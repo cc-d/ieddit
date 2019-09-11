@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<head>
+	<title>ieddit</title>
+</head>
+<body>
+	<div id="topbar">
+		<p>Logged in as {{ session['username'] }}</p>
+	</div>
+	<div id="content">
+		{% block content %}
+		{% endblock %}
+	</div>
+</body>
+</html>
