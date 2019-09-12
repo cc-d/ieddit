@@ -100,7 +100,7 @@ def comment(sub, post_id, inurl_title):
 	comments = [str(vars(comment)) for comment in comments]
 
 	return render_template('comments.html', comments=comments, post_id=post_id, 
-		post_url=config.URL + '/r/' + sub + '/' + post_id + '/' + inurl_title + '/')
+		post_url='%s/r/%s/%s/%s/' % (config.URL, sub, post_id, inurl_title)) #config.URL + '/r/' + sub + '/' + post_id + '/' + inurl_title + '/')
 
 @app.route('/create', methods=['POST', 'GET'])
 def create_sub():
