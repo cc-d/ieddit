@@ -1,5 +1,6 @@
 from flask import Flask, render_template, session, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
@@ -66,7 +67,9 @@ def register():
 
 @app.route('/r/<subi>')
 def subi(subi):
-	subname = Sub.query.filter_by(name=subi).first()
+	#subname = Sub.query.filter_by(name=subi).first()
+	#subname = Sub.query.with_entities(Sub.name).filter(Sub.name.ilike('%' + subi + '%')).all()
+	subname = Sub.query.filter(func.lower(Sub.name) == subi.lower()).first()
 	if subname == None:
 		return 'invalid sub'
 	posts = Post.query.filter_by(sub=subi).all()
@@ -110,20 +113,5 @@ def create_post():
 
 	if request.method == 'GET':
 		return render_template('create_sub.html')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
