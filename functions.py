@@ -1,3 +1,4 @@
+import urllib.parse
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
 
 def verify_username(username):
@@ -18,17 +19,7 @@ def verify_subname(subname):
 
 def convert_ied(url):
 	url = url.lower()
-	new_url = ''
+	url = url.replace(' ', '_')
+	url = urllib.parse.quote(url)[:75]
 
-	for c in url:
-		if c in legal_chars:
-			new_url += c
-		elif c == ' ':
-			new_url += '_'
-		if len(url) >= 75:
-			break
-
-	if len(url) == 0:
-		new_url = 'empty'
-
-	return new_url
+	return url
