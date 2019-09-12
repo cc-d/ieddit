@@ -16,8 +16,14 @@ db = SQLAlchemy(app)
 
 @app.route('/')
 def hello_world():
-	return render_template('index.html')
-
+	subs = Sub.query.filter_by().all()
+	subs = [str(vars(sub)) for sub in subs]
+	comments = Comment.query.filter_by().all()
+	comments = [str(vars(comment)) for comment in comments]
+	posts = Post.query.filter_by().all()
+	posts = [str(vars(post)) for post in posts]
+	return render_template('index.html', subs=subs, comments=comments, posts=posts)
+	
 @app.route('/login',  methods=['GET', 'POST'])
 def login():
 	if request.method == 'GET':
@@ -34,7 +40,7 @@ def login():
 			hashed_pw = User.query.filter_by(username=username).first().password
 			if check_password_hash(hashed_pw, password):
 				session['username'] = username
-				return 'login succeded'
+				return redirect(config.URL, 302)
 
 		return 'login failed' 
 
@@ -63,7 +69,8 @@ def register():
 			password=generate_password_hash(password))
 		db.session.add(new_user)
 		db.session.commit()
-		return 'ok'
+		session['username'] = username
+		return redirect(config.URL, 302)
 
 @app.route('/r/<subi>')
 def subi(subi):
