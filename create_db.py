@@ -18,14 +18,19 @@ db.session.add(new_sub)
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'), author='test', sub='test')
 db.session.add(new_post)
 
+new_comment = Comment(post_id=1, text='this is comment text', username='test')
+db.session.add(new_comment)
+
 '''
-	id = db.Column(db.Integer, primary_key=True)	
-	url = db.Column(db.String(2000), unique=False, nullable=False)
-	title = db.Column(db.String(400), unique=False, nullable=False)
+class Comment(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	post_id = db.Column(db.Integer, unique=False, nullable=False)
+	text = db.Column(db.String(20000), unique=False, nullable=False)
 	ups = db.Column(db.Integer, default=0, nullable=False)
 	downs = db.Column(db.Integer, default=0, nullable=False)
-	inurl_title = db.Column(db.String(75), unique=False, nullable=False)
-	author = db.Column(db.String(20), unique=False, nullable=False)
+
+	def __repr__(self):
+		return '<Comment %r>' % self.id
 '''
 
 db.session.commit()

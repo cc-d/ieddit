@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
+
+
 {% for post in posts %}
 	{{ post }} <br>
+	<a href="{{ links[loop.index0] }}">{{ links[loop.index0] }}</a>
+{% else %}
+	<p> no posts </p>
 {% endfor %}
+
 {% endblock %}

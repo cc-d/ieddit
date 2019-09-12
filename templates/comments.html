@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ post }}</h1> <br>
+<form action='/create_comment' method='POST'>
+	<input type='text' name='comment_text'>
+	<input type='hidden' name='post_id' value='{{post_id}}'>
+	<input type='hidden' name='post_url' value='{{post_url}}'>
+	<input type='submit' value='new comment'>
+</form>
+{% for comment in comments %}
+	{{ comment }} <br>
+{% endfor %}
+{% endblock %}

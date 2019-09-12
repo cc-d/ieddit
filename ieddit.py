@@ -73,12 +73,27 @@ def subi(subi):
 	if subname == None:
 		return 'invalid sub'
 	posts = Post.query.filter_by(sub=subi).all()
-	if len(posts) < 1:
-		return render_template('sub.html', posts='no posts')
+
 	p = []
+	links = []
 	for po in posts:
 		p.append(str(vars(po)))
-	return render_template('sub.html', posts=p)
+		links.append(config.URL + '/r/' + subi + '/' + str(po.id) + '/' + po.inurl_title)
+
+	return render_template('sub.html', posts=p, links=links)
+
+@app.route('/r/<sub>/<post_id>/<inurl_title>/')
+def comment(sub, post_id, inurl_title):
+	if sub == None or post_id == None or inurl_title == None:
+		return 'badlink'
+	post = Post.query.filter_by(id=post_id, sub=sub).first()
+	post = str(vars(post))
+
+	comments = Comment.query.filter_by(post_id=post_id).all()
+	comments = [str(vars(comment)) for comment in comments]
+
+	return render_template('comments.html', comments=comments, post_id=post_id, 
+		post_url=config.URL + '/r/' + sub + '/' + post_id + '/' + inurl_title + '/')
 
 @app.route('/create', methods=['POST', 'GET'])
 def create_sub():
@@ -114,9 +129,19 @@ def create_post():
 	if request.method == 'GET':
 		return render_template('create_sub.html')
 
+@app.route('/create_comment', methods=['POST'])
+def create_comment():
+	text = request.form.get('comment_text')
+	post_id = request.form.get('post_id')
+	post_url = request.form.get('post_url')
+	if text == None or 'username' not in session or post_id == None or post_url == None:
+		return 'bad comment'
+	new_comment = Comment(post_id=post_id, text=text, username=session['username'])
+	db.session.add(new_comment)
+	db.session.commit()
+	return redirect(post_url, 302)
+
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
 	session.pop('username', None)
 	return redirect(config.URL, 302)
-
-
