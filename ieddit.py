@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 
 @app.route('/')
 def hello_world():
-	return 'hi'
+	return render_template('index.html')
 
 @app.route('/login',  methods=['GET', 'POST'])
 def login():
@@ -67,18 +67,18 @@ def register():
 
 @app.route('/r/<subi>')
 def subi(subi):
-	#subname = Sub.query.filter_by(name=subi).first()
-	#subname = Sub.query.with_entities(Sub.name).filter(Sub.name.ilike('%' + subi + '%')).all()
+	if verify_subname(subi) == False:
+		return 'invalid subpath'
 	subname = Sub.query.filter(func.lower(Sub.name) == subi.lower()).first()
 	if subname == None:
 		return 'invalid sub'
 	posts = Post.query.filter_by(sub=subi).all()
 	if len(posts) < 1:
-		return 'no posts'
-	p = ''
+		return render_template('sub.html', posts='no posts')
+	p = []
 	for po in posts:
-		p += str(vars(po)) + '<br>' 
-	return p
+		p.append(str(vars(po)))
+	return render_template('sub.html', posts=p)
 
 @app.route('/create', methods=['POST', 'GET'])
 def create_sub():
@@ -90,7 +90,7 @@ def create_sub():
 			new_sub = Sub(name=subname, created_by=session['username'])
 			db.session.add(new_sub)
 			db.session.commit()
-			return 'created'
+			return redirect(config.URL + '/r/' + subname, 302)
 		return 'invalid'
 	elif request.method == 'GET':
 		return render_template('create.html')
@@ -113,5 +113,10 @@ def create_post():
 
 	if request.method == 'GET':
 		return render_template('create_sub.html')
+
+@app.route('/logout', methods=['POST', 'GET'])
+def logout():
+	session.pop('username', None)
+	return redirect(config.URL, 302)
 
 

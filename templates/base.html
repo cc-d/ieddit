@@ -5,6 +5,10 @@
 <body>
 	<div id="topbar">
 		<p>Logged in as {{ session['username'] }}</p>
+<a href="/create">create sub</a><br>
+<a href="/login"> login or regiser </a><br>
+<a href="/create_post">create a post</a><br>
+<a href="/logout">logout</a><br>
 	</div>
 	<div id="content">
 		{% block content %}
