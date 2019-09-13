@@ -26,15 +26,17 @@
   </li>
 </ul>
 
-<form action='/create_comment' method='POST'>
+<form id='reply-box' action='/create_comment' method='POST'>
 	<input type='text' name='comment_text'>
 	<input type='hidden' name='post_id' value='{{post_id}}'>
 	<input type='hidden' name='post_url' value='{{post_url}}'>
 	<input type='submit' value='new comment'>
 </form>
+
 <ul class="list-unstyled">
 {% for comment in comments %}
   <li class="media sub-comment">
+
     <div class="media-body">
     <div class="row post-row">
     	<div class="col inner-div">
@@ -49,7 +51,7 @@
     			<i class="fa fa-arrow-down"></i>
     	</div>
     	<div class="col-4 inner-div">
-    		<a class="comment-link" href="#">reply</a>
+    		<a class="comment-link comment-reply" href="javascript:void(0)">reply</a>
     	</div>
     	</div>
     </div>
