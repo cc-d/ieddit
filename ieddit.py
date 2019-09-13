@@ -95,13 +95,12 @@ def comment(sub, post_id, inurl_title):
 	if sub == None or post_id == None or inurl_title == None:
 		return 'badlink'
 	post = Post.query.filter_by(id=post_id, sub=sub).first()
-	post = str(vars(post))
-
+	post.comment_count = Comment.query.filter_by(post_id=post.id).count()
+	
 	comments = Comment.query.filter_by(post_id=post_id).all()
-	comments = [str(vars(comment)) for comment in comments]
-
+	
 	return render_template('comments.html', comments=comments, post_id=post_id, 
-		post_url='%s/r/%s/%s/%s/' % (config.URL, sub, post_id, inurl_title)) #config.URL + '/r/' + sub + '/' + post_id + '/' + inurl_title + '/')
+		post_url='%s/r/%s/%s/%s/' % (config.URL, sub, post_id, inurl_title), post=post) #config.URL + '/r/' + sub + '/' + post_id + '/' + inurl_title + '/')
 
 @app.route('/create', methods=['POST', 'GET'])
 def create_sub():

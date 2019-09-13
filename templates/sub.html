@@ -11,7 +11,8 @@
     		<i class="fa fa-user"></i> {{ post['author'] }}
     	</div>
     </div>
-      <h6>TIL that Thor Heyerdahl, a Norwegian Ethnographer, sailed from Peru to Polynesia on an primitive balsa wood raft to prove that ancient trans-oceanic travel was possible. When experts called it a fluke, he made an Egyptian reed boat and sailed it from Morocco to Central America to prove them wrong. </h6>
+      <!--<h6>TIL that Thor Heyerdahl, a Norwegian Ethnographer, sailed from Peru to Polynesia on an primitive balsa wood raft to prove that ancient trans-oceanic travel was possible. When experts called it a fluke, he made an Egyptian reed boat and sailed it from Morocco to Central America to prove them wrong. </h6>-->
+      <h6> {{ post.title }} </h6>
     <div class="row post-row">
     	<div class="col-2 inner-div">
     			<i class="fa fa-arrow-up"></i>
@@ -22,7 +23,6 @@
     		<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
     	</div>
     	</div>
-    </div>
     </div>
   </li>
 </ul>

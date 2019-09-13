@@ -15,6 +15,10 @@
 	border: 0px solid red;
 }
 
+.sub-comment {
+	border: 2px solid yellow;
+}
+
 .comment-link {
 	color: #212529;
 }
