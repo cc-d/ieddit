@@ -15,6 +15,7 @@
 	<title>ieddit</title>
 </head>
 <body>
+	<div id="page" class="mx-auto">
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<a class="navbar-brand" href="#">ieddit</a>
 
@@ -26,9 +27,6 @@
 				{% if session['username'] %}
 				<li class="nav-item">
 					<a class="nav-link" href="/create">create sub</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/login">login/reg</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/create_post">create post</a>
@@ -43,16 +41,20 @@
 			<ul class="navbar-nav mr-auto navbar-right">
 				{% if session['username'] %}
 				<li class="nav-item active">
-
 					<a class="nav-link" href="#"><i class="fa fa-user"></i> {{ session['username'] }}</a>
+				</li>
+				{% else %}
+				<li class="nav-item">
+					<a class="nav-link" href="/login">login</a>
 				</li>
 				{% endif %}
 			</ul>
 		</div>
 		<div class="navbar">
-									<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
+
 		</div>
 
 	</nav>
@@ -66,5 +68,6 @@
 		{% block content %}
 		{% endblock %}
 	</div>
+</div>
 </body>
 </html>

@@ -82,12 +82,11 @@ def subi(subi):
 	posts = Post.query.filter_by(sub=subi).all()
 
 	p = []
-	links = []
-	for po in posts:
-		p.append(str(vars(po)))
-		links.append(config.URL + '/r/' + subi + '/' + str(po.id) + '/' + po.inurl_title)
+	for post in posts:
+		post.site_url = config.URL + '/r/' + subi + '/' + str(post.id) + '/' + post.inurl_title
+		p.append(post)
 
-	return render_template('sub.html', posts=p, links=links)
+	return render_template('sub.html', posts=p)
 
 @app.route('/r/<sub>/<post_id>/<inurl_title>/')
 def comment(sub, post_id, inurl_title):

@@ -1,0 +1,20 @@
+.inner-div {
+	border:0px solid green;
+}
+
+.post-row {
+	margin-right: 0px;
+}
+
+#page {
+	max-width: 1024px;
+}
+
+.sub-post {
+	margin-top: 10px;
+	border: 0px solid red;
+}
+
+.comment-link {
+	color: #212529;
+}
