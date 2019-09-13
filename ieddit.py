@@ -77,6 +77,7 @@ def subi(subi):
 	if verify_subname(subi) == False:
 		return 'invalid subpath'
 	subname = Sub.query.filter(func.lower(Sub.name) == subi.lower()).first()
+
 	if subname == None:
 		return 'invalid sub'
 	posts = Post.query.filter_by(sub=subi).all()
@@ -84,6 +85,7 @@ def subi(subi):
 	p = []
 	for post in posts:
 		post.site_url = config.URL + '/r/' + subi + '/' + str(post.id) + '/' + post.inurl_title
+		post.comment_count = Comment.query.filter_by(post_id=post.id).count()
 		p.append(post)
 
 	return render_template('sub.html', posts=p)
