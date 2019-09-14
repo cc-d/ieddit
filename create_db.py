@@ -4,6 +4,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from ieddit import db
 from models import *
 from functions import *
+import os
+#test sqlite3 db location
+os.system('rm -rf test.db')
 
 db.create_all()
 db.session.commit()
@@ -18,7 +21,10 @@ db.session.add(new_sub)
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'), author='test', sub='test')
 db.session.add(new_post)
 
-new_comment = Comment(post_id=1, text='this is comment text', username='test')
+new_comment = Comment(post_id=1, text='this is comment text', username='test', parent_id=None)
+db.session.add(new_comment)
+
+new_comment = Comment(post_id=1, text='this is a reply', username='test', parent_id=1)
 db.session.add(new_comment)
 
 '''

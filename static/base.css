@@ -6,6 +6,10 @@
 	margin-right: 0px;
 }
 
+.post-image {
+	margin-left: 1rem;
+}
+
 #page {
 	max-width: 1024px;
 }

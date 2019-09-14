@@ -41,6 +41,7 @@ class Comment(db.Model):
 	ups = db.Column(db.Integer, default=0, nullable=False)
 	downs = db.Column(db.Integer, default=0, nullable=False)
 	username = db.Column(db.String(20), unique=False, nullable=False)
+	parent_id = db.Column(db.Integer, unique=False, nullable=True)
 
 	def __repr__(self):
 		return '<Comment %r>' % self.id

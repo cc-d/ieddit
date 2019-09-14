@@ -4,7 +4,7 @@
 {% for post in posts %}
 <ul class="list-unstyled">
   <li class="media sub-post">
-    <img class="mr-3" src="https://via.placeholder.com/100" alt="Generic placeholder image">
+    <img class="mr-3 post-image" src="https://via.placeholder.com/100" alt="Generic placeholder image">
     <div class="media-body">
     <div class="row post-row">
     	<div class="col inner-div">
@@ -14,12 +14,12 @@
       <!--<h6>TIL that Thor Heyerdahl, a Norwegian Ethnographer, sailed from Peru to Polynesia on an primitive balsa wood raft to prove that ancient trans-oceanic travel was possible. When experts called it a fluke, he made an Egyptian reed boat and sailed it from Morocco to Central America to prove them wrong. </h6>-->
       <h6> {{ post.title }} </h6>
     <div class="row post-row">
-    	<div class="col-2 inner-div">
+    	<div class="col-6 inner-div">
     			<i class="fa fa-arrow-up"></i>
     			0
     			<i class="fa fa-arrow-down"></i>
     	</div>
-    	<div class="col-4 inner-div">
+    	<div class="col-6 inner-div">
     		<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
     	</div>
     	</div>

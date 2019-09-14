@@ -96,7 +96,7 @@ def comment(sub, post_id, inurl_title):
 		return 'badlink'
 	post = Post.query.filter_by(id=post_id, sub=sub).first()
 	post.comment_count = Comment.query.filter_by(post_id=post.id).count()
-	
+
 	comments = Comment.query.filter_by(post_id=post_id).all()
 	
 	return render_template('comments.html', comments=comments, post_id=post_id, 
@@ -141,9 +141,10 @@ def create_comment():
 	text = request.form.get('comment_text')
 	post_id = request.form.get('post_id')
 	post_url = request.form.get('post_url')
+	parent_id = request.form.get('parent_id')
 	if text == None or 'username' not in session or post_id == None or post_url == None:
 		return 'bad comment'
-	new_comment = Comment(post_id=post_id, text=text, username=session['username'])
+	new_comment = Comment(post_id=post_id, text=text, username=session['username'], parent_id=parent_id)
 	db.session.add(new_comment)
 	db.session.commit()
 	return redirect(post_url, 302)
