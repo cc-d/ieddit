@@ -12,6 +12,7 @@ $(document).on('click', '.comment-reply', function () {
 
 	$('#comment-reply-box').css('display', 'inline-block');
 	$(this).after($('#comment-reply-box'));
+	$('#parent_id').val($(this).attr('comment_id'));
 	$(this).css('display', 'none');
 
 	if($('#reply-box').parent().attr('comment_id') !== undefined) {

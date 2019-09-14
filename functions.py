@@ -24,13 +24,16 @@ def convert_ied(url):
 
 	return url
 
+# horribly ineffecient function lol
+# like no seriously, this is really, really bad
+# it just seemed like an entertaining way to write it
+# will change on release
 def nested_keys(comments, tree):
 	paths = {0:['tree']}
 	depth = 0
-	safety = 50
+	limit = 50
 	while len(comments) > 0:
 		paths[depth+1] = []
-		tkeys = []
 		if depth == 0:
 			for z in tree.keys():
 				paths[1].append('tree[' + str(z) + ']')
@@ -39,24 +42,38 @@ def nested_keys(comments, tree):
 			for p in paths[depth-1]:
 				for com in [c for c in comments]:
 					try:
-						print(str(vars(com)))
-						eval(p + '[' + str(com.parent_id )+ ']')[com.id] = {}
+						exec(p + '[' + str(com.parent_id ) + ']')
+						exec_txt = p + '[' + str(com.parent_id ) + '][' + str(com.id) + '] = {}'
+						exec(exec_txt)
+						paths[depth].append(p + '[' + str(com.parent_id ) + ']')
 						comments.remove(com)
 					except KeyError as e:
-						print(e)
+						pass
 
 		depth += 1
-		if depth == safety:
+		if depth >= limit:
 			break
+
 	return tree
 
 def create_comment_tree(comments):
 	tree = {}
 	for i in [c for c in comments if c.parent_id == None]:
 		tree[i.id] = {}
-		comments.remove(i)
-
 	tree=nested_keys(comments, tree)
-
-			
 	return tree
+
+def recursive_items(dictionary):
+	for key, value in dictionary.items():
+		if type(value) is dict:
+			yield from recursive_items(value)
+		else:
+			yield (key, value)
+
+def comment_structure(comments, tree):
+	new = {}
+	for k, v in tree.items():
+		cobj = next((x for x in comments if x.id == k), None)
+		new[cobj] = comment_structure(comments, v)
+	return new
+

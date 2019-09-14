@@ -99,6 +99,7 @@ def comment(sub, post_id, inurl_title):
 
 	comments = Comment.query.filter_by(post_id=post_id).all()
 	tree = create_comment_tree(comments)
+	tree = comment_structure(comments, tree)
 	return render_template('comments.html', comments=comments, post_id=post_id, 
 		post_url='%s/r/%s/%s/%s/' % (config.URL, sub, post_id, inurl_title), post=post, tree=tree)
 

@@ -42,15 +42,14 @@
 </form>
 {{ tree }}
 <ul class="list-unstyled">
-{% for comment in comments %}
-  <li class="media sub-comment">
-    <div class="media-body">
+{%- for key, value in tree.items() recursive %}  
+<li class="media sub-comment" style="margin-left:{{ loop.depth - 1 }}em">
     <div class="row post-row">
     	<div class="col inner-div">
-    		<i class="fa fa-user"></i> {{ comment.username }}
-    	</div>
-    </div>
-      <h6>{{ comment.text }} </h6>
+    		<i class="fa fa-user"></i> {{ key.username }}
+    	</div>	
+    </div>             
+      <h6>{{ key.text }} </h6>
     <div class="row post-row">
     	<div class="col-6 inner-div">
     			<i class="fa fa-arrow-up"></i>
@@ -58,19 +57,16 @@
     			<i class="fa fa-arrow-down"></i>
     	</div>
     	<div class="col-6 inner-div">
-    		<a class="comment-link comment-reply" href="javascript:void(0)" comment_id='{{ comment.id }}'>reply</a>
+    		<a class="comment-link comment-reply" href="javascript:void(0)" comment_id='{{ key.id }}'>reply</a>
     	</div>
-    	</div>
-    </div><!--
-    <li class="media sub-comment" style="margin-left: 3em">
-      <div class="media-body">
-        <h5 class="mt-0">Media heading</h5>
-        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-      </div>
-  </li>-->
-  </li>
+    	</div>                                   
+</li> <!-- ??? -->
+
+    {%- if value %}                            
+    {{ loop(value.items()) }}                                       
+    {% endif %}
 {% else %}
-	<p>no comments</p>
-{% endfor %}
+	<p>no comments</p>                                                                                                                          
+{%- endfor %}  
 </ul>
-{% endblock %}
+{% endblock %} -->

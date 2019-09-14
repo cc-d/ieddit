@@ -21,7 +21,7 @@ db.session.add(new_sub)
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'), author='test', sub='test')
 db.session.add(new_post)
 
-new_comment = Comment(post_id=1, text='this is comment text', username='test', parent_id=None)
+new_comment = Comment(post_id=1, text='this is comment text', username='test')
 db.session.add(new_comment)
 
 new_comment = Comment(post_id=1, text='this is a reply', username='test', parent_id=1)
