@@ -2,28 +2,28 @@
 {% block content %}
 
 <ul class="list-unstyled">
-  <li class="media sub-post">
-    <img class="mr-3" src="https://via.placeholder.com/100" alt="Generic placeholder image">
-    <div class="media-body">
-    <div class="row post-row">
-    	<div class="col inner-div">
-    		<i class="fa fa-user"></i> {{ post['author'] }}
-    	</div>
-    </div>
-      <h6>{{ post.title }}</h6>
-    <div class="row post-row">
-    	<div class="col-2 inner-div">
-    			<i class="fa fa-arrow-up"></i>
-    			0
-    			<i class="fa fa-arrow-down"></i>
-    	</div>
-    	<div class="col-4 inner-div">
-    		<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
-    	</div>
-    	</div>
-    </div>
-    </div>
-  </li>
+	<li class="media sub-post">
+		<img class="mr-3" src="https://via.placeholder.com/100" alt="Generic placeholder image">
+		<div class="media-body">
+			<div class="row post-row">
+				<div class="col inner-div">
+					<i class="fa fa-user"></i> {{ post['author'] }}
+				</div>
+			</div>
+			<h6>{{ post.title }}</h6>
+			<div class="row post-row">
+				<div class="col-2 inner-div">
+					<i class="fa fa-arrow-up"></i>
+					0
+					<i class="fa fa-arrow-down"></i>
+				</div>
+				<div class="col-4 inner-div">
+					<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</li>
 </ul>
 
 <form id='reply-box' action='/create_comment' method='POST'>
@@ -42,31 +42,31 @@
 </form>
 {{ tree }}
 <ul class="list-unstyled">
-{%- for key, value in tree.items() recursive %}  
-<li class="media sub-comment" style="margin-left:{{ loop.depth - 1 }}em">
-    <div class="row post-row">
-    	<div class="col inner-div">
-    		<i class="fa fa-user"></i> {{ key.username }}
-    	</div>	
-    </div>             
-      <h6>{{ key.text }} </h6>
-    <div class="row post-row">
-    	<div class="col-6 inner-div">
-    			<i class="fa fa-arrow-up"></i>
-    			0
-    			<i class="fa fa-arrow-down"></i>
-    	</div>
-    	<div class="col-6 inner-div">
-    		<a class="comment-link comment-reply" href="javascript:void(0)" comment_id='{{ key.id }}'>reply</a>
-    	</div>
-    	</div>                                   
-</li> <!-- ??? -->
+	{%- for key, value in tree.items() recursive %}  
+	<li class="media sub-comment" style="margin-left:{{ loop.depth - 1 }}em">
+		<div class="row post-row">
+			<div class="col inner-div">
+				<i class="fa fa-user"></i> {{ key.username }}
+			</div>
+		</div>
+		<h6>{{ key.text }} </h6>
+		<div class="row post-row">
+			<div class="col-6 inner-div">
+				<i class="fa fa-arrow-up"></i>
+				0
+				<i class="fa fa-arrow-down"></i>
+			</div>
+			<div class="col-6 inner-div">
+				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id='{{ key.id }}'>reply</a>
+			</div>
+		</div>
+	</li> <!-- ??? -->
 
-    {%- if value %}                            
-    {{ loop(value.items()) }}                                       
-    {% endif %}
-{% else %}
-	<p>no comments</p>                                                                                                                          
-{%- endfor %}  
+	{%- if value %}
+	{{ loop(value.items()) }}
+	{% endif %}
+	{% else %}
+	<p>no comments</p>
+	{%- endfor %}
 </ul>
-{% endblock %} -->
+{% endblock %} 
