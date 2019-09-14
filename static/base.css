@@ -10,6 +10,22 @@
 	margin-left: 1rem;
 }
 
+.comment-text {
+	min-height: 50px;
+}
+
+.comment-bottom {
+}
+
+.comment-voting {
+	margin-left: 1em;
+	margin-right: 1em;}
+
+.comment-media-body {
+	min-height: 100px !important;
+	margin-left: 0.5em;
+}
+
 #page {
 	max-width: 1024px;
 }
@@ -17,6 +33,7 @@
 .sub-post {
 	margin-top: 10px;
 	border: 0px solid red;
+	min-height: 100px;
 }
 
 .sub-comment {
