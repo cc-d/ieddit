@@ -10,7 +10,7 @@
     		<i class="fa fa-user"></i> {{ post['author'] }}
     	</div>
     </div>
-      <h6>TIL that Thor Heyerdahl, a Norwegian Ethnographer, sailed from Peru to Polynesia on an primitive balsa wood raft to prove that ancient trans-oceanic travel was possible. When experts called it a fluke, he made an Egyptian reed boat and sailed it from Morocco to Central America to prove them wrong. </h6>
+      <h6>{{ post.title }}</h6>
     <div class="row post-row">
     	<div class="col-2 inner-div">
     			<i class="fa fa-arrow-up"></i>
@@ -40,11 +40,10 @@
 	<input type='hidden' name='parent_id' id='parent_id'>
 	<input type='submit' value='reply'>
 </form>
-
+{{ tree }}
 <ul class="list-unstyled">
 {% for comment in comments %}
   <li class="media sub-comment">
-
     <div class="media-body">
     <div class="row post-row">
     	<div class="col inner-div">
@@ -62,7 +61,13 @@
     		<a class="comment-link comment-reply" href="javascript:void(0)" comment_id='{{ comment.id }}'>reply</a>
     	</div>
     	</div>
-    </div>
+    </div><!--
+    <li class="media sub-comment" style="margin-left: 3em">
+      <div class="media-body">
+        <h5 class="mt-0">Media heading</h5>
+        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+      </div>
+  </li>-->
   </li>
 {% else %}
 	<p>no comments</p>
