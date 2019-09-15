@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 
 @app.route('/')
 def index():
-	return r_all(index=True)
+	return all_sub_posts(index=True)
 	
 @app.route('/login',  methods=['GET', 'POST'])
 def login():
@@ -66,6 +66,7 @@ def register():
 		session['username'] = username
 		return redirect(config.URL, 302)
 
+# These two functions look the same, but they will work somewhat different in fucture
 @app.route('/r/<subi>')
 def subi(subi):
 	if verify_subname(subi) == False:
@@ -78,18 +79,25 @@ def subi(subi):
 
 	p = []
 	for post in posts:
+		post.created_ago = time_ago(post.created)
+		post.posted_to = '/r/' + post.sub
 		post.site_url = config.URL + '/r/' + subi + '/' + str(post.id) + '/' + post.inurl_title
+		post.remote_url_parsed = post_url_parse(post.url)
 		post.comment_count = Comment.query.filter_by(post_id=post.id).count()
 		p.append(post)
 
 	return render_template('sub.html', posts=p, url=config.URL)
 
+# These two functions look the same, but they will work somewhat different in fucture
 @app.route('/r/all')
-def r_all(index=False):
+def all_sub_posts(index=False):
 	posts = Post.query.filter_by().order_by(Post.id.asc()).limit(10)
 	p = []
 	for post in posts:
+		post.created_ago = time_ago(post.created)
+		post.posted_to = '/r/' + post.sub
 		post.site_url = config.URL + '/r/' + post.sub + '/' + str(post.id) + '/' + post.inurl_title
+		post.remote_url_parsed = post_url_parse(post.url)
 		post.comment_count = Comment.query.filter_by(post_id=post.id).count()
 		p.append(post)
 	if index:

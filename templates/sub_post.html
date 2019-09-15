@@ -1,13 +1,19 @@
-<ul class="list-unstyled">
+<ul class="list-unstyled sub-list">
   <li class="media sub-post">
-    <img class="mr-3 post-image" src="https://via.placeholder.com/100" alt="Generic placeholder image">
+    <div class="post-image-container">
+        <img class="mr-3 post-image" src="https://via.placeholder.com/100" alt="Generic placeholder image">
+    </div>
     <div class="media-body">
     <div class="row post-row">
     	<div class="col inner-div">
-    		<i class="fa fa-user"></i> <a class="user-icon-link" href="{{ config.URL }}/u/{{ post['author'] }}">{{ post.author }}</a>
+    		<small><i class="fa fa-user"></i> <a class="user-icon-link" href="{{ config.URL }}/u/{{ post['author'] }}">{{ post.author }}</a></small>
+            <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}{{ post.posted_to }}">{{ post.posted_to }}</a></small>
+            <small class="created-ago">{{ post.created_ago }}</small>
     	</div>
     </div>
-      <p> {{ post.title }} </p>
+    <a class="sub-post-title-link" href="{{ post.site_url }}">{{ post.title }}</a> 
+    <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
+
     <div class="row post-row">
         {% include 'votearrows.html' %}
     	<div class="col-6 inner-div">

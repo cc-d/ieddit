@@ -1,5 +1,6 @@
 import urllib.parse
 import random
+from datetime import datetime, timedelta
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
 
 def rstring(length1, length2=False):
@@ -27,8 +28,20 @@ def convert_ied(url):
 	url = url.lower()
 	url = url.replace(' ', '_')
 	url = urllib.parse.quote(url)[:40]
-
 	return url
+
+def post_url_parse(url):
+	return urllib.parse.urlparse(url).netloc
+
+def time_ago(dt):
+	diff = datetime.now() - dt
+	if diff.seconds < 60:
+		return str(int(diff.seconds)) + ' seconds ago'
+	if diff.seconds > 60 and diff.seconds < 3600:#86400:
+		return str(int(diff.seconds / 60)) + ' minutes ago'
+	if diff.seconds > 3600 and diff.seconds < 86400:
+		return str(int((diff.seconds / 60) / 60)) + ' hours ago'
+	return str(int(diff.days)) + ' days ago'
 
 # horribly ineffecient function lol
 # like no seriously, this is really, really bad

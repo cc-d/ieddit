@@ -4,14 +4,27 @@
 .post-row {
 	margin-right: 0px;}
 
+.post-row-top {
+	font-size: 0.8rem;}
+
 .post-image {
-	margin-left: 1rem;}
+	margin-left: 0.5rem;
+	margin-right: 0.5rem!important;
+	height: 5rem;
+	width: 5rem;}
 
 .comment-text {
 	min-height: 50px;}
 
-.comment-bottom {
-}
+.sub-post-title-link {
+	font-size: 1rem;
+	color: #212529;}
+
+.top-of-post {
+	margin-left: 1rem;}
+
+.top-post-sublink {
+	color: #212529;}
 
 .user-icon-link {
 	text-decoration: none;
@@ -32,17 +45,34 @@
 	margin-right: 1em;}
 
 .comment-media-body {
-	min-height: 100px !important;
+	min-height: 75px !important;
 	margin-left: 0.5em;}
 
 #page {
 	max-width: 1024px;}
 
+#comment-page-wrapper{
+	margin-left: 0.5em;
+	margin-right: 0.5em;}
+
 .sub-post {
-	margin-top: 10px;
+	margin-top: 0.5em;
+	margin-right: 0.5em;
 	border: 0px solid red;
-	min-height: 100px;
+	min-height: 92px;
 	word-break: break-word;}
+
+.sub-list {
+	margin-bottom: 1rem;
+	margin-top: 1rem;
+	border: 1px solid black;}
+
+.sub-post-title-url {
+	font-size: 0.8rem;
+	color: #212529;}
+
+.created-ago {
+	margin-left: 1rem;}
 
 .sub-comment {
 	border: 1px solid gray;
