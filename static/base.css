@@ -23,23 +23,30 @@
 
 .comment-media-body {
 	min-height: 100px !important;
-	margin-left: 0.5em;
-}
+	margin-left: 0.5em;}
 
 #page {
-	max-width: 1024px;
-}
+	max-width: 1024px;}
 
 .sub-post {
 	margin-top: 10px;
 	border: 0px solid red;
-	min-height: 100px;
-}
+	min-height: 100px;}
 
 .sub-comment {
-	border: 1px solid gray;
-}
+	border: 1px solid gray;}
 
 .comment-link {
-	color: #212529;
-}
+	color: #212529;}
+
+.fa-arrow-up {
+	color: #212529;}
+
+.fa-arrow-up a:hover {
+	pointer-events: none;}
+
+.fa-arrow-down {
+	color: #212529;}
+
+.fa-arrow-down a:hover {
+	pointer-events: none;}

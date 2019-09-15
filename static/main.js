@@ -19,4 +19,22 @@ $(document).on('click', '.comment-reply', function () {
 		$('#reply-box').parent().text('reply');
 	}
 });
+
+$(document).on('click', '.fa-arrow-up', function() {
+	if($(this).css('color') != 'rgb(255, 165, 0)') {
+		console.log($(this).css('color'));
+		$(this).css('color', 'orange');
+	} else if ($(this).css('color') == 'rgb(255, 165, 0)') {
+		$(this).css('color', '#212529');
+	}
+});
+
+$(document).on('click', '.fa-arrow-down', function() {
+	if($(this).css('color') == 'rgb(33, 37, 41)') {
+		$(this).css('color', 'rgb(173, 216, 230)');
+	} else if ($(this).css('color') == 'rgb(173, 216, 230)') {
+		$(this).css('color', '#212529');
+	}
+});
+
 console.log('loaded');
