@@ -2,29 +2,7 @@
 {% block content %}
 
 {% for post in posts %}
-<ul class="list-unstyled">
-  <li class="media sub-post">
-    <img class="mr-3 post-image" src="https://via.placeholder.com/100" alt="Generic placeholder image">
-    <div class="media-body">
-    <div class="row post-row">
-    	<div class="col inner-div">
-    		<i class="fa fa-user"></i> <a class="user-icon-link" href="{{ config.URL }}/u/{{ post['author'] }}">{{ post.author }}</a>
-    	</div>
-    </div>
-      <h6> {{ post.title }} </h6>
-    <div class="row post-row">
-    	<div class="col-6 inner-div">
-    			<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
-    			0
-    			<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
-    	</div>
-    	<div class="col-6 inner-div">
-    		<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
-    	</div>
-    	</div>
-    </div>
-  </li>
-</ul>
+    {% include 'sub_post.html' %}
 {% else %}
 	<p> no posts </p>
 {% endfor %}

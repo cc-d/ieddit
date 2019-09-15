@@ -1,0 +1,19 @@
+<ul class="list-unstyled">
+  <li class="media sub-post">
+    <img class="mr-3 post-image" src="https://via.placeholder.com/100" alt="Generic placeholder image">
+    <div class="media-body">
+    <div class="row post-row">
+    	<div class="col inner-div">
+    		<i class="fa fa-user"></i> <a class="user-icon-link" href="{{ config.URL }}/u/{{ post['author'] }}">{{ post.author }}</a>
+    	</div>
+    </div>
+      <p> {{ post.title }} </p>
+    <div class="row post-row">
+        {% include 'votearrows.html' %}
+    	<div class="col-6 inner-div">
+    		<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
+    	</div>
+    	</div>
+    </div>
+  </li>
+</ul>

@@ -15,14 +15,8 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 @app.route('/')
-def hello_world():
-	subs = Sub.query.filter_by().all()
-	subs = [str(vars(sub)) for sub in subs]
-	comments = Comment.query.filter_by().all()
-	comments = [str(vars(comment)) for comment in comments]
-	posts = Post.query.filter_by().all()
-	posts = [str(vars(post)) for post in posts]
-	return render_template('index.html', subs=subs, comments=comments, posts=posts)
+def index():
+	return r_all(index=True)
 	
 @app.route('/login',  methods=['GET', 'POST'])
 def login():
@@ -89,6 +83,19 @@ def subi(subi):
 		p.append(post)
 
 	return render_template('sub.html', posts=p, url=config.URL)
+
+@app.route('/r/all')
+def r_all(index=False):
+	posts = Post.query.filter_by().order_by(Post.id.asc()).limit(10)
+	p = []
+	for post in posts:
+		post.site_url = config.URL + '/r/' + post.sub + '/' + str(post.id) + '/' + post.inurl_title
+		post.comment_count = Comment.query.filter_by(post_id=post.id).count()
+		p.append(post)
+	if index:
+		return render_template('index.html', posts=p, url=config.URL)
+	else:
+		return render_template('sub.html', posts=p, url=config.URL)
 
 @app.route('/r/<sub>/<post_id>/<inurl_title>/')
 def comment(sub, post_id, inurl_title):

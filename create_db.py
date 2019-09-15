@@ -5,7 +5,11 @@ from ieddit import db
 from models import *
 from functions import *
 import os
-#test sqlite3 db location
+import string
+import random
+from faker import Faker
+fake = Faker()
+
 os.system('rm -rf test.db')
 
 db.create_all()
@@ -15,17 +19,39 @@ new_user = User(username='test', email='test@test.com',
 	password=generate_password_hash('test'))
 db.session.add(new_user)
 
+for i in range(20):
+	new_user = User(username=rstring(3,10), email= rstring(4) + '@test.com',
+	password=generate_password_hash('test'))
+	db.session.add(new_user)
+
 new_sub = Sub(name='test', created_by='test')
 db.session.add(new_sub)
+db.session.commit()
+
+for i in range(10):
+	db.session.add(Sub(name=rstring(3, 10), created_by='test'))
 
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'), author='test', sub='test')
 db.session.add(new_post)
+for i in range(10):
+	title = fake.text()[:200]
+	db.session.add(Post(url='https://google.com/' + rstring(5, 10), title=title, inurl_title=convert_ied(title), author='test', sub='test'))
 
+comments = [1, 2]
 new_comment = Comment(post_id=1, text='this is comment text', username='test')
 db.session.add(new_comment)
+db.session.commit()
+
 
 new_comment = Comment(post_id=1, text='this is a reply', username='test', parent_id=1)
 db.session.add(new_comment)
+db.session.commit()
+
+for i in range(5):
+	new_comment = Comment(post_id=1, text='this is a reply', username='test', parent_id=random.choice(comments))
+	db.session.add(new_comment)
+	db.session.commit()
+	comments.append(new_comment.id)
 
 '''
 class Comment(db.Model):

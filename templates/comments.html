@@ -12,11 +12,7 @@
 			</div>
 			<h6>{{ post.title }}</h6>
 			<div class="row post-row comment-bottom">
-				<div class="inner-div comment-voting">
-					<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
-					0
-					<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
-				</div>
+					{% include 'votearrows.html' %}
 			<div class="inner-div">
 				<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
 			</div>
@@ -28,15 +24,15 @@
 
 <form id='reply-box' action='/create_comment' method='POST'>
 	<input type='text' name='comment_text'>
-	<input type='hidden' name='post_id' value='{{post_id}}'>
-	<input type='hidden' name='post_url' value='{{post_url}}'>
+	<input type='hidden' name='post_id' value='{{ post_id }}'>
+	<input type='hidden' name='post_url' value='{{ post_url }}'>
 	<input type='submit' value='new comment'>
 </form>
 
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
 	<input type='text' name='comment_text'>
-	<input type='hidden' name='post_id' value='{{post_id}}'>
-	<input type='hidden' name='post_url' value='{{post_url}}'>
+	<input type='hidden' name='post_id' value='{{ post_id }}'>
+	<input type='hidden' name='post_url' value='{{ post_url }}'>
 	<input type='hidden' name='parent_id' id='parent_id'>
 	<input type='submit' value='reply'>
 </form>
@@ -54,27 +50,14 @@
 		<p>{{ key.text }}</p>
 	</div>
 			<div class="row post-row comment-bottom">
-				<div class="inner-div comment-voting">
-					<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
-					0
-					<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
-				</div>
+				{% include 'votearrows.html' %}
 			<div class="inner-div">
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id='{{ key.id }}'>reply</a>
 			</div>
 			</div>
 
 	</div>
-			<!--
-			<div class="col-2 inner-div">
-				<i class="fa fa-arrow-up"></i>
-				0
-				<i class="fa fa-arrow-down"></i>
-			</div>
-			<div class="col-4 inner-div">
-				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id='{{ key.id }}'>reply</a>
-			</div>-->
-	</li> <!-- ??? -->
+	</li> 
 
 	{%- if value %}
 	{{ loop(value.items()) }}

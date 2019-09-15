@@ -1,15 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>subs</h1>
-{% for sub in subs %}
-	{{ sub }} <br>
-{% endfor %}
-<h1>posts</h1>
+
 {% for post in posts %}
-	{{ post }} <br>
+    {% include 'sub_post.html' %}
+{% else %}
+	<p> no posts </p>
 {% endfor %}
-<h1>comments</h1>
-{% for comment in comments %}
-	{{ comment }} <br>
-{% endfor %}
+
 {% endblock %}

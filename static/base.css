@@ -41,10 +41,12 @@
 .sub-post {
 	margin-top: 10px;
 	border: 0px solid red;
-	min-height: 100px;}
+	min-height: 100px;
+	word-break: break-word;}
 
 .sub-comment {
-	border: 1px solid gray;}
+	border: 1px solid gray;
+	word-break: break-word;}
 
 .comment-link {
 	color: #212529;}

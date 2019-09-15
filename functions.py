@@ -1,5 +1,11 @@
 import urllib.parse
+import random
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
+
+def rstring(length1, length2=False):
+	if length2 == False:
+		length2 = length1
+	return ''.join([random.choice(legal_chars) for n in range(random.randint(length1, length2))])
 
 def verify_username(username):
 	if len(username) > 20 or len(username) < 1:
@@ -20,7 +26,7 @@ def verify_subname(subname):
 def convert_ied(url):
 	url = url.lower()
 	url = url.replace(' ', '_')
-	url = urllib.parse.quote(url)[:75]
+	url = urllib.parse.quote(url)[:40]
 
 	return url
 
