@@ -22,7 +22,6 @@ $(document).on('click', '.comment-reply', function () {
 
 $(document).on('click', '.fa-arrow-up', function() {
 	if($(this).css('color') != 'rgb(255, 165, 0)') {
-		console.log($(this).css('color'));
 		$(this).css('color', 'orange');
 		$(this).parent().parent().children('a').children('.fa-arrow-down').css('color', '#212529');
 	} else if ($(this).css('color') == 'rgb(255, 165, 0)') {

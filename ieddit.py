@@ -88,7 +88,7 @@ def subi(subi):
 		post.comment_count = Comment.query.filter_by(post_id=post.id).count()
 		p.append(post)
 
-	return render_template('sub.html', posts=p)
+	return render_template('sub.html', posts=p, url=config.URL)
 
 @app.route('/r/<sub>/<post_id>/<inurl_title>/')
 def comment(sub, post_id, inurl_title):
@@ -117,6 +117,10 @@ def create_sub():
 		return 'invalid'
 	elif request.method == 'GET':
 		return render_template('create.html')
+
+@app.route('/u/<uname>', methods=['GET'])
+def view_user(uname):
+	return render_template('user.html', user=uname);
 
 @app.route('/create_post', methods=['POST', 'GET'])
 def create_post():

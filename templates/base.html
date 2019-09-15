@@ -45,7 +45,7 @@
 			<ul class="navbar-nav mr-auto navbar-right">
 				{% if session['username'] %}
 				<li class="nav-item active">
-					<a class="nav-link" href="#"><i class="fa fa-user"></i> {{ session['username'] }}</a>
+					<a class="nav-link" href="/u/{{ session['username'] }}"><i class="fa fa-user user-icon-link"></i> {{ session['username'] }}</a>
 				</li>
 				{% else %}
 				<li class="nav-item">

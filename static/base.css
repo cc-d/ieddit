@@ -1,21 +1,31 @@
 .inner-div {
-	border:0px solid green;
-}
+	border:0px solid green;}
 
 .post-row {
-	margin-right: 0px;
-}
+	margin-right: 0px;}
 
 .post-image {
-	margin-left: 1rem;
-}
+	margin-left: 1rem;}
 
 .comment-text {
-	min-height: 50px;
-}
+	min-height: 50px;}
 
 .comment-bottom {
 }
+
+.user-icon-link {
+	text-decoration: none;
+	color: #212529}
+
+.user-icon-link:hover {
+    color: #212529;
+    text-decoration: underline;
+    text-decoration-line: underline;
+    text-decoration-style: none;
+    text-decoration-color: none;}
+
+.user-icon-link a {
+	color: #212529;}
 
 .comment-voting {
 	margin-left: 1em;

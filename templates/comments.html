@@ -7,7 +7,7 @@
 		<div class="media-body">
 			<div class="row post-row row-space">
 				<div class="col inner-div">
-					<i class="fa fa-user"></i> {{ post['author'] }}
+					<a class="user-icon-link" href="{{ url }}/u/{{ post['author'] }}"><i class="fa fa-user "></i>{{ post.author }}</a>
 				</div>
 			</div>
 			<h6>{{ post.title }}</h6>
