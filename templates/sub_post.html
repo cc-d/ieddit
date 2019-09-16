@@ -16,7 +16,11 @@
     <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
     </div>
     <div class="row post-row">
-        {% include 'votearrows.html' %}
+<div class="inner-div comment-voting">
+    <a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
+    {{ post.ups - post.downs }}
+    <a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
+</div>
     	<div class="col-6 inner-div">
     		<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
     	</div>

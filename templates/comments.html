@@ -19,7 +19,11 @@
     <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
     </div>
 			<div class="row post-row comment-bottom">
-					{% include 'votearrows.html' %}
+<div class="inner-div comment-voting">
+	<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
+	{{ post.ups - post.downs }}
+	<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
+</div>
 			<div class="inner-div">
 				<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
 			</div>
@@ -66,7 +70,11 @@
 		<p>{{ comment.text }}</p>
 	</div>
 			<div class="row post-row comment-bottom">
-				{% include 'votearrows.html' %}
+<div class="inner-div comment-voting">
+	<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
+	{{ comment.ups - comment.downs }}
+	<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
+</div>
 			<div class="inner-div">
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id='{{ comment.id }}'>reply</a>
 			</div>

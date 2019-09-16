@@ -6,7 +6,7 @@ from models import *
 from functions import *
 import os
 import string
-import random
+from random import randint, choice
 from faker import Faker
 fake = Faker()
 
@@ -31,32 +31,34 @@ db.session.commit()
 for i in range(10):
 	db.session.add(Sub(name=rstring(3, 10), created_by='test'))
 
-new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'), author='test', sub='test')
+new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'),
+ author='test', sub='test', ups=randint(1,20), downs=randint(1,5))
 db.session.add(new_post)
 for i in range(10):
-	title = fake.text()[:random.randint(10,200)]
-	db.session.add(Post(url='https://google.com/' + rstring(5, 10), title=title, inurl_title=convert_ied(title), author='test', sub='test'))
+	title = fake.text()[:randint(10,200)]
+	db.session.add(Post(url='https://google.com/' + rstring(5, 10), title=title, inurl_title=convert_ied(title), 
+		author='test', sub='test', ups=randint(1,20), downs=randint(1,5)))
 
-new_comment = Comment(post_id=1, text='this is comment text', username='test')
+new_comment = Comment(post_id=1, text='this is comment text', username='test', ups=randint(1,20), downs=randint(1,5))
 db.session.add(new_comment)
 db.session.commit()
 
 
-new_comment = Comment(post_id=1, text='this is a reply', username='test', parent_id=1)
+new_comment = Comment(post_id=1, text='this is a reply', username='test', parent_id=1, ups=randint(1,20), downs=randint(1,5))
 db.session.add(new_comment)
 db.session.commit()
 
 comments = list(Comment.query.all())
 
 for i in range(50):
-	if random.choice([x for x in range(3)]) == 0:
+	if choice([x for x in range(3)]) == 0:
 		pid = None
 		level = None
 	else:
-		rancom = random.choice(comments)
+		rancom = choice(comments)
 		pid = rancom.id
 		level = rancom.level + 1
-	new_comment = Comment(post_id=1, text=fake.text()[:random.randint(1,200)], username='test', parent_id=pid, level=level)
+	new_comment = Comment(post_id=1, text=fake.text()[:randint(1,200)], username='test', parent_id=pid, level=level, ups=randint(1,20), downs=randint(1,5))
 	db.session.add(new_comment)
 	db.session.commit()
 	comments.append(new_comment)
