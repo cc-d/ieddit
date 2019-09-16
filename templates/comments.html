@@ -32,6 +32,7 @@
 </li>
 </ul>
 
+{% if not parent_comment.id %}
 <div class="form-group">
 <form id='reply-box' class="form-group" action='/create_comment' method='POST'>
 	<input type='hidden' name='post_id' value='{{ post_id }}'>
@@ -41,15 +42,16 @@
 	<input type='submit' value='new comment'>
 </form>
 </div>
+{% endif %}
 
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
 	<br>
-	<textarea rows="5" cols="60" name="comment_text"></textarea>
+	<textarea rows="5" cols="100" name="comment_text"></textarea>
 	<input type='hidden' name='post_id' value='{{ post_id }}'>
 	<input type='hidden' name='post_url' value='{{ post_url }}'>
 	<input type='hidden' name='parent_id' id='parent_id'>
 	<br>
-	<input class="comment-textarea-button" type='submit' value='reply'>
+	<input class="comment-text-area-button" style="float: right;" type='submit' value='reply'>
 </form>
 
 <ul class="list-unstyled">
@@ -84,7 +86,17 @@
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id='{{ comment.id }}'>reply</a>
 			</div>
 			</div>
-
+	{% if parent_comment.id and loop.index0 == 0 and loop.depth0 == 0 %}
+<form id='comment-reply-box' action='/create_comment' method='POST' style="display: block;">
+	<br>
+	<textarea rows="5" cols="100" name="comment_text"></textarea>
+	<input type='hidden' name='post_id' value='{{ post_id }}'>
+	<input type='hidden' name='post_url' value='{{ post_url }}{{ parent_comment.id }}'>
+	<input type='hidden' name='parent_id' value='{{ parent_comment.id }}'>
+	<br>
+	<input class="comment-text-area-button" style="float: left;" type='submit' value='reply'>
+</form>
+	{% endif %}
 	</div>
 	</li> 
 

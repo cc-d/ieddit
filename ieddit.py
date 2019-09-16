@@ -115,10 +115,12 @@ def comment(sub, post_id, inurl_title, comment_id=False):
 
 	if not comment_id:
 		comments = Comment.query.filter(Comment.post_id == post_id, Comment.level < 7).all()
+		parent_comment = None
+		parent_posturl = None
 	else:
 		comments = list_of_child_comments(comment_id)
-		comment = Comment.query.filter_by(id=comment_id).first()
-		comments.append(comment)
+		parent_comment = Comment.query.filter_by(id=comment_id).first()
+		comments.append(parent_comment)
 
 	for c in comments:
 		c.created_ago = time_ago(c.created)
@@ -127,9 +129,11 @@ def comment(sub, post_id, inurl_title, comment_id=False):
 		tree = create_id_tree(comments)
 	else:
 		tree = create_id_tree(comments, parent_id=comment_id)
+
 	tree = comment_structure(comments, tree)
 	return render_template('comments.html', comments=comments, post_id=post_id, 
-		post_url='%s/r/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), post=post, tree=tree)
+		post_url='%s/r/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), 
+		post=post, tree=tree, parent_comment=parent_comment)
 
 # need to entirely rewrite how comments are handled once everything else is complete
 # this sort of recursion KILLS performance, especially when combined with the already
