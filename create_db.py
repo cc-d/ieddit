@@ -19,11 +19,13 @@ db.session.commit()
 new_user = User(username='test', email='test@test.com',
 	password=generate_password_hash('test'))
 db.session.add(new_user)
+db.session.commit()
 
 for i in range(20):
 	new_user = User(username=rstring(3,10), email= rstring(4) + '@test.com',
 	password=generate_password_hash('test'))
 	db.session.add(new_user)
+db.session.commit()
 
 new_sub = Sub(name='test', created_by='test')
 db.session.add(new_sub)
@@ -31,14 +33,19 @@ db.session.commit()
 
 for i in range(10):
 	db.session.add(Sub(name=rstring(3, 10), created_by='test'))
+db.session.commit()
 
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'),
  author='test', sub='test', ups=randint(1,20), downs=randint(1,5))
 db.session.add(new_post)
+db.session.commit()
+
 for i in range(10):
 	title = fake.text()[:randint(10,200)]
 	db.session.add(Post(url='https://google.com/' + rstring(5, 10), title=title, inurl_title=convert_ied(title), 
 		author='test', sub='test', ups=randint(1,20), downs=randint(1,5)))
+
+db.session.commit()
 
 new_comment = Comment(post_id=1, text='this is comment text', username='test', ups=randint(1,20), downs=randint(1,5))
 db.session.add(new_comment)
