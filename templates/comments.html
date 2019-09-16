@@ -33,14 +33,14 @@
 </ul>
 
 {% if not parent_comment.id %}
-<form id='top-comment-reply-box' action='/create_comment' method='POST'>
+<form id='post-reply-box' action='/create_comment' method='POST'>
 	<div class="comment-reply-box-wrapper">
 		<textarea class="comment-reply-box-expand" name="comment_text"></textarea>
 	</div>
 	<input type='hidden' name='post_id' value='{{ post_id }}'>
 	<input type='hidden' name='post_url' value='{{ post_url }}'>
 	<input type='hidden' name='parent_id'>
-	<input class="comment-text-area-button" type='submit' value='new comment'>
+	<input class="post-text-area-button" type='submit' value='new comment'>
 </form>
 {% endif %}
 

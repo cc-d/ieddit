@@ -14,7 +14,6 @@
 	width: 5rem;}
 
 .comment-reply-box-wrapper {
-	margin-left: 1rem;
 	min-width: 16rem;
 	min-height: 3rem;}
 
@@ -22,13 +21,16 @@
     width: -webkit-fill-available;}
 
 #comment-reply-box {
-	margin-left: -0.5rem!important;
-    margin-right: 1rem!important;
-    margin-top: 0rem!important;
+	margin-left: 0.5rem!important;
+    margin-right: 0.5rem!important;
+    margin-top: 0.5rem!important;
 	max-width: 40rem;}
 
 #top-comment-reply-box {
 	max-width: 40rem;}
+
+.post-text-area-button {
+	margin-bottom: 1rem;}
 
 .comment-image {
 	margin-left: 0.5rem;
