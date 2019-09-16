@@ -12,6 +12,7 @@ fake = Faker()
 
 #su postgres
 #os.system('rm -rf test.db')
+os.system('recreate_psql_db.sh')
 
 db.create_all()
 db.session.commit()
@@ -38,6 +39,12 @@ db.session.commit()
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'),
  author='test', sub='test', ups=randint(1,20), downs=randint(1,5))
 db.session.add(new_post)
+db.session.commit()
+json_post = JSON_Post(id=new_post.id, comments={'title':new_post.title, 
+	'inurl_title':new_post.inurl_title, 'author':new_post.author,
+	'sub':new_post.sub, 'ups':new_post.ups, 'downs':new_post.downs, 'children':{}}
+	)
+db.session.add(json_post)
 db.session.commit()
 
 for i in range(10):

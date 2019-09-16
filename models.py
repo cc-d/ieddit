@@ -39,6 +39,13 @@ class Post(db.Model):
 	def __repr__(self):
 		return '<Post %r>' % self.id
 
+class JSON_Post(db.Model):
+	id = db.Column(db.Integer, db.ForeignKey('post.id'), primary_key=True)
+	comments = db.Column(db.JSON)
+
+	def __repr__(Self):
+		return '<JSON_Post %r>' % self.id
+
 class Comment(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
