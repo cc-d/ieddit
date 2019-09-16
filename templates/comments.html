@@ -25,7 +25,7 @@
 	<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
 </div>
 			<div class="inner-div">
-				<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
+				<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
 			</div>
 			</div>
 		</div>
@@ -33,24 +33,25 @@
 </ul>
 
 {% if not parent_comment.id %}
-<div class="form-group">
-<form id='reply-box' class="form-group" action='/create_comment' method='POST'>
+<form id='top-comment-reply-box' action='/create_comment' method='POST'>
+	<div class="comment-reply-box-wrapper">
+		<textarea class="comment-reply-box-expand" name="comment_text"></textarea>
+	</div>
 	<input type='hidden' name='post_id' value='{{ post_id }}'>
 	<input type='hidden' name='post_url' value='{{ post_url }}'>
-	<textarea rows="5" cols="100" name="comment_text"></textarea>
-	<br>
-	<input type='submit' value='new comment'>
+	<input type='hidden' name='parent_id'>
+	<input class="comment-text-area-button" type='submit' value='new comment'>
 </form>
-</div>
 {% endif %}
 
+
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
-	<br>
-	<textarea rows="5" cols="100" name="comment_text"></textarea>
+	<div class="comment-reply-box-wrapper">
+		<textarea class="comment-reply-box-expand" name="comment_text"></textarea>
+	</div>
 	<input type='hidden' name='post_id' value='{{ post_id }}'>
 	<input type='hidden' name='post_url' value='{{ post_url }}'>
 	<input type='hidden' name='parent_id' id='parent_id'>
-	<br>
 	<input class="comment-text-area-button" style="float: right;" type='submit' value='reply'>
 </form>
 
@@ -89,12 +90,13 @@
 	{% if parent_comment.id and loop.index0 == 0 and loop.depth0 == 0 %}
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: block;">
 	<br>
-	<textarea rows="5" cols="100" name="comment_text"></textarea>
+	<div class="comment-reply-box-wrapper">
+		<textarea class="comment-reply-box-expand" name="comment_text"></textarea>
+	</div>
 	<input type='hidden' name='post_id' value='{{ post_id }}'>
 	<input type='hidden' name='post_url' value='{{ post_url }}{{ parent_comment.id }}'>
 	<input type='hidden' name='parent_id' value='{{ parent_comment.id }}'>
-	<br>
-	<input class="comment-text-area-button" style="float: left;" type='submit' value='reply'>
+	<input class="comment-text-area-button" type='submit' value='reply'>
 </form>
 	{% endif %}
 	</div>

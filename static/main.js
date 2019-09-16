@@ -10,8 +10,8 @@ $(document).on('click', '.comment-reply', function () {
 		}
 	}
 
-	$('#comment-reply-box').css('display', 'inline-block');
-	$(this).after($('#comment-reply-box'));
+	$('#comment-reply-box').css('display', 'block');
+	$(this).parent().parent().after($('#comment-reply-box'));
 	$('#parent_id').val($(this).attr('comment_id'));
 	$(this).css('display', 'none');
 
@@ -37,15 +37,5 @@ $(document).on('click', '.fa-arrow-down', function() {
 		$(this).css('color', '#212529');
 	}
 });
-/*
-$(document).ready(function() {
-	$('form input').keydown(function(event){
-	if(event.keyCode == 13) {
-		event.preventDefault();
-		return false;
-		}
-	});
-});
-*/
 
 console.log('loaded');
