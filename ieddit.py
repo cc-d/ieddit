@@ -200,6 +200,8 @@ def create_comment():
 		return 'bad comment'
 	if parent_id != None:
 		level = (Comment.query.filter_by(id=parent_id).first().level) + 1
+	else:
+		level = None
 	new_comment = Comment(post_id=post_id, text=text, username=session['username'], parent_id=parent_id, level=level)
 	db.session.add(new_comment)
 	db.session.commit()

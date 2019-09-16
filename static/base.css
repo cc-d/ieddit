@@ -35,6 +35,10 @@
 .top-post-sublink {
 	color: #212529;}
 
+.comment-textarea-button {
+	float: right;
+	margin-bottom: 0.5rem;}
+
 .user-icon-link {
 	text-decoration: none;
 	color: #212529}
@@ -104,3 +108,8 @@
 
 .fa-arrow-down a:hover {
 	pointer-events: none;}
+
+.comment-text-text {
+	white-space: pre-wrap;
+	max-height: 100rem;
+	overflow: hidden;}

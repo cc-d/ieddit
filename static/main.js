@@ -37,5 +37,15 @@ $(document).on('click', '.fa-arrow-down', function() {
 		$(this).css('color', '#212529');
 	}
 });
+/*
+$(document).ready(function() {
+	$('form input').keydown(function(event){
+	if(event.keyCode == 13) {
+		event.preventDefault();
+		return false;
+		}
+	});
+});
+*/
 
 console.log('loaded');

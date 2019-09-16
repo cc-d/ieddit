@@ -32,19 +32,24 @@
 </li>
 </ul>
 
-<form id='reply-box' action='/create_comment' method='POST'>
-	<input type='text' name='comment_text'>
+<div class="form-group">
+<form id='reply-box' class="form-group" action='/create_comment' method='POST'>
 	<input type='hidden' name='post_id' value='{{ post_id }}'>
 	<input type='hidden' name='post_url' value='{{ post_url }}'>
+	<textarea rows="5" cols="100" name="comment_text"></textarea>
+	<br>
 	<input type='submit' value='new comment'>
 </form>
+</div>
 
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
-	<input type='text' name='comment_text'>
+	<br>
+	<textarea rows="5" cols="60" name="comment_text"></textarea>
 	<input type='hidden' name='post_id' value='{{ post_id }}'>
 	<input type='hidden' name='post_url' value='{{ post_url }}'>
 	<input type='hidden' name='parent_id' id='parent_id'>
-	<input type='submit' value='reply'>
+	<br>
+	<input class="comment-textarea-button" type='submit' value='reply'>
 </form>
 
 <ul class="list-unstyled">
@@ -67,7 +72,7 @@
 			</div>
 		</div>
 		<div class="comment-text">
-		<p>{{ comment.text }}</p>
+		<p class="comment-text-text">{{ comment.text }}</p>
 	</div>
 			<div class="row post-row comment-bottom">
 <div class="inner-div comment-voting">

@@ -43,7 +43,6 @@ new_comment = Comment(post_id=1, text='this is comment text', username='test', u
 db.session.add(new_comment)
 db.session.commit()
 
-
 new_comment = Comment(post_id=1, text='this is a reply', username='test', parent_id=1, ups=randint(1,20), downs=randint(1,5))
 db.session.add(new_comment)
 db.session.commit()
