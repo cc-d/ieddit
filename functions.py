@@ -37,7 +37,7 @@ def time_ago(dt):
 	diff = datetime.now() - dt
 	if diff.seconds < 60:
 		return str(int(diff.seconds)) + ' seconds ago'
-	if diff.seconds > 60 and diff.seconds < 3600:#86400:
+	if diff.seconds > 60 and diff.seconds < 3600:
 		return str(int(diff.seconds / 60)) + ' minutes ago'
 	if diff.seconds > 3600 and diff.seconds < 86400:
 		return str(int((diff.seconds / 60) / 60)) + ' hours ago'
@@ -47,7 +47,16 @@ def time_ago(dt):
 # like no seriously, this is really, really bad
 # it just seemed like an entertaining way to write it
 # will change on release
-def nested_keys(comments, tree):
+def create_id_tree(comments, parent_id=None):
+	tree = {}
+	if not parent_id:
+		for i in [c for c in comments if c.parent_id == None]:
+			tree[i.id] = {}
+	else:
+		#for i in [c for c in comments if c.parent_id == int(parent_id)]:
+			#tree[i.id] = {}
+		tree[int(parent_id)] = {}
+
 	paths = {0:['tree']}
 	depth = 0
 	limit = 50
@@ -73,13 +82,6 @@ def nested_keys(comments, tree):
 		if depth >= limit:
 			break
 
-	return tree
-
-def create_comment_tree(comments):
-	tree = {}
-	for i in [c for c in comments if c.parent_id == None]:
-		tree[i.id] = {}
-	tree=nested_keys(comments, tree)
 	return tree
 
 def recursive_items(dictionary):

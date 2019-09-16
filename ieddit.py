@@ -67,7 +67,7 @@ def register():
 		return redirect(config.URL, 302)
 
 # These two functions look the same, but they will work somewhat different in fucture
-@app.route('/r/<subi>')
+@app.route('/r/<subi>/')
 def subi(subi):
 	if verify_subname(subi) == False:
 		return 'invalid subpath'
@@ -80,7 +80,6 @@ def subi(subi):
 	p = []
 	for post in posts:
 		post.created_ago = time_ago(post.created)
-		post.posted_to = '/r/' + post.sub
 		post.site_url = config.URL + '/r/' + subi + '/' + str(post.id) + '/' + post.inurl_title
 		post.remote_url_parsed = post_url_parse(post.url)
 		post.comment_count = Comment.query.filter_by(post_id=post.id).count()
@@ -89,13 +88,12 @@ def subi(subi):
 	return render_template('sub.html', posts=p, url=config.URL)
 
 # These two functions look the same, but they will work somewhat different in fucture
-@app.route('/r/all')
+@app.route('/r/all/')
 def all_sub_posts(index=False):
 	posts = Post.query.filter_by().order_by(Post.id.asc()).limit(10)
 	p = []
 	for post in posts:
 		post.created_ago = time_ago(post.created)
-		post.posted_to = '/r/' + post.sub
 		post.site_url = config.URL + '/r/' + post.sub + '/' + str(post.id) + '/' + post.inurl_title
 		post.remote_url_parsed = post_url_parse(post.url)
 		post.comment_count = Comment.query.filter_by(post_id=post.id).count()
@@ -105,18 +103,52 @@ def all_sub_posts(index=False):
 	else:
 		return render_template('sub.html', posts=p, url=config.URL)
 
+@app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/')
 @app.route('/r/<sub>/<post_id>/<inurl_title>/')
-def comment(sub, post_id, inurl_title):
+def comment(sub, post_id, inurl_title, comment_id=False):
 	if sub == None or post_id == None or inurl_title == None:
 		return 'badlink'
 	post = Post.query.filter_by(id=post_id, sub=sub).first()
 	post.comment_count = Comment.query.filter_by(post_id=post.id).count()
+	post.created_ago = time_ago(post.created)
+	post.remote_url_parsed = post_url_parse(post.url)
 
-	comments = Comment.query.filter_by(post_id=post_id).all()
-	tree = create_comment_tree(comments)
+	if not comment_id:
+		comments = Comment.query.filter(Comment.post_id == post_id, Comment.level < 7).all()
+	else:
+		comments = list_of_child_comments(comment_id)
+		comment = Comment.query.filter_by(id=comment_id).first()
+		comments.append(comment)
+
+	for c in comments:
+		c.created_ago = time_ago(c.created)
+
+	if not comment_id:
+		tree = create_id_tree(comments)
+	else:
+		tree = create_id_tree(comments, parent_id=comment_id)
 	tree = comment_structure(comments, tree)
 	return render_template('comments.html', comments=comments, post_id=post_id, 
 		post_url='%s/r/%s/%s/%s/' % (config.URL, sub, post_id, inurl_title), post=post, tree=tree)
+
+# need to entirely rewrite how comments are handled once everything else is complete
+# this sort of recursion KILLS performance, especially when combined with the already
+# terrible comment_structure function. only reason i'm doing it this way now is
+# performance doens't matter and i don't have redis/similar setup yet
+def list_of_child_comments(comment_id):
+	comments = {}
+	current_comments = []
+	start = Comment.query.filter_by(parent_id=comment_id).all()
+	for c in start:
+		current_comments.append(c.id)
+		comments[c.id] = c
+	while len(current_comments) > 0:
+		for current_c in current_comments:
+			for c in Comment.query.filter_by(parent_id=current_c).all():
+				current_comments.append(c.id)
+				comments[c.id] = c
+			current_comments.remove(current_c)
+	return [comments[c] for c in comments]
 
 @app.route('/create', methods=['POST', 'GET'])
 def create_sub():
@@ -133,7 +165,7 @@ def create_sub():
 	elif request.method == 'GET':
 		return render_template('create.html')
 
-@app.route('/u/<uname>', methods=['GET'])
+@app.route('/u/<uname>/', methods=['GET'])
 def view_user(uname):
 	return render_template('user.html', user=uname);
 
@@ -166,7 +198,9 @@ def create_comment():
 		parent_id = None
 	if text == None or 'username' not in session or post_id == None or post_url == None:
 		return 'bad comment'
-	new_comment = Comment(post_id=post_id, text=text, username=session['username'], parent_id=parent_id)
+	if parent_id != None:
+		level = (Comment.query.filter_by(id=parent_id).first().level) + 1
+	new_comment = Comment(post_id=post_id, text=text, username=session['username'], parent_id=parent_id, level=level)
 	db.session.add(new_comment)
 	db.session.commit()
 	return redirect(post_url, 302)

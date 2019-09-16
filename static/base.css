@@ -13,12 +13,21 @@
 	height: 5rem;
 	width: 5rem;}
 
+.comment-image {
+	margin-left: 0.5rem;
+	margin-right: 1.5rem!important;
+	height: 5.5rem;
+	width: 5.5rem;}
+
 .comment-text {
 	min-height: 50px;}
 
 .sub-post-title-link {
 	font-size: 1rem;
 	color: #212529;}
+
+.sub-post-title {
+	min-height: 2rem;}
 
 .top-of-post {
 	margin-left: 1rem;}
@@ -61,6 +70,9 @@
 	border: 0px solid red;
 	min-height: 92px;
 	word-break: break-word;}
+
+.comment-post-title {
+	min-height: 2.5rem;}
 
 .sub-list {
 	margin-bottom: 1rem;

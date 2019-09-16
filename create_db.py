@@ -34,10 +34,9 @@ for i in range(10):
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'), author='test', sub='test')
 db.session.add(new_post)
 for i in range(10):
-	title = fake.text()[:200]
+	title = fake.text()[:random.randint(10,200)]
 	db.session.add(Post(url='https://google.com/' + rstring(5, 10), title=title, inurl_title=convert_ied(title), author='test', sub='test'))
 
-comments = [1, 2]
 new_comment = Comment(post_id=1, text='this is comment text', username='test')
 db.session.add(new_comment)
 db.session.commit()
@@ -47,11 +46,20 @@ new_comment = Comment(post_id=1, text='this is a reply', username='test', parent
 db.session.add(new_comment)
 db.session.commit()
 
-for i in range(5):
-	new_comment = Comment(post_id=1, text='this is a reply', username='test', parent_id=random.choice(comments))
+comments = list(Comment.query.all())
+
+for i in range(50):
+	if random.choice([x for x in range(3)]) == 0:
+		pid = None
+		level = None
+	else:
+		rancom = random.choice(comments)
+		pid = rancom.id
+		level = rancom.level + 1
+	new_comment = Comment(post_id=1, text=fake.text()[:random.randint(1,200)], username='test', parent_id=pid, level=level)
 	db.session.add(new_comment)
 	db.session.commit()
-	comments.append(new_comment.id)
+	comments.append(new_comment)
 
 '''
 class Comment(db.Model):

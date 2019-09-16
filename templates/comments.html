@@ -1,16 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
+
 <div id="comment-page-wrapper">
+
 <ul class="list-unstyled">
 	<li class="media sub-post">
-		<img class="mr-3" src="https://via.placeholder.com/100" alt="Generic placeholder image">
+		<img class="mr-3 comment-image" src="{{ url_for('static', filename='globe.png') }}">
 		<div class="media-body">
 			<div class="row post-row row-space">
 				<div class="col inner-div">
-					<a class="user-icon-link" href="{{ url }}/u/{{ post['author'] }}"><i class="fa fa-user "></i>{{ post.author }}</a>
+					<small><a class="user-icon-link" href="{{ url }}/u/{{ post['author'] }}"><i class="fa fa-user "></i>{{ post.author }}</a></small>
+					<small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/r/{{ post.sub }}">/r/{{ post.sub }}</a></small>
+					<small class="created-ago">{{ post.created_ago }}</small>
 				</div>
 			</div>
-			<h6>{{ post.title }}</h6>
+    <div class="comment-post-title">
+    <a class="sub-post-title-link" href="{{ post.url }}">{{ post.title }}</a> 
+    <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
+    </div>
 			<div class="row post-row comment-bottom">
 					{% include 'votearrows.html' %}
 			<div class="inner-div">
@@ -35,23 +42,24 @@
 	<input type='hidden' name='parent_id' id='parent_id'>
 	<input type='submit' value='reply'>
 </form>
-{{ tree }}
+
 <ul class="list-unstyled">
-	{%- for key, value in tree.items() recursive %}  
-	<li class="media sub-comment media-body" style="margin-left:{{ loop.depth - 1 }}em">
+	{%- for comment, value in tree.items() recursive %}  
+	<li class="media sub-comment media-body" style="margin-left:{{ loop.depth - 1 }}rem">
 		<div class='media-body comment-media-body'>
 		<div class="row post-row">
-			<div class="col-12 inner-div">
-				<i class="fa fa-user"></i> {{ key.username }}
+			<div class="col inner-div">
+    		<i class="fa fa-user"></i> <a class="user-icon-link" href="{{ config.URL }}/u/{{ comment.username }}">{{ comment.username }}</a>
+            <small class="created-ago">{{ comment.created_ago }}</small>
 			</div>
 		</div>
 		<div class="comment-text">
-		<p>{{ key.text }}</p>
+		<p>{{ comment.text }}</p>
 	</div>
 			<div class="row post-row comment-bottom">
 				{% include 'votearrows.html' %}
 			<div class="inner-div">
-				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id='{{ key.id }}'>reply</a>
+				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id='{{ comment.id }}'>reply</a>
 			</div>
 			</div>
 
