@@ -53,8 +53,6 @@ def create_id_tree(comments, parent_id=None):
 		for i in [c for c in comments if c.parent_id == None]:
 			tree[i.id] = {}
 	else:
-		#for i in [c for c in comments if c.parent_id == int(parent_id)]:
-			#tree[i.id] = {}
 		tree[int(parent_id)] = {}
 
 	paths = {0:['tree']}
