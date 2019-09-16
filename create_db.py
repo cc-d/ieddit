@@ -61,16 +61,4 @@ for i in range(50):
 	db.session.commit()
 	comments.append(new_comment)
 
-'''
-class Comment(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	post_id = db.Column(db.Integer, unique=False, nullable=False)
-	text = db.Column(db.String(20000), unique=False, nullable=False)
-	ups = db.Column(db.Integer, default=0, nullable=False)
-	downs = db.Column(db.Integer, default=0, nullable=False)
-
-	def __repr__(self):
-		return '<Comment %r>' % self.id
-'''
-
 db.session.commit()

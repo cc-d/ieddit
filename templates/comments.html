@@ -50,7 +50,16 @@
 		<div class="row post-row">
 			<div class="col inner-div">
     		<i class="fa fa-user"></i> <a class="user-icon-link" href="{{ config.URL }}/u/{{ comment.username }}">{{ comment.username }}</a>
-            <small class="created-ago">{{ comment.created_ago }}</small>
+            <a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
+            	<small class="created-ago comment-link">{{ comment.created_ago }}</small>
+            </a>
+			{% if comment.parent_id != None %}
+            <a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
+            {% else %}
+            <a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
+           	{% endif %}
+            	<small class="created-ago">parent</small>
+            </a>
 			</div>
 		</div>
 		<div class="comment-text">

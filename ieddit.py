@@ -129,7 +129,7 @@ def comment(sub, post_id, inurl_title, comment_id=False):
 		tree = create_id_tree(comments, parent_id=comment_id)
 	tree = comment_structure(comments, tree)
 	return render_template('comments.html', comments=comments, post_id=post_id, 
-		post_url='%s/r/%s/%s/%s/' % (config.URL, sub, post_id, inurl_title), post=post, tree=tree)
+		post_url='%s/r/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), post=post, tree=tree)
 
 # need to entirely rewrite how comments are handled once everything else is complete
 # this sort of recursion KILLS performance, especially when combined with the already
