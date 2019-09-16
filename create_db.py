@@ -10,7 +10,8 @@ from random import randint, choice
 from faker import Faker
 fake = Faker()
 
-os.system('rm -rf test.db')
+#su postgres
+#os.system('rm -rf test.db')
 
 db.create_all()
 db.session.commit()
