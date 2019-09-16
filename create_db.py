@@ -12,7 +12,7 @@ fake = Faker()
 
 #su postgres
 #os.system('rm -rf test.db')
-os.system('recreate_psql_db.sh')
+os.system('bash recreate_psql_db.sh')
 
 db.create_all()
 db.session.commit()
