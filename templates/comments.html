@@ -101,7 +101,7 @@
 	</div>
 	<input type='hidden' name='post_id' value='{{ post_id }}'>
 	<input type='hidden' name='post_url' value='{{ post_url }}{{ parent_comment.id }}'>
-	<input type='hidden' name='parent_id' id='parent_id'>
+	<input type='hidden' name='parent_id' id='parent_id' value='{{ parent_comment.id }}'>
 	<input class="comment-text-area-button" type='submit' value='reply'>
 </form>
 	{% endif %}

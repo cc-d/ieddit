@@ -103,22 +103,36 @@ def all_sub_posts(index=False):
 	else:
 		return render_template('sub.html', posts=p, url=config.URL)
 
+@app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/sort-<sort_by>')
 @app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/')
+@app.route('/r/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
 @app.route('/r/<sub>/<post_id>/<inurl_title>/')
-def comment(sub, post_id, inurl_title, comment_id=False):
+def comment(sub, post_id, inurl_title, comment_id=False, sort_by=None):
 	if sub == None or post_id == None or inurl_title == None:
 		return 'badlink'
+	try:
+		int(comment_id)
+	except:
+		comment_id = False
 	post = Post.query.filter_by(id=post_id, sub=sub).first()
 	post.comment_count = Comment.query.filter_by(post_id=post.id).count()
 	post.created_ago = time_ago(post.created)
 	post.remote_url_parsed = post_url_parse(post.url)
 
 	if not comment_id:
-		comments = Comment.query.filter(Comment.post_id == post_id, Comment.level < 7).all()
+		if sort_by == 'new':
+			comments = Comment.query.filter(Comment.post_id == post_id, Comment.level < 7)\
+			.order_by((Comment.created).asc()).all()
+
+		#if sort_by == None or sort_by == 'top':
+		else:
+			comments = Comment.query.filter(Comment.post_id == post_id, Comment.level < 7)\
+			.order_by((Comment.ups - Comment.downs).desc()).all()
+
 		parent_comment = None
 		parent_posturl = None
 	else:
-		comments = list_of_child_comments(comment_id)
+		comments = list_of_child_comments(comment_id, sort_by=sort_by)
 		parent_comment = Comment.query.filter_by(id=comment_id).first()
 		comments.append(parent_comment)
 
@@ -139,16 +153,28 @@ def comment(sub, post_id, inurl_title, comment_id=False):
 # this sort of recursion KILLS performance, especially when combined with the already
 # terrible comment_structure function. only reason i'm doing it this way now is
 # performance doens't matter and i don't have redis/similar setup yet
-def list_of_child_comments(comment_id):
+def list_of_child_comments(comment_id, sort_by=None):
 	comments = {}
 	current_comments = []
-	start = Comment.query.filter_by(parent_id=comment_id).all()
+	if sort_by == 'new':
+		start = Comment.query.filter(Comment.parent_id == comment_id)\
+					.order_by((Comment.created).asc()).all()
+	else:
+		start = Comment.query.filter(Comment.parent_id == comment_id)\
+					.order_by((Comment.ups - Comment.downs).desc()).all()
+
 	for c in start:
 		current_comments.append(c.id)
 		comments[c.id] = c
 	while len(current_comments) > 0:
 		for current_c in current_comments:
-			for c in Comment.query.filter_by(parent_id=current_c).all():
+			if sort_by == 'new':
+				get_comments = Comment.query.filter(Comment.parent_id == current_c)\
+					.order_by((Comment.created).asc()).all()
+			else:
+				get_comments = Comment.query.filter(Comment.parent_id == current_c)\
+					.order_by((Comment.ups - Comment.downs).desc()).all()
+			for c in get_comments:
 				current_comments.append(c.id)
 				comments[c.id] = c
 			current_comments.remove(current_c)
