@@ -39,13 +39,6 @@ class Post(db.Model):
 	def __repr__(self):
 		return '<Post %r>' % self.id
 
-class JSON_Post(db.Model):
-	id = db.Column(db.Integer, db.ForeignKey('post.id'), primary_key=True)
-	comments = db.Column(db.JSON)
-
-	def __repr__(Self):
-		return '<JSON_Post %r>' % self.id
-
 class Comment(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
@@ -53,12 +46,22 @@ class Comment(db.Model):
 	text = db.Column(db.String(20000), nullable=False)
 	ups = db.Column(db.Integer, default=0, nullable=False)
 	downs = db.Column(db.Integer, default=0, nullable=False)
-	username = db.Column(db.String(20), nullable=False)
+	username = db.Column(db.String(20), db.ForeignKey('user.username'), nullable=False)
 	parent_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
 	level = db.Column(db.Integer, default=0)
 	created = db.Column(db.DateTime, default=datetime.now())
 
 	def __repr__(self):
 		return '<Comment %r>' % self.id
+
+class Vote(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
+	comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
+	vote = db.Column(db.Integer, nullable=False)
+	username = db.Column(db.String(20), db.ForeignKey('user.username'), nullable=False)
+
+	def __repr__(self):
+		return '<Vote %r>' % self.id
 
 

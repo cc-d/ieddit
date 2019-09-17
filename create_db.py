@@ -8,6 +8,7 @@ import os
 import string
 from random import randint, choice
 from faker import Faker
+import json
 fake = Faker()
 
 #su postgres
@@ -40,12 +41,7 @@ new_post = Post(url='https://google.com', title='Test Title', inurl_title=conver
  author='test', sub='test', ups=randint(1,20), downs=randint(1,5))
 db.session.add(new_post)
 db.session.commit()
-json_post = JSON_Post(id=new_post.id, comments={'title':new_post.title, 
-	'inurl_title':new_post.inurl_title, 'author':new_post.author,
-	'sub':new_post.sub, 'ups':new_post.ups, 'downs':new_post.downs, 'children':{}}
-	)
-db.session.add(json_post)
-db.session.commit()
+
 
 for i in range(10):
 	title = fake.text()[:randint(10,200)]

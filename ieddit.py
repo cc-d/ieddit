@@ -199,6 +199,38 @@ def create_sub():
 def view_user(uname):
 	return render_template('user.html', user=uname);
 
+@app.route('/vote', methods=['POST'])
+def vote():
+	post_id = request.form.get('post_id')
+	comment_id = request.form.get('comment_id')
+	vote = request.form.get('vote')
+	username = session['username']
+
+	if 'username' not in session:
+		return 'not logged in'
+	if comment_id != None and post_id != None:
+		return 'cannot vote for 2 objects'
+	if comment_id == None and post_id == None:
+		return 'no vote object'
+	if vote not in ['1', '-1']:
+		return 'invalid vote amount'
+
+	vote = int(vote)
+
+	new_vote = Vote(username=username, vote=vote, comment_id=comment_id, post_id=post_id)
+	if comment_id != None:
+		if vote == 1:
+			update(Comment.update().where(Comment.id == comment_id).values(ups=Comment.ups + 1))
+		else:
+			update(Comment.update().where(Comment.id == comment_id).values(downs=Comment.downs + 1))
+	elif post_id != None:
+		if vote == 1:
+			update(Post.update().where(Post.id == Post_id).values(ups=Post.ups + 1))
+		else:
+			update(Post.update().where(Post.id == Post_id).values(downs=Post.downs + 1))
+
+	return 'ok'
+
 @app.route('/create_post', methods=['POST', 'GET'])
 def create_post():
 	if request.method == 'POST':
