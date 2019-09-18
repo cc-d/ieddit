@@ -19,10 +19,18 @@
     <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
     </div>
 			<div class="row post-row comment-bottom">
-<div class="inner-div comment-voting">
+<div class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
+	{% if post.has_voted == 1 %}
+	<a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
+	{% else %}
 	<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
+	{% endif %}
 	<vote class="score">{{ post.ups - post.downs }}</vote>
+	{% if post.has_voted == -1 %}
+	<a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
+	{% else %}
 	<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
+	{% endif %}
 </div>
 			<div class="inner-div">
 				<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
@@ -31,7 +39,18 @@
 		</div>
 </li>
 </ul>
-
+<div id="row">
+	<unstyled> sort by: </unstyled>
+	{% if not parent_comment.id %}
+	<a class="comment-link" href="{{ post_url }}sort-top"><small>top</small></a>
+	<unstyled><small>|</small></unstyled>
+	<a class="comment-link" href="{{ post_url }}sort-new"><small>new</small></a>
+	{% else %}
+	<a class="comment-link" href="{{ post_url }}{{ parent_comment.id }}/sort-top"><small>top</small></a>
+	<unstyled><small>|</small></unstyled>
+	<a class="comment-link" href="{{ post_url }}{{ parent_comment.id }}/sort-new"><small>new</small></a>
+	{% endif %}
+</div>
 {% if not parent_comment.id %}
 <form id='post-reply-box' action='/create_comment' method='POST'>
 	<div class="comment-reply-box-wrapper">
@@ -75,14 +94,23 @@
             </a>
 			</div>
 		</div>
-		<div class="comment-text">
+		<div clss="comment-text">
 		<p class="comment-text-text">{{ comment.text }}</p>
 	</div>
 			<div class="row post-row comment-bottom">
-<div class="inner-div comment-voting">
+
+<div class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="session['user_id']" has_voted="{{ comment.has_voted }}">
+	{% if comment.has_voted == 1 %}
+	<a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
+	{% else %}
 	<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
-	{{ comment.ups - comment.downs }}
+	{% endif %}
+	<vote class="score">{{ comment.ups - comment.downs }}</vote>
+	{% if comment.has_voted == -1 %}
+	<a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
+	{% else %}
 	<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
+	{% endif %}
 </div>
 			<div class="inner-div">
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>

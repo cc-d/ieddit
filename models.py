@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
-class User(db.Model):
+class Iuser(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(20), unique=True, nullable=False)
 	email = db.Column(db.String(75), nullable=True)
@@ -14,12 +14,12 @@ class User(db.Model):
 	created = db.Column(db.DateTime, default=datetime.now())
 
 	def __repr__(self):
-		return '<User %r>' % self.username
+		return '<Iuser %r>' % self.username
 
 class Sub(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(30), unique=True, nullable=False)
-	created_by = db.Column(db.String(20), db.ForeignKey('user.username'), nullable=False)
+	created_by = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
 	created = db.Column(db.DateTime, default=datetime.now())
 
 	def __repr__(self):
@@ -32,7 +32,7 @@ class Post(db.Model):
 	ups = db.Column(db.Integer, default=0, nullable=False)
 	downs = db.Column(db.Integer, default=0, nullable=False)
 	inurl_title = db.Column(db.String(75), nullable=False)
-	author = db.Column(db.String(20), db.ForeignKey('user.username'), nullable=False)
+	author = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
 	sub = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
 	created = db.Column(db.DateTime, default=datetime.now())
 
@@ -46,7 +46,7 @@ class Comment(db.Model):
 	text = db.Column(db.String(20000), nullable=False)
 	ups = db.Column(db.Integer, default=0, nullable=False)
 	downs = db.Column(db.Integer, default=0, nullable=False)
-	username = db.Column(db.String(20), db.ForeignKey('user.username'), nullable=False)
+	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
 	parent_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
 	level = db.Column(db.Integer, default=0)
 	created = db.Column(db.DateTime, default=datetime.now())
@@ -59,7 +59,7 @@ class Vote(db.Model):
 	post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
 	comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
 	vote = db.Column(db.Integer, nullable=False)
-	username = db.Column(db.String(20), db.ForeignKey('user.username'), nullable=False)
+	user_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
 
 	def __repr__(self):
 		return '<Vote %r>' % self.id

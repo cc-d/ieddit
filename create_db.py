@@ -18,13 +18,13 @@ os.system('bash recreate_psql_db.sh')
 db.create_all()
 db.session.commit()
 
-new_user = User(username='test', email='test@test.com',
+new_user = Iuser(username='test', email='test@test.com',
 	password=generate_password_hash('test'))
 db.session.add(new_user)
 db.session.commit()
 
 for i in range(20):
-	new_user = User(username=rstring(3,10), email= rstring(4) + '@test.com',
+	new_user = Iuser(username=rstring(3,10), email= rstring(4) + '@test.com',
 	password=generate_password_hash('test'))
 	db.session.add(new_user)
 db.session.commit()

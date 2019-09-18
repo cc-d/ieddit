@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 
 @app.route('/')
 def index():
-	return all_sub_posts(index=True)
+	return subi('all')
 	
 @app.route('/login',  methods=['GET', 'POST'])
 def login():
@@ -28,12 +28,14 @@ def login():
 		if username == None or password == None or len(username) > 20 or len(password) > 100:
 			return 'invalid login'
 
-		if db.session.query(db.session.query(User)
+		if db.session.query(db.session.query(Iuser)
 				.filter_by(username=username)
 				.exists()).scalar():
-			hashed_pw = User.query.filter_by(username=username).first().password
+			login_user = db.session.query(Iuser).filter_by(username=username).first()
+			hashed_pw = login_user.password
 			if check_password_hash(hashed_pw, password):
-				session['username'] = username
+				session['username'] = login_user.username
+				session['user_id'] = login_user.id
 				return redirect(config.URL, 302)
 
 		return 'login failed' 
@@ -46,7 +48,7 @@ def register():
 		email = request.form.get('email')
 
 		if verify_username(username):
-			if db.session.query(db.session.query(User)
+			if db.session.query(db.session.query(Iuser)
 				.filter_by(username=username).exists()).scalar():
 				return 'exists'
 		else:
@@ -59,49 +61,41 @@ def register():
 			if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
 				return 'invalid email'
 
-		new_user = User(username=username, email=email,
+		new_user = Iuser(username=username, email=email,
 			password=generate_password_hash(password))
 		db.session.add(new_user)
 		db.session.commit()
-		session['username'] = username
+		session['username'] = new_user.username
+		session['user_id'] = new_user.id
 		return redirect(config.URL, 302)
 
 # These two functions look the same, but they will work somewhat different in fucture
 @app.route('/r/<subi>/')
 def subi(subi):
-	if verify_subname(subi) == False:
-		return 'invalid subpath'
-	subname = Sub.query.filter(func.lower(Sub.name) == subi.lower()).first()
+	if subi != 'all':
+		if verify_subname(subi) == False:
+			return 'invalid subpath'
+		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 
-	if subname == None:
-		return 'invalid sub'
-	posts = Post.query.filter_by(sub=subi).all()
-
+		if subname == None:
+			return 'invalid sub'
+		posts = db.session.query(Post).filter_by(sub=subi).all()
+	else:
+		posts = db.session.query(Post).all()
 	p = []
 	for post in posts:
 		post.created_ago = time_ago(post.created)
-		post.site_url = config.URL + '/r/' + subi + '/' + str(post.id) + '/' + post.inurl_title
+		if subi != 'all':
+			post.site_url = config.URL + '/r/' + subi + '/' + str(post.id) + '/' + post.inurl_title
 		post.remote_url_parsed = post_url_parse(post.url)
-		post.comment_count = Comment.query.filter_by(post_id=post.id).count()
+		post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
+		if 'user_id' in session:
+			post.has_voted = db.session.query(Vote).filter_by(post_id=post.id, user_id=session['user_id']).first()
+			if post.has_voted != None:
+				post.has_voted = post.has_voted.vote
 		p.append(post)
 
 	return render_template('sub.html', posts=p, url=config.URL)
-
-# These two functions look the same, but they will work somewhat different in fucture
-@app.route('/r/all/')
-def all_sub_posts(index=False):
-	posts = Post.query.filter_by().order_by(Post.id.asc()).limit(10)
-	p = []
-	for post in posts:
-		post.created_ago = time_ago(post.created)
-		post.site_url = config.URL + '/r/' + post.sub + '/' + str(post.id) + '/' + post.inurl_title
-		post.remote_url_parsed = post_url_parse(post.url)
-		post.comment_count = Comment.query.filter_by(post_id=post.id).count()
-		p.append(post)
-	if index:
-		return render_template('index.html', posts=p, url=config.URL)
-	else:
-		return render_template('sub.html', posts=p, url=config.URL)
 
 @app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/sort-<sort_by>')
 @app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/')
@@ -114,30 +108,38 @@ def comment(sub, post_id, inurl_title, comment_id=False, sort_by=None):
 		int(comment_id)
 	except:
 		comment_id = False
-	post = Post.query.filter_by(id=post_id, sub=sub).first()
-	post.comment_count = Comment.query.filter_by(post_id=post.id).count()
+	post = db.session.query(Post).filter_by(id=post_id, sub=sub).first()
+	post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
 	post.created_ago = time_ago(post.created)
 	post.remote_url_parsed = post_url_parse(post.url)
+	if 'user_id' in session:
+		post.has_voted = db.session.query(Vote).filter_by(post_id=post.id, user_id=session['user_id']).first()
+		if post.has_voted != None:
+			post.has_voted = post.has_voted.vote
 
 	if not comment_id:
 		if sort_by == 'new':
-			comments = Comment.query.filter(Comment.post_id == post_id, Comment.level < 7)\
+			comments = db.session.query(Comment).filter(Comment.post_id == post_id, Comment.level < 7)\
 			.order_by((Comment.created).asc()).all()
 
 		#if sort_by == None or sort_by == 'top':
 		else:
-			comments = Comment.query.filter(Comment.post_id == post_id, Comment.level < 7)\
+			comments = db.session.query(Comment).filter(Comment.post_id == post_id, Comment.level < 7)\
 			.order_by((Comment.ups - Comment.downs).desc()).all()
 
 		parent_comment = None
 		parent_posturl = None
 	else:
 		comments = list_of_child_comments(comment_id, sort_by=sort_by)
-		parent_comment = Comment.query.filter_by(id=comment_id).first()
+		parent_comment = db.session.query(Comment).filter_by(id=comment_id).first()
 		comments.append(parent_comment)
 
 	for c in comments:
 		c.created_ago = time_ago(c.created)
+		if 'user_id' in session:
+			c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
+			if c.has_voted != None:
+				c.has_voted = c.has_voted.vote
 
 	if not comment_id:
 		tree = create_id_tree(comments)
@@ -157,10 +159,10 @@ def list_of_child_comments(comment_id, sort_by=None):
 	comments = {}
 	current_comments = []
 	if sort_by == 'new':
-		start = Comment.query.filter(Comment.parent_id == comment_id)\
+		start = db.session.query(Comment).filter(Comment.parent_id == comment_id)\
 					.order_by((Comment.created).asc()).all()
 	else:
-		start = Comment.query.filter(Comment.parent_id == comment_id)\
+		start = db.session.query(Comment).filter(Comment.parent_id == comment_id)\
 					.order_by((Comment.ups - Comment.downs).desc()).all()
 
 	for c in start:
@@ -169,10 +171,10 @@ def list_of_child_comments(comment_id, sort_by=None):
 	while len(current_comments) > 0:
 		for current_c in current_comments:
 			if sort_by == 'new':
-				get_comments = Comment.query.filter(Comment.parent_id == current_c)\
+				get_comments = db.session.query(Comment).filter(Comment.parent_id == current_c)\
 					.order_by((Comment.created).asc()).all()
 			else:
-				get_comments = Comment.query.filter(Comment.parent_id == current_c)\
+				get_comments = db.session.query(Comment).filter(Comment.parent_id == current_c)\
 					.order_by((Comment.ups - Comment.downs).desc()).all()
 			for c in get_comments:
 				current_comments.append(c.id)
@@ -199,37 +201,97 @@ def create_sub():
 def view_user(uname):
 	return render_template('user.html', user=uname);
 
-@app.route('/vote', methods=['POST'])
+@app.route('/vote', methods=['GET', 'POST'])
 def vote():
-	post_id = request.form.get('post_id')
-	comment_id = request.form.get('comment_id')
-	vote = request.form.get('vote')
-	username = session['username']
+	if request.method == 'POST':
+		post_id = request.form.get('post_id')
+		comment_id = request.form.get('comment_id')
+		vote = request.form.get('vote')
+		user_id = session['user_id']
+	
+		if 'username' not in session:
+			return 'not logged in'
+		if comment_id != None and post_id != None:
+			return 'cannot vote for 2 objects'
+		if comment_id == None and post_id == None:
+			return 'no vote object'
+		if vote not in ['1', '-1', '0']:
+			return 'invalid vote amount'
+	
+		vote = int(vote)
 
-	if 'username' not in session:
-		return 'not logged in'
-	if comment_id != None and post_id != None:
-		return 'cannot vote for 2 objects'
-	if comment_id == None and post_id == None:
-		return 'no vote object'
-	if vote not in ['1', '-1']:
-		return 'invalid vote amount'
+		invert_vote = False
+		if post_id != None:
+			last_vote = db.session.query(Vote).filter_by(user_id=user_id, post_id=post_id).first()
+			if last_vote != None:
+				if last_vote.vote == vote:
+					return 'already voted'
+				else:
+					invert_vote = True
 
-	vote = int(vote)
+		elif comment_id != None:
+			last_vote = db.session.query(Vote).filter_by(user_id=user_id, comment_id=comment_id).first()
+			if last_vote != None:
+				if last_vote.vote == vote:
+					return 'already voted'
+				else:
+					invert_vote = True
 
-	new_vote = Vote(username=username, vote=vote, comment_id=comment_id, post_id=post_id)
-	if comment_id != None:
+		if vote == 0 and last_vote == None:
+			return 'never voted'
+
+		if vote == 0:
+			if last_vote.post_id != None:
+				if last_vote.post_id != None:
+					vpost = db.session.query(Post).filter_by(id=last_vote.post_id).first()
+				elif last_vote.comment_id != None:
+					vpost = db.session.query(Comment).filter_by(id=last_vote.post_id).first()
+				if last_vote.vote == 1:
+					vpost.ups -= 1
+				elif last_vote.vote == -1:
+					vpost.downs -= 1
+			db.session.delete(last_vote)
+			db.session.commit()
+			return str(vpost.ups - vpost.downs)
+
+		if last_vote == None:
+			new_vote = Vote(user_id=user_id, vote=vote, comment_id=comment_id, post_id=post_id)
+			db.session.add(new_vote)
+			db.session.commit()
+
+		elif invert_vote:
+			if last_vote.vote == 1:
+				last_vote.vote = -1
+			else:
+				last_vote.vote = 1
+		db.session.commit()
+
+		if comment_id != None:
+			vcom = db.session.query(Comment).filter_by(id=comment_id).first()
+		elif post_id != None:
+			vcom = db.session.query(Post).filter_by(id=post_id).first()
+
+
 		if vote == 1:
-			update(Comment.update().where(Comment.id == comment_id).values(ups=Comment.ups + 1))
-		else:
-			update(Comment.update().where(Comment.id == comment_id).values(downs=Comment.downs + 1))
-	elif post_id != None:
-		if vote == 1:
-			update(Post.update().where(Post.id == Post_id).values(ups=Post.ups + 1))
-		else:
-			update(Post.update().where(Post.id == Post_id).values(downs=Post.downs + 1))
+			if not invert_vote:
+				vcom.ups += 1
+			else:
+				vcom.ups += 1
+				vcom.downs -= 1
 
-	return 'ok'
+		elif vote == -1:
+			if not invert_vote:
+				vcom.downs += 1
+			else:
+				vcom.downs += 1
+				vcom.ups -= 1
+
+		db.session.commit()	
+
+	
+		return str(vcom.ups - vcom.downs)
+	elif request.method == 'GET':
+		return 'get'
 
 @app.route('/create_post', methods=['POST', 'GET'])
 def create_post():
@@ -261,7 +323,7 @@ def create_comment():
 	if text == None or 'username' not in session or post_id == None or post_url == None:
 		return 'bad comment'
 	if parent_id != None:
-		level = (Comment.query.filter_by(id=parent_id).first().level) + 1
+		level = (db.session.query(Comment).filter_by(id=parent_id).first().level) + 1
 	else:
 		level = None
 	new_comment = Comment(post_id=post_id, text=text, username=session['username'], parent_id=parent_id, level=level)

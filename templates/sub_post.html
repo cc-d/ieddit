@@ -16,10 +16,18 @@
     <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
     </div>
     <div class="row post-row">
-<div class="inner-div comment-voting">
+<div class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
+    {% if post.has_voted == 1 %}
+    <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
+    {% else %}
     <a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
-    {{ post.ups - post.downs }}
+    {% endif %}
+    <vote class="score">{{ post.ups - post.downs }}</vote>
+    {% if post.has_voted == -1 %}
+    <a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
+    {% else %}
     <a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
+    {% endif %}
 </div>
     	<div class="col-6 inner-div">
     		<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
