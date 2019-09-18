@@ -1,4 +1,57 @@
 {% extends 'base.html' %}
 {% block content %}
-<h6>user profile for {{ user }}</h6>
+<h6> user profile for {{ username }} </h6>
+<h6> recent posts </h6>
+
+{% for post in posts %}
+    {% include 'sub_post.html' %}
+{% else %}
+	<p> no posts </p>
+{% endfor %}
+
+
+<h6> recent comments </h6>
+<ul class="list-unstyled">
+{% for comment, post in comments_with_posts %}
+<li class="media sub-comment media-body">
+	<div class='media-body comment-media-body'>
+		<div class="row post-row">
+			<div class="col inner-div">
+				<i class="fa fa-user"></i> <a class="user-icon-link" href="{{ config.URL }}/u/{{ comment.author }}">{{ comment.author }}</a>
+    	    	<a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
+    	    		<small class="created-ago comment-link">{{ comment.created_ago }}</small>
+    	    	</a>
+				{% if comment.parent_id != None %}
+    	    	<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
+    	    	{% else %}
+    	    	<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
+    	   		{% endif %}
+    	    		<small class="created-ago">parent</small>
+    	    	</a>
+			</div>
+		</div>
+		<div clss="comment-text">
+			<p class="comment-text-text">{{ comment.text }}</p>
+		</div>
+		<div class="row post-row comment-bottom">
+			<div class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="session['user_id']" has_voted="{{ comment.has_voted }}">
+				{% if comment.has_voted == 1 %}
+				<a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
+				{% else %}
+				<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
+				{% endif %}
+				<vote class="score">{{ comment.ups - comment.downs }}</vote>
+				{% if comment.has_voted == -1 %}
+				<a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
+				{% else %}
+				<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</li>
+{% else %}
+<p> no comments </p>
+{% endfor %}
+</ul>
 {% endblock %}

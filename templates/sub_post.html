@@ -30,7 +30,7 @@
     {% endif %}
 </div>
     	<div class="col-6 inner-div">
-    		<a class="comment-link" href="{{ post['site_url'] }}">{{ post.comment_count }} comments</a>
+    		<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
     	</div>
     	</div>
     </div>

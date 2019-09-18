@@ -33,6 +33,7 @@ class Post(db.Model):
 	downs = db.Column(db.Integer, default=0, nullable=False)
 	inurl_title = db.Column(db.String(75), nullable=False)
 	author = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
+	author_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
 	sub = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
 	created = db.Column(db.DateTime, default=datetime.now())
 
@@ -42,14 +43,15 @@ class Post(db.Model):
 class Comment(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-
 	text = db.Column(db.String(20000), nullable=False)
 	ups = db.Column(db.Integer, default=0, nullable=False)
 	downs = db.Column(db.Integer, default=0, nullable=False)
-	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
+	author = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
+	author_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
 	parent_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
 	level = db.Column(db.Integer, default=0)
 	created = db.Column(db.DateTime, default=datetime.now())
+	sub_name = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
 
 	def __repr__(self):
 		return '<Comment %r>' % self.id

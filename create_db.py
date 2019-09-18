@@ -15,6 +15,14 @@ fake = Faker()
 #os.system('rm -rf test.db')
 os.system('bash recreate_psql_db.sh')
 
+# force clear user sessions by changing key
+with open('config.py', 'r+') as f:
+	ctext = f.read()
+	ctext = ctext.split('|r|')
+	ctext[1] = rstring(10)
+	f.seek(0)
+	f.write('|r|'.join(ctext))
+
 db.create_all()
 db.session.commit()
 
@@ -38,7 +46,7 @@ for i in range(10):
 db.session.commit()
 
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'),
- author='test', sub='test', ups=randint(1,20), downs=randint(1,5))
+ author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5))
 db.session.add(new_post)
 db.session.commit()
 
@@ -46,15 +54,15 @@ db.session.commit()
 for i in range(10):
 	title = fake.text()[:randint(10,200)]
 	db.session.add(Post(url='https://google.com/' + rstring(5, 10), title=title, inurl_title=convert_ied(title), 
-		author='test', sub='test', ups=randint(1,20), downs=randint(1,5)))
+		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5)))
 
 db.session.commit()
 
-new_comment = Comment(post_id=1, text='this is comment text', username='test', ups=randint(1,20), downs=randint(1,5))
+new_comment = Comment(post_id=1, sub_name='test', text='this is comment text', author='test', author_id=1, ups=randint(1,20), downs=randint(1,5))
 db.session.add(new_comment)
 db.session.commit()
 
-new_comment = Comment(post_id=1, text='this is a reply', username='test', parent_id=1, ups=randint(1,20), downs=randint(1,5))
+new_comment = Comment(post_id=1, sub_name='test', text='this is a reply', author='test', author_id=1, parent_id=1, ups=randint(1,20), downs=randint(1,5))
 db.session.add(new_comment)
 db.session.commit()
 
@@ -68,7 +76,7 @@ for i in range(50):
 		rancom = choice(comments)
 		pid = rancom.id
 		level = rancom.level + 1
-	new_comment = Comment(post_id=1, text=fake.text()[:randint(1,200)], username='test', parent_id=pid, level=level, ups=randint(1,20), downs=randint(1,5))
+	new_comment = Comment(post_id=1, sub_name='test', text=fake.text()[:randint(1,200)],  author='test', author_id=1,  parent_id=pid, level=level, ups=randint(1,20), downs=randint(1,5))
 	db.session.add(new_comment)
 	db.session.commit()
 	comments.append(new_comment)

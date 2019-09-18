@@ -1,3 +1,12 @@
+{% if posts_only %}
+
+{% for post in posts %}
+    {% include 'sub_post.html' %}
+{% else %}
+	<p> no posts </p>
+{% endfor %}
+
+{% else %}
 {% extends 'base.html' %}
 {% block content %}
 
@@ -7,5 +16,5 @@
 	<p> no posts </p>
 {% endfor %}
 
-
 {% endblock %}
+{% endif %}
