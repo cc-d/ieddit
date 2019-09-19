@@ -1,5 +1,41 @@
 {% extends 'base.html' %}
 {% block content %}
+<div id='signup-form-container' class='mx-auto'>
+<div id='login-container'>
+<h2>Login</h2>
+<form class="needs-validation" novalidate method='post'>
+	<div class="form-group">
+	<label for="validationCustom04">Username</label>
+	<input name='username' type="text" class="form-control" id="validationCustom04" placeholder="Enter username">
+	</div>
+	<div class="form-group">
+	<label for="validationCustom05">Password</label>
+	<input name='password' type="password" class="form-control" id="validationCustom05" placeholder="Password">
+	</div>
+	<button type="submit" class="btn btn-primary">Login</button>
+</form>
+</div>
+<div id='register-container'>
+<h2>Create New User</h2>
+<form class="needs-validation" novalidate method='post' action='/register'>
+	<div class="form-group">
+	<label for="validationCustom01">New Username</label>
+	<input name='username' type="text" class="form-control" id="validationCustom01" placeholder="Enter username">
+	</div>
+	<div class="form-group">
+	<label for="validationCustom02">Email address (optional)</label>
+	<input name='email' type="email" class="form-control" id="validationCustom02" aria-describedby="email-reg-info" placeholder="Enter email">
+	<small id="email-reg-info" class="form-text text-muted">Lost passwords cannot be recovered without an email.<br></small>
+	</div>
+	<div class="form-group">
+	<label for="validationCustom03">Password</label>
+	<input name='password' type="password" class="form-control" id="validationCustom03" placeholder="Password">
+	</div>
+	<button type="submit" class="btn btn-primary">Create</button>
+</form>
+</div>
+</div>
+<!--
 <form method="post">
 	<p>username</p>
 	<input type="text" name="username">
@@ -17,4 +53,5 @@
 	<input type="text" name="password">
 	<input type="submit" value="Register">
 </form>
+-->
 {% endblock %}

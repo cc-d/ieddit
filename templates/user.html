@@ -18,6 +18,9 @@
 		<div class="row post-row">
 			<div class="col inner-div">
 				<i class="fa fa-user"></i> <a class="user-icon-link" href="{{ config.URL }}/u/{{ comment.author }}">{{ comment.author }}</a>
+    	    	<a href="{{ config.URL }}/r/{{ post.sub }}/" style="margin-left: 0.5rem;">
+    	    		<small class="comment-link">/r/{{ post.sub }}</small>
+    	    	</a>
     	    	<a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
     	    		<small class="created-ago comment-link">{{ comment.created_ago }}</small>
     	    	</a>

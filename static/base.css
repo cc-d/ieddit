@@ -79,6 +79,25 @@
 .user-icon-link a {
 	color: #212529;}
 
+#signup-form-container {
+	display: block;
+	/*width: fit-content;*/
+}
+
+#content {
+	margin-left: 0.5rem;
+	margin-right: 0.5rem;}
+
+#register-container {
+	width: 20rem;
+	display: inline-block;}
+
+#login-container {
+	margin-right: 1rem;
+	width: 18rem;
+	display: inline-block;
+	vertical-align: top}
+
 .comment-voting {
 	margin-left: 1em;
 	margin-right: 1em;}
