@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 <div id='signup-form-container' class='mx-auto'>
+{% if session['username'] %}
+<p> you are already logged in as: {{ session['username'] }} </p>
+{% endif %}
 <div id='login-container'>
 <h2>Login</h2>
 <form class="needs-validation" novalidate method='post'>
@@ -12,7 +15,7 @@
 	<label for="validationCustom05">Password</label>
 	<input name='password' type="password" class="form-control" id="validationCustom05" placeholder="Password">
 	</div>
-	<button type="submit" class="btn btn-primary">Login</button>
+	<button type="submit" class="btn btn-primary btn-dark">Login</button>
 </form>
 </div>
 <div id='register-container'>
@@ -31,7 +34,7 @@
 	<label for="validationCustom03">Password</label>
 	<input name='password' type="password" class="form-control" id="validationCustom03" placeholder="Password">
 	</div>
-	<button type="submit" class="btn btn-primary">Create</button>
+	<button type="submit" class="btn btn-primary btn-dark">Create</button>
 </form>
 </div>
 </div>

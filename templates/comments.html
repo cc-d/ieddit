@@ -78,6 +78,7 @@
 
 <ul class="list-unstyled">
 	{%- for comment, value in tree.items() recursive %}  
+	{% if loop.depth0 < 5 %}
 	<li class="media sub-comment media-body" style="margin-left:{{ loop.depth - 1 }}rem">
 		<div class='media-body comment-media-body'>
 		<div class="row post-row">
@@ -115,7 +116,7 @@
 </div>
 			<div class="inner-div">
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>
-				{% if loop.depth0 == 6 %}
+				{% if loop.depth0 == 4 and value|length > 0 %}
 					<a class="comment-link  comment-more" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
 						more>>
 					</a>
@@ -140,6 +141,7 @@
 
 	{%- if value %}
 	{{ loop(value.items()) }}
+	{% endif %}
 	{% endif %}
 	{% else %}
 	<p>no comments</p>

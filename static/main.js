@@ -113,4 +113,14 @@ $(document).on('click', '.fa-arrow-down', function() {
 	}
 });
 
+function autoFadeErrors() {
+	$(".alert").alert('close');
+}
+
+$(document).ready(function() {
+	setTimeout(function() {
+		autoFadeErrors(); 
+	}, 5000);
+});
+
 console.log('loaded');

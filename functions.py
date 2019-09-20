@@ -1,5 +1,6 @@
 import urllib.parse
 import random
+import json
 from datetime import datetime, timedelta
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
 
@@ -36,12 +37,12 @@ def post_url_parse(url):
 def time_ago(dt):
 	diff = datetime.now() - dt
 	if diff.seconds < 60:
-		return str(int(diff.seconds)) + ' seconds ago'
+		return str(int(diff.seconds)) + 's'#econds ago'
 	if diff.seconds > 60 and diff.seconds < 3600:
-		return str(int(diff.seconds / 60)) + ' minutes ago'
+		return str(int(diff.seconds / 60)) + 'm'#inutes ago'
 	if diff.seconds > 3600 and diff.seconds < 86400:
-		return str(int((diff.seconds / 60) / 60)) + ' hours ago'
-	return str(int(diff.days)) + ' days ago'
+		return str(int((diff.seconds / 60) / 60)) + 'h'#ours ago'
+	return str(int(diff.days)) + 'd'#ays ago'
 
 # horribly ineffecient function lol
 # like no seriously, this is really, really bad

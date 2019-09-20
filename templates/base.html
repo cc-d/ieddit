@@ -56,13 +56,27 @@
 		</div>
 		<div class="navbar">
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+
 			<span class="navbar-toggler-icon"></span>
 		</button>
 
 		</div>
 
 	</nav>
-
+	{% with messages = get_flashed_messages(with_categories=true) %}
+		{% if messages %}
+			<ul class='flashes generic-alert' onload="autoFadeAlert()">
+			{% for category, message in messages %}
+			<div class="alert alert-dismissible alert-danger fade show" role="alert">
+				{{ message }}
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
 	<div id="content">
 		{% block content %}
 		{% endblock %}

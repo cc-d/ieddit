@@ -1,6 +1,6 @@
-from flask import Flask, render_template, session, request, redirect
+from flask import Flask, render_template, session, request, redirect, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
+from sqlalchemy import func, exists
 
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
@@ -14,6 +14,11 @@ app.config.from_object('config')
 
 db = SQLAlchemy(app)
 
+# I don't like repeating myself ok don't judge
+def flash_redirect(message, urlf, ftype='error'):
+	flash(message, ftype)
+	return redirect(url_for(urlf), 302)
+
 @app.route('/')
 def index():
 	return subi('all')
@@ -25,8 +30,12 @@ def login():
 	if request.method == 'POST':
 		username = request.form.get('username')
 		password = request.form.get('password')
-		if username == None or password == None or len(username) > 20 or len(password) > 100:
-			return 'invalid login'
+		if username == None or password == None:
+			flash('Username or Password missing.', 'error')
+			return redirect(url_for('login'), 302)
+		if username == '' or password == '' or len(username) > 20 or len(password) > 100:
+			flash('Username or Password empty.', 'error')
+			return redirect(url_for('login'), 302)
 
 		if db.session.query(db.session.query(Iuser)
 				.filter_by(username=username)
@@ -34,11 +43,13 @@ def login():
 			login_user = db.session.query(Iuser).filter_by(username=username).first()
 			hashed_pw = login_user.password
 			if check_password_hash(hashed_pw, password):
+				[session.pop(key) for key in list(session.keys())]
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
-				return redirect(config.URL, 302)
+				return redirect(url_for('index'), 302)
 
-		return 'login failed' 
+		flash('Username or Password incorrect.', 'error')
+		return redirect(url_for('login'), 302)
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -47,19 +58,26 @@ def register():
 		password = request.form.get('password')
 		email = request.form.get('email')
 
+		if username == None or password == None:
+			flash('username or password missing', 'error')
+			return redirect(url_for('login'))
+
 		if verify_username(username):
-			if db.session.query(db.session.query(Iuser)
-				.filter_by(username=username).exists()).scalar():
-				return 'exists'
+			if db.session.query(db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).exists()).scalar():
+				flash('username exists', 'error')
+				return redirect(url_for('login'))
 		else:
-			return 'invalid username'
+			flash('invalid username', 'error')
+			return redirect(url_for('login'))
 
 		if len(password) > 100:
-			return 'pass to long'
+			flash('password too long', 'error')
+			return redirect(url_for('login'))
 
-		if email != '':
+		if email != None and email != '':
 			if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-				return 'invalid email'
+				flash('invalid email')
+				return redirect(url_for('login'))
 
 		new_user = Iuser(username=username, email=email,
 			password=generate_password_hash(password))
@@ -358,5 +376,5 @@ def create_comment():
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
-	session.pop('username', None)
-	return redirect(config.URL, 302)
+	[session.pop(key) for key in list(session.keys())]
+	return redirect(url_for('index'), 302)
