@@ -337,9 +337,11 @@ def create_post():
 		url = request.form.get('url')
 		sub = request.form.get('sub')
 		if title == None or url == None or 'username' not in session:
-			return 'invalid post'
+			flush('invalid post, no title/username/url', 'error')
+			return redirect(url_for('create_post'))
 		if len(title) > 400 or len(title) < 1 or len(sub) > 30 or len(sub) < 1 or len(url) > 2000 or len(url) < 1:
-			return 'invalid post len'
+			flush('invalid title/sub/url length')
+			return redirect(url_for('create_post'))
 		new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'], author_id=session['user_id'], sub=sub)
 		db.session.add(new_post)
 		db.session.commit()
