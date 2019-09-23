@@ -2,6 +2,7 @@ from flask import Flask, render_template, session, request, redirect, flash, url
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, exists
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_caching import Cache
 
 import time
 import re
@@ -12,6 +13,7 @@ from functions import *
 
 app = Flask(__name__)
 app.config.from_object('config')
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 db = SQLAlchemy(app)
 
@@ -29,7 +31,7 @@ def apply_headers(response):
     #response.headers['X-Content-Type-Options'] = 'nosniff'
 	if app.debug:
 		load_time = str(time.time() - g.start)
-		print('[Load: %s] -v' % load_time)
+		print('\n[Load: %s]' % load_time)
 	return response
 
 @app.route('/')
@@ -103,6 +105,7 @@ def register():
 
 # These two functions look the same, but they will work somewhat different in fucture
 @app.route('/r/<subi>/')
+@cache.memoize(50)
 def subi(subi, user_id=None, posts_only=False):
 	if subi != 'all':
 		if verify_subname(subi) == False:
@@ -141,6 +144,7 @@ def subi(subi, user_id=None, posts_only=False):
 @app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/')
 @app.route('/r/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
 @app.route('/r/<sub>/<post_id>/<inurl_title>/')
+@cache.memoize(50)
 def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
 	if sub == None or post_id == None or inurl_title == None:
 		if not comments_only:
@@ -246,9 +250,11 @@ def create_sub():
 			return redirect(config.URL + '/r/' + subname, 302)
 		return 'invalid'
 	elif request.method == 'GET':
+		cache.clear()
 		return render_template('create.html')
 
 @app.route('/u/<username>/', methods=['GET'])
+@cache.memoize(50)
 def view_user(username):
 	vuser = db.session.query(Iuser).filter_by(username=username).first()
 	mod_of = db.session.query(Moderator).filter_by(user_id=vuser.id).all()
@@ -306,6 +312,8 @@ def vote():
 		if vote == 0 and last_vote == None:
 			return 'never voted'
 
+		cache.clear()
+
 		if vote == 0:
 			if last_vote.post_id != None:
 				if last_vote.post_id != None:
@@ -353,8 +361,6 @@ def vote():
 				vcom.ups -= 1
 
 		db.session.commit()	
-
-	
 		return str(vcom.ups - vcom.downs)
 	elif request.method == 'GET':
 		return 'get'
@@ -396,6 +402,7 @@ def create_post():
 		db.session.add(new_post)
 		db.session.commit()
 		url = config.URL + '/r/' + sub
+		cache.clear()
 		return redirect(url, 302)
 
 	if request.method == 'GET':
@@ -432,6 +439,7 @@ def create_comment():
 	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=psuedo_markup(text), author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level)
 	db.session.add(new_comment)
 	db.session.commit()
+	cache.clear()
 	return redirect(post_url, 302)
 
 @app.route('/logout', methods=['POST', 'GET'])
