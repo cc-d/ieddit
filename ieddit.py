@@ -1,8 +1,9 @@
-from flask import Flask, render_template, session, request, redirect, flash, url_for, Blueprint
+from flask import Flask, render_template, session, request, redirect, flash, url_for, Blueprint, g
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, exists
-
 from werkzeug.security import generate_password_hash, check_password_hash
+
+import time
 import re
 import config
 
@@ -17,12 +18,19 @@ db = SQLAlchemy(app)
 from mod import bp
 app.register_blueprint(bp)
 
+@app.before_request
+def before_request():
+    g.start = time.time()
+
 @app.after_request
-def apply_caching(response):
+def apply_headers(response):
     #response.headers["X-Frame-Options"] = "SAMEORIGIN"
     #response.headers["X-XSS-Protection"] = "1; mode=block"
     #response.headers['X-Content-Type-Options'] = 'nosniff'
-    return response
+	if app.debug:
+		load_time = str(time.time() - g.start)
+		print('[Load: %s] -v' % load_time)
+	return response
 
 @app.route('/')
 def index():
