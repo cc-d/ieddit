@@ -65,6 +65,7 @@
 	{% endif %}
 </div>
 {% if not parent_comment.id %}
+
 {% if session['username'] and session['user_id'] %}
 <form id='post-reply-box' action='/create_comment' method='POST'>
 	<div class="comment-reply-box-wrapper">
@@ -75,17 +76,6 @@
 	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
 	<input class="post-text-area-button" type='submit' value='new comment'>
 </form>
-{% else %}
-<p> log in to post a comment </p>
-<form id='post-reply-box' action='/create_comment' method='POST'>
-	<div class="comment-reply-box-wrapper">
-		<textarea class="comment-reply-box-expand" name="comment_text" disabled="disabled"></textarea>
-	</div>
-	<input type='hidden' name='post_id' value='{{ post_id }}'>
-	<input type='hidden' name='post_url' value='{{ post_url }}'>
-	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
-</form>
-{% endif %}
 
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
 	<br>
@@ -98,6 +88,31 @@
 	<input type='hidden' name='parent_id' id='parent_id'>
 	<input class="comment-text-area-button" type='submit' value='reply'>
 </form>
+{% else %}
+<form id='post-reply-box' action='/create_comment' method='POST'>
+	<div class="comment-reply-box-wrapper">
+		<textarea class="comment-reply-box-expand" name="comment_text" disabled="disabled"></textarea>
+	</div>
+	<input type='hidden' name='post_id' value='{{ post_id }}'>
+	<input type='hidden' name='post_url' value='{{ post_url }}'>
+	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
+	<input class="post-text-area-button" type='submit' value='new comment' disabled="disabled"><small> <a href="{{ config.URL }}/login">login to comment</a></small>
+</form>
+
+<form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
+	<br>
+	<div class="comment-reply-box-wrapper">
+		<textarea class="comment-reply-box-expand" name="comment_text" disabled="disabled"></textarea>
+	</div>
+	<input type='hidden' name='post_id' value='{{ post_id }}'>
+	<input type='hidden' name='post_url' value='{{ post_url }}{{ parent_comment.id }}'>
+	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
+	<input type='hidden' name='parent_id' id='parent_id'>
+	<input class="comment-text-area-button" type='submit' value='reply' disabled="disabled"><small> <a href="{{ config.URL }}/login">login to reply</a></small>
+</form>
+
+{% endif %}
+
 {% endif %}
 
 
