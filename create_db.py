@@ -31,6 +31,11 @@ new_user = Iuser(username='test', email='test@test.com',
 db.session.add(new_user)
 db.session.commit()
 
+new_user = Iuser(username='a', email='a@a.com',
+	password=generate_password_hash('a'), admin=True)
+db.session.add(new_user)
+db.session.commit()
+
 for i in range(20):
 	new_user = Iuser(username=rstring(3,10), email= rstring(4) + '@test.com',
 	password=generate_password_hash('test'))

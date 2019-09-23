@@ -51,6 +51,7 @@ def login():
 				[session.pop(key) for key in list(session.keys())]
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
+				session['admin'] = login_user.admin
 				return redirect(url_for('index'), 302)
 
 		flash('Username or Password incorrect.', 'error')

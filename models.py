@@ -12,6 +12,7 @@ class Iuser(db.Model):
 	email = db.Column(db.String(75), nullable=True)
 	password = db.Column(db.String(255), nullable=False)
 	created = db.Column(db.DateTime, default=datetime.now())
+	admin = db.Column(db.Boolean, default=False, unique=False)
 
 	def __repr__(self):
 		return '<Iuser %r>' % self.username
