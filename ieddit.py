@@ -241,10 +241,12 @@ def vote():
 		post_id = request.form.get('post_id')
 		comment_id = request.form.get('comment_id')
 		vote = request.form.get('vote')
-		user_id = session['user_id']
 	
-		if 'username' not in session:
+		if 'username' not in session or 'user_id' not in session:
 			return 'not logged in'
+		else:
+			user_id = session['user_id']
+			username = session['username']
 		if comment_id != None and post_id != None:
 			return 'cannot vote for 2 objects'
 		if comment_id == None and post_id == None:

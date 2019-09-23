@@ -19,51 +19,60 @@ $(document).on('click', '.comment-reply', function () {
 		$('#reply-box').parent().text('reply');
 	}
 });
-
+// Copy paste coding, refactor when time
 $(document).on('click', '.fa-arrow-up', function() {
 	var oType = $(this).parent().parent().attr('vote-obj-type');
 	var voteId = $(this).parent().parent().attr('vote-obj-id');
 	var voteDiv = $(this).parent().parent().children('vote');
-
-	if($(this).css('color') != 'rgb(255, 165, 0)') {
+	var self = $(this);
+	if($(self).css('color') != 'rgb(255, 165, 0)') {
 		if (oType == 'post') {
-			$.post('/vote', {'vote':'1', 'post_id':voteId}, function(data) {
-				if (data !== 'already voted') {
+			$.post('/vote', {'vote':'1', 'post_id':voteId}).done( function(data) {
+				if (data == 'not logged in') {
+					alert('please login to vote');
+				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(self).css('color', 'orange');
+					$(self).parent().parent().children('a').children('.fa-arrow-down').css('color', '#212529');
 				}
 			});
-			$(voteDiv).html(parseInt(voteDiv.html()) + 1);
+			//$(voteDiv).html(parseInt(voteDiv.html()) + 1);
 		}
 		else if (oType == 'comment') {
-			$.post('/vote', {'vote':'1', 'comment_id':voteId}, function(data) {
-				if (data !== 'already voted') {
+			$.post('/vote', {'vote':'1', 'comment_id':voteId}).done( function(data) {
+				if (data == 'not logged in') {
+					alert('please login to vote');
+				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(self).css('color', 'orange');
+					$(self).parent().parent().children('a').children('.fa-arrow-down').css('color', '#212529');
 				}
 			});
-			$(voteDiv).html(parseInt(voteDiv.html()) + 1);
+			//$(voteDiv).html(parseInt(voteDiv.html()) + 1);
 		}
-
-		$(this).css('color', 'orange');
-		$(this).parent().parent().children('a').children('.fa-arrow-down').css('color', '#212529');
-	} else if ($(this).css('color') == 'rgb(255, 165, 0)') {
+	} else if ($(self).css('color') == 'rgb(255, 165, 0)') {
 		if (oType == 'post') {
-			$.post('/vote', {'vote':'0', 'post_id':voteId}, function(data) {
-				if (data !== 'already voted') {
+			$.post('/vote', {'vote':'0', 'post_id':voteId}).done( function(data) {
+				if (data == 'not logged in') {
+					alert('please login to vote');
+				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(self).css('color', '#212529');
 				}
 			});
-			$(voteDiv).html(parseInt(voteDiv.html()) - 1);
+			//$(voteDiv).html(parseInt(voteDiv.html()) - 1);
 		}
 		else if (oType == 'comment') {
-			$.post('/vote', {'vote':'0', 'comment_id':voteId}, function(data) {
-				if (data !== 'already voted') {
+			$.post('/vote', {'vote':'0', 'comment_id':voteId}).done( function(data) {
+				if (data == 'not logged in') {
+					alert('please login to vote');
+				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(self).css('color', '#212529');
 				}
 			});
-			$(voteDiv).html(parseInt(voteDiv.html()) - 1);
+			//$(voteDiv).html(parseInt(voteDiv.html()) - 1);
 		}
-
-		$(this).css('color', '#212529');
 	}
 });
 
@@ -71,45 +80,55 @@ $(document).on('click', '.fa-arrow-down', function() {
 	var oType = $(this).parent().parent().attr('vote-obj-type');
 	var voteId = $(this).parent().parent().attr('vote-obj-id');
 	var voteDiv = $(this).parent().parent().children('vote');
-
-	if($(this).css('color') == 'rgb(33, 37, 41)') {
+	var self = $(this);
+	if($(self).css('color') == 'rgb(33, 37, 41)') {
 		if (oType == 'post') {
-			$.post('/vote', {'vote':'-1', 'post_id':voteId}, function(data) {
-				if (data !== 'already voted') {
+			$.post('/vote', {'vote':'-1', 'post_id':voteId}).done( function(data) {
+				if (data == 'not logged in') {
+					alert('please login to vote');
+				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(self).css('color', 'rgb(173, 216, 230)');
+					$(self).parent().parent().children('a').children('.fa-arrow-up').css('color', '#212529');
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) - 1);
 		}
 		else if (oType == 'comment') {
-			$.post('/vote', {'vote':'-1', 'comment_id':voteId}, function(data) {
-				if (data !== 'already voted') {
+			$.post('/vote', {'vote':'-1', 'comment_id':voteId}).done( function(data) {
+				if (data == 'not logged in') {
+					alert('please login to vote');
+				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(self).css('color', 'rgb(173, 216, 230)');
+					$(self).parent().parent().children('a').children('.fa-arrow-up').css('color', '#212529');
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) - 1);
 		}
-
-		$(this).css('color', 'rgb(173, 216, 230)');
-		$(this).parent().parent().children('a').children('.fa-arrow-up').css('color', '#212529');
-	} else if ($(this).css('color') == 'rgb(173, 216, 230)') {
+	} else if ($(self).css('color') == 'rgb(173, 216, 230)') {
 		if (oType == 'post') {
-			$.post('/vote', {'vote':'0', 'post_id':voteId}, function(data) {
-				if (data !== 'already voted') {
+			$.post('/vote', {'vote':'0', 'post_id':voteId}).done( function(data) {
+				if (data == 'not logged in') {
+					alert('please login to vote');
+				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(self).css('color', '#212529');
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) + 1);
 		}
 		else if (oType == 'comment') {
-			$.post('/vote', {'vote':'0', 'comment_id':voteId}, function(data) {
-				if (data !== 'already voted') {
+			$.post('/vote', {'vote':'0', 'comment_id':voteId}).done( function(data) {
+				if (data == 'not logged in') {
+					alert('please login to vote');
+				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(self).css('color', '#212529');
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) + 1);
 		}
-		$(this).css('color', '#212529');
 	}
 });
 

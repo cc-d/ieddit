@@ -8,7 +8,7 @@
 		{% if post.post_type == 'url' %}
 			<img class="mr-3 comment-image" src="{{ url_for('static', filename='globe.png') }}">
 		{% else %}
-			<img class="mr-3 comment-image" src="{{ url_for('static', filename='comment.png') }}">
+			<img class="mr-3 comment-image self-post-image" src="{{ url_for('static', filename='comment.png') }}">
 		{% endif %}
 		<div class="media-body">
 			<div class="row post-row row-space">
@@ -65,6 +65,7 @@
 	{% endif %}
 </div>
 {% if not parent_comment.id %}
+{% if session['username'] and session['user_id'] %}
 <form id='post-reply-box' action='/create_comment' method='POST'>
 	<div class="comment-reply-box-wrapper">
 		<textarea class="comment-reply-box-expand" name="comment_text"></textarea>
@@ -74,6 +75,17 @@
 	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
 	<input class="post-text-area-button" type='submit' value='new comment'>
 </form>
+{% else %}
+<p> log in to post a comment </p>
+<form id='post-reply-box' action='/create_comment' method='POST'>
+	<div class="comment-reply-box-wrapper">
+		<textarea class="comment-reply-box-expand" name="comment_text" disabled="disabled"></textarea>
+	</div>
+	<input type='hidden' name='post_id' value='{{ post_id }}'>
+	<input type='hidden' name='post_url' value='{{ post_url }}'>
+	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
+</form>
+{% endif %}
 
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
 	<br>
