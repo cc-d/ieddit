@@ -108,7 +108,7 @@ def split_link(sst, s):
 	new_s.append(s[:sindex-1])
 	new_s.append(s[sindex:sindex + len(sst[0])])
 	sindex = s.find(sst[1])  
-	new_s.append(s[(sindex):sindex+len(sst[1])].replace('"', '&quot;'))
+	new_s.append(s[(sindex):sindex+len(sst[1])])
 	new_s.append(s[sindex+len(sst[1])+1:])
 	return new_s
 
@@ -122,6 +122,6 @@ def psuedo_markup(text):
 		else:
 			ntext = split_link(r[0], text)
 			mstring += html.escape(ntext[0])
-			mstring += '<a href="' + ntext[2] + '">' + html.escape(ntext[1]) + '</a>'
+			mstring += '<a href="' + html.escape(ntext[2]) + '">' + html.escape(ntext[1]) + '</a>'
 			text = ntext[3]
 	return mstring
