@@ -58,6 +58,7 @@ def login():
 			login_user = db.session.query(Iuser).filter_by(username=username).first()
 			hashed_pw = login_user.password
 			if check_password_hash(hashed_pw, password):
+				cache.clear()
 				[session.pop(key) for key in list(session.keys())]
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
@@ -101,6 +102,7 @@ def register():
 		db.session.commit()
 		session['username'] = new_user.username
 		session['user_id'] = new_user.id
+		cache.clear()
 		return redirect(config.URL, 302)
 
 # These two functions look the same, but they will work somewhat different in fucture
@@ -247,10 +249,10 @@ def create_sub():
 			new_mod = Moderator(username=new_sub.created_by, user_id=new_sub.created_by_id, sub_id=new_sub.id, sub_name=new_sub.name)
 			db.session.add(new_mod)
 			db.session.commit()
+			cache.clear()
 			return redirect(config.URL + '/r/' + subname, 302)
 		return 'invalid'
 	elif request.method == 'GET':
-		cache.clear()
 		return render_template('create.html')
 
 @app.route('/u/<username>/', methods=['GET'])
@@ -445,4 +447,5 @@ def create_comment():
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
 	[session.pop(key) for key in list(session.keys())]
+	cache.clear()
 	return redirect(url_for('index'), 302)
