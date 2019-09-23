@@ -14,11 +14,6 @@ app.config.from_object('config')
 
 db = SQLAlchemy(app)
 
-# I don't like repeating myself ok don't judge
-def flash_redirect(message, urlf, ftype='error'):
-	flash(message, ftype)
-	return redirect(url_for(urlf), 302)
-
 @app.route('/')
 def index():
 	return subi('all')
@@ -76,7 +71,7 @@ def register():
 
 		if email != None and email != '':
 			if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-				flash('invalid email')
+				flash('invalid email', 'error')
 				return redirect(url_for('login'))
 
 		new_user = Iuser(username=username, email=email,
@@ -92,12 +87,12 @@ def register():
 def subi(subi, user_id=None, posts_only=False):
 	if subi != 'all':
 		if verify_subname(subi) == False:
-			flash('invalid subname')
+			flash('invalid subname', 'error')
 			return urlfor('index')
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 
 		if subname == None:
-			flash('no subname')
+			flash('no subname', 'error')
 			return urlfor('index')
 		posts = db.session.query(Post).filter_by(sub=subi).all()
 	elif user_id != None:
@@ -338,20 +333,41 @@ def create_post():
 		title = request.form.get('title')
 		url = request.form.get('url')
 		sub = request.form.get('sub')
-		if title == None or url == None or 'username' not in session:
-			flash('invalid post, no title/username/url', 'error')
+		self_post_text = request.form.get('self_post_text')
+
+		if self_post_text != None:
+			post_type = 'self_post'
+		elif url != None:
+			post_type = 'url'
+		else:
+			flash('invalid post type, not url or self', 'error')
 			return redirect(url_for('create_post'))
-		if len(title) > 400 or len(title) < 1 or len(sub) > 30 or len(sub) < 1 or len(url) > 2000 or len(url) < 1:
-			flash('invalid title/sub/url length', 'error')
+
+		if title == None or 'username' not in session or 'user_id' not in session:
+			flash('invalid post, no title/username/uid', 'error')
 			return redirect(url_for('create_post'))
-		new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'], author_id=session['user_id'], sub=sub)
+		if len(title) > 400 or len(title) < 1 or len(sub) > 30 or len(sub) < 1:
+			flash('invalid title/sub length', 'error', 'error')
+			return redirect(url_for('create_post'))
+
+		if post_type == 'url':
+			if len(url) > 2000 or len(url) < 1:
+				flash('invalid url length', 'error')
+				return redirect(url_for('create_post'))
+			new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type)
+		elif post_type == 'self_post':
+			if len(self_post_text) < 1 or len(self_post_text) > 20000:
+				flash('invalid self post length', 'error')
+				return redirect(url_for('create_post'))
+			new_post = Post(self_text=self_post_text, title=title, inurl_title=convert_ied(title), author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type)
+
 		db.session.add(new_post)
 		db.session.commit()
 		url = config.URL + '/r/' + sub
 		return redirect(url, 302)
 
 	if request.method == 'GET':
-		return render_template('create_sub.html')
+		return render_template('create_post.html')
 
 @app.route('/create_comment', methods=['POST'])
 def create_comment():

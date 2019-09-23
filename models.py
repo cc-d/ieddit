@@ -27,7 +27,9 @@ class Sub(db.Model):
 
 class Post(db.Model):
 	id = db.Column(db.Integer, primary_key=True)	
-	url = db.Column(db.String(2000), nullable=False)
+	url = db.Column(db.String(2000), nullable=True)
+	self_text = db.Column(db.String(20000), nullable=True)
+	post_type = db.Column(db.String(15), nullable=False)
 	title = db.Column(db.String(400), nullable=False)
 	ups = db.Column(db.Integer, default=0, nullable=False)
 	downs = db.Column(db.Integer, default=0, nullable=False)

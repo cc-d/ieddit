@@ -46,7 +46,7 @@ for i in range(10):
 db.session.commit()
 
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'),
- author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5))
+ author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='url')
 db.session.add(new_post)
 db.session.commit()
 
@@ -54,7 +54,11 @@ db.session.commit()
 for i in range(10):
 	title = fake.text()[:randint(10,200)]
 	db.session.add(Post(url='https://google.com/' + rstring(5, 10), title=title, inurl_title=convert_ied(title), 
-		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5)))
+		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='url'))
+for i in range(10):
+	title = fake.text()[:randint(10,200)]
+	db.session.add(Post(title=title, inurl_title=convert_ied(title), self_text=fake.text(2000)[:randint(500,2000)],
+		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='self_post'))
 
 db.session.commit()
 

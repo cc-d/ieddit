@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="post">
+	<p>create url post</p>
+	title
+	<input type="text" name="title"><br>
+	url
+	<input type="text" name="url"><br>
+	sub
+	<input type="text" name="sub"><br>
+	<input type="submit" value="create">
+</form>
+<br>
+<form method="post">
+	<p>create self post</p>
+	title
+	<input type="text" name="title"><br>
+	post_text
+	<textarea class="self-post-box" name="self_post_text"></textarea><br>
+	sub
+	<input type="text" name="sub"><br>
+	<input type="submit" value="create">
+</form>
+{% endblock %}

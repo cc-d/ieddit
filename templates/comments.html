@@ -5,7 +5,11 @@
 
 <ul class="list-unstyled">
 	<li class="media sub-post">
-		<img class="mr-3 comment-image" src="{{ url_for('static', filename='globe.png') }}">
+		{% if post.post_type == 'url' %}
+			<img class="mr-3 comment-image" src="{{ url_for('static', filename='globe.png') }}">
+		{% else %}
+			<img class="mr-3 comment-image" src="{{ url_for('static', filename='comment.png') }}">
+		{% endif %}
 		<div class="media-body">
 			<div class="row post-row row-space">
 				<div class="col inner-div">
@@ -15,8 +19,17 @@
 				</div>
 			</div>
     <div class="comment-post-title">
-    <a class="sub-post-title-link" href="{{ post.url }}">{{ post.title }}</a> 
-    <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
+    {% if post.post_type == 'url' %}
+    	<a class="sub-post-title-link" href="{{ post.url }}">{{ post.title }}</a> 
+    	<small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
+    {% else %}
+<div class="media">
+  <div class="media-body">
+    <h5 class="mt-0">{{ post.title }}</h5>
+    <selftext>{{ post.self_text }} </selftext>
+  </div>
+</div>
+    {% endif %}
     </div>
 			<div class="row post-row comment-bottom">
 <div class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
