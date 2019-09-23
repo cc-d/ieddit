@@ -14,6 +14,13 @@ app.config.from_object('config')
 
 db = SQLAlchemy(app)
 
+@app.after_request
+def apply_caching(response):
+    #response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    #response.headers["X-XSS-Protection"] = "1; mode=block"
+    #response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
+
 @app.route('/')
 def index():
 	return subi('all')
@@ -215,7 +222,7 @@ def create_sub():
 		if subname != None and verify_subname(subname) and 'username' in session:
 			if len(subname) > 30 or len(subname) < 1:
 				return 'invalid length'
-			new_sub = Sub(name=subname, created_by=session['username'])
+			new_sub = Sub(name=subname, created_by=session['username'], created_by_id=session['user_id'])
 			db.session.add(new_sub)
 			db.session.commit()
 			return redirect(config.URL + '/r/' + subname, 302)
@@ -366,7 +373,7 @@ def create_post():
 			if len(self_post_text) < 1 or len(self_post_text) > 20000:
 				flash('invalid self post length', 'error')
 				return redirect(url_for('create_post'))
-			new_post = Post(self_text=self_post_text, title=title, inurl_title=convert_ied(title), author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type)
+			new_post = Post(self_text=psuedo_markup(self_post_text), title=title, inurl_title=convert_ied(title), author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type)
 
 		db.session.add(new_post)
 		db.session.commit()
@@ -404,7 +411,7 @@ def create_comment():
 		level = (db.session.query(Comment).filter_by(id=parent_id).first().level) + 1
 	else:
 		level = None
-	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=text, author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level)
+	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=psuedo_markup(text), author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level)
 	db.session.add(new_comment)
 	db.session.commit()
 	return redirect(post_url, 302)

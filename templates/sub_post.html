@@ -16,10 +16,11 @@
     	</div>
     </div>
     <div class="sub-post-title">
-    <a class="sub-post-title-link" href="{{ post.url }}">{{ post.title }}</a> 
     {% if post.post_type == 'url' %}
+    <a class="sub-post-title-link" href="{{ post.url }}">{{ post.title }}</a> 
         <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
     {% else %}
+    <a class="sub-post-title-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.title }}</a> 
         <small><a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">(self.text)</a></small>
     {% endif %}
     </div>

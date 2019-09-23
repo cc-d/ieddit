@@ -1,6 +1,10 @@
 import urllib.parse
 import random
 import json
+import re
+import jinja2
+import html
+
 from datetime import datetime, timedelta
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
 
@@ -97,3 +101,27 @@ def comment_structure(comments, tree):
 		new[cobj] = comment_structure(comments, v)
 	return new
 
+# i hate math
+def split_link(sst, s):
+	new_s = []
+	sindex = s.find(sst[0])
+	new_s.append(s[:sindex-1])
+	new_s.append(s[sindex:sindex + len(sst[0])])
+	sindex = s.find(sst[1])  
+	new_s.append(s[(sindex):sindex+len(sst[1])].replace('"', '&quot;'))
+	new_s.append(s[sindex+len(sst[1])+1:])
+	return new_s
+
+def psuedo_markup(text):
+	mstring = ''
+	while True:
+		r = re.findall('\[(.*?)\]\((https?\:\/.*?)\)', text)
+		if len(r) < 1:
+			mstring += html.escape(text)
+			break
+		else:
+			ntext = split_link(r[0], text)
+			mstring += html.escape(ntext[0])
+			mstring += '<a href="' + ntext[2] + '">' + html.escape(ntext[1]) + '</a>'
+			text = ntext[3]
+	return mstring

@@ -64,7 +64,7 @@ for i in range(10):
 		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='url'))
 for i in range(10):
 	title = fake.text()[:randint(10,200)]
-	db.session.add(Post(title=title, inurl_title=convert_ied(title), self_text=fake.text(2000)[:randint(500,2000)],
+	db.session.add(Post(title=title, inurl_title=convert_ied(title), self_text=psuedo_markup(fake.text(2000))[:randint(500,2000)],
 		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='self_post'))
 
 db.session.commit()
@@ -87,7 +87,7 @@ for i in range(50):
 		rancom = choice(comments)
 		pid = rancom.id
 		level = rancom.level + 1
-	new_comment = Comment(post_id=1, sub_name='test', text=fake.text()[:randint(1,200)],  author='test', author_id=1,  parent_id=pid, level=level, ups=randint(1,20), downs=randint(1,5))
+	new_comment = Comment(post_id=1, sub_name='test', text=psuedo_markup(fake.text()[:randint(1,200)]),  author='test', author_id=1,  parent_id=pid, level=level, ups=randint(1,20), downs=randint(1,5))
 	db.session.add(new_comment)
 	db.session.commit()
 	comments.append(new_comment)
