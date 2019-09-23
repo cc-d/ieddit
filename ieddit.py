@@ -226,6 +226,11 @@ def create_sub():
 @app.route('/u/<username>/', methods=['GET'])
 def view_user(username):
 	vuser = db.session.query(Iuser).filter_by(username=username).first()
+	mod_of = db.session.query(Moderator).filter_by(user_id=vuser.id).all()
+	mods = {}
+	for s in mod_of:
+		mods[s.sub_name] = s.rank
+	vuser.mods = str(mods)
 	posts = subi('all', user_id=vuser.id, posts_only=True)
 	#sub, post_id, inurl_title, comment_id=False, sort_by=None, comments_only=False, user_id=None):
 	comments_with_posts = []
@@ -233,7 +238,7 @@ def view_user(username):
 	for c in comments:
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
 		comments_with_posts.append((c, cpost))
-	return render_template('user.html', username=vuser.username, posts=posts, url=config.URL, comments_with_posts=comments_with_posts)
+	return render_template('user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts)
 
 @app.route('/vote', methods=['GET', 'POST'])
 def vote():
@@ -382,10 +387,18 @@ def create_comment():
 	if parent_id == '':
 		parent_id = None
 
+	if post_url != None:
+		if post_url_parse(post_url) != post_url_parse(config.URL):
+			flash('bad origin url', 'error')
+			return redirect('/')
+
 	if 'username' not in session:
-		return 'not logged in'
-	elif text == None or post_id == None or post_url == None or sub_name == None:
-		return 'bad comment'
+		flash('not logged in', 'error')
+		return redirect(post_url)
+
+	elif text == None or post_id == None or sub_name == None:
+		flash('bad comment', 'error')
+		return redirect(post_url)
 
 	if parent_id != None:
 		level = (db.session.query(Comment).filter_by(id=parent_id).first().level) + 1

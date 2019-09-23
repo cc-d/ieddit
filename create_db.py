@@ -37,13 +37,20 @@ for i in range(20):
 	db.session.add(new_user)
 db.session.commit()
 
-new_sub = Sub(name='test', created_by='test')
+new_sub = Sub(name='test', created_by='test', created_by_id=1)
 db.session.add(new_sub)
+db.session.commit()
+new_mod = Moderator(username='test', user_id=1, sub_id=1, sub_name='test')
+db.session.add(new_mod)
 db.session.commit()
 
 for i in range(10):
-	db.session.add(Sub(name=rstring(3, 10), created_by='test'))
-db.session.commit()
+	new_sub = Sub(name=rstring(3, 10), created_by='test', created_by_id=1)
+	db.session.add(new_sub)
+	db.session.commit()
+	new_mod = Moderator(username=new_sub.created_by, user_id=new_sub.created_by_id, sub_id=new_sub.id, sub_name=new_sub.name)
+	db.session.add(new_mod)
+	db.session.commit()
 
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'),
  author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='url')

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-<h6> user profile for {{ username }} </h6>
+<h6> user profile for {{ vuser.username }} </h6>
+<h6> moderator of: {{ vuser.mods }}</h6>
 <h6> recent posts </h6>
 
 {% for post in posts %}

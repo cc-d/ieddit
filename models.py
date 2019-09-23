@@ -20,6 +20,7 @@ class Sub(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(30), unique=True, nullable=False)
 	created_by = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
+	created_by_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
 	created = db.Column(db.DateTime, default=datetime.now())
 
 	def __repr__(self):
@@ -68,4 +69,13 @@ class Vote(db.Model):
 	def __repr__(self):
 		return '<Vote %r>' % self.id
 
+class Moderator(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
+	user_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
+	sub_id = db.Column(db.Integer, db.ForeignKey('sub.id'), nullable=False)
+	sub_name = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
+	rank = db.Column(db.Integer, default=0)
 
+	def __repr__(self):
+		return '<Moderator %r>' % self.id
