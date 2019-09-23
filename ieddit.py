@@ -92,11 +92,13 @@ def register():
 def subi(subi, user_id=None, posts_only=False):
 	if subi != 'all':
 		if verify_subname(subi) == False:
-			return 'invalid subpath'
+			flash('invalid subname')
+			return urlfor('index')
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 
 		if subname == None:
-			return 'invalid sub'
+			flash('no subname')
+			return urlfor('index')
 		posts = db.session.query(Post).filter_by(sub=subi).all()
 	elif user_id != None:
 		posts = db.session.query(Post).filter_by(author_id=user_id).all()
