@@ -11,6 +11,6 @@ from functions import *
 
 bp = Blueprint('mod', 'mod', url_prefix='/mod')
 
-@bp.route('/')
+@bp.route('/hello/')
 def hello():
 	return 'todo'

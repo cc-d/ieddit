@@ -58,7 +58,6 @@ def login():
 			login_user = db.session.query(Iuser).filter_by(username=username).first()
 			hashed_pw = login_user.password
 			if check_password_hash(hashed_pw, password):
-				cache.clear()
 				[session.pop(key) for key in list(session.keys())]
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
@@ -102,22 +101,14 @@ def register():
 		db.session.commit()
 		session['username'] = new_user.username
 		session['user_id'] = new_user.id
-		cache.clear()
 		return redirect(config.URL, 302)
 
-# These two functions look the same, but they will work somewhat different in fucture
-@app.route('/r/<subi>/')
-@cache.memoize(50)
-def subi(subi, user_id=None, posts_only=False):
+@cache.memoize(600)
+def get_subi(subi, user_id=None, posts_only=False, *args, **kwargs):
 	if subi != 'all':
-		if verify_subname(subi) == False:
-			flash('invalid subname', 'error')
-			return urlfor('create')
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
-
 		if subname == None:
-			flash('no subname', 'error')
-			return urlfor('create')
+			return {'error':'no subname'}
 		posts = db.session.query(Post).filter_by(sub=subi).order_by((Post.ups - Post.downs).desc()).all()
 	elif user_id != None:
 		posts = db.session.query(Post).filter_by(author_id=user_id).order_by((Post.ups - Post.downs).desc()).all()
@@ -137,25 +128,24 @@ def subi(subi, user_id=None, posts_only=False):
 			if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub_name.like(post.sub)).exists()).scalar():
 				post.is_mod = True
 		p.append(post)
+	return p
+
+@app.route('/r/<subi>/')
+def subi(subi, user_id=None, posts_only=False, *args, **kwargs):
+	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only)
+	if type(subi) == dict:
+		if 'error' in sub_posts.keys():
+			if sub_posts.error == 'no subname':
+				flash('no subname', 'error')
+				return urlfor('/')
 
 	if posts_only:
-		return p
-	return render_template('sub.html', posts=p, url=config.URL)
+		return sub_posts
+	return render_template('sub.html', posts=sub_posts, url=config.URL)
 
-@app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/sort-<sort_by>')
-@app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/')
-@app.route('/r/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
-@app.route('/r/<sub>/<post_id>/<inurl_title>/')
-@cache.memoize(50)
-def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
-	if sub == None or post_id == None or inurl_title == None:
-		if not comments_only:
-			return 'badlink'
-	try:
-		int(comment_id)
-	except:
-		comment_id = False
 
+@cache.memoize(600)
+def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
 	if not comments_only:
 		post = db.session.query(Post).filter_by(id=post_id, sub=sub).first()
 		post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
@@ -190,8 +180,24 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 			c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
 			if c.has_voted != None:
 				c.has_voted = c.has_voted.vote
+	return comments, post, parent_comment
 
+@app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/sort-<sort_by>')
+@app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/')
+@app.route('/r/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
+@app.route('/r/<sub>/<post_id>/<inurl_title>/')
+def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
+	if sub == None or post_id == None or inurl_title == None:
+		if not comments_only:
+			return 'badlink'
+	try:
+		int(comment_id)
+	except:
+		comment_id = False
 
+	comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title,
+		comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
+	
 	if comments_only:
 		return comments
 
@@ -209,6 +215,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 # this sort of recursion KILLS performance, especially when combined with the already
 # terrible comment_structure function. only reason i'm doing it this way now is
 # performance doens't matter and i don't have redis/similar setup yet
+@cache.memoize(600)
 def list_of_child_comments(comment_id, sort_by=None):
 	comments = {}
 	current_comments = []
@@ -249,14 +256,13 @@ def create_sub():
 			new_mod = Moderator(username=new_sub.created_by, user_id=new_sub.created_by_id, sub_id=new_sub.id, sub_name=new_sub.name)
 			db.session.add(new_mod)
 			db.session.commit()
-			cache.clear()
+			cache.delete_memoized(get_subi)
 			return redirect(config.URL + '/r/' + subname, 302)
 		return 'invalid'
 	elif request.method == 'GET':
 		return render_template('create.html')
 
 @app.route('/u/<username>/', methods=['GET'])
-@cache.memoize(50)
 def view_user(username):
 	vuser = db.session.query(Iuser).filter_by(username=username).first()
 	mod_of = db.session.query(Moderator).filter_by(user_id=vuser.id).all()
@@ -314,7 +320,9 @@ def vote():
 		if vote == 0 and last_vote == None:
 			return 'never voted'
 
-		cache.clear()
+		cache.delete_memoized(get_subi)
+		cache.delete_memoized(c_get_comments)
+		cache.delete_memoized(list_of_child_comments)
 
 		if vote == 0:
 			if last_vote.post_id != None:
@@ -363,6 +371,8 @@ def vote():
 				vcom.ups -= 1
 
 		db.session.commit()	
+
+	
 		return str(vcom.ups - vcom.downs)
 	elif request.method == 'GET':
 		return 'get'
@@ -404,7 +414,8 @@ def create_post():
 		db.session.add(new_post)
 		db.session.commit()
 		url = config.URL + '/r/' + sub
-		cache.clear()
+		
+		cache.delete_memoized(get_subi)
 		return redirect(url, 302)
 
 	if request.method == 'GET':
@@ -441,11 +452,14 @@ def create_comment():
 	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=psuedo_markup(text), author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level)
 	db.session.add(new_comment)
 	db.session.commit()
-	cache.clear()
+
+	cache.delete_memoized(get_subi)
+	cache.delete_memoized(c_get_comments)
+	cache.delete_memoized(list_of_child_comments)
+
 	return redirect(post_url, 302)
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
 	[session.pop(key) for key in list(session.keys())]
-	cache.clear()
 	return redirect(url_for('index'), 302)
