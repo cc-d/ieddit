@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, request, redirect, flash, url_for
+from flask import Flask, render_template, session, request, redirect, flash, url_for, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, exists
 
@@ -13,6 +13,9 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 db = SQLAlchemy(app)
+
+from mod import bp
+app.register_blueprint(bp)
 
 @app.after_request
 def apply_caching(response):
@@ -95,17 +98,17 @@ def subi(subi, user_id=None, posts_only=False):
 	if subi != 'all':
 		if verify_subname(subi) == False:
 			flash('invalid subname', 'error')
-			return urlfor('index')
+			return urlfor('create')
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 
 		if subname == None:
 			flash('no subname', 'error')
-			return urlfor('index')
-		posts = db.session.query(Post).filter_by(sub=subi).all()
+			return urlfor('create')
+		posts = db.session.query(Post).filter_by(sub=subi).order_by((Post.ups - Post.downs).desc()).all()
 	elif user_id != None:
-		posts = db.session.query(Post).filter_by(author_id=user_id).all()
+		posts = db.session.query(Post).filter_by(author_id=user_id).order_by((Post.ups - Post.downs).desc()).all()
 	else:
-		posts = db.session.query(Post).all()
+		posts = db.session.query(Post).order_by((Post.ups - Post.downs).desc()).all()
 	p = []
 	for post in posts:
 		post.created_ago = time_ago(post.created)
@@ -113,10 +116,12 @@ def subi(subi, user_id=None, posts_only=False):
 			post.site_url = config.URL + '/r/' + subi + '/' + str(post.id) + '/' + post.inurl_title
 		post.remote_url_parsed = post_url_parse(post.url)
 		post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
-		if 'user_id' in session:
+		if 'user_id' in session and 'username' in session:
 			post.has_voted = db.session.query(Vote).filter_by(post_id=post.id, user_id=session['user_id']).first()
 			if post.has_voted != None:
 				post.has_voted = post.has_voted.vote
+			if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub_name.like(post.sub)).exists()).scalar():
+				post.is_mod = True
 		p.append(post)
 
 	if posts_only:
@@ -171,6 +176,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 			if c.has_voted != None:
 				c.has_voted = c.has_voted.vote
 
+
 	if comments_only:
 		return comments
 
@@ -224,6 +230,9 @@ def create_sub():
 				return 'invalid length'
 			new_sub = Sub(name=subname, created_by=session['username'], created_by_id=session['user_id'])
 			db.session.add(new_sub)
+			db.session.commit()
+			new_mod = Moderator(username=new_sub.created_by, user_id=new_sub.created_by_id, sub_id=new_sub.id, sub_name=new_sub.name)
+			db.session.add(new_mod)
 			db.session.commit()
 			return redirect(config.URL + '/r/' + subname, 302)
 		return 'invalid'
@@ -361,7 +370,7 @@ def create_post():
 			flash('invalid post, no title/username/uid', 'error')
 			return redirect(url_for('create_post'))
 		if len(title) > 400 or len(title) < 1 or len(sub) > 30 or len(sub) < 1:
-			flash('invalid title/sub length', 'error', 'error')
+			flash('invalid title/sub length', 'error')
 			return redirect(url_for('create_post'))
 
 		if post_type == 'url':

@@ -1,78 +1,98 @@
 .inner-div {
-	border:0px solid green;}
+	border:0px solid green;
+}
 
 .post-row {
-	margin-right: 0px;}
+	margin-right: 0px;
+}
 
 .post-row-top {
-	font-size: 0.8rem;}
+	font-size: 0.8rem;
+}
 
 .post-image {
 	margin-left: 0.5rem;
 	margin-right: 0.5rem!important;
 	height: 5rem;
-	width: 5rem;}
+	width: 5rem;
+}
 
 @media only screen and (max-width: 768px) {
 	.self-post-image {
-		display: none;}
+		display: none;
+	}
 }
 
 .generic-alert {
 	padding-left: 1rem;
-	padding-right: 1rem;}
+	padding-right: 1rem;
+}
 
 .comment-reply-box-wrapper {
 	min-width: 16rem;
-	min-height: 3rem;}
+	min-height: 3rem;
+}
 
 .comment-reply-box-expand {
-    width: -webkit-fill-available;}
+    width: -webkit-fill-available;
+}
 
 #comment-reply-box {
 	margin-left: 0.5rem!important;
     margin-right: 0.5rem!important;
     margin-top: 0.5rem!important;
-	max-width: 40rem;}
+	max-width: 40rem;
+}
 
 .comment-more {
-	margin-left: 1rem;}
+	margin-left: 1rem;
+}
 
 #top-comment-reply-box {
-	max-width: 40rem;}
+	max-width: 40rem;
+}
 
 .post-text-area-button {
-	margin-bottom: 1rem;}
+	margin-bottom: 1rem;
+}
 
 .comment-image {
 	margin-left: 0.5rem;
 	margin-right: 1.5rem!important;
 	height: 88px;
-	width: 88px;}
+	width: 88px;
+}
 
 .comment-text {
-	min-height: 50px;}
+	min-height: 50px;
+}
 
 .comment-text-area-button {
 	margin-left: 1rem;
-	margin-bottom: 1rem;}
+	margin-bottom: 1rem;
+}
 
 .sub-post-title-link {
 	font-size: 1rem;
-	color: #212529;}
+	color: #212529;
+}
 
 .sub-post-title {
-	min-height: 2rem;}
+	min-height: 2rem;
+}
 
 .top-of-post {
-	margin-left: 1rem;}
+	margin-left: 1rem;
+}
 
 .top-post-sublink {
-	color: #212529;}
+	color: #212529;
+}
 
 .comment-textarea-button {
 	float: right;
-	margin-bottom: 0.5rem;}
+	margin-bottom: 0.5rem;
+}
 
 .user-icon-link {
 	text-decoration: none;
@@ -83,21 +103,26 @@
     text-decoration: underline;
     text-decoration-line: underline;
     text-decoration-style: none;
-    text-decoration-color: none;}
+    text-decoration-color: none;
+}
 
 .user-icon-link a {
-	color: #212529;}
+	color: #212529;
+}
 
 #signup-form-container {
-	display: block;}
+	display: block;
+}
 
 #content {
 	margin-left: 0.5rem;
-	margin-right: 0.5rem;}
+	margin-right: 0.5rem;
+}
 
 #register-container {
 	width: 20rem;
-	display: inline-block;}
+	display: inline-block;
+}
 
 #login-container {
 	margin-right: 1rem;
@@ -107,65 +132,110 @@
 
 .comment-voting {
 	margin-left: 1em;
-	margin-right: 1em;}
+	margin-right: 1em;
+}
 
 .comment-post-voting{
 	margin-left: 1em;
-	margin-right: 1em;}
+	margin-right: 1em;
+}
 
 .comment-media-body {
 	min-height: 75px !important;
-	margin-left: 0.5em;}
+	margin-left: 0.5em;
+}
 
 #page {
-	max-width: 1024px;}
+	max-width: 1024px;
+}
 
 #comment-page-wrapper{
 	margin-left: 0.5em;
-	margin-right: 0.5em;}
+	margin-right: 0.5em;
+}
 
 .sub-post {
 	margin-top: 0.5em;
 	margin-right: 0.5em;
 	border: 0px solid red;
 	min-height: 92px;
-	word-break: break-word;}
+	word-break: break-word;
+}
 
 .comment-post-title {
-	min-height: 2.5rem;}
+	min-height: 2.5rem;
+}
 
 .sub-list {
 	margin-bottom: 1rem;
 	margin-top: 1rem;
-	border: 1px solid black;}
+	border: 1px solid black;
+}
 
 .sub-post-title-url {
 	font-size: 0.8rem;
-	color: #212529;}
+	color: #212529;
+}
 
 .created-ago {
-	margin-left: 1rem;}
+	margin-left: 1rem;
+}
 
 .sub-comment {
 	border: 1px solid gray;
-	word-break: break-word;}
+	word-break: break-word;
+}
 
 .comment-link {
-	color: #212529;}
+	color: #212529;
+}
 
 .fa-arrow-up {
-	color: #212529;}
+	color: #212529;
+}
 
 .fa-arrow-up a:hover {
-	pointer-events: none;}
+	pointer-events: none;
+}
 
 .fa-arrow-down {
-	color: #212529;}
+	color: #212529;
+}
 
 .fa-arrow-down a:hover {
-	pointer-events: none;}
+	pointer-events: none;
+}
 
 .comment-text-text {
 	white-space: pre-wrap;
 	max-height: 100rem;
-	overflow: hidden;}
+	overflow: hidden;
+}
+.mod-option-wrapper {
+	float: right;
+}
+.post-mod-option-form {
+	display: inline;
+	height: 1rem;
+}
+
+.mod-option-button {
+	background-color: #fff;
+	margin-bottom: 1px;
+	padding: 0px;
+	margin: 0px;
+	margin-bottom: 1px;
+	border: 0px ridge black;
+	text-decoration: underline;
+}
+
+.mod-option-button-i {
+	display: block;
+}
+
+.post-delete-button {
+
+}
+.post-sticky-button {
+
+}
