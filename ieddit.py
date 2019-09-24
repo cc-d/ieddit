@@ -11,14 +11,15 @@ import config
 from models import *
 from functions import *
 
+z = 'z'
+def a():
+	return 'a'
 app = Flask(__name__)
 app.config.from_object('config')
-cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
 
 db = SQLAlchemy(app)
 
-from mod import bp
-app.register_blueprint(bp)
 
 @app.before_request
 def before_request():
@@ -33,6 +34,14 @@ def apply_headers(response):
 		load_time = str(time.time() - g.start)
 		print('\n[Load: %s]' % load_time)
 	return response
+
+@cache.memoize(600)
+def get_sub_mods(sub):
+	mod_subs = db.session.query(Moderator).filter_by(sub_name=sub).all()
+	admins = db.session.query(Iuser).filter_by(admin=True).all()
+	for a in admins:
+		mod_subs.append(a)
+	return [m.username for m in mod_subs]
 
 @app.route('/')
 def index():
@@ -62,9 +71,7 @@ def login():
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
 				session['admin'] = login_user.admin
-				mod_subs = db.session.query(Moderator).filter_by(username=login_user.username).all()
-				session['mods_over'] = [m.sub_name for m in mod_subs]
-				print(str(session['mods_over']) + str(mod_subs))
+
 				return redirect(url_for('index'), 302)
 
 		flash('Username or Password incorrect.', 'error')
@@ -107,11 +114,11 @@ def register():
 		return redirect(config.URL, 302)
 
 @cache.memoize(600)
-def get_subi(subi, user_id=None, posts_only=False, *args, **kwargs):
+def get_subi(subi, user_id=None, posts_only=False):
 	if subi != 'all':
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 		if subname == None:
-			return {'error':'no subname'}
+			return {'error':'sub does not exist'}
 		posts = db.session.query(Post).filter_by(sub=subi).order_by((Post.ups - Post.downs).desc()).all()
 	elif user_id != None:
 		posts = db.session.query(Post).filter_by(author_id=user_id).order_by((Post.ups - Post.downs).desc()).all()
@@ -119,6 +126,7 @@ def get_subi(subi, user_id=None, posts_only=False, *args, **kwargs):
 		posts = db.session.query(Post).order_by((Post.ups - Post.downs).desc()).all()
 	p = []
 	for post in posts:
+		post.mods = get_sub_mods(post.sub)
 		post.created_ago = time_ago(post.created)
 		if subi != 'all':
 			post.site_url = config.URL + '/r/' + subi + '/' + str(post.id) + '/' + post.inurl_title
@@ -134,16 +142,17 @@ def get_subi(subi, user_id=None, posts_only=False, *args, **kwargs):
 	return p
 
 @app.route('/r/<subi>/')
-def subi(subi, user_id=None, posts_only=False, *args, **kwargs):
+def subi(subi, user_id=None, posts_only=False):
 	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only)
-	if type(subi) == dict:
+	if type(sub_posts) == dict:
 		if 'error' in sub_posts.keys():
-			if sub_posts.error == 'no subname':
-				flash('no subname', 'error')
-				return urlfor('/')
+			flash(sub_posts['error'], 'error')
+			return redirect(request.referrer or '/')
+			#return 403
 
 	if posts_only:
 		return sub_posts
+
 	return render_template('sub.html', posts=sub_posts, url=config.URL)
 
 
@@ -154,6 +163,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 	if not comments_only:
 		if post_id != None:
 			post = db.session.query(Post).filter_by(id=post_id, sub=sub).first()
+			post.mods = get_sub_mods(post.sub)
 			post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
 			post.created_ago = time_ago(post.created)
 			post.remote_url_parsed = post_url_parse(post.url)
@@ -183,6 +193,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
 
 	for c in comments:
+		c.mods = get_sub_mods(c.sub_name)
 		c.created_ago = time_ago(c.created)
 		if 'user_id' in session:
 			c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
@@ -211,7 +222,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 
 	comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
 	
-	if post != None:
+	if post != None and 'username' in session:
 		if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub_name.like(post.sub)).exists()).scalar():
 			post.is_mod = True
 
@@ -286,12 +297,15 @@ def view_user(username):
 	mods = {}
 	for s in mod_of:
 		mods[s.sub_name] = s.rank
-	vuser.mods = str(mods)
+	vuser.mods = mods
 	posts = subi('all', user_id=vuser.id, posts_only=True)
+	for p in posts:
+		p.mods = get_sub_mods(p.sub)
 	#sub, post_id, inurl_title, comment_id=False, sort_by=None, comments_only=False, user_id=None):
 	comments_with_posts = []
 	comments = get_comments(comments_only=True, user_id=vuser.id)
 	for c in comments:
+		c.mods = get_sub_mods(c.sub_name)
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
 		comments_with_posts.append((c, cpost))
 	return render_template('user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts)
@@ -452,7 +466,7 @@ def create_comment():
 	if post_url != None:
 		if post_url_parse(post_url) != post_url_parse(config.URL):
 			flash('bad origin url', 'error')
-			return redirect('/')
+			return redirect(request.referrer or '/')
 
 	if 'username' not in session:
 		flash('not logged in', 'error')
@@ -480,3 +494,6 @@ def create_comment():
 def logout():
 	[session.pop(key) for key in list(session.keys())]
 	return redirect(url_for('index'), 302)
+
+from mod import bp
+app.register_blueprint(bp)

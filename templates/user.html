@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
+{% if vuser.admin %}
+<h6 style="color: red;"> admin </h6>
+{% endif %}
 <h6> user profile for {{ vuser.username }} </h6>
-<h6> moderator of: {{ vuser.mods }}</h6>
+{% if vuser.mods|length > 1 %}
+<h6> moderator of: {{ vuser.mods|string }} </h6>
+{% endif %}
 <h6> recent posts </h6>
 
 {% for post in posts %}
@@ -52,7 +57,7 @@
 				{% endif %}
 			</div>
 		</div>
-            {% if comment.sub_name in session['mods_over'] %}
+            {% if session['username'] in comment.mods %}
             <div class='mod-option-wrapper'><small>
                     <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>

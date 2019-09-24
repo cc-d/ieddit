@@ -6,7 +6,6 @@ import json
 import re
 import jinja2
 import html
-from flask_caching import Cache
 import config
 
 from datetime import datetime, timedelta

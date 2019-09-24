@@ -49,19 +49,19 @@
 				<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
 			</div>
 			</div>
-            {% if post.sub in session['mods_over'] %}
+            {% if session['username'] in post.mods %}
             <div class='mod-option-wrapper'><small>
-                    <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                    <form action='{{ config.URL }}/mod/sticky/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
                     </form>|
-                    <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>lock</button>
+                    <form action='{{ config.URL }}/mod/lock/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-lock-button'>lock</button>
                     </form>|
-                    <form action='{{ config.URL }}/mod/delete/' method='POST' class='post-mod-option-form post-mod-delete-form'>
+                    <form action='{{ config.URL }}/mod/delete/post/' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|
                     <form action='{{ config.URL }}/mod/ban/' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                        <button type='submit' name='post_id' value='{{ post.author }}' class='mod-option-button post-delete-button'>ban</button>
+                        <button type='submit' name='post_id' value='{{ post.author }}' class='mod-option-button post-ban-button'>ban</button>
                     </form>
             </small></div>
             {% endif %}
@@ -179,7 +179,7 @@
 				{% endif %}
 			</div>
 			</div>
-            {% if comment.sub_name in session['mods_over'] %}
+            {% if session['username'] in post.mods %}
             <div class='mod-option-wrapper'><small>
                     <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
@@ -187,7 +187,7 @@
                     <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>lock</button>
                     </form>|
-                    <form action='{{ config.URL }}/mod/delete/' method='POST' class='post-mod-option-form post-mod-delete-form'>
+                    <form action='{{ config.URL }}/mod/delete/post/' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|
                     <form action='{{ config.URL }}/mod/ban/' method='POST' class='post-mod-option-form post-mod-delete-form'>

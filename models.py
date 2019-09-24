@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
+# iuser instead of user to avoid conflicting namespace with postgresql
 class Iuser(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(20), unique=True, nullable=False)
