@@ -52,6 +52,22 @@
 				{% endif %}
 			</div>
 		</div>
+            {% if comment.sub_name in session['mods_over'] %}
+            <div class='mod-option-wrapper'><small>
+                    <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
+                    </form>|
+                    <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>lock</button>
+                    </form>|
+                    <form action='{{ config.URL }}/mod/delete/' method='POST' class='post-mod-option-form post-mod-delete-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
+                    </form>|
+                    <form action='{{ config.URL }}/mod/ban/' method='POST' class='post-mod-option-form post-mod-delete-form'>
+                        <button type='submit' name='post_id' value='{{ post.author }}' class='mod-option-button post-delete-button'>ban</button>
+                    </form>
+            </small></div>
+            {% endif %}
 	</div>
 </li>
 {% else %}

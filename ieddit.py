@@ -62,6 +62,9 @@ def login():
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
 				session['admin'] = login_user.admin
+				mod_subs = db.session.query(Moderator).filter_by(username=login_user.username).all()
+				session['mods_over'] = [m.sub_name for m in mod_subs]
+				print(str(session['mods_over']) + str(mod_subs))
 				return redirect(url_for('index'), 302)
 
 		flash('Username or Password incorrect.', 'error')
@@ -146,17 +149,21 @@ def subi(subi, user_id=None, posts_only=False, *args, **kwargs):
 
 @cache.memoize(600)
 def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
+	post = None
+	parent_comment = None
 	if not comments_only:
-		post = db.session.query(Post).filter_by(id=post_id, sub=sub).first()
-		post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
-		post.created_ago = time_ago(post.created)
-		post.remote_url_parsed = post_url_parse(post.url)
-	
+		if post_id != None:
+			post = db.session.query(Post).filter_by(id=post_id, sub=sub).first()
+			post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
+			post.created_ago = time_ago(post.created)
+			post.remote_url_parsed = post_url_parse(post.url)
+		else:
+			post = None
 		if 'user_id' in session:
 			post.has_voted = db.session.query(Vote).filter_by(post_id=post.id, user_id=session['user_id']).first()
 			if post.has_voted != None:
-				post.has_voted = post.has_voted.vote
-	
+				post.has_voted = post.has_voted.vote	
+
 		if not comment_id:
 			if sort_by == 'new':
 				comments = db.session.query(Comment).filter(Comment.post_id == post_id, Comment.level < 7)\
@@ -174,12 +181,19 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 	else:
 		comments = db.session.query(Comment).filter(Comment.author_id == user_id).order_by(Comment.created.desc()).all()
 
+
 	for c in comments:
 		c.created_ago = time_ago(c.created)
 		if 'user_id' in session:
 			c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
 			if c.has_voted != None:
 				c.has_voted = c.has_voted.vote
+				if Comment.sub_name:
+					if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub_name.like(Comment.sub_name)).exists()).scalar():
+						Comment.is_mod = True
+					else:
+						Comment.is_mod = False
+
 	return comments, post, parent_comment
 
 @app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/sort-<sort_by>')
@@ -195,9 +209,12 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 	except:
 		comment_id = False
 
-	comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title,
-		comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
+	comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
 	
+	if post != None:
+		if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub_name.like(post.sub)).exists()).scalar():
+			post.is_mod = True
+
 	if comments_only:
 		return comments
 
@@ -414,7 +431,7 @@ def create_post():
 		db.session.add(new_post)
 		db.session.commit()
 		url = config.URL + '/r/' + sub
-		
+
 		cache.delete_memoized(get_subi)
 		return redirect(url, 302)
 
