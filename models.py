@@ -13,8 +13,9 @@ class Iuser(db.Model):
 	username = db.Column(db.String(20), unique=True, nullable=False)
 	email = db.Column(db.String(75), nullable=True)
 	password = db.Column(db.String(255), nullable=False)
-	created = db.Column(db.DateTime, default=datetime.now())
-	admin = db.Column(db.Boolean, default=False, unique=False)
+	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+	admin = db.Column(db.Boolean, default=False, nullable=False)
+	banned = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Iuser %r>' % self.username
@@ -24,7 +25,7 @@ class Sub(db.Model):
 	name = db.Column(db.String(30), unique=True, nullable=False)
 	created_by = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
 	created_by_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
-	created = db.Column(db.DateTime, default=datetime.now())
+	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
 	def __repr__(self):
 		return '<Sub %r>' % self.name
@@ -41,7 +42,9 @@ class Post(db.Model):
 	author = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
 	author_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
 	sub = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
-	created = db.Column(db.DateTime, default=datetime.now())
+	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+	deleted = db.Column(db.Boolean, default=False, unique=False)
+	permalink = db.Column(db.String(2000), nullable=True)
 
 	def __repr__(self):
 		return '<Post %r>' % self.id
@@ -55,9 +58,11 @@ class Comment(db.Model):
 	author = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
 	author_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
 	parent_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
-	level = db.Column(db.Integer, default=0)
-	created = db.Column(db.DateTime, default=datetime.now())
+	level = db.Column(db.Integer, default=0, nullable=False)
+	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 	sub_name = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
+	deleted = db.Column(db.Boolean, default=False, unique=False)
+	permalink = db.Column(db.String(2000), nullable=True)
 
 	def __repr__(self):
 		return '<Comment %r>' % self.id
@@ -78,7 +83,17 @@ class Moderator(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
 	sub_id = db.Column(db.Integer, db.ForeignKey('sub.id'), nullable=False)
 	sub_name = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
-	rank = db.Column(db.Integer, default=0)
+	rank = db.Column(db.Integer, default=0, nullable=False)
 
 	def __repr__(self):
 		return '<Moderator %r>' % self.id
+
+class Mod_action(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	username = db.Column(db.String(20), unique=False, nullable=False)
+	action = db.Column(db.String(20), unique=False, nullable=False)
+	url = db.Column(db.String(2000), unique=False, nullable=False)
+
+	def __repr__(self):
+		return '<Mod_action %r>' % self.id
+

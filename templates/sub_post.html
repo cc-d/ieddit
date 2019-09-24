@@ -1,4 +1,8 @@
+{% if post.deleted != False %}
+<ul class="list-unstyled sub-list" style="display: none;">
+{% else %}
 <ul class="list-unstyled sub-list">
+{% endif %}
   <li class="media sub-post">
     <div class="post-image-container">
         {% if post.post_type == 'url' %}

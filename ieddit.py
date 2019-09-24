@@ -11,9 +11,6 @@ import config
 from models import *
 from functions import *
 
-z = 'z'
-def a():
-	return 'a'
 app = Flask(__name__)
 app.config.from_object('config')
 cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
@@ -114,7 +111,7 @@ def register():
 		return redirect(config.URL, 302)
 
 @cache.memoize(600)
-def get_subi(subi, user_id=None, posts_only=False):
+def get_subi(subi, user_id=None, posts_only=False, deleted=False):
 	if subi != 'all':
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 		if subname == None:
@@ -143,7 +140,7 @@ def get_subi(subi, user_id=None, posts_only=False):
 
 @app.route('/r/<subi>/')
 def subi(subi, user_id=None, posts_only=False):
-	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only)
+	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only, deleted=False)
 	if type(sub_posts) == dict:
 		if 'error' in sub_posts.keys():
 			flash(sub_posts['error'], 'error')
@@ -176,10 +173,10 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
 		if not comment_id:
 			if sort_by == 'new':
-				comments = db.session.query(Comment).filter(Comment.post_id == post_id, Comment.level < 7)\
+				comments = db.session.query(Comment).filter(Comment.post_id == post_id, Comment.level < 7, Comment.deleted == False)\
 				.order_by((Comment.created).asc()).all()
 			else:
-				comments = db.session.query(Comment).filter(Comment.post_id == post_id, Comment.level < 7)\
+				comments = db.session.query(Comment).filter(Comment.post_id == post_id, Comment.level < 7, Comment.deleted == False)\
 				.order_by((Comment.ups - Comment.downs).desc()).all()
 	
 			parent_comment = None
@@ -248,10 +245,10 @@ def list_of_child_comments(comment_id, sort_by=None):
 	comments = {}
 	current_comments = []
 	if sort_by == 'new':
-		start = db.session.query(Comment).filter(Comment.parent_id == comment_id)\
+		start = db.session.query(Comment).filter(Comment.parent_id == comment_id, Comment.deleted == False)\
 					.order_by((Comment.created).asc()).all()
 	else:
-		start = db.session.query(Comment).filter(Comment.parent_id == comment_id)\
+		start = db.session.query(Comment).filter(Comment.parent_id == comment_id, Comment.deleted == False)\
 					.order_by((Comment.ups - Comment.downs).desc()).all()
 
 	for c in start:
@@ -444,6 +441,8 @@ def create_post():
 
 		db.session.add(new_post)
 		db.session.commit()
+		new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
+		db.session.commit()
 		url = config.URL + '/r/' + sub
 
 		cache.delete_memoized(get_subi)
@@ -482,6 +481,10 @@ def create_comment():
 		level = None
 	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=psuedo_markup(text), author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level)
 	db.session.add(new_comment)
+	db.session.commit()
+
+	post = db.session.query(Post).filter_by(id=post_id).first()
+	new_comment.permalink = post.permalink + '/' +  str(new_comment.id)
 	db.session.commit()
 
 	cache.delete_memoized(get_subi)
