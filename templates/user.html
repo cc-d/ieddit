@@ -5,7 +5,10 @@
 {% endif %}
 <h6> user profile for {{ vuser.username }} </h6>
 {% if vuser.mods|length > 1 %}
-<h6> moderator of: {{ vuser.mods|string }} </h6>
+<h6> moderator of: 
+{% for sub, rank in vuser.mods.items() %}
+<a href="{{ config.URL }}/r/{{ sub }}/">/r/{{ sub }}</a> {% if loop.last == False %}-{% endif %} 
+{% endfor %}</h6>
 {% endif %}
 <h6> recent posts </h6>
 
@@ -88,7 +91,7 @@
 			</div>
 		</div>
             {% if session['username'] in comment.mods %}
-            <div class='mod-option-wrapper'><small>
+            <div class='mod-option-wrapper-comments'><small>
                     <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
                     </form>|

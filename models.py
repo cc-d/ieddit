@@ -16,7 +16,7 @@ class Iuser(db.Model):
 	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 	admin = db.Column(db.Boolean, default=False, nullable=False)
 	banned = db.Column(db.Boolean, default=False, nullable=False)
-	anonymous = db.Column(db.Boolean, default=False, nullable=False)
+	anonymous = db.Column(db.Boolean, default=True, nullable=False)
 
 	def __repr__(self):
 		return '<Iuser %r>' % self.username

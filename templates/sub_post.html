@@ -5,7 +5,14 @@
 {% set pauther = post.author %}
 {% set pauther_type = post.author_type %}
 {% endif %}
+
+{% if loop is defined %}
+{% if loop.last %}
+<ul class="list-unstyled sub-list" style="margin-bottom: 0px;">
+{% else %}
 <ul class="list-unstyled sub-list">
+{% endif %}
+{% endif %}
   <li class="media sub-post">
     <div class="post-image-container">
         {% if post.post_type == 'url' %}
@@ -74,3 +81,11 @@
     </div>
   </li>
 </ul>
+{% if loop is defined %}
+{% if loop.last %}
+{% if session.prev_off_url %}
+<h6><a href="{{ session.prev_off_url }}" class="sub-posts-prev"><< prev</a><h6>
+{% endif %}
+<h6><a href="{{ session.off_url }}" class="sub-posts-next">next >></a><h6>
+{% endif %}
+{% endif %}

@@ -71,7 +71,7 @@ new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) 
 db.session.commit()
 fp = new_post
 
-for i in range(10):
+for i in range(50):
 	title = fake.text()[:randint(10,200)]
 	new_post = Post(url='https://google.com/' + rstring(5, 10), title=title, inurl_title=convert_ied(title), 
 		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='url', author_type='mod')
@@ -79,7 +79,7 @@ for i in range(10):
 	db.session.commit()
 	new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 	db.session.commit()
-for i in range(10):
+for i in range(50):
 	title = fake.text()[:randint(10,200)]
 	new_post = Post(title=title, inurl_title=convert_ied(title), self_text=psuedo_markup(fake.text(2000))[:randint(500,2000)],
 		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='self_post', author_type='mod')

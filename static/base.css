@@ -255,6 +255,12 @@ selftext {
 .mod-option-wrapper {
 	float: right;
 }
+
+.mod-option-wrapper-comments {
+	float: right;
+	margin-right: 2px;
+}
+
 .post-mod-option-form {
 	display: inline;
 	height: 1rem;
@@ -292,4 +298,9 @@ selftext {
 .form-input-text {
     max-width: 35rem;
     min-height: 5rem;
+}
+
+.sub-posts-next {
+	margin-bottom: 3rem;
+	float: right;
 }

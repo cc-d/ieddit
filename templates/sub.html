@@ -12,6 +12,8 @@
 
 {% for post in posts %}
     {% include 'sub_post.html' %}
+    {% if loop.last %}
+    {% endif %}
 {% else %}
 	<p> no posts </p>
 {% endfor %}

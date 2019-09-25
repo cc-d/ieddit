@@ -71,10 +71,6 @@ def is_admin(username):
 def set_rate_limit():
 	if 'username' in session:
 		session['rate_limit'] = int(time.time()) + (5 * 60)
-
-@app.route('/')
-def index():
-	return subi('all')
 	
 @app.route('/login/',  methods=['GET', 'POST'])
 def login():
@@ -100,6 +96,7 @@ def login():
 			login_user = db.session.query(Iuser).filter_by(username=username).first()
 			hashed_pw = login_user.password
 			if check_password_hash(hashed_pw, password):
+				logout()
 				[session.pop(key) for key in list(session.keys())]
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
@@ -161,22 +158,32 @@ def register():
 			password=generate_password_hash(password))
 		db.session.add(new_user)
 		db.session.commit()
+		logout()
 		session['username'] = new_user.username
 		session['user_id'] = new_user.id
 		set_rate_limit()
 		return redirect(config.URL, 302)
 
+@app.route('/')
+def index():
+	return subi('all')
+
 @cache.memoize(600)
-def get_subi(subi, user_id=None, posts_only=False, deleted=False):
+def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, sort_by=False):
 	if subi != 'all':
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 		if subname == None:
 			return {'error':'sub does not exist'}
-		posts = db.session.query(Post).filter_by(sub=subi).order_by((Post.ups - Post.downs).desc()).all()
+		posts = db.session.query(Post).filter_by(sub=subi).order_by((Post.ups - Post.downs).desc())
 	elif user_id != None:
-		posts = db.session.query(Post).filter_by(author_id=user_id).order_by((Post.ups - Post.downs).desc()).all()
+		posts = db.session.query(Post).filter_by(author_id=user_id).order_by((Post.ups - Post.downs).desc())
 	else:
-		posts = db.session.query(Post).order_by((Post.ups - Post.downs).desc()).all()
+		if sort_by == 'new':
+			posts = db.session.query(Post).order_by((Post.created).desc())
+		else:
+			posts = db.session.query(Post).order_by((Post.ups - Post.downs).desc())
+		
+	posts = posts.limit(limit).offset(offset)
 	p = []
 	for post in posts:
 		post.mods = get_sub_mods(post.sub)
@@ -195,19 +202,44 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False):
 	return p
 
 @app.route('/r/<subi>/')
-def subi(subi, user_id=None, posts_only=False):
-	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only, deleted=False)
+def subi(subi, user_id=None, posts_only=False, offset=0, limit=15):
+	offset = request.args.get('offset')
+	sort_date = request.args.get('sort_date')
+	sort_by = request.args.get('sort_by')
+	flash(request.environ)
+	if request.environ['QUERY_STRING'] == '':
+		session['off_url'] = request.url + '?offset=15'
+		session['prev_off_url'] = request.url
+		offset = 15
+	else:
+		if offset == None:
+			session['off_url'] = request.url + '&offset=15'
+			session['prev_off_url'] = request.url
+			offset = 15
+		else:
+			if (int(offset) - 15) > 0:
+				session['prev_off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) -15))
+			else:
+				session['prev_off_url'] = re.sub('[&\?]?offset=(\d+)', '', request.url)
+			session['off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) +15))
+	if request.url.find('offset=') == -1:
+		session['prev_off_url'] = False
+
+
+	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only, deleted=False, offset=offset, limit=15, sort_by=sort_by)
 	if type(sub_posts) == dict:
 		if 'error' in sub_posts.keys():
 			flash(sub_posts['error'], 'danger')
-			return redirect(request.referrer or '/')
-			#return 403
+			if 'last_url' in session:
+				return redirect(session['last_url'] or "/")
+			return redirect('/')
 
 	if posts_only:
 		return sub_posts
 
 	return render_template('sub.html', posts=sub_posts, url=config.URL)
 
+	#return str(hasattr(request.environ, 'QUERY_STRING'))#str(vars(request))
 
 @cache.memoize(600)
 def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
@@ -367,7 +399,7 @@ def view_user(username):
 		p.mods = get_sub_mods(p.sub)
 	#sub, post_id, inurl_title, comment_id=False, sort_by=None, comments_only=False, user_id=None):
 	comments_with_posts = []
-	comments = get_comments(comments_only=True, user_id=vuser.id)
+	comments = get_comments(comments_only=True, user_id=vuser.id)[:15]
 	for c in comments:
 		c.mods = get_sub_mods(c.sub_name)
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
@@ -535,7 +567,9 @@ def create_post(postsub=None):
 		db.session.commit()
 		url = config.URL + '/r/' + sub
 		set_rate_limit()
+
 		cache.delete_memoized(get_subi)
+
 		return redirect(url, 302)
 
 	if request.method == 'GET':
