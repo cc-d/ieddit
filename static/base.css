@@ -288,3 +288,8 @@ selftext {
 .alert.error {
   background-color: red;
 }
+
+.form-input-text {
+    max-width: 35rem;
+    min-height: 5rem;
+}

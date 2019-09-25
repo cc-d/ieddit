@@ -1,8 +1,11 @@
-from flask import Flask, render_template, session, request, redirect, flash, url_for, Blueprint, g
+from flask import Flask, render_template, request, redirect, flash, url_for, Blueprint, g
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, exists
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_caching import Cache
+from flask_session import Session
+from flask_session_captcha import FlaskSessionCaptcha
+from datetime import timedelta
 
 import time
 import re
@@ -17,10 +20,13 @@ cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
 
 db = SQLAlchemy(app)
 
+Session(app)
+captcha = FlaskSessionCaptcha(app)
 
 @app.before_request
 def before_request():
-    g.start = time.time()
+	g.start = time.time()
+	session.permanent = True
 
 @app.after_request
 def apply_headers(response):
@@ -72,6 +78,10 @@ def login():
 	if request.method == 'POST':
 		username = request.form.get('username')
 		password = request.form.get('password')
+		if config.CAPTCHA_ENABLE:
+			if captcha.validate() == False:
+				flash('invalid captcha', 'danger')
+				return redirect(url_for('login'))
 		if username == None or password == None:
 			flash('Username or Password missing.', 'danger')
 			return redirect(url_for('login'), 302)
@@ -107,6 +117,10 @@ def logout():
 @app.route('/register', methods=['POST'])
 def register():
 	if request.method == 'POST':
+		if config.CAPTCHA_ENABLE:
+			if captcha.validate() == False:
+				flash('invalid captcha', 'danger')
+				return redirect(url_for('login'))
 		username = request.form.get('username')
 		password = request.form.get('password')
 		email = request.form.get('email')
@@ -301,6 +315,10 @@ def list_of_child_comments(comment_id, sort_by=None):
 def create_sub():
 	if request.method == 'POST':
 		subname = request.form.get('subname')
+		if config.CAPTCHA_ENABLE:
+			if captcha.validate() == False:
+				flash('invalid captcha', 'danger')
+				return redirect(url_for('create_sub'))
 		if subname != None and verify_subname(subname) and 'username' in session:
 			if len(subname) > 30 or len(subname) < 1:
 				return 'invalid length'
@@ -442,14 +460,18 @@ def create_post(postsub=None):
 		sub = request.form.get('sub')
 		self_post_text = request.form.get('self_post_text')
 		anonymous = request.form.get('anonymous')
+		if config.CAPTCHA_ENABLE:
+			if captcha.validate() == False:
+				flash('invalid captcha', 'danger')
+				return redirect(url_for('create_post'))
 		if anonymous != None:
 			anonymous = True
 		else:
 			anonymous = False
 
-		if self_post_text != None:
+		if len(self_post_text) > 0:
 			post_type = 'self_post'
-		elif url != None:
+		elif len(url) > 0:
 			post_type = 'url'
 		else:
 			flash('invalid post type, not url or self', 'danger')
@@ -560,7 +582,7 @@ def send_message(title, text, sent_to, sender=None):
 def has_messages(username):
 	if 'username' in session:
 		if 'has_messages' not in session:
-			messages = db.session.query(Message).filter_by(sent_to=username, read=False).all()
+			messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
 		else:
 			messages = None
 		if messages != None:

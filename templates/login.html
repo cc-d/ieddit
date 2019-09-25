@@ -33,28 +33,14 @@
 	<div class="form-group">
 	<label for="validationCustom03">Password</label>
 	<input name='password' type="password" class="form-control" id="validationCustom03" placeholder="Password">
+	{% if config.CAPTCHA_ENABLE %}
+	<br>
+	{{ captcha() }}
+	<input type="text" id='captcha' name="captcha">
+	{% endif %}
 	</div>
 	<button type="submit" class="btn btn-primary btn-dark">Create</button>
 </form>
 </div>
 </div>
-<!--
-<form method="post">
-	<p>username</p>
-	<input type="text" name="username">
-	<p>password</p>
-	<input type="text" name="password">
-	<input type="submit" value="Login">
-</form>
-<h1>register</h1>
-<form method="post" action="/register">
-	<p>username</p>
-	<input type="text" name="username">
-	<p>email</p>
-	<input type="text" name="email">
-	<p>password</p>
-	<input type="text" name="password">
-	<input type="submit" value="Register">
-</form>
--->
 {% endblock %}
