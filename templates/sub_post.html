@@ -1,8 +1,11 @@
-{% if post.deleted != False %}
-<ul class="list-unstyled sub-list" style="display: none;">
+{% if post.anonymous %}
+{% set pauther = 'Anonymous' %}
+{% set pauther_type = 'user' %}
 {% else %}
-<ul class="list-unstyled sub-list">
+{% set pauther = post.author %}
+{% set pauther_type = post_author_type %}
 {% endif %}
+<ul class="list-unstyled sub-list">
   <li class="media sub-post">
     <div class="post-image-container">
         {% if post.post_type == 'url' %}
@@ -14,7 +17,15 @@
     <div class="media-body">
     <div class="row post-row">
     	<div class="col inner-div">
-    		<small><i class="fa fa-user"></i> <a class="user-icon-link" href="{{ config.URL }}/u/{{ post['author'] }}">{{ post.author }}</a></small>
+            <small>
+            {% if pauther_type == 'admin' %}
+            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[a]{{ pauther }}</a>
+            {% elif pauther_type == 'mod' %}
+           <i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[m]{{ pauther }}</a>
+            {% else %}
+    		<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">{{ pauther }}</a>
+            {% endif %}
+            </small>
             <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/r/{{ post.sub }}">/r/{{ post.sub }}</a></small>
             <small class="created-ago">{{ post.created_ago }}</small>
     	</div>
@@ -56,7 +67,7 @@
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|
                     <form action='{{ config.URL }}/mod/ban/' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                        <button type='submit' name='post_id' value='{{ post.author }}' class='mod-option-button post-delete-button'>ban</button>
+                        <button type='submit' name='post_id' value='{{ pauther }}' class='mod-option-button post-delete-button'>ban</button>
                     </form>
             </small></div>
             {% endif %}

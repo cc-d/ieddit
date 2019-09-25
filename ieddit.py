@@ -40,6 +40,25 @@ def get_sub_mods(sub):
 		mod_subs.append(a)
 	return [m.username for m in mod_subs]
 
+def is_mod(obj, username):
+	if hasattr(obj, 'inurl_title'):
+		post = obj
+		if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(username),
+			Moderator.sub_name.like(obj.sub)).exists()).scalar():
+			return True
+	elif hasattr(obj, 'parent_id'):
+		if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
+			Moderator.sub_name.like(obj.sub_name)).exists()).scalar():
+			return True
+	return False
+
+def is_admin(username):
+	#if db.session.query(db.session.query(Iuser).filter_by(admin=True, username=username).exists()).scalar():
+	if 'admin' in session:
+		if session['admin'] == True:
+			return True
+	return False
+
 @app.route('/')
 def index():
 	return subi('all')
@@ -68,6 +87,9 @@ def login():
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
 				session['admin'] = login_user.admin
+				if hasattr(login_user, 'anonymous'):
+					if login_user.anonymous:
+						session['anonymous'] = True
 
 				return redirect(url_for('index'), 302)
 
@@ -406,12 +428,17 @@ def vote():
 		return 'get'
 
 @app.route('/create_post', methods=['POST', 'GET'])
-def create_post():
+def create_post(postsub=None):
 	if request.method == 'POST':
 		title = request.form.get('title')
 		url = request.form.get('url')
 		sub = request.form.get('sub')
 		self_post_text = request.form.get('self_post_text')
+		anonymous = request.form.get('anonymous')
+		if anonymous != None:
+			anonymous = True
+		else:
+			anonymous = False
 
 		if self_post_text != None:
 			post_type = 'self_post'
@@ -432,16 +459,22 @@ def create_post():
 			if len(url) > 2000 or len(url) < 1:
 				flash('invalid url length', 'error')
 				return redirect(url_for('create_post'))
-			new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type)
+			new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'],
+						author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous)
 		elif post_type == 'self_post':
 			if len(self_post_text) < 1 or len(self_post_text) > 20000:
 				flash('invalid self post length', 'error')
 				return redirect(url_for('create_post'))
-			new_post = Post(self_text=psuedo_markup(self_post_text), title=title, inurl_title=convert_ied(title), author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type)
+			new_post = Post(self_text=psuedo_markup(self_post_text), title=title, inurl_title=convert_ied(title),
+				author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous)
 
 		db.session.add(new_post)
 		db.session.commit()
 		new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
+		if is_admin(session['username']) and anonymous == False:
+			new_post.author_type = 'admin'
+		elif is_mod(new_post, session['username']) and anonymous == False:
+			new_post.author_type = 'mod'
 		db.session.commit()
 		url = config.URL + '/r/' + sub
 
@@ -449,7 +482,12 @@ def create_post():
 		return redirect(url, 302)
 
 	if request.method == 'GET':
-		return render_template('create_post.html')
+		subref = re.findall('\/r\/([a-zA-z1-9-_]*)', request.referrer)
+		if subref != None:
+			if len(subref) == 1:
+				if len(subref[0]) > 0:
+					postsub = subref[0]
+		return render_template('create_post.html', postsub=postsub)
 
 @app.route('/create_comment', methods=['POST'])
 def create_comment():
@@ -458,6 +496,11 @@ def create_comment():
 	post_url = request.form.get('post_url')
 	parent_id = request.form.get('parent_id')
 	sub_name = request.form.get('sub_name')
+	anonymous = request.form.get('anonymous')
+	if anonymous != None:
+		anonymous = True
+	else:
+		anonymous = False
 
 	if parent_id == '':
 		parent_id = None
@@ -479,12 +522,19 @@ def create_comment():
 		level = (db.session.query(Comment).filter_by(id=parent_id).first().level) + 1
 	else:
 		level = None
-	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=psuedo_markup(text), author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level)
+	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=psuedo_markup(text),
+		author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level, anonymous=anonymous)
 	db.session.add(new_comment)
 	db.session.commit()
 
 	post = db.session.query(Post).filter_by(id=post_id).first()
 	new_comment.permalink = post.permalink + '/' +  str(new_comment.id)
+
+	if is_admin(session['username']) and anonymous == False:
+		new_comment.author_type = 'admin'
+	elif is_mod(new_comment, session['username']) and anonymous == False:
+		new_comment.author_type = 'mod'
+
 	db.session.commit()
 
 	cache.delete_memoized(get_subi)

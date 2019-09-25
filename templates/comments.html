@@ -1,8 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
-
+{% if post.anonymous %}
+{% set pauthor = 'Anonymous' %}
+{% set pauthor_type = 'user' %}
+{% else %}
+{% set pauthor = post.author %}
+{% set pauthor_type = post_author_type %}
+{% endif %}
 <div id="comment-page-wrapper">
-
 <ul class="list-unstyled">
 	<li class="media sub-post">
 		{% if post.post_type == 'url' %}
@@ -13,7 +18,15 @@
 		<div class="media-body">
 			<div class="row post-row row-space">
 				<div class="col inner-div">
-					<small><a class="user-icon-link" href="{{ url }}/u/{{ post['author'] }}"><i class="fa fa-user "></i>{{ post.author }}</a></small>
+            <small>
+            {% if pauthor_type == 'admin' and post.anonymous == False %}
+            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[a]{{ pauthor }}</a>
+            {% elif pauthor_type == 'mod' and post.anonymous == False %}
+            <i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[m]{{ pauthor }}</a>
+            {% else %}
+    		<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">{{ pauthor }}</a>
+            {% endif %}
+            </small>
 					<small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/r/{{ post.sub }}">/r/{{ post.sub }}</a></small>
 					<small class="created-ago">{{ post.created_ago }}</small>
 				</div>
@@ -26,7 +39,7 @@
 <div class="media">
   <div class="media-body">
     <h5 class="mt-0">{{ post.title }}</h5>
-    {{ post.self_text|safe }}
+    <selftext>{{ post.self_text|safe }}<selftext>
   </div>
 </div>
     {% endif %}
@@ -61,7 +74,7 @@
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|
                     <form action='{{ config.URL }}/mod/ban/' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                        <button type='submit' name='post_id' value='{{ post.author }}' class='mod-option-button post-ban-button'>ban</button>
+                        <button type='submit' name='post_id' value='{{ pauthor }}' class='mod-option-button post-ban-button'>ban</button>
                     </form>
             </small></div>
             {% endif %}
@@ -91,6 +104,8 @@
 	<input type='hidden' name='post_url' value='{{ post_url }}'>
 	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
 	<input class="post-text-area-button" type='submit' value='new comment'>
+	<small> anonymous? </small>
+	<input type='checkbox' name='anonymous' value='1'>
 </form>
 
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
@@ -103,6 +118,8 @@
 	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
 	<input type='hidden' name='parent_id' id='parent_id'>
 	<input class="comment-text-area-button" type='submit' value='reply'>
+	<small> anonymous? </small>
+	<input type='checkbox' name='anonymous' value='1'>
 </form>
 {% else %}
 <form id='post-reply-box' action='/create_comment' method='POST'>
@@ -134,12 +151,27 @@
 
 <ul class="list-unstyled">
 	{%- for comment, value in tree.items() recursive %}  
+{% if comment.anonymous %}
+{% set cauthor = 'Anonymous' %}
+{% set cauthor_type = 'user' %}
+{% else %}
+{% set cauthor = comment.author %}
+{% set cauthor_type = comment.author_type %}
+{% endif %}
 	{% if loop.depth0 < 5 %}
 	<li class="media sub-comment media-body" style="margin-left:{{ loop.depth - 1 }}rem">
 		<div class='media-body comment-media-body'>
 		<div class="row post-row">
 			<div class="col inner-div">
-    		<i class="fa fa-user"></i> <a class="user-icon-link" href="{{ config.URL }}/u/{{ comment.author }}">{{ comment.author }}</a>
+            <small>
+            {% if cauthor_type == 'admin' %}
+            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[a]{{ cauthor }}</a>
+            {% elif cauthor_type == 'mod' %}
+            <i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[m]{{ pauthor }}</a>
+            {% else %}
+    		<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">{{ cauthor }}</a>
+            {% endif %}
+            </small>
             <a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
             	<small class="created-ago comment-link">{{ comment.created_ago }}</small>
             </a>
@@ -191,7 +223,7 @@
                         <button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|
                     <form action='{{ config.URL }}/mod/ban/' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                        <button type='submit' name='post_id' value='{{ comment.author }}' class='mod-option-button post-delete-button'>ban</button>
+                        <button type='submit' name='post_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>ban</button>
                     </form>
             </small></div>
             {% endif %}
@@ -206,6 +238,8 @@
 	<input type='hidden' name='parent_id' id='parent_id' value='{{ parent_comment.id }}'>
 	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
 	<input class="comment-text-area-button" type='submit' value='reply'>
+	<small> anonymous? </small>
+	<input type='checkbox' name='anonymous' value='1'>
 </form>
 	{% endif %}
 	</div>

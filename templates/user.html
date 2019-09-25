@@ -9,21 +9,51 @@
 {% endif %}
 <h6> recent posts </h6>
 
+{% set count = [0] %}
+
 {% for post in posts %}
+{% if count.append(count.pop() + 1) %}{% endif %}
+{% if post.anonymous == False %}
     {% include 'sub_post.html' %}
+{% endif %}
 {% else %}
 	<p> no posts </p>
 {% endfor %}
 
+{% if count.pop() > 0 %}
+<p> user has additional anonymous posts </p>
+{% endif %}
+
 
 <h6> recent comments </h6>
 <ul class="list-unstyled">
+
+{% set count = [0] %}
 {% for comment, post in comments_with_posts %}
+{% if count.append(count.pop() + 1) %}{% endif %}
+
+{% if comment.anonymous %}
+{% set cauthor = 'Anonymous' %}
+{% set cauthor_type = 'user' %}
+{% else %}
+{% set cauthor = comment.author %}
+{% set cauthor_type = comment.author_type %}
+{% endif %}
+
+{% if comment.anonymous == False %}
 <li class="media sub-comment media-body">
 	<div class='media-body comment-media-body'>
 		<div class="row post-row">
 			<div class="col inner-div">
-				<i class="fa fa-user"></i> <a class="user-icon-link" href="{{ config.URL }}/u/{{ comment.author }}">{{ comment.author }}</a>
+            <small>
+            {% if cauthor_type == 'admin' %}
+            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[a]{{ cauthor }}</a>
+            {% elif cauthor_type == 'mod' %}
+            <i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[m]{{ post.author }}</a>
+            {% else %}
+    		<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">{{ cauthor }}</a>
+            {% endif %}
+            </small>
     	    	<a href="{{ config.URL }}/r/{{ post.sub }}/" style="margin-left: 0.5rem;">
     	    		<small class="comment-link">/r/{{ post.sub }}</small>
     	    	</a>
@@ -75,8 +105,13 @@
             {% endif %}
 	</div>
 </li>
+{% endif %}
 {% else %}
 <p> no comments </p>
 {% endfor %}
+
+{% if count.pop() > 0 %}
+<p> user has additional anonymous comments </p>
+{% endif %}
 </ul>
 {% endblock %}

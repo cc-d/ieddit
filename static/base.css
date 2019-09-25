@@ -166,6 +166,12 @@
 	min-height: 2.5rem;
 }
 
+selftext {
+	white-space: pre-wrap;
+	max-height: 200rem;
+	overflow: hidden;
+}
+
 .sub-list {
 	margin-bottom: 1rem;
 	margin-top: 1rem;

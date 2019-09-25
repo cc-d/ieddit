@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
+{% if postsub == None %}
+{% set postsub = '' %}
+{% endif %}
 <form method="post">
 	<p>create url post</p>
 	title
@@ -7,7 +10,11 @@
 	url
 	<input type="text" name="url"><br>
 	sub
-	<input type="text" name="sub"><br>
+	<input type="text" name="sub" value={{ postsub }}><br>
+	{% if session['anonymous'] %}
+	<small> anonymous? </small>
+	<input type='checkbox' name='anonymous' value='1'>
+	{% endif %}
 	<input type="submit" value="create">
 </form>
 <br>
@@ -18,7 +25,11 @@
 	post_text
 	<textarea class="self-post-box" name="self_post_text"></textarea><br>
 	sub
-	<input type="text" name="sub"><br>
+	<input type="text" name="sub" value={{ postsub }}><br>
+	{% if session['anonymous'] %}
+	<small> anonymous? </small>
+	<input type='checkbox' name='anonymous' value='1'>
+	{% endif %}
 	<input type="submit" value="create">
 </form>
 {% endblock %}

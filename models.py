@@ -16,6 +16,7 @@ class Iuser(db.Model):
 	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 	admin = db.Column(db.Boolean, default=False, nullable=False)
 	banned = db.Column(db.Boolean, default=False, nullable=False)
+	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Iuser %r>' % self.username
@@ -41,10 +42,14 @@ class Post(db.Model):
 	inurl_title = db.Column(db.String(75), nullable=False)
 	author = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
 	author_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
+	author_type = db.Column(db.String(20), default='user', nullable=False)
 	sub = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
 	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
-	deleted = db.Column(db.Boolean, default=False, unique=False)
+	deleted = db.Column(db.Boolean, default=False)
 	permalink = db.Column(db.String(2000), nullable=True)
+	stickied = db.Column(db.Boolean, default=False, nullable=False)
+	locked = db.Column(db.Boolean, default=False, nullable=False)
+	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Post %r>' % self.id
@@ -57,12 +62,14 @@ class Comment(db.Model):
 	downs = db.Column(db.Integer, default=0, nullable=False)
 	author = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
 	author_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
+	author_type = db.Column(db.String(20), default='user', nullable=False)
 	parent_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
 	level = db.Column(db.Integer, default=0, nullable=False)
 	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 	sub_name = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
 	deleted = db.Column(db.Boolean, default=False, unique=False)
 	permalink = db.Column(db.String(2000), nullable=True)
+	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Comment %r>' % self.id
