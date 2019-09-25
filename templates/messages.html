@@ -52,9 +52,18 @@
   		{% endif %}
   	</div>
   	{% endif %}
-    <h5 class="mt-0 message-title">Media heading</h5>
-    	{{ message.title }}
-    </div>
+    <h5 class="mt-0 message-title">{{ message.title }}</h5>
+		{{ message.text }}
+	{% if message.in_reply_to != None %}
+	<div class="row message-bottom-row">
+	<small><a class="user-icon-link" href="{{ message.in_reply_to }}">reply</a></small>
+	</div>
+	{% elif message.sender != None %}
+	<div class="row message-bottom-row">
+	<small><a class="user-icon-link" href="reply/{{ message.id }}">reply</a></small>
+	</div>
+	{% endif %}
+	</div>
   </div>
 </div>
 {% else %}

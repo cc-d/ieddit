@@ -73,10 +73,10 @@ def login():
 		username = request.form.get('username')
 		password = request.form.get('password')
 		if username == None or password == None:
-			flash('Username or Password missing.', 'error')
+			flash('Username or Password missing.', 'danger')
 			return redirect(url_for('login'), 302)
 		if username == '' or password == '' or len(username) > 20 or len(password) > 100:
-			flash('Username or Password empty.', 'error')
+			flash('Username or Password empty.', 'danger')
 			return redirect(url_for('login'), 302)
 
 		if db.session.query(db.session.query(Iuser)
@@ -95,7 +95,7 @@ def login():
 
 				return redirect(url_for('index'), 302)
 
-		flash('Username or Password incorrect.', 'error')
+		flash('Username or Password incorrect.', 'danger')
 		return redirect(url_for('login'), 302)
 
 
@@ -112,24 +112,24 @@ def register():
 		email = request.form.get('email')
 
 		if username == None or password == None:
-			flash('username or password missing', 'error')
+			flash('username or password missing', 'danger')
 			return redirect(url_for('login'))
 
 		if verify_username(username):
 			if db.session.query(db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).exists()).scalar():
-				flash('username exists', 'error')
+				flash('username exists', 'danger')
 				return redirect(url_for('login'))
 		else:
-			flash('invalid username', 'error')
+			flash('invalid username', 'danger')
 			return redirect(url_for('login'))
 
 		if len(password) > 100:
-			flash('password too long', 'error')
+			flash('password too long', 'danger')
 			return redirect(url_for('login'))
 
 		if email != None and email != '':
 			if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-				flash('invalid email', 'error')
+				flash('invalid email', 'danger')
 				return redirect(url_for('login'))
 
 		new_user = Iuser(username=username, email=email,
@@ -173,7 +173,7 @@ def subi(subi, user_id=None, posts_only=False):
 	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only, deleted=False)
 	if type(sub_posts) == dict:
 		if 'error' in sub_posts.keys():
-			flash(sub_posts['error'], 'error')
+			flash(sub_posts['error'], 'danger')
 			return redirect(request.referrer or '/')
 			#return 403
 
@@ -452,25 +452,25 @@ def create_post(postsub=None):
 		elif url != None:
 			post_type = 'url'
 		else:
-			flash('invalid post type, not url or self', 'error')
+			flash('invalid post type, not url or self', 'danger')
 			return redirect(url_for('create_post'))
 
 		if title == None or 'username' not in session or 'user_id' not in session:
-			flash('invalid post, no title/username/uid', 'error')
+			flash('invalid post, no title/username/uid', 'danger')
 			return redirect(url_for('create_post'))
 		if len(title) > 400 or len(title) < 1 or len(sub) > 30 or len(sub) < 1:
-			flash('invalid title/sub length', 'error')
+			flash('invalid title/sub length', 'danger')
 			return redirect(url_for('create_post'))
 
 		if post_type == 'url':
 			if len(url) > 2000 or len(url) < 1:
-				flash('invalid url length', 'error')
+				flash('invalid url length', 'danger')
 				return redirect(url_for('create_post'))
 			new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'],
 						author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous)
 		elif post_type == 'self_post':
 			if len(self_post_text) < 1 or len(self_post_text) > 20000:
-				flash('invalid self post length', 'error')
+				flash('invalid self post length', 'danger')
 				return redirect(url_for('create_post'))
 			new_post = Post(self_text=psuedo_markup(self_post_text), title=title, inurl_title=convert_ied(title),
 				author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous)
@@ -515,15 +515,15 @@ def create_comment():
 
 	if post_url != None:
 		if post_url_parse(post_url) != post_url_parse(config.URL):
-			flash('bad origin url', 'error')
+			flash('bad origin url', 'danger')
 			return redirect(request.referrer or '/')
 
 	if 'username' not in session:
-		flash('not logged in', 'error')
+		flash('not logged in', 'danger')
 		return redirect(post_url)
 
 	elif text == None or post_id == None or sub_name == None:
-		flash('bad comment', 'error')
+		flash('bad comment', 'danger')
 		return redirect(post_url)
 
 	if parent_id != None:
@@ -556,11 +556,11 @@ def send_message(title, text, sent_to, sender=None):
 	db.session.add(new_message)
 	db.session.commit()
 
-#@cache.memoize(600)
+@cache.memoize(600)
 def has_messages(username):
 	if 'username' in session:
 		if 'has_messages' not in session:
-			messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
+			messages = db.session.query(Message).filter_by(sent_to=username, read=False).all()
 		else:
 			messages = None
 		if messages != None:
@@ -573,11 +573,11 @@ def has_messages(username):
 @app.route('/u/<username>/messages/', methods=['GET'])
 def user_messages(username=None):
 	if 'username' not in session or username == None:
-		flash('not logged in', 'error')
+		flash('not logged in', 'danger')
 		return redirect('/login')
 	else:
 		if session['username'] != username:
-			flash('you are not that user', 'error')
+			flash('you are not that user', 'danger')
 			return redirect('/')
 		else:
 			read = db.session.query(Message).filter_by(sent_to=username, read=True).all()
@@ -585,6 +585,15 @@ def user_messages(username=None):
 			for r in read:
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
+			
+			session['has_messages'] = False
+			session['unread_messages'] = None
+
+			for r in unread:
+				r.read = True
+				session
+			db.session.commit()
+
 			for r in unread:
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
@@ -594,14 +603,14 @@ def user_messages(username=None):
 @app.route('/u/<username>/messages/reply/<mid>', methods=['GET'])
 def reply_message(username=None, mid=None):
 	if 'username' not in session or username == None:
-		flash('not logged in', 'error')
+		flash('not logged in', 'danger')
 		return redirect('/login')
 	if session['username'] != username:
-		flash('you are not that user', 'error')
+		flash('you are not that user', 'danger')
 		return redirect('/')
 	m = db.session.query(Message).filter_by(sent_to=username, id=mid).first()
 	if m == None:
-		flash('invalid message id', 'error')
+		flash('invalid message id', 'danger')
 		return redirect('/')
 	else:
 		if hasattr(m, 'in_reply_to'):
@@ -610,6 +619,7 @@ def reply_message(username=None, mid=None):
 		return render_template('message_reply.html', message=m, sendto=False)
 
 def sendmsg(title, text, sender, sent_to):
+	cache.delete_memoized(has_messages)
 	new_message = Message(title=title, text=text, sender=sender, sent_to=sent_to)
 	db.session.add(new_message)
 	db.session.commit()
@@ -618,7 +628,7 @@ def sendmsg(title, text, sender, sent_to):
 @app.route('/message/<username>', methods=['GET', 'POST'])
 def msg(username=None):
 	if 'username' not in session:
-		flash('not logged in', 'error')
+		flash('not logged in', 'danger')
 		return redirect('/login/')
 	if request.method == 'POST':
 		text = request.form.get('message_text')
@@ -632,14 +642,14 @@ def msg(username=None):
 			return redirect('/message/')
 
 		if str(sent_to) == 'None':
-			flash('this user is not valid', 'error')
+			flash('this user is not valid', 'danger')
 			return redirect('/message/')
 
 		sender = session['username']
 
 		sendmsg(title=title, text=text, sender=session['username'], sent_to=sent_to)
 
-		flash('sent message', 'succes')
+		flash('sent message', category='success')
 		return redirect(url_for('msg'))
 
 	if request.method == 'GET':
@@ -654,5 +664,6 @@ def msg(username=None):
 					if len(ru[0]) > 0:
 						username = ru[0]
 		return render_template('message_reply.html', sendto=username, message=None)
+
 from mod import bp
 app.register_blueprint(bp)

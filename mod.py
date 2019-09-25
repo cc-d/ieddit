@@ -35,7 +35,7 @@ def delete_post():
 		mod_action(session['username'], 'delete', post.permalink)
 		db.session.commit()
 		cache.delete_memoized(get_subi)
-		flash('post deleted', 'succes')
+		flash('post deleted', category='success')
 		return redirect(sub_url)
 	else:
 		return 403
@@ -59,7 +59,7 @@ def delete_comment():
 		mod_action(session['username'], 'delete', comment.permalink)
 		db.session.commit()
 		cache.delete_memoized(c_get_comments)
-		flash('comment deleted','succes')
+		flash('comment deleted', category='success')
 		return redirect(post.permalink)		
 	else:
 		return 403

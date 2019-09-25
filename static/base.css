@@ -280,3 +280,11 @@ selftext {
 .post-sticky-button {
 
 }
+
+.alert.succes {
+  background-color: green;
+}
+
+.alert.error {
+  background-color: red;
+}
