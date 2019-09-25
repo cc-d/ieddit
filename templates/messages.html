@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if unread != None %}
+<h2> unread messages </h2>
+{% for message in unread %}
+<div class="media">
+  <div class="media-body message-body">
+  	<div class="message-text-body">
+  	{% if message.sender %}
+  	<div class="row message-top-row">
+  		<a class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}"><i class="fa fa-user"></i> {{ message.sender }}</a>
+  		{% if message.in_reply_to %}
+  		<div class="in-reply-to">
+  			<a href="{{ message.in_reply_to }}"></a>
+  		</div>
+  		{% endif %}
+  	</div>
+  	{% endif %}
+    <h5 class="mt-0 message-title">{{ message.title }}</h5>
+		{{ message.text }}
+	</div>
+  </div>
+</div>
+{% else %}
+<p> no unread messages</p><br><br>
+{% endfor %}
+{% endif %}
+
+{% if read != None %}
+
+{% for message in read %}
+<div class="media">
+  <div class="media-body message-body">
+  	<div class="message-text-body">
+  	{% if message.sender %}
+  	<div class="row message-top-row">
+  		<a class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}"><i class="fa fa-user"></i> {{ message.sender }}</a>
+  		{% if message.in_reply_to %}
+  		<div class="in-reply-to">
+  			<a href="{{ message.in_reply_to }}"></a>
+  		</div>
+  		{% endif %}
+  	</div>
+  	{% endif %}
+    <h5 class="mt-0 message-title">Media heading</h5>
+    	{{ message.title }}
+    </div>
+  </div>
+</div>
+{% else %}
+
+{% endfor %}
+{% endif %}
+
+{% endblock %}

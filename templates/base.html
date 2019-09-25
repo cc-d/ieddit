@@ -53,6 +53,11 @@
 				</li>
 				{% endif %}
 			</ul>
+			<ul class="navbar-nav mr-auto navbar-right">
+					{% if session['has_messages'] %}
+					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> ({{ session['unread_messages'] }})</a>
+				{% endif %}
+			</ul>
 		</div>
 		<div class="navbar">
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

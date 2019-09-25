@@ -24,9 +24,11 @@ def before_request():
 
 @app.after_request
 def apply_headers(response):
-    #response.headers["X-Frame-Options"] = "SAMEORIGIN"
-    #response.headers["X-XSS-Protection"] = "1; mode=block"
-    #response.headers['X-Content-Type-Options'] = 'nosniff'
+	#response.headers["X-Frame-Options"] = "SAMEORIGIN"
+	#response.headers["X-XSS-Protection"] = "1; mode=block"
+	#response.headers['X-Content-Type-Options'] = 'nosniff'
+	if 'username' in session:
+		has_messages(session['username'])
 	if app.debug:
 		load_time = str(time.time() - g.start)
 		print('\n[Load: %s]' % load_time)
@@ -260,8 +262,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 
 # need to entirely rewrite how comments are handled once everything else is complete
 # this sort of recursion KILLS performance, especially when combined with the already
-# terrible comment_structure function. only reason i'm doing it this way now is
-# performance doens't matter and i don't have redis/similar setup yet
+# terrible comment_structure function.
 @cache.memoize(600)
 def list_of_child_comments(comment_id, sort_by=None):
 	comments = {}
@@ -538,10 +539,51 @@ def create_comment():
 	db.session.commit()
 
 	cache.delete_memoized(get_subi)
-	cache.delete_memoized(c_get_comments)
+	cache.delete_memoized(c_get_comments) 
 	cache.delete_memoized(list_of_child_comments)
 
 	return redirect(post_url, 302)
+
+def send_message(title, text, sent_to, sender=None):
+	new_message = Message(title=title, text=text, sent_to=sent_to, sender=sender)
+	db.session.add(new_message)
+	db.session.commit()
+
+#@cache.memoize(600)
+def has_messages(username):
+	if 'username' in session:
+		if 'has_messages' not in session:
+			messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
+		else:
+			messages = None
+		if messages != None:
+			if messages > 0:
+				session['has_messages'] = True
+				session['unread_messages'] = messages
+				return True
+	return False
+
+@app.route('/u/<username>/messages/', methods=['GET'])
+def user_messages(username=None):
+	if 'username' not in session or username == None:
+		flash('not logged in', 'error')
+		return redirect('/login')
+	else:
+		if session['username'] != username:
+			flash('you are not that user', 'error')
+			return redirect('/')
+		else:
+			read = db.session.query(Message).filter_by(sent_to=username, read=True).all()
+			unread = db.session.query(Message).filter_by(sent_to=username, read=False).all()
+
+			return render_template('messages.html', read=read, unread=unread)
+
+@app.route('/wut/')
+def wut():
+	username = 'a'
+	read = str(db.session.query(Message).filter_by(sent_to=username, read=True).all())
+	unread = str(db.session.query(Message).filter_by(sent_to=username, read=False).all())
+	return str(read) + str(unread)
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():

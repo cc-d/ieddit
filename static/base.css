@@ -154,6 +154,20 @@
 	margin-right: 0.5em;
 }
 
+.message-body {
+	border: 1px black solid;
+	margin: 0.5rem;
+}
+
+.message-text-body {
+	margin: 5px;
+}
+
+.message-top-row {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
 .sub-post {
 	margin-top: 0.5em;
 	margin-right: 0.5em;
@@ -164,6 +178,16 @@
 
 .comment-post-title {
 	min-height: 2.5rem;
+}
+
+.has-messages {
+	margin: 0;
+	margin-left: 1rem;
+	font-color: black;
+}
+
+.has-messages-i {
+	color: orange;
 }
 
 selftext {

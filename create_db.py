@@ -69,6 +69,7 @@ db.session.add(new_post)
 db.session.commit()
 new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 db.session.commit()
+fp = new_post
 
 for i in range(10):
 	title = fake.text()[:randint(10,200)]
@@ -125,5 +126,14 @@ for i in range(50):
 	new_comment.permalink = post.permalink + str(new_comment.id)
 	db.session.commit()	
 	comments.append(new_comment)
+
+new_message = Message(sent_to='a', sender='test', title='this is a title', text='this is text')
+db.session.add(new_message)
+db.session.commit()
+
+new_message = Message(sent_to='a', sender='test', title='this is a title', text='this is text', in_reply_to=fp.permalink)
+db.session.add(new_message)
+db.session.commit()
+
 
 db.session.commit()

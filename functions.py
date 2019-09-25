@@ -53,8 +53,7 @@ def time_ago(dt):
 
 # horribly ineffecient function lol
 # like no seriously, this is really, really bad
-# it just seemed like an entertaining way to write it
-# will change on release
+# will change after release
 def create_id_tree(comments, parent_id=None):
 	tree = {}
 	if not parent_id:

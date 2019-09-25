@@ -45,7 +45,7 @@ class Post(db.Model):
 	author_type = db.Column(db.String(20), default='user', nullable=False)
 	sub = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
 	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
-	deleted = db.Column(db.Boolean, default=False)
+	deleted = db.Column(db.Boolean, default=False, nullable=False)
 	permalink = db.Column(db.String(2000), nullable=True)
 	stickied = db.Column(db.Boolean, default=False, nullable=False)
 	locked = db.Column(db.Boolean, default=False, nullable=False)
@@ -100,7 +100,20 @@ class Mod_action(db.Model):
 	username = db.Column(db.String(20), unique=False, nullable=False)
 	action = db.Column(db.String(20), unique=False, nullable=False)
 	url = db.Column(db.String(2000), unique=False, nullable=False)
+	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
 	def __repr__(self):
 		return '<Mod_action %r>' % self.id
 
+class Message(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	title = db.Column(db.String(400), unique=False, nullable=False)
+	text = db.Column(db.String(20000), unique=False, nullable=False)
+	read = db.Column(db.Boolean, default=False, nullable=False)
+	sent_to = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
+	sender = db.Column(db.String(20), db.ForeignKey('iuser.username'), default=None, nullable=True)
+	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+	in_reply_to = db.Column(db.String(400), default=None, nullable=True)
+
+	def __repr__(self):
+		return '<Message %r>' % self.id
