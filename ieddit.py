@@ -609,6 +609,11 @@ def reply_message(username=None, mid=None):
 				m.ppath = m.in_reply_to.replace(config.URL, '')
 		return render_template('message_reply.html', message=m, sendto=False)
 
+def sendmsg(title, text, sender, sent_to):
+	new_message = Message(title=title, text=text, sender=sender, sent_to=sent_to)
+	db.session.add(new_message)
+	db.session.commit()
+
 @app.route('/message/', methods=['GET', 'POST'])
 @app.route('/message/<username>', methods=['GET', 'POST'])
 def msg(username=None):
@@ -632,9 +637,7 @@ def msg(username=None):
 
 		sender = session['username']
 
-		new_message = Message(title=title, text=text, sender=session['username'], sent_to=sent_to)
-		db.session.add(new_message)
-		db.session.commit()
+		sendmsg(title=title, text=text, sender=session['username'], sent_to=sent_to)
 
 		flash('sent message', 'succes')
 		return redirect(url_for('msg'))
