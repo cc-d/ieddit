@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_caching import Cache
 from flask_session import Session
 from flask_session_captcha import FlaskSessionCaptcha
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 import time
 import re
@@ -35,6 +35,7 @@ def apply_headers(response):
 	#response.headers['X-Content-Type-Options'] = 'nosniff'
 	if 'username' in session:
 		has_messages(session['username'])
+		session['last_url'] = request.url
 	if app.debug:
 		load_time = str(time.time() - g.start)
 		print('\n[Load: %s]' % load_time)
@@ -66,6 +67,10 @@ def is_admin(username):
 		if session['admin'] == True:
 			return True
 	return False
+
+def set_rate_limit():
+	if 'username' in session:
+		session['rate_limit'] = int(time.time()) + (5 * 60)
 
 @app.route('/')
 def index():
@@ -125,6 +130,12 @@ def register():
 		password = request.form.get('password')
 		email = request.form.get('email')
 
+		if 'username' in session:
+			flash('already logged in', 'danger')
+			if 'last_url' in session:
+				return redirect(session['last_url'] or "/")
+			return redirect('/')
+
 		if username == None or password == None:
 			flash('username or password missing', 'danger')
 			return redirect(url_for('login'))
@@ -152,6 +163,7 @@ def register():
 		db.session.commit()
 		session['username'] = new_user.username
 		session['user_id'] = new_user.id
+		set_rate_limit()
 		return redirect(config.URL, 302)
 
 @cache.memoize(600)
@@ -319,6 +331,13 @@ def create_sub():
 			if captcha.validate() == False:
 				flash('invalid captcha', 'danger')
 				return redirect(url_for('create_sub'))
+			if 'rate_limit' in session:
+				rl = session['rate_limit'] - time.time()
+				if rl > 0:
+					flash('rate limited, try again in %s seconds' % str(rl))
+					if 'last_url' in session:
+						return redirect(session['last_url'] or "/")
+					return redirect('/')
 		if subname != None and verify_subname(subname) and 'username' in session:
 			if len(subname) > 30 or len(subname) < 1:
 				return 'invalid length'
@@ -329,6 +348,7 @@ def create_sub():
 			db.session.add(new_mod)
 			db.session.commit()
 			cache.delete_memoized(get_subi)
+			set_rate_limit()
 			return redirect(config.URL + '/r/' + subname, 302)
 		return 'invalid'
 	elif request.method == 'GET':
@@ -464,6 +484,14 @@ def create_post(postsub=None):
 			if captcha.validate() == False:
 				flash('invalid captcha', 'danger')
 				return redirect(url_for('create_post'))
+			if 'rate_limit' in session:
+				rl = session['rate_limit'] - time.time()
+				if rl > 0:
+					flash('rate limited, try again in %s seconds' % str(rl))
+					if 'last_url' in session:
+						return redirect(session['last_url'] or "/")
+					return redirect('/')
+
 		if anonymous != None:
 			anonymous = True
 		else:
@@ -506,7 +534,7 @@ def create_post(postsub=None):
 			new_post.author_type = 'mod'
 		db.session.commit()
 		url = config.URL + '/r/' + sub
-
+		set_rate_limit()
 		cache.delete_memoized(get_subi)
 		return redirect(url, 302)
 
@@ -527,6 +555,15 @@ def create_comment():
 	parent_id = request.form.get('parent_id')
 	sub_name = request.form.get('sub_name')
 	anonymous = request.form.get('anonymous')
+
+	if 'rate_limit' in session:
+		rl = session['rate_limit'] - time.time()
+		if rl > 0:
+			flash('rate limited, try again in %s seconds' % str(rl))
+			if 'last_url' in session:
+				return redirect(session['last_url'] or "/")
+			return redirect('/')
+
 	if anonymous != None:
 		anonymous = True
 	else:
@@ -570,6 +607,8 @@ def create_comment():
 	cache.delete_memoized(get_subi)
 	cache.delete_memoized(c_get_comments) 
 	cache.delete_memoized(list_of_child_comments)
+
+	set_rate_limit()
 
 	return redirect(post_url, 302)
 
@@ -630,6 +669,7 @@ def reply_message(username=None, mid=None):
 	if session['username'] != username:
 		flash('you are not that user', 'danger')
 		return redirect('/')
+
 	m = db.session.query(Message).filter_by(sent_to=username, id=mid).first()
 	if m == None:
 		flash('invalid message id', 'danger')
@@ -659,6 +699,14 @@ def msg(username=None):
 		if sent_to == None:
 			sent_to = username
 
+		if 'rate_limit' in session:
+			rl = session['rate_limit'] - time.time()
+			if rl > 0:
+				flash('rate limited, try again in %s seconds' % str(rl))
+				if 'last_url' in session:
+					return redirect(session['last_url'] or "/")
+				return redirect('/')
+
 		if len(text) > 20000 or len(title) > 200:
 			flash('text/title too long')
 			return redirect('/message/')
@@ -670,7 +718,7 @@ def msg(username=None):
 		sender = session['username']
 
 		sendmsg(title=title, text=text, sender=session['username'], sent_to=sent_to)
-
+		set_rate_limit()
 		flash('sent message', category='success')
 		return redirect(url_for('msg'))
 
