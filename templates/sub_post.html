@@ -3,7 +3,7 @@
 {% set pauther_type = 'user' %}
 {% else %}
 {% set pauther = post.author %}
-{% set pauther_type = post_author_type %}
+{% set pauther_type = post.author_type %}
 {% endif %}
 <ul class="list-unstyled sub-list">
   <li class="media sub-post">

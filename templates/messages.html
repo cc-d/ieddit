@@ -10,15 +10,24 @@
   	{% if message.sender %}
   	<div class="row message-top-row">
   		<a class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}"><i class="fa fa-user"></i> {{ message.sender }}</a>
-  		{% if message.in_reply_to %}
+  		{% if message.in_reply_to != None %}
   		<div class="in-reply-to">
-  			<a href="{{ message.in_reply_to }}"></a>
+  		<small><a class="user-icon-link" href="{{ message.in_reply_to }}">{{ message.ppath }}</a></small>
   		</div>
   		{% endif %}
   	</div>
   	{% endif %}
     <h5 class="mt-0 message-title">{{ message.title }}</h5>
 		{{ message.text }}
+	{% if message.in_reply_to != None %}
+	<div class="row message-bottom-row">
+	<small><a class="user-icon-link" href="{{ message.in_reply_to }}">reply</a></small>
+	</div>
+	{% elif message.sender != None %}
+	<div class="row message-bottom-row">
+	<small><a class="user-icon-link" href="reply/{{ message.id }}">reply</a></small>
+	</div>
+	{% endif %}
 	</div>
   </div>
 </div>
@@ -28,7 +37,7 @@
 {% endif %}
 
 {% if read != None %}
-
+<h2> read messages </h2>
 {% for message in read %}
 <div class="media">
   <div class="media-body message-body">
@@ -36,9 +45,9 @@
   	{% if message.sender %}
   	<div class="row message-top-row">
   		<a class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}"><i class="fa fa-user"></i> {{ message.sender }}</a>
-  		{% if message.in_reply_to %}
+  		{% if message.in_reply_to != None %}
   		<div class="in-reply-to">
-  			<a href="{{ message.in_reply_to }}"></a>
+  		<small><a class="user-icon-link" href="{{ message.in_reply_to }}">{{ message.ppath }}</a></small>
   		</div>
   		{% endif %}
   	</div>

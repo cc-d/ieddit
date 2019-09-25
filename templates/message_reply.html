@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if message %}
+<div class="media">
+  <div class="media-body message-body">
+  	<div class="message-text-body">
+  	<div class="row message-top-row">
+      {% if message.sender %}
+  		<a class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}"><i class="fa fa-user"></i> {{ message.sender }}</a>
+      {% else %}
+      
+      {% endif %}
+  		{% if message.in_reply_to != None %}
+  		<div class="in-reply-to">
+  		<small><a class="user-icon-link" href="{{ message.in_reply_to }}">{{ message.ppath }}</a></small>
+  		</div>
+  		{% endif %}
+  	</div>
+    <h5 class="mt-0 message-title">{{ message.title }}</h5>
+		{{ message.text }}
+	</div>
+  </div>
+</div>
+{% endif %}
+
+{% if message.sender %}
+<form id='comment-reply-box' action='/message/{{ message.sender }}' method='POST'>
+  <input type='hidden' name='message_title' value='RE: {{ message.title }}'>
+  <input type='hidden' name='sent_to' value='{{ message.sender }}'>
+  <div class="comment-reply-box-wrapper">
+    <textarea class="comment-reply-box-expand" name="message_text"></textarea>
+  </div>
+  <input class="post-text-area-button" type='submit' value='reply'>
+</form>
+{% else %}
+<form id='comment-reply-box' action='/message/{{ sendto }}' method='POST'>
+  <label>message title</label><br>
+  <input type='text' name='message_title'><br><br>
+  <label> send to </label><br>
+
+  <input type='text' name='sent_to' value='{% if sendto != None %}{{ sendto }}{% endif %}'><br><br>
+  <label> message text </label><br>
+  <div class="comment-reply-box-wrapper">
+    <textarea class="comment-reply-box-expand" name="message_text"></textarea>
+  </div>
+  <input class="post-text-area-button" type='submit' value='send message'>
+</form>
+{% endif %}
+
+{% endblock %}

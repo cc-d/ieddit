@@ -65,7 +65,7 @@ def is_admin(username):
 def index():
 	return subi('all')
 	
-@app.route('/login',  methods=['GET', 'POST'])
+@app.route('/login/',  methods=['GET', 'POST'])
 def login():
 	if request.method == 'GET':
 		return render_template('login.html')
@@ -97,6 +97,12 @@ def login():
 
 		flash('Username or Password incorrect.', 'error')
 		return redirect(url_for('login'), 302)
+
+
+@app.route('/logout', methods=['POST', 'GET'])
+def logout():
+	[session.pop(key) for key in list(session.keys())]
+	return redirect(url_for('index'), 302)
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -483,7 +489,8 @@ def create_post(postsub=None):
 		return redirect(url, 302)
 
 	if request.method == 'GET':
-		subref = re.findall('\/r\/([a-zA-z1-9-_]*)', request.referrer)
+		if request.referrer:
+			subref = re.findall('\/r\/([a-zA-z1-9-_]*)', request.referrer)
 		if subref != None:
 			if len(subref) == 1:
 				if len(subref[0]) > 0:
@@ -575,20 +582,74 @@ def user_messages(username=None):
 		else:
 			read = db.session.query(Message).filter_by(sent_to=username, read=True).all()
 			unread = db.session.query(Message).filter_by(sent_to=username, read=False).all()
+			for r in read:
+				if r.in_reply_to != None:
+					r.ppath = r.in_reply_to.replace(config.URL, '')
+			for r in unread:
+				if r.in_reply_to != None:
+					r.ppath = r.in_reply_to.replace(config.URL, '')
 
 			return render_template('messages.html', read=read, unread=unread)
 
-@app.route('/wut/')
-def wut():
-	username = 'a'
-	read = str(db.session.query(Message).filter_by(sent_to=username, read=True).all())
-	unread = str(db.session.query(Message).filter_by(sent_to=username, read=False).all())
-	return str(read) + str(unread)
+@app.route('/u/<username>/messages/reply/<mid>', methods=['GET'])
+def reply_message(username=None, mid=None):
+	if 'username' not in session or username == None:
+		flash('not logged in', 'error')
+		return redirect('/login')
+	if session['username'] != username:
+		flash('you are not that user', 'error')
+		return redirect('/')
+	m = db.session.query(Message).filter_by(sent_to=username, id=mid).first()
+	if m == None:
+		flash('invalid message id', 'error')
+		return redirect('/')
+	else:
+		if hasattr(m, 'in_reply_to'):
+			if m.in_reply_to != None:
+				m.ppath = m.in_reply_to.replace(config.URL, '')
+		return render_template('message_reply.html', message=m, sendto=False)
 
-@app.route('/logout', methods=['POST', 'GET'])
-def logout():
-	[session.pop(key) for key in list(session.keys())]
-	return redirect(url_for('index'), 302)
+@app.route('/message/', methods=['GET', 'POST'])
+@app.route('/message/<username>', methods=['GET', 'POST'])
+def msg(username=None):
+	if 'username' not in session:
+		flash('not logged in', 'error')
+		return redirect('/login/')
+	if request.method == 'POST':
+		text = request.form.get('message_text')
+		title = request.form.get('message_title')
+		sent_to = request.form.get('sent_to')
+		if sent_to == None:
+			sent_to = username
 
+		if len(text) > 20000 or len(title) > 200:
+			flash('text/title too long')
+			return redirect('/message/')
+
+		if str(sent_to) == 'None':
+			flash('this user is not valid', 'error')
+			return redirect('/message/')
+
+		sender = session['username']
+
+		new_message = Message(title=title, text=text, sender=session['username'], sent_to=sent_to)
+		db.session.add(new_message)
+		db.session.commit()
+
+		flash('sent message', 'succes')
+		return redirect(url_for('msg'))
+
+	if request.method == 'GET':
+		if username != None:
+			if len(str(username)) < 1:
+				flash('invalid username')
+				return redirect('/')
+		if request.referrer:
+			ru = re.findall('\/r\/([a-zA-z1-9-_]*)', request.referrer)
+			if ru != None:
+				if len(ru) == 1:
+					if len(ru[0]) > 0:
+						username = ru[0]
+		return render_template('message_reply.html', sendto=username, message=None)
 from mod import bp
 app.register_blueprint(bp)

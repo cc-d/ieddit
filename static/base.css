@@ -164,8 +164,19 @@
 }
 
 .message-top-row {
-	margin-left: 5px;
-	margin-right: 5px;
+	margin-left: 1px;
+	margin-right: 1px;
+}
+
+.message-bottom-row {
+	margin-left: 1px;
+	margin-right: 1px;
+	border-top: 1px ridge;
+	border-opacity: 0.5;
+}
+
+.in-reply-to {
+	margin-left: 1rem;
 }
 
 .sub-post {
