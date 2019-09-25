@@ -64,7 +64,8 @@ for i in range(10):
 	db.session.commit()
 
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'),
- author='test', author_id=1, sub='test', ups=randint(100,200), downs=randint(1,5), post_type='url', author_type='mod')
+ author='test', author_id=1, sub='test', ups=randint(100,200), downs=randint(1,5), post_type='url', 
+ author_type='mod', stickied=True)
 db.session.add(new_post)
 db.session.commit()
 new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'

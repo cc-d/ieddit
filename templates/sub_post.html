@@ -20,10 +20,14 @@
         {% else %}
             <img class="mr-3 post-image" src="{{ url_for('static', filename='comment.png') }}" alt="Generic placeholder image">
         {% endif %}
+
     </div>
     <div class="media-body">
     <div class="row post-row">
     	<div class="col inner-div">
+            {% if post.stickied == True %}
+            <i class="fa fa-thumb-tack" style="margin-right: 0.5rem;"></i>
+            {% endif %}
             <small>
             {% if pauther_type == 'admin' %}
             <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[a]{{ pauther }}</a>
@@ -64,7 +68,7 @@
     	</div>
             {% if session['username'] in post.mods %}
             <div class='mod-option-wrapper'><small>
-                    <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                    <form action='{{ config.URL }}/mod/sticky/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
                     </form>|
                     <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
@@ -83,9 +87,12 @@
 </ul>
 {% if loop is defined %}
 {% if loop.last %}
+
 {% if session.prev_off_url %}
-<h6><a href="{{ session.prev_off_url }}" class="sub-posts-prev"><< prev</a><h6>
+<z><a href="{{ session.prev_off_url }}" class="sub-posts-prev"><< prev</a></z>
+
 {% endif %}
-<h6><a href="{{ session.off_url }}" class="sub-posts-next">next >></a><h6>
+<z><a href="{{ session.off_url }}" class="sub-posts-next">next >></a></z>
+
 {% endif %}
 {% endif %}

@@ -63,3 +63,33 @@ def delete_comment():
 		return redirect(post.permalink)		
 	else:
 		return 403
+
+@bp.route('/sticky/post/', methods=['POST'])
+def sticky_post():
+	if 'username' not in session:
+		flash('not logged in', 'error')
+		return redirect(url_for('login'))
+
+	pid = request.form.get('post_id')
+	post = db.session.query(Post).filter_by(id=pid).first()
+
+	if session['admin']:
+		is_mod = True
+	else:
+		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
+					Moderator.sub_name.like(post.sub)).exists()).scalar()
+	if is_mod:
+		old_sticky = db.session.query(Post).filter_by(sub=post.sub, stickied=True).all()
+		for s in old_sticky:
+			print('\n\n\n\n', s.permalink, '\n\n\n\n')
+			s.stickied = False
+			db.session.commit()	
+		post.stickied = True
+		db.session.commit()
+		cache.delete_memoized(get_subi)
+		cache.clear()
+		flash('sticked post', category='success')
+		return redirect(config.URL + '/r/' + post.sub)
+	else:
+		return 403
+

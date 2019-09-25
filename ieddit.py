@@ -184,6 +184,21 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 			posts = db.session.query(Post).order_by((Post.ups - Post.downs).desc())
 		
 	posts = posts.limit(limit).offset(offset)
+	posts = [post for post in posts]
+
+	stid = False
+	for p in posts:
+		if p.stickied == True:
+			stid = p.id
+
+	if stid:
+		posts = [post for post in posts if post.id != stid]
+
+	if subi != 'all':
+		sticky = db.session.query(Post).filter(func.lower(Post.sub) == subi.lower(), Post.stickied == True).first()
+		if sticky:
+			posts.insert(0, sticky)
+
 	p = []
 	for post in posts:
 		post.mods = get_sub_mods(post.sub)
@@ -206,16 +221,16 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15):
 	offset = request.args.get('offset')
 	sort_date = request.args.get('sort_date')
 	sort_by = request.args.get('sort_by')
-	flash(request.environ)
+	if type(offset) == None:
+		offset = 0
+
 	if request.environ['QUERY_STRING'] == '':
 		session['off_url'] = request.url + '?offset=15'
 		session['prev_off_url'] = request.url
-		offset = 15
 	else:
 		if offset == None:
 			session['off_url'] = request.url + '&offset=15'
 			session['prev_off_url'] = request.url
-			offset = 15
 		else:
 			if (int(offset) - 15) > 0:
 				session['prev_off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) -15))
