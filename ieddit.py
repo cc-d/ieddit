@@ -70,7 +70,7 @@ def is_admin(username):
 
 def set_rate_limit():
 	if 'username' in session:
-		session['rate_limit'] = int(time.time()) + (5 * 60)
+		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME * 60)
 	
 @app.route('/login/',  methods=['GET', 'POST'])
 def login():
@@ -174,15 +174,16 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 		if subname == None:
 			return {'error':'sub does not exist'}
-		posts = db.session.query(Post).filter_by(sub=subi).order_by((Post.ups - Post.downs).desc())
+		posts = db.session.query(Post).filter_by(sub=subi, deleted=False).order_by((Post.ups - Post.downs).desc())
 	elif user_id != None:
-		posts = db.session.query(Post).filter_by(author_id=user_id).order_by((Post.ups - Post.downs).desc())
+		posts = db.session.query(Post).filter_by(author_id=user_id, deleted=False).order_by((Post.ups - Post.downs).desc())
 	else:
 		if sort_by == 'new':
-			posts = db.session.query(Post).order_by((Post.created).desc())
+			posts = db.session.query(Post).filter_by(deleted=False).order_by((Post.created).desc()).filter_by()
 		else:
-			posts = db.session.query(Post).order_by((Post.ups - Post.downs).desc())
+			posts = db.session.query(Post).filter_by(deleted=False).order_by((Post.ups - Post.downs).desc())
 		
+
 	posts = posts.limit(limit).offset(offset)
 	posts = [post for post in posts]
 
@@ -378,7 +379,7 @@ def create_sub():
 			if captcha.validate() == False:
 				flash('invalid captcha', 'danger')
 				return redirect(url_for('create_sub'))
-			if 'rate_limit' in session:
+			if 'rate_limit' in session and config.RATE_LIMIT == True:
 				rl = session['rate_limit'] - time.time()
 				if rl > 0:
 					flash('rate limited, try again in %s seconds' % str(rl))
@@ -531,7 +532,7 @@ def create_post(postsub=None):
 			if captcha.validate() == False:
 				flash('invalid captcha', 'danger')
 				return redirect(url_for('create_post'))
-			if 'rate_limit' in session:
+			if 'rate_limit' in session and config.RATE_LIMIT == True:
 				rl = session['rate_limit'] - time.time()
 				if rl > 0:
 					flash('rate limited, try again in %s seconds' % str(rl))
@@ -605,7 +606,7 @@ def create_comment():
 	sub_name = request.form.get('sub_name')
 	anonymous = request.form.get('anonymous')
 
-	if 'rate_limit' in session:
+	if 'rate_limit' in session and config.RATE_LIMIT == True:
 		rl = session['rate_limit'] - time.time()
 		if rl > 0:
 			flash('rate limited, try again in %s seconds' % str(rl))
@@ -644,7 +645,7 @@ def create_comment():
 	db.session.commit()
 
 	post = db.session.query(Post).filter_by(id=post_id).first()
-	new_comment.permalink = post.permalink + '/' +  str(new_comment.id)
+	new_comment.permalink = post.permalink +  str(new_comment.id)
 
 	if is_admin(session['username']) and anonymous == False:
 		new_comment.author_type = 'admin'
@@ -748,7 +749,7 @@ def msg(username=None):
 		if sent_to == None:
 			sent_to = username
 
-		if 'rate_limit' in session:
+		if 'rate_limit' in session and config.RATE_LIMIT == True:
 			rl = session['rate_limit'] - time.time()
 			if rl > 0:
 				flash('rate limited, try again in %s seconds' % str(rl))
@@ -786,3 +787,6 @@ def msg(username=None):
 
 from mod import bp
 app.register_blueprint(bp)
+
+from user import ubp
+app.register_blueprint(ubp)

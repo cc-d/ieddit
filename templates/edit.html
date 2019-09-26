@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>edit</h3>
+<form action='{{ config.URL }}/user/edit' class="needs-validation" novalidate method='post'>
+	<input type='hidden' value='{{ itype }}' name='itype'>
+	<input type='hidden' value='{{ iid }}' name='iid'>
+	<div class="form-group">
+	<textarea name='etext' class="form-control form-input-text" id="create-post-text">{{ etext }}</textarea>
+	</div>
+	<div class="captcha-div">
+	{% if config.CAPTCHA_ENABLE %}
+	{{ captcha() }}
+	<input type="text" id='captcha' name="captcha">
+</div>
+	<br>
+	{% endif %}
+	<button type="submit" class="btn btn-primary btn-dark">Create Sub</button>
+	<br><br><br>
+</form>
+{% endblock %}

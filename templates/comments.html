@@ -60,6 +60,20 @@
 </div>
 			<div class="inner-div">
 				<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
+            {% if session['username'] == post.author %}
+            <div class='mod-option-wrapper user-options'>
+                <small>
+                    {% if post.self_text %}
+                    <a href='{{ config.URL }}/user/edit/post/{{ post.id }}/' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>edit</button>
+                    </a>
+                    {% endif %}
+                    <form action='{{ config.URL }}/user/delete/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
+                    </form>
+                </small>
+            </div>
+            {% endif %}
 			</div>
 			</div>
             {% if session['username'] in post.mods %}
@@ -204,6 +218,20 @@
 </div>
 			<div class="inner-div">
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>
+            {% if session['username'] == post.author %}
+            <div class='mod-option-wrapper user-options'>
+                <small>
+                    {% if post.self_text %}
+                    <a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' class='mod-option-button'>edit</button>
+                    </a>
+                    {% endif %}
+                    <form action='{{ config.URL }}/user/delete/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
+                    </form>
+                </small>
+            </div>
+            {% endif %}
 				{% if loop.depth0 == 4 and value|length > 0 %}
 					<a class="comment-link  comment-more" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
 						more>>

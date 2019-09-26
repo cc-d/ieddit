@@ -65,12 +65,32 @@
     {% endif %}
 </div>
     		<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
+            {% if session['username'] == post.author %}
+            <div class='mod-option-wrapper user-options'>
+                <small>
+                    {% if post.self_text %}
+                    <a href='{{ config.URL }}/user/edit/post/{{ post.id }}/' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>edit</button>
+                    </a>
+                    {% endif %}
+                    <form action='{{ config.URL }}/user/delete/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
+                    </form>
+                </small>
+            </div>
+            {% endif %}
     	</div>
             {% if session['username'] in post.mods %}
             <div class='mod-option-wrapper'><small>
+                {% if post.stickied == False %}
                     <form action='{{ config.URL }}/mod/sticky/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
                     </form>|
+                {% else %}
+                    <form action='{{ config.URL }}/mod/unsticky/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>unsticky</button>
+                    </form>|
+                {% endif %}
                     <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>lock</button>
                     </form>|

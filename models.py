@@ -16,7 +16,7 @@ class Iuser(db.Model):
 	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 	admin = db.Column(db.Boolean, default=False, nullable=False)
 	banned = db.Column(db.Boolean, default=False, nullable=False)
-	anonymous = db.Column(db.Boolean, default=True, nullable=False)
+	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Iuser %r>' % self.username
@@ -50,6 +50,7 @@ class Post(db.Model):
 	stickied = db.Column(db.Boolean, default=False, nullable=False)
 	locked = db.Column(db.Boolean, default=False, nullable=False)
 	anonymous = db.Column(db.Boolean, default=False, nullable=False)
+	edited = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Post %r>' % self.id
@@ -70,6 +71,7 @@ class Comment(db.Model):
 	deleted = db.Column(db.Boolean, default=False, unique=False)
 	permalink = db.Column(db.String(2000), nullable=True)
 	anonymous = db.Column(db.Boolean, default=False, nullable=False)
+	edited = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Comment %r>' % self.id

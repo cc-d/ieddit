@@ -290,6 +290,9 @@ selftext {
 .bottom-subposts {
 	margin: 0;
 }
+.user-options {
+	margin-left: 1rem;
+}
 
 .alert.succes {
   background-color: green;
