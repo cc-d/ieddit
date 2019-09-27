@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if request.is_mod %}
+<nav class="nav mod-page-controls">
+  <a class="nav-link">Mod Controls: </a>
+  <a class="nav-link" href="/r/{{ request.sub }}/mods/">Mod Log</a>
+  <a class="nav-link" href="/r/{{ request.sub }}/mods/banned/">Banned Users</a>
+  <a class="nav-link" href="/r/{{ request.sub }}/mods/add/">Manage Mods</a>
+</nav>
+{% endif %}
+
+<nav class="nav mod-page-controls">
+<p class="nav-link">Mods</p>
+{% for mod in mods %}
+<a style="color: blue;" class="user-icon-link nav-link" href="{{ config.URL }}/u/{{ mod }}"><i class="fa fa-user"></i>[m]{{ mod }}</a>
+{% endfor %}
+</nav>
+
+
+{% if addmod %}
+<form action='/mod/add' method='POST'>
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">/u/</span>
+  </div>
+  <input type='hidden' name='sub' value='{{ request.sub }}'>
+  <input type="text" name='username' class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+<button type='submit' class="btn btn-outline-secondary" type="button">Add User To Mods</button>
+</div>
+</form>
+
+<form action='/mod/remove' method='POST'>
+<div class="input-group mb-3">
+	<button type='submit' class="btn btn-danger" type="button">Remove Mod</button>
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">/u/</span>
+  </div>
+  <input type='hidden' name='sub' value='{{ request.sub }}'>
+  <input type="text" name='username' class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+</div>
+</form>
+{% endif %}
+
+
+
+
+{% if banned %}
+<ul class="list-group list-group-horizontal-sm">
+{% for ban in banned %}
+<li class="list-group-item">User: {{ ban.username }} 
+	<form action='/mod/unban' method='POST'>
+		<input type='hidden' value='{{ ban.username }}' name='username'>
+		<input type='hidden' value='{{ request.sub }}' name='sub'>
+		<button type="submit" class="btn btn-dark btn-sm">Unban</button>
+	</form>
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+
+{% if modactions %}
+<table class="table table-sm mod-actions-table">
+  <thead>
+    <tr>
+      <th scope="col">Mod</th>
+      <th scope="col">Action</th>
+      <th scope="col">Permalink</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for ma in modactions %}
+    <tr>
+      <td>{{ ma.username }}</td>
+      <td>{{ ma.action }}</td>
+      <td>{{ ma.url }}</td>
+    </tr>
+ {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% endblock %}

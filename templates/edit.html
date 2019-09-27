@@ -5,7 +5,7 @@
 	<input type='hidden' value='{{ itype }}' name='itype'>
 	<input type='hidden' value='{{ iid }}' name='iid'>
 	<div class="form-group">
-	<textarea name='etext' class="form-control form-input-text" id="create-post-text">{{ etext }}</textarea>
+	<textarea name='etext' class="form-control form-input-text" id="create-post-text">{{ etext|safe }}</textarea>
 	</div>
 	<div class="captcha-div">
 	{% if config.CAPTCHA_ENABLE %}
@@ -14,7 +14,7 @@
 </div>
 	<br>
 	{% endif %}
-	<button type="submit" class="btn btn-primary btn-dark">Create Sub</button>
+	<button type="submit" class="btn btn-primary btn-dark">edit {{ itype }}</button>
 	<br><br><br>
 </form>
 {% endblock %}

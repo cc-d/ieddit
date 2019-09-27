@@ -93,7 +93,7 @@ def edit_post():
 		return 403
 
 	if hasattr(obj, 'self_text'):
-		obj.self_text = pseudo_markup(etext)
+		obj.self_text = etext
 		obj.edited = True
 		db.session.commit()
 		cache.clear()
@@ -101,7 +101,7 @@ def edit_post():
 		return redirect(obj.permalink)
 	elif hasattr(obj, 'text'):
 		obj.edited = True
-		obj.text = psuedo_markup(etext)
+		obj.text = etext
 		db.session.commit()
 		cache.delete_memoized(c_get_comments)
 		flash('comment edited', category='success')

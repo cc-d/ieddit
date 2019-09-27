@@ -13,7 +13,12 @@
 
 	<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
 	<script src="{{ url_for('static', filename='main.js') }}"></script>
+	<link rel="shortcut icon" href="{{ url_for('static', filename='globe.png') }}">
+	{% if request.sub %}
+	<title>/r/{{ request.sub}}</title>
+	{% else %}
 	<title>ieddit</title>
+	{% endif %}
 </head>
 <body>
 	<div id="page" class="mx-auto">
@@ -22,20 +27,31 @@
 
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto navbar-right">
-				{% if session['username'] %}
+
 
 				{% if request.sub == False %}
+				{% if session['username'] %}
 				<li class="nav-item">
 					<a class="nav-link" href="/create">create a sub</a>
 				</li>
+				{% endif %}
 				{% else %}
 				<li class="nav-item">
-					<a class="nav-link" href="/r/{{ request.sub }}">/r/{{ request.sub }}</a>
+					<a class="nav-link" style="color: black;" href="/r/{{ request.sub }}">/r/{{ request.sub }}</a>
 				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/r/{{ request.sub }}/rules/">rules</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/r/{{ request.sub }}/mods/">mods</a>
+				</li>
+				{% if session['username'] %}
 				<li class="nav-item">
 					<a class="nav-link" href="/create_post">create post</a>
 				</li>
 				{% endif %}
+				{% endif %}
+				{% if session['username'] %}
 				<li class="nav-item">
 					<a class="nav-link" href="/logout">logout</a>
 				</li>
@@ -54,6 +70,7 @@
 				</li>
 				{% endif %}
 			</ul>
+			{% if session['username'] %}
 			<ul class="navbar-nav mr-auto navbar-right">
 					{% if session['has_messages'] %}
 					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> ({{ session['unread_messages'] }})</a>
@@ -61,6 +78,7 @@
 					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> (0)</a>
 				{% endif %}
 			</ul>
+			{% endif %}
 		</div>
 		<div class="navbar">
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

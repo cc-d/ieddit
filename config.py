@@ -5,7 +5,7 @@ DATABASE_URI = 'postgres://test:test@localhost:5432/ieddit'
 SQLALCHEMY_DATABASE_URI = 'postgres://test:test@localhost:5432/ieddit'
 # This will be unique every time create_db.py is ran when testing
 # to force clear sessions
-SECRET_KEY = 'not-a-real-key-|r|Z6pg7AufFV|r|'
+SECRET_KEY = 'not-a-real-key-|r|qX2hiKC6lW|r|'
 URL = 'http://dev.ieddit.com'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 #SESSION_COOKIE_SAMESITE='Lax'

@@ -16,9 +16,6 @@ fake = Faker()
 #os.system('rm -rf test.db')
 os.system('bash recreate_psql_db.sh')
 
-# nothing else should have this extension...
-os.system('rm -rf static/thumb-*.JPEG')
-
 # force clear user sessions by changing key
 with open('config.py', 'r+') as f:
 	ctext = f.read()
@@ -54,7 +51,7 @@ db.session.commit()
 new_sub = Sub(name='test', created_by='test', created_by_id=1)
 db.session.add(new_sub)
 db.session.commit()
-new_mod = Moderator(username='test', user_id=1, sub_id=1, sub_name='test')
+new_mod = Moderator(username='test', sub='test')
 db.session.add(new_mod)
 db.session.commit()
 
@@ -62,7 +59,7 @@ for i in range(10):
 	new_sub = Sub(name=rstring(3, 10), created_by='test', created_by_id=1)
 	db.session.add(new_sub)
 	db.session.commit()
-	new_mod = Moderator(username=new_sub.created_by, user_id=new_sub.created_by_id, sub_id=new_sub.id, sub_name=new_sub.name)
+	new_mod = Moderator(username=new_sub.created_by, sub=new_sub.name)
 	db.session.add(new_mod)
 	db.session.commit()
 
@@ -73,6 +70,7 @@ db.session.add(new_post)
 db.session.commit()
 new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 db.session.commit()
+test_perma = new_post.permalink
 fp = new_post
 
 for i in range(50):

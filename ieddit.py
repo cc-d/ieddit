@@ -47,8 +47,10 @@ def before_request():
 			getsub = re.findall('\/r\/([a-zA-Z1-9-_]*)', request.environ['REQUEST_URI'])
 			if len(getsub) > 0:
 				request.sub = getsub[0]
-
-	flash(str(vars(request)))
+				if 'username' in session:
+					if session['username'] in get_sub_mods(request.sub):
+						request.is_mod = True
+	#flash(str(vars(request)))
 
 @app.after_request
 def apply_headers(response):
@@ -65,8 +67,10 @@ def apply_headers(response):
 	return response
 
 @cache.memoize(600)
-def get_sub_mods(sub):
-	mod_subs = db.session.query(Moderator).filter_by(sub_name=sub).all()
+def get_sub_mods(sub, admin=True):
+	mod_subs = db.session.query(Moderator).filter_by(sub=sub).all()
+	if admin == False:
+		return [m.username for m in mod_subs]
 	admins = db.session.query(Iuser).filter_by(admin=True).all()
 	for a in admins:
 		mod_subs.append(a)
@@ -76,11 +80,11 @@ def is_mod(obj, username):
 	if hasattr(obj, 'inurl_title'):
 		post = obj
 		if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(username),
-			Moderator.sub_name.like(obj.sub)).exists()).scalar():
+			Moderator.sub.like(obj.sub)).exists()).scalar():
 			return True
 	elif hasattr(obj, 'parent_id'):
 		if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-			Moderator.sub_name.like(obj.sub_name)).exists()).scalar():
+			Moderator.sub.like(obj.sub)).exists()).scalar():
 			return True
 	return False
 
@@ -94,7 +98,20 @@ def is_admin(username):
 def set_rate_limit():
 	if 'username' in session:
 		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME * 60)
-	
+
+def normalize_username(username):
+	username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
+	if username != None:
+		return username.username
+	return False
+
+def normalize_sub(sub):
+	sub = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
+	if sub != None:
+		return sub.name
+	return False
+
+
 @app.route('/login/',  methods=['GET', 'POST'])
 def login():
 	if request.method == 'GET':
@@ -231,6 +248,8 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 
 	p = []
 	for post in posts:
+		if hasattr(post, 'text'):
+			post.text = psuedo_markup(post.text)
 		if thumb_exists(post.id):
 			post.thumbnail = 'thumb-' + str(post.id) + '.JPEG'
 		post.mods = get_sub_mods(post.sub)
@@ -243,14 +262,13 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 			post.has_voted = db.session.query(Vote).filter_by(post_id=post.id, user_id=session['user_id']).first()
 			if post.has_voted != None:
 				post.has_voted = post.has_voted.vote
-			if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub_name.like(post.sub)).exists()).scalar():
+			if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
 				post.is_mod = True
 		p.append(post)
 	return p
 
 @app.route('/r/<subi>/')
 def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=None):
-	flash(str(vars(request)))
 	offset = request.args.get('offset')
 	sort_date = request.args.get('sort_date')
 	sort_by = request.args.get('sort_by')
@@ -324,6 +342,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
 
 	for c in comments:
+		c.text = psuedo_markup(c.text)
 		c.mods = get_sub_mods(c.sub_name)
 		c.created_ago = time_ago(c.created)
 		if 'user_id' in session:
@@ -331,7 +350,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 			if c.has_voted != None:
 				c.has_voted = c.has_voted.vote
 				if Comment.sub_name:
-					if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub_name.like(Comment.sub_name)).exists()).scalar():
+					if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(Comment.sub_name)).exists()).scalar():
 						Comment.is_mod = True
 					else:
 						Comment.is_mod = False
@@ -354,7 +373,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 	comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
 	
 	if post != None and 'username' in session:
-		if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub_name.like(post.sub)).exists()).scalar():
+		if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
 			post.is_mod = True
 
 	if comments_only:
@@ -425,7 +444,7 @@ def create_sub():
 			new_sub = Sub(name=subname, created_by=session['username'], created_by_id=session['user_id'])
 			db.session.add(new_sub)
 			db.session.commit()
-			new_mod = Moderator(username=new_sub.created_by, user_id=new_sub.created_by_id, sub_id=new_sub.id, sub_name=new_sub.name)
+			new_mod = Moderator(username=new_sub.created_by, user_id=new_sub.created_by_id, sub_id=new_sub.id, sub=new_sub.name)
 			db.session.add(new_mod)
 			db.session.commit()
 			cache.delete_memoized(get_subi)
@@ -441,7 +460,7 @@ def view_user(username):
 	mod_of = db.session.query(Moderator).filter_by(user_id=vuser.id).all()
 	mods = {}
 	for s in mod_of:
-		mods[s.sub_name] = s.rank
+		mods[s.sub] = s.rank
 	vuser.mods = mods
 	posts = subi('all', user_id=vuser.id, posts_only=True)
 	for p in posts:
@@ -559,6 +578,8 @@ def create_post(postsub=None):
 		title = request.form.get('title')
 		url = request.form.get('url')
 		sub = request.form.get('sub')
+		#if db.session.query(db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).exists()).scalar():
+
 		self_post_text = request.form.get('self_post_text')
 		anonymous = request.form.get('anonymous')
 		if config.CAPTCHA_ENABLE:
@@ -572,6 +593,13 @@ def create_post(postsub=None):
 					if 'last_url' in session:
 						return redirect(session['last_url'] or "/")
 					return redirect('/')
+
+		sub = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
+		if sub == None:
+			flash('invalid sub', 'danger')
+			return redirect('/create_post')
+
+		sub = sub.name
 
 		if anonymous != None:
 			anonymous = True
@@ -603,7 +631,7 @@ def create_post(postsub=None):
 			if len(self_post_text) < 1 or len(self_post_text) > 20000:
 				flash('invalid self post length', 'danger')
 				return redirect(url_for('create_post'))
-			new_post = Post(self_text=psuedo_markup(self_post_text), title=title, inurl_title=convert_ied(title),
+			new_post = Post(self_text=self_post_text, title=title, inurl_title=convert_ied(title),
 				author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous)
 
 		db.session.add(new_post)
@@ -676,12 +704,17 @@ def create_comment():
 		level = (db.session.query(Comment).filter_by(id=parent_id).first().level) + 1
 	else:
 		level = None
-	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=psuedo_markup(text),
+
+	post = db.session.query(Post).filter_by(id=post_id).first()
+	if post.locked == True:
+		flash('post is locked')
+		return redirect(post.permalink)
+
+	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=text,
 		author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level, anonymous=anonymous)
 	db.session.add(new_comment)
 	db.session.commit()
 
-	post = db.session.query(Post).filter_by(id=post_id).first()
 	new_comment.permalink = post.permalink +  str(new_comment.id)
 
 	if is_admin(session['username']) and anonymous == False:
@@ -700,7 +733,7 @@ def create_comment():
 	return redirect(post_url, 302)
 
 def send_message(title, text, sent_to, sender=None):
-	new_message = Message(title=title, text=psuedo_markup(text), sent_to=sent_to, sender=sender)
+	new_message = Message(title=title, text=text, sent_to=sent_to, sender=sender)
 	db.session.add(new_message)
 	db.session.commit()
 
@@ -821,6 +854,35 @@ def msg(username=None):
 					if len(ru[0]) > 0:
 						username = ru[0]
 		return render_template('message_reply.html', sendto=username, message=None)
+
+
+@app.route('/r/<sub>/mods/', methods=['GET'])
+def submods(sub=None):
+	modactions = db.session.query(Mod_action).filter_by(sub=sub).all()
+	if type(modactions) != None:
+		modactions = [m for m in modactions]
+	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions)
+
+@app.route('/r/<sub>/mods/banned/', methods=['GET'])
+def bannedusers(sub=None):
+	banned = db.session.query(Ban).filter_by(sub=sub).all()
+	if type(banned) != None:
+		banned = [b for b in banned]
+	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), banned=banned)
+
+@app.route('/r/<sub>/mods/add/', methods=['GET'])
+def addmod(sub=None):
+	if hasattr(request, 'is_mod'):
+		if request.is_mod:
+			return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
+	return '403'
+
+@app.route('/r/<sub>/mods/remove/', methods=['GET'])
+def removemod(sub=None):
+	if hasattr(request, 'is_mod'):
+		if request.is_mod:
+			return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
+	return '403'
 
 from mod import bp
 app.register_blueprint(bp)

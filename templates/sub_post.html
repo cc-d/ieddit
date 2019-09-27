@@ -8,12 +8,12 @@
 
 {% if loop is defined %}
 {% if loop.last %}
-<ul class="list-unstyled sub-list" style="margin-bottom: 0px;">
+<ul class="list-unstyled sub-list rounded" style="margin-bottom: 0px;">
 {% else %}
-<ul class="list-unstyled sub-list">
+<ul class="list-unstyled sub-list rounded">
 {% endif %}
 {% endif %}
-  <li class="media sub-post">
+  <li class="media sub-post rounded">
     <div class="post-image-container">
         {% if post.post_type == 'url' %}
         <a href="{{ post.url }}">
@@ -35,6 +35,9 @@
     	<div class="col inner-div">
             {% if post.stickied == True %}
             <i class="fa fa-thumb-tack" style="margin-right: 0.5rem;"></i>
+            {% endif %}
+            {% if post.locked == True %}
+            <i class="fa fa-lock" style="margin-right: 0.5rem;"></i>
             {% endif %}
             <small>
             {% if post.edited %}* {% endif %}
@@ -107,7 +110,9 @@
                     <form action='{{ config.URL }}/mod/delete/post/' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|
-                    <form action='{{ config.URL }}/mod/ban/' method='POST' class='post-mod-option-form post-mod-delete-form'>
+                    <form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
+                        <input name='iid' type='hidden' value='{{ post.id }}'>
+                        <input name='itype' type='hidden' value='post'>
                         <button type='submit' name='post_id' value='{{ pauther }}' class='mod-option-button post-delete-button'>ban</button>
                     </form>
             </small></div>

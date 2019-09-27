@@ -91,10 +91,8 @@ class Vote(db.Model):
 class Moderator(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
-	user_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
-	sub_id = db.Column(db.Integer, db.ForeignKey('sub.id'), nullable=False)
-	sub_name = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
-	rank = db.Column(db.Integer, default=0, nullable=False)
+	sub = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
+	rank = db.Column(db.Integer, default=0, nullable=False, autoincrement=True)
 
 	def __repr__(self):
 		return '<Moderator %r>' % self.id
@@ -105,6 +103,7 @@ class Mod_action(db.Model):
 	action = db.Column(db.String(20), unique=False, nullable=False)
 	url = db.Column(db.String(2000), unique=False, nullable=False)
 	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+	sub = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
 
 	def __repr__(self):
 		return '<Mod_action %r>' % self.id
@@ -121,3 +120,11 @@ class Message(db.Model):
 
 	def __repr__(self):
 		return '<Message %r>' % self.id
+
+class Ban(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	sub = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
+	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
+
+	def __repr__(self):
+		return '<Ban %r>' % self.id

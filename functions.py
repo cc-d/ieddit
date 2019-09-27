@@ -8,6 +8,8 @@ import jinja2
 import html
 import config
 import os.path
+from markdown import markdown
+from bleach import clean
 
 from datetime import datetime, timedelta
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
@@ -121,15 +123,5 @@ def split_link(sst, s):
 	return new_s
 
 def psuedo_markup(text):
-	mstring = ''
-	while True:
-		r = re.findall('\[(.*?)\]\((https?\:\/.*?)\)', text)
-		if len(r) < 1:
-			mstring += html.escape(text)
-			break
-		else:
-			ntext = split_link(r[0], text)
-			mstring += html.escape(ntext[0])
-			mstring += '<a href="' + html.escape(ntext[2]) + '">' + html.escape(ntext[1]) + '</a>'
-			text = ntext[3]
-	return mstring
+	return clean(markdown(text), strip=True)
+
