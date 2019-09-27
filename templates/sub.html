@@ -10,17 +10,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="nav">
-    <a class="top-sort" href="{{ session['top_url'] }}">Top</a>
-    <a class="top-sort" href="{{ session['new_url'] }}">New</a>
-    <a class="top-sort" href="{{ session['hour_url'] }}"></a>
-    <a class="top-sort" href="{{ session['hour_url'] }}"></a>
-    <a class="top-sort" href="{{ session['hour_url'] }}"></a>
-    <a class="top-sort" href="{{ session['hour_url'] }}"></a>
-<a class="top-sort" href="{{ session['hour_url'] }}">Hour</a>
-<a class="top-sort" href="{{ session['day_url'] }}">Day</a>
-<a class="top-sort" href="{{ session['week_url'] }}">Week</a>
-<a class="top-sort" href="{{ session['month_url'] }}">Month</a>
+<div class="btn-group" role="group" aria-label="Basic example">
+    <a class="top-sort" href="{{ session['hot_url'] }}"><button type="button" class="btn btn-outline-secondary">Hot</button></a>
+  <a class="top-sort" href="{{ session['top_url'] }}"><button type="button" class="btn btn-outline-secondary">Top</button></a>
+  <a class="top-sort" href="{{ session['new_url'] }}"><button type="button" class="btn btn-outline-secondary">New</button></a>
 </div>
 
 {% for post in posts %}

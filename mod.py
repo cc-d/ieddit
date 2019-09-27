@@ -309,3 +309,25 @@ def editrules():
 		return(redirect('/r/' + sub + '/rules/'))
 	else:
 		return 403
+
+@bp.route('/nsfw',  methods=['POST'])
+def marknsfw():
+	if 'username' not in session:
+		flash('not logged in', 'danger')
+		return redirect(url_for('login'))
+
+	post_id = request.form.get('post_id')
+	post = db.session.query(Post).filter_by(id=post_id).first()
+
+
+	if session['admin']:
+		is_mod = True
+	else:
+		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
+					Moderator.sub.like(post.sub)).exists()).scalar()
+	if is_mod:
+		post.nsfw = True
+		flash('marked as nsfw')
+		db.session.commit()
+		cache.clear()
+		return redirect(post.permalink)

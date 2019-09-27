@@ -28,32 +28,26 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto navbar-right">
 
-
-				{% if request.sub == False %}
-				{% if session['username'] %}
 				<li class="nav-item">
-					<a class="nav-link" href="/create">create a sub</a>
-				</li>
-				{% endif %}
-				{% else %}
-				<li class="nav-item">
-					<a class="nav-link" style="color: black;" href="/r/{{ request.sub }}">/r/{{ request.sub }}</a>
+					<a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-outline-secondary">Create Sub</button></a>
 				</li>
 				<li class="nav-item">
+					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-outline-secondary">Create Post</button></a>
+				</li>
+				{% if request.sub %}
+				<li class="nav-item active">
+					<a class="nav-link" href="/r/{{ request.sub }}">/r/{{ request.sub }}</a>
+				</li>
+				<li class="nav-item active">
 					<a class="nav-link" href="/r/{{ request.sub }}/rules/">rules</a>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item active">
 					<a class="nav-link" href="/r/{{ request.sub }}/mods/">mods</a>
 				</li>
-				{% if session['username'] %}
-				<li class="nav-item">
-					<a class="nav-link" href="/create_post">create post</a>
-				</li>
-				{% endif %}
 				{% endif %}
 				{% if session['username'] %}
 				<li class="nav-item">
-					<a class="nav-link" href="/logout">logout</a>
+					<a class="nav-link" href="/logout"><button type="button" class="btn btn-sm btn-outline-danger">logout</button></a>
 				</li>
 				{% endif %}
 			</ul>

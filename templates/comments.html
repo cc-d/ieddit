@@ -10,47 +10,49 @@
 <div id="comment-page-wrapper">
 <ul class="list-unstyled">
 	<li class="media sub-post">
-		{% if post.post_type == 'url' %}
+		{% if post.post_type == 'url' and post.nsfw == False %}
 			<img class="mr-3 comment-image" src="{{ url_for('static', filename='globe.png') }}">
+		{% elif post.nsfw == True %}
+			<img class="mr-3 comment-image" src="{{ url_for('static', filename='nsfw.png') }}">
 		{% else %}
 			<img class="mr-3 comment-image self-post-image" src="{{ url_for('static', filename='comment.png') }}">
 		{% endif %}
 		<div class="media-body">
 			<div class="row post-row row-space">
 				<div class="col inner-div">
-            {% if post.stickied == True %}
-            <i class="fa fa-thumb-tack" style="margin-right: 0.5rem;"></i>
-            {% endif %}
-            {% if post.locked == True %}
-            <i class="fa fa-lock" style="margin-right: 0.5rem;"></i>
-            {% endif %}
-            <small>
-            	{% if post.edited %}* {% endif %}
-            {% if pauthor_type == 'admin' and post.anonymous == False %}
-            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[a]{{ pauthor }}</a>
-            {% elif pauthor_type == 'mod' and post.anonymous == False %}
-            <i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[m]{{ pauthor }}</a>
-            {% else %}
-    		<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">{{ pauthor }}</a>
-            {% endif %}
-            </small>
+			{% if post.stickied == True %}
+			<i class="fa fa-thumb-tack" style="margin-right: 0.5rem;"></i>
+			{% endif %}
+			{% if post.locked == True %}
+			<i class="fa fa-lock" style="margin-right: 0.5rem;"></i>
+			{% endif %}
+			<small>
+				{% if post.edited %}* {% endif %}
+			{% if pauthor_type == 'admin' and post.anonymous == False %}
+			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[a]{{ pauthor }}</a>
+			{% elif pauthor_type == 'mod' and post.anonymous == False %}
+			<i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[m]{{ pauthor }}</a>
+			{% else %}
+			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">{{ pauthor }}</a>
+			{% endif %}
+			</small>
 					<small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/r/{{ post.sub }}">/r/{{ post.sub }}</a></small>
 					<small class="created-ago">{{ post.created_ago }}</small>
 				</div>
 			</div>
-    <div class="comment-post-title">
-    {% if post.post_type == 'url' %}
-    	<a class="sub-post-title-link" href="{{ post.url }}">{{ post.title }}</a> 
-    	<small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
-    {% else %}
+	<div class="comment-post-title">
+	{% if post.post_type == 'url' %}
+		<a class="sub-post-title-link" href="{{ post.url }}">{{ post.title }}</a> 
+		<small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
+	{% else %}
 <div class="media">
   <div class="media-body">
-    <h5 class="mt-0">{{ post.title }}</h5>
-    <selftext>{{ post.self_text|safe }}<selftext>
+	<h5 class="mt-0">{{ post.title }}</h5>
+	<selftext>{{ post.self_text|safe }}<selftext>
   </div>
 </div>
-    {% endif %}
-    </div>
+	{% endif %}
+	</div>
 			<div class="row post-row comment-bottom">
 <div class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
 	{% if post.has_voted == 1 %}
@@ -67,47 +69,66 @@
 </div>
 			<div class="inner-div">
 				<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
-            {% if session['username'] == post.author %}
-            <div class='mod-option-wrapper user-options'>
-                <small>
-                    {% if post.self_text %}
-                    <a href='{{ config.URL }}/user/edit/post/{{ post.id }}/' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>edit</button>
-                    </a>
-                    {% endif %}
-                    <form action='{{ config.URL }}/user/delete/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
-                    </form>
-                </small>
-            </div>
-            {% endif %}
+			{% if session['username'] == post.author %}
+			<div class='mod-option-wrapper user-options'>
+				<small>
+					{% if post.self_text %}
+					<a href='{{ config.URL }}/user/edit/post/{{ post.id }}/' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>edit</button>
+					</a>
+					{% endif %}
+					<form action='{{ config.URL }}/user/delete/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
+					</form>
+					{% if nsfw == False %}
+					<form action='{{ config.URL }}/user/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>nsfw</button>
+					</form>
+					{% else %}
+						<nsfw style="color: red;">nsfw</nsfw>
+					{% endif %}
+				</small>
+			</div>
+			{% endif %}
+
+
+			{% if post.nsfw %}
+			<p class='nsfw'>nsfw</p>
+			{% endif %}
+
+
 			</div>
 			</div>
-            {% if session['username'] in post.mods %}
-            <div class='mod-option-wrapper'><small>
-                {% if post.stickied == False %}
-                    <form action='{{ config.URL }}/mod/sticky/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
-                    </form>|
-                {% else %}
-                    <form action='{{ config.URL }}/mod/unsticky/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>unsticky</button>
-                    </form>|
-                {% endif %}
-                    <form action='{{ config.URL }}/mod/lock/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>
-                        {% if post.locked == True %}unlock{% else %}lock{% endif %}</button>
-                    </form>|
-                    <form action='{{ config.URL }}/mod/delete/post/' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
-                    </form>|
-                    <form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                    	<input name='iid' type='hidden' value='{{ post.id }}'>
-                    	<input name='itype' type='hidden' value='post'>
-                        <button type='submit' name='post_id' value='{{ pauther }}' class='mod-option-button post-delete-button'>ban</button>
-                    </form>
-            </small></div>
-            {% endif %}
+			{% if session['username'] in post.mods %}
+			<div class='mod-option-wrapper'><small>
+				{% if post.nsfw == False %}
+					<form action='{{ config.URL }}/mod/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>nsfw</button>
+					</form>|
+				{% endif %}
+				{% if post.stickied == False %}
+					<form action='{{ config.URL }}/mod/sticky/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
+					</form>|
+				{% else %}
+					<form action='{{ config.URL }}/mod/unsticky/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>unsticky</button>
+					</form>|
+				{% endif %}
+					<form action='{{ config.URL }}/mod/lock/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>
+						{% if post.locked == True %}unlock{% else %}lock{% endif %}</button>
+					</form>|
+					<form action='{{ config.URL }}/mod/delete/post/' method='POST' class='post-mod-option-form post-mod-delete-form'>
+						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
+					</form>|
+					<form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
+						<input name='iid' type='hidden' value='{{ post.id }}'>
+						<input name='itype' type='hidden' value='post'>
+						<button type='submit' name='post_id' value='{{ pauther }}' class='mod-option-button post-delete-button'>ban</button>
+					</form>
+			</small></div>
+			{% endif %}
 		</div>
 </li>
 </ul>
@@ -196,26 +217,26 @@
 		<div class='media-body comment-media-body'>
 		<div class="row post-row">
 			<div class="col inner-div">
-            <small>
-            {% if comment.edited %}* {% endif %}
-            {% if cauthor_type == 'admin' %}
-            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[a]{{ cauthor }}</a>
-            {% elif cauthor_type == 'mod' %}
-            <i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[m]{{ pauthor }}</a>
-            {% else %}
-    		<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">{{ cauthor }}</a>
-            {% endif %}
-            </small>
-            <a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
-            	<small class="created-ago comment-link">{{ comment.created_ago }}</small>
-            </a>
+			<small>
+			{% if comment.edited %}* {% endif %}
+			{% if cauthor_type == 'admin' %}
+			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[a]{{ cauthor }}</a>
+			{% elif cauthor_type == 'mod' %}
+			<i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[m]{{ pauthor }}</a>
+			{% else %}
+			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">{{ cauthor }}</a>
+			{% endif %}
+			</small>
+			<a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
+				<small class="created-ago comment-link">{{ comment.created_ago }}</small>
+			</a>
 			{% if comment.parent_id != None %}
-            <a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
-            {% else %}
-            <a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
-           	{% endif %}
-            	<small class="created-ago">parent</small>
-            </a>
+			<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
+			{% else %}
+			<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
+			{% endif %}
+				<small class="created-ago">parent</small>
+			</a>
 			</div>
 		</div>
 		<div clss="comment-text">
@@ -240,18 +261,18 @@
 				{% if post.locked == False %}
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>
 				{% endif %}
-            {% if session['username'] == comment.author %}
-            <div class='mod-option-wrapper user-options'>
-                <small>
-                    <a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' class='mod-option-button'>edit</button>
-                    </a>
-                    <form action='{{ config.URL }}/user/delete/comment/{{ comment.id}}' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button'>delete</button>
-                    </form>
-                </small>
-            </div>
-            {% endif %}
+			{% if session['username'] == comment.author %}
+			<div class='mod-option-wrapper user-options'>
+				<small>
+					<a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' class='mod-option-button'>edit</button>
+					</a>
+					<form action='{{ config.URL }}/user/delete/comment/{{ comment.id}}' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button'>delete</button>
+					</form>
+				</small>
+			</div>
+			{% endif %}
 				{% if loop.depth0 == 4 and value|length > 0 %}
 					<a class="comment-link  comment-more" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
 						more>>
@@ -259,18 +280,18 @@
 				{% endif %}
 			</div>
 			</div>
-            {% if session['username'] in post.mods %}
-            <div class='mod-option-wrapper-comments'><small>
-                    <form action='{{ config.URL }}/mod/delete/comment' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                        <button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button post-delete-button'>delete</button>
-                    </form>|
-                    <form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                    	<input name='iid' type='hidden' value='{{ comment.id }}'>
-                    	<input name='itype' type='hidden' value='comment'>
-                        <button type='submit' name='post_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>ban</button>
-                    </form>
-            </small></div>
-            {% endif %}
+			{% if session['username'] in post.mods %}
+			<div class='mod-option-wrapper-comments'><small>
+					<form action='{{ config.URL }}/mod/delete/comment' method='POST' class='post-mod-option-form post-mod-delete-form'>
+						<button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button post-delete-button'>delete</button>
+					</form>|
+					<form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
+						<input name='iid' type='hidden' value='{{ comment.id }}'>
+						<input name='itype' type='hidden' value='comment'>
+						<button type='submit' name='post_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>ban</button>
+					</form>
+			</small></div>
+			{% endif %}
 	{% if parent_comment.id and loop.index0 == 0 and loop.depth0 == 0 %}
 	{% if post.locked == False %}
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: block;">

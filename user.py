@@ -78,9 +78,7 @@ def edit_post():
 			rl = session['rate_limit'] - time.time()
 			if rl > 0:
 				flash('rate limited, try again in %s seconds' % str(rl))
-				if 'last_url' in session:
-					return redirect('/user/edit/%s/%s/' % (itype, iid))
-				return redirect('/')
+				return redirect('/user/edit/%s/%s/' % (itype, iid))
 
 	if itype == 'post':
 		obj = db.session.query(Post).filter_by(id=iid).first()
@@ -124,6 +122,7 @@ def marknsfw(pid=None):
 	post.nsfw = True
 	flash('marked as nsfw')
 	db.session.commit()
+	cache.clear()
 	return redirect(post.permalink)
 
 

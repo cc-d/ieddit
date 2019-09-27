@@ -169,8 +169,6 @@ def register():
 
 		if 'username' in session:
 			flash('already logged in', 'danger')
-			if 'last_url' in session:
-				return redirect(session['last_url'] or "/")
 			return redirect('/')
 
 		if username == None or password == None:
@@ -245,8 +243,13 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		posts = posts.order_by((Post.ups - Post.downs).desc())
 	elif s == 'new':
 		posts = posts.order_by((Post.created).desc())
-
-	posts = [post for post in posts if post.created > ago]
+	else:
+		posts = posts.all()
+		for p in posts:
+			p.hot = hot(p.ups, p.downs, p.created)
+		posts.sort(key=lambda x: x.hot, reverse=True)
+	#posts = [post for post in posts if post.created > ago]
+	
 	more = False
 	pc = len(posts)
 	if pc > limit:
@@ -321,6 +324,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=None, sh
 
 	session['top_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=top'
 	session['new_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=new'
+	session['new_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=hot'
 
 	session['hour_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=hour'
 	session['day_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=day'	
@@ -474,8 +478,6 @@ def create_sub():
 				rl = session['rate_limit'] - time.time()
 				if rl > 0:
 					flash('rate limited, try again in %s seconds' % str(rl))
-					if 'last_url' in session:
-						return redirect(session['last_url'] or "/")
 					return redirect('/')
 		if subname != None and verify_subname(subname) and 'username' in session:
 			if len(subname) > 30 or len(subname) < 1:
@@ -635,8 +637,6 @@ def create_post(postsub=None):
 				rl = session['rate_limit'] - time.time()
 				if rl > 0:
 					flash('rate limited, try again in %s seconds' % str(rl))
-					if 'last_url' in session:
-						return redirect(session['last_url'] or "/")
 					return redirect('/')
 
 		sub = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
@@ -720,8 +720,6 @@ def create_comment():
 		rl = session['rate_limit'] - time.time()
 		if rl > 0:
 			flash('rate limited, try again in %s seconds' % str(rl))
-			if 'last_url' in session:
-				return redirect(session['last_url'] or "/")
 			return redirect('/')
 
 	if anonymous != None:
@@ -873,8 +871,6 @@ def msg(username=None):
 			rl = session['rate_limit'] - time.time()
 			if rl > 0:
 				flash('rate limited, try again in %s seconds' % str(rl))
-				if 'last_url' in session:
-					return redirect(session['last_url'] or "/")
 				return redirect('/')
 
 		if len(text) > 20000 or len(title) > 200:
@@ -940,7 +936,10 @@ def rules(sub=None):
 	if hasattr(subr, 'rules') == False:
 		rtext = False
 	else:
-		rtext = pseudo_markup(subr.rules)
+		if subr.rules != None:
+			rtext = pseudo_markup(subr.rules)
+		else:
+			rtext = False
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), rules=True, rtext=rtext)
 
 from mod import bp
