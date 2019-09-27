@@ -210,7 +210,10 @@ def index():
 
 @cache.memoize(600)
 def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=None, d=None, s=None):
-	offset = int(offset)
+	if type(offset) == int:
+		offset = int(offset)
+	else:
+		offset = 0
 	if subi != 'all':
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 		if subname == None:
@@ -232,6 +235,8 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		ago = datetime.now() - timedelta(days=7)
 	elif d == 'month':
 		ago = datetime.now() - timedelta(days=31)
+	else:
+		ago = datetime.now() - timedelta(days=9999)
 
 	if d:
 		posts.filter(Post.created > ago)
@@ -320,8 +325,9 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=None, sh
 	session['hour_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=hour'
 	session['day_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=day'	
 	session['week_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=week'
+	session['month_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=month'
 
-	for a in ['top_url', 'new_url', 'day_url', 'week_url', 'hour_url']:
+	for a in ['top_url', 'new_url', 'day_url', 'week_url', 'hour_url', 'month_url']:
 		if session[a].find('/&') != -1:
 			session[a] = session[a].replace('/&', '/?')
 
