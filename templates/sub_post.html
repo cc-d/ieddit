@@ -9,6 +9,8 @@
 {% if loop is defined %}
 {% if loop.last %}
 <ul class="list-unstyled sub-list rounded" style="margin-bottom: 0px;">
+{% elif loop.first %}
+<ul class="list-unstyled sub-list rounded" style="margin-top: 0px;">
 {% else %}
 <ul class="list-unstyled sub-list rounded">
 {% endif %}

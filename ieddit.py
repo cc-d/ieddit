@@ -209,26 +209,46 @@ def index():
 	return subi('all', nsfw=False)
 
 @cache.memoize(600)
-def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, sort_by=False, nsfw=None):
+def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=None, d=None, s=None):
+	offset = int(offset)
 	if subi != 'all':
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 		if subname == None:
 			return {'error':'sub does not exist'}
-		posts = db.session.query(Post).filter_by(sub=subi, deleted=False).order_by((Post.ups - Post.downs).desc())
+		subi = subname.name
+		posts = db.session.query(Post).filter_by(sub=subi, deleted=False)
 	elif user_id != None:
-		posts = db.session.query(Post).filter_by(author_id=user_id, deleted=False).order_by((Post.ups - Post.downs).desc())
+		posts = db.session.query(Post).filter_by(author_id=user_id, deleted=False)
 	else:
-		if sort_by == 'new':
-			posts = db.session.query(Post).filter_by(deleted=False).order_by((Post.created).desc()).filter_by()
-		else:
-			posts = db.session.query(Post).filter_by(deleted=False).order_by((Post.ups - Post.downs).desc())
-		
+		posts = db.session.query(Post).filter_by(deleted=False)
+
+# .order_by((Post.created).desc())
+#			posts = db.session.query(Post).filter_by(deleted=False).order_by((Post.ups - Post.downs).desc())
+	if d == 'hour':
+		ago = datetime.now() - timedelta(hours=1)
+	elif d == 'day':
+		ago = datetime.now() - timedelta(hours=24)
+	elif d == 'week':
+		ago = datetime.now() - timedelta(days=7)
+	elif d == 'month':
+		ago = datetime.now() - timedelta(days=31)
+
+	if d:
+		posts.filter(Post.created > ago)
+
+	if s == 'top':
+		posts = posts.order_by((Post.ups - Post.downs).desc())
+	elif s == 'new':
+		posts = posts.order_by((Post.created).desc())
+
+	posts = [post for post in posts if post.created > ago]
 	more = False
-	pc = posts.count()
+	pc = len(posts)
 	if pc > limit:
 		more = True
-	posts = posts.limit(limit).offset(offset)
-	posts = [post for post in posts]
+	
+	posts = posts[offset:]
+	posts = posts[:limit]
 
 	stid = False
 	for p in posts:
@@ -268,10 +288,11 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	return p
 
 @app.route('/r/<subi>/')
-def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=None):
+def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=None, show_top=True, s=None, d=None):
 	offset = request.args.get('offset')
-	sort_date = request.args.get('sort_date')
-	sort_by = request.args.get('sort_by')
+	d = request.args.get('d')
+	s = request.args.get('s')
+
 	if type(offset) == None:
 		offset = 0
 
@@ -291,17 +312,29 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=None):
 	if request.url.find('offset=') == -1:
 		session['prev_off_url'] = False
 
+	prefix = '&'
 
-	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only, deleted=False, offset=offset, limit=15, sort_by=sort_by)
+	session['top_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=top'
+	session['new_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=new'
+
+	session['hour_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=hour'
+	session['day_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=day'	
+	session['week_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=week'
+
+	for a in ['top_url', 'new_url', 'day_url', 'week_url', 'hour_url']:
+		if session[a].find('/&') != -1:
+			session[a] = session[a].replace('/&', '/?')
+
+	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only, deleted=False, offset=offset, limit=15, d=d, s=s)
 	if type(sub_posts) == dict:
 		if 'error' in sub_posts.keys():
 			flash(sub_posts['error'], 'danger')
-			return redirect('/')
+			return redirect('/')	
 
 	if posts_only:
 		return sub_posts
 
-	return render_template('sub.html', posts=sub_posts, url=config.URL)
+	return render_template('sub.html', posts=sub_posts, url=config.URL, show_top=show_top)
 
 	#return str(hasattr(request.environ, 'QUERY_STRING'))#str(vars(request))
 
@@ -444,7 +477,7 @@ def create_sub():
 			new_sub = Sub(name=subname, created_by=session['username'], created_by_id=session['user_id'])
 			db.session.add(new_sub)
 			db.session.commit()
-			new_mod = Moderator(username=new_sub.created_by, user_id=new_sub.created_by_id, sub_id=new_sub.id, sub=new_sub.name)
+			new_mod = Moderator(username=new_sub.created_by, sub=new_sub.name)
 			db.session.add(new_mod)
 			db.session.commit()
 			cache.delete_memoized(get_subi)
@@ -457,7 +490,7 @@ def create_sub():
 @app.route('/u/<username>/', methods=['GET'])
 def view_user(username):
 	vuser = db.session.query(Iuser).filter_by(username=username).first()
-	mod_of = db.session.query(Moderator).filter_by(user_id=vuser.id).all()
+	mod_of = db.session.query(Moderator).filter_by(username=vuser.username).all()
 	mods = {}
 	for s in mod_of:
 		mods[s.sub] = s.rank

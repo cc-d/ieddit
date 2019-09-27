@@ -10,6 +10,19 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<div class="nav">
+    <a class="top-sort" href="{{ session['top_url'] }}">Top</a>
+    <a class="top-sort" href="{{ session['new_url'] }}">New</a>
+    <a class="top-sort" href="{{ session['hour_url'] }}"></a>
+    <a class="top-sort" href="{{ session['hour_url'] }}"></a>
+    <a class="top-sort" href="{{ session['hour_url'] }}"></a>
+    <a class="top-sort" href="{{ session['hour_url'] }}"></a>
+<a class="top-sort" href="{{ session['hour_url'] }}">Hour</a>
+<a class="top-sort" href="{{ session['day_url'] }}">Day</a>
+<a class="top-sort" href="{{ session['week_url'] }}">Week</a>
+<a class="top-sort" href="{{ session['month_url'] }}">Month</a>
+</div>
+
 {% for post in posts %}
     {% include 'sub_post.html' %}
     {% if loop.last %}

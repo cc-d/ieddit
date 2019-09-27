@@ -147,7 +147,13 @@
 	margin-left: 1em;
 	margin-right: 1em;
 }
+.top-sort {
+	margin-left: 0.5rem;
+	margin-bottom: 0px;
+	color: #212529;
+	text-decoration: underline;
 
+}
 .comment-media-body {
 	min-height: 75px !important;
 	margin-left: 0.5em;

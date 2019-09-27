@@ -5,7 +5,7 @@
 <h2> unread messages </h2>
 {% for message in unread %}
 <div class="media">
-  <div class="media-body message-body">
+  <div class="media-body message-body rounded">
   	<div class="message-text-body">
   	{% if message.sender %}
   	<div class="row message-top-row">
@@ -40,7 +40,7 @@
 <h2> read messages </h2>
 {% for message in read %}
 <div class="media">
-  <div class="media-body message-body">
+  <div class="media-body message-body rounded">
   	<div class="message-text-body">
   	{% if message.sender %}
   	<div class="row message-top-row">

@@ -273,11 +273,13 @@ def removemod():
 		delmod = db.session.query(Moderator).filter_by(username=username, sub=sub).first()
 		you = db.session.query(Moderator).filter_by(username=session['username'], sub=sub).first()
 
-		if delmod.rank > you.rank:
+		if delmod.rank < you.rank:
 			flash('cannot delete mod of higher rank')
 			return redirect('/r/' + sub + '/mods/')
 
 		db.session.query(Moderator).filter_by(username=delmod.username, sub=sub).delete()
-		db.session.commit()
+		db.	session.commit()
+		cache.delete_memoized(get_sub_mods)
+		cache.clear()
 		flash('deleted mod')
 		return redirect('/r/' + sub + '/mods/')
