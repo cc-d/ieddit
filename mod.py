@@ -283,3 +283,29 @@ def removemod():
 		cache.clear()
 		flash('deleted mod')
 		return redirect('/r/' + sub + '/mods/')
+
+@bp.route('/edit/rules', methods=['POST'])
+def editrules():
+	sub = request.form.get('sub')
+	rtext = request.form.get('rtext')
+	if 'username' not in session:
+		flash('not logged in', 'error')
+		return redirect(url_for('login'))
+
+	if len(rtext) < 1 or len(rtext) > 20000:
+		return 'invalid rules text lngth'
+
+	if session['admin']:
+		is_mod = True
+	else:
+		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
+					Moderator.sub.like(post.sub)).exists()).scalar()
+	if is_mod:
+		rules = db.session.query(Sub).filter_by(name=sub).first()
+		rules.rules = rtext
+		db.session.add(rules)
+		db.session.commit()
+		flash('successfully updated rules')
+		return(redirect('/r/' + sub + '/rules/'))
+	else:
+		return 403

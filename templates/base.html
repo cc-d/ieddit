@@ -23,7 +23,7 @@
 <body>
 	<div id="page" class="mx-auto">
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-		<a class="navbar-brand" href="/">ieddit</a>
+		<a class="navbar-brand" href="/">ieddit<small style="font-size:50%;"> alpha</small></a>
 
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto navbar-right">
@@ -70,13 +70,14 @@
 				</li>
 				{% endif %}
 			</ul>
+
 			{% if session['username'] %}
 			<ul class="navbar-nav mr-auto navbar-right">
 					{% if session['has_messages'] %}
 					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> ({{ session['unread_messages'] }})</a>
 					{% else %}
 					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> (0)</a>
-				{% endif %}
+					{% endif %}
 			</ul>
 			{% endif %}
 		</div>

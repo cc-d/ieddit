@@ -90,6 +90,9 @@
                     <form action='{{ config.URL }}/user/delete/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
                     </form>
+                    <form action='{{ config.URL }}/user/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>nsfw</button>
+                    </form>
                 </small>
             </div>
             {% endif %}

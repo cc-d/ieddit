@@ -122,6 +122,6 @@ def split_link(sst, s):
 	new_s.append(s[sindex+len(sst[1])+1:])
 	return new_s
 
-def psuedo_markup(text):
+def pseudo_markup(text):
 	return clean(markdown(text), strip=True)
 

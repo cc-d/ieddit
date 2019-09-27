@@ -50,6 +50,9 @@ def before_request():
 				if 'username' in session:
 					if session['username'] in get_sub_mods(request.sub):
 						request.is_mod = True
+
+	if 'username' in session:
+		has_messages(session['username'])
 	#flash(str(vars(request)))
 
 @app.after_request
@@ -57,9 +60,7 @@ def apply_headers(response):
 	#response.headers["X-Frame-Options"] = "SAMEORIGIN"
 	#response.headers["X-XSS-Protection"] = "1; mode=block"
 	#response.headers['X-Content-Type-Options'] = 'nosniff'
-	if 'username' in session:
-		has_messages(session['username'])
-		session['last_url'] = request.url
+	session['last_url'] = request.url
 	if app.debug:
 		if hasattr(g, 'start'):
 			load_time = str(time.time() - g.start)
@@ -110,7 +111,6 @@ def normalize_sub(sub):
 	if sub != None:
 		return sub.name
 	return False
-
 
 @app.route('/login/',  methods=['GET', 'POST'])
 def login():
@@ -274,7 +274,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	p = []
 	for post in posts:
 		if hasattr(post, 'text'):
-			post.text = psuedo_markup(post.text)
+			post.text = pseudo_markup(post.text)
 		if thumb_exists(post.id):
 			post.thumbnail = 'thumb-' + str(post.id) + '.JPEG'
 		post.mods = get_sub_mods(post.sub)
@@ -381,7 +381,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
 
 	for c in comments:
-		c.text = psuedo_markup(c.text)
+		c.text = pseudo_markup(c.text)
 		c.mods = get_sub_mods(c.sub_name)
 		c.created_ago = time_ago(c.created)
 		if 'user_id' in session:
@@ -480,6 +480,12 @@ def create_sub():
 		if subname != None and verify_subname(subname) and 'username' in session:
 			if len(subname) > 30 or len(subname) < 1:
 				return 'invalid length'
+
+			already = db.session.query(Sub).filter(func.lower(Sub.name) == subname.lower()).first()
+			if already != None:
+				flash('sub already exists', 'danger')
+				return redirect('/create')
+
 			new_sub = Sub(name=subname, created_by=session['username'], created_by_id=session['user_id'])
 			db.session.add(new_sub)
 			db.session.commit()
@@ -763,26 +769,31 @@ def create_comment():
 
 	db.session.commit()
 
-	cache.delete_memoized(get_subi)
+	if parent_id:
+		cparent = db.session.query(Comment).filter_by(id=parent_id).first()
+		sendmsg(title='comment reply', text=new_comment.text, sender=session['username'], sent_to=cparent.author)
+	else:
+		sendmsg(title='comment reply', text=new_comment.text, sender=session['username'], sent_to=post.author)
+
+
+	cache.delete_memoized(get_subi)	
 	cache.delete_memoized(c_get_comments) 
 	cache.delete_memoized(list_of_child_comments)
+	cache.clear()
 
 	set_rate_limit()
 
 	return redirect(post_url, 302)
 
-def send_message(title, text, sent_to, sender=None):
-	new_message = Message(title=title, text=text, sent_to=sent_to, sender=sender)
+def send_message(title, text, sent_to, sender=None, in_reply_to=None):
+	new_message = Message(title=title, text=text, sent_to=sent_to, sender=sender, in_reply_to=in_reply_to)
 	db.session.add(new_message)
 	db.session.commit()
 
 @cache.memoize(600)
 def has_messages(username):
 	if 'username' in session:
-		if 'has_messages' not in session:
-			messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
-		else:
-			messages = None
+		messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
 		if messages != None:
 			if messages > 0:
 				session['has_messages'] = True
@@ -922,6 +933,15 @@ def removemod(sub=None):
 		if request.is_mod:
 			return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
 	return '403'
+
+@app.route('/r/<sub>/rules/', methods=['GET'])
+def rules(sub=None):
+	subr = db.session.query(Sub).filter_by(name=sub).first()
+	if hasattr(subr, 'rules') == False:
+		rtext = False
+	else:
+		rtext = pseudo_markup(subr.rules)
+	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), rules=True, rtext=rtext)
 
 from mod import bp
 app.register_blueprint(bp)

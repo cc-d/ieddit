@@ -97,14 +97,34 @@ def edit_post():
 		obj.edited = True
 		db.session.commit()
 		cache.clear()
-		flash('post edited', category='success')
+		flash('post edited', category='succes')
 		return redirect(obj.permalink)
 	elif hasattr(obj, 'text'):
 		obj.edited = True
 		obj.text = etext
 		db.session.commit()
 		cache.delete_memoized(c_get_comments)
-		flash('comment edited', category='success')
+		flash('comment edited', category='succes')
 		return redirect(obj.permalink)
 	else:
 		return 403
+
+@ubp.route('/nsfw',  methods=['POST'])
+def marknsfw(pid=None):
+	if 'username' not in session:
+		flash('not logged in', 'danger')
+		return redirect(url_for('login'))
+
+	post_id = request.form.get('post_id')
+	post = db.session.query(Post).filter_by(id=post_id).first()
+
+	if session['username'] != post.author:
+		return '403'
+
+	post.nsfw = True
+	flash('marked as nsfw')
+	db.session.commit()
+	return redirect(post.permalink)
+
+
+

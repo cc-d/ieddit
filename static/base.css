@@ -154,6 +154,13 @@
 	text-decoration: underline;
 
 }
+#display-rules {
+	margin-left: 1rem;
+	white-space: pre-wrap;
+	max-height: 200rem;
+	overflow: hidden;
+	word-break: break-word;
+}
 .comment-media-body {
 	min-height: 75px !important;
 	margin-left: 0.5em;
@@ -219,6 +226,7 @@ selftext {
 	white-space: pre-wrap;
 	max-height: 200rem;
 	overflow: hidden;
+	word-break: break-word;
 }
 
 .sub-list {

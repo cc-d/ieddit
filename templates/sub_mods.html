@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 
+
+
 {% if request.is_mod %}
 <nav class="nav mod-page-controls">
   <a class="nav-link">Mod Controls: </a>
@@ -16,6 +18,28 @@
 <a style="color: blue;" class="user-icon-link nav-link" href="{{ config.URL }}/u/{{ mod }}"><i class="fa fa-user"></i>[m]{{ mod }}</a>
 {% endfor %}
 </nav>
+
+
+{% if rules %}
+<div id='display-rules'>
+<h3>rules</h3>
+<selftext>
+{{ rtext|safe }}
+</selftext>
+</div>
+<br><br>
+{% if request.is_mod %}
+<div id='rules'>
+<form style="margin-left: 1rem;" action='/mod/edit/rules' method='POST'>
+  <div class="form-group">
+    <label for="exampleFormControlTextarea1"><h3>Edit Rules</h3></label>
+    <textarea name='rtext' class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+  </div>
+  <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-outline-primary" type="button">Save Rules</button>
+</form>
+</div>
+{% endif %}
+{% endif %}
 
 
 {% if addmod %}
