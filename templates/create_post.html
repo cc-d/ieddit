@@ -8,10 +8,7 @@
 	<label for="create-post-title">Title</label>
 	<input name='title' type="text" class="form-control" id="create-post-title" placeholder="Example: Look at this site I found.">
 	</div>
-	<div class="form-group form-input-text">
-	<label for="create-post-sub">Sub</label>
-	<input name='sub' type="text" class="form-control" id="create-post-sub" placeholder="Example: baseball" value='{{ postsub }}'>
-	</div>
+
 	<h5>URL OR Text</h5>
 	<div class="form-group border-top form-input-text">
 
@@ -22,6 +19,10 @@
 
 	<div class="form-group">
 	<textarea name='self_post_text' class="form-control form-input-text" id="create-post-text" placeholder="Example: How are you doing today?"></textarea>
+	</div>
+	<div class="form-group form-input-text">
+	<label for="create-post-sub">Sub</label>
+	<input name='sub' type="text" class="form-control" id="create-post-sub" placeholder="Example: baseball" value='{{ postsub }}'>
 	</div>
 	<div class="captcha-div">
 	{% if config.CAPTCHA_ENABLE %}

@@ -39,6 +39,16 @@ def before_request():
 	if app.debug:
 		g.start = time.time()
 	session.permanent = True
+	
+	request.sub = False
+	uri = request.environ['REQUEST_URI']
+	if len(uri) > 2:
+		if uri[:3] == '/r/':
+			getsub = re.findall('\/r\/([a-zA-Z1-9-_]*)', request.environ['REQUEST_URI'])
+			if len(getsub) > 0:
+				request.sub = getsub[0]
+
+	flash(str(vars(request)))
 
 @app.after_request
 def apply_headers(response):
@@ -179,10 +189,10 @@ def register():
 
 @app.route('/')
 def index():
-	return subi('all')
+	return subi('all', nsfw=False)
 
 @cache.memoize(600)
-def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, sort_by=False):
+def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, sort_by=False, nsfw=None):
 	if subi != 'all':
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 		if subname == None:
@@ -239,7 +249,8 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	return p
 
 @app.route('/r/<subi>/')
-def subi(subi, user_id=None, posts_only=False, offset=0, limit=15):
+def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=None):
+	flash(str(vars(request)))
 	offset = request.args.get('offset')
 	sort_date = request.args.get('sort_date')
 	sort_by = request.args.get('sort_by')
@@ -267,8 +278,6 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15):
 	if type(sub_posts) == dict:
 		if 'error' in sub_posts.keys():
 			flash(sub_posts['error'], 'danger')
-			if 'last_url' in session:
-				return redirect(session['last_url'] or "/")
 			return redirect('/')
 
 	if posts_only:
@@ -396,6 +405,9 @@ def list_of_child_comments(comment_id, sort_by=None):
 def create_sub():
 	if request.method == 'POST':
 		subname = request.form.get('subname')
+		if subname.lower() == 'all':
+			flash('reserved name')
+			return redirect(url_for('create_sub'))
 		if config.CAPTCHA_ENABLE:
 			if captcha.validate() == False:
 				flash('invalid captcha', 'danger')
@@ -688,7 +700,7 @@ def create_comment():
 	return redirect(post_url, 302)
 
 def send_message(title, text, sent_to, sender=None):
-	new_message = Message(title=title, text=text, sent_to=sent_to, sender=sender)
+	new_message = Message(title=title, text=psuedo_markup(text), sent_to=sent_to, sender=sender)
 	db.session.add(new_message)
 	db.session.commit()
 
