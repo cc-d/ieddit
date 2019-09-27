@@ -50,6 +50,8 @@
 			<ul class="navbar-nav mr-auto navbar-right">
 					{% if session['has_messages'] %}
 					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> ({{ session['unread_messages'] }})</a>
+					{% else %}
+					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> (0)</a>
 				{% endif %}
 			</ul>
 		</div>

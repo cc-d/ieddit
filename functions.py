@@ -7,9 +7,15 @@ import re
 import jinja2
 import html
 import config
+import os.path
 
 from datetime import datetime, timedelta
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
+
+def thumb_exists(tid):
+	if os.path.exists('static/thumb-%s.JPEG' % str(tid)):
+		return True
+	return False
 
 def rstring(length1, length2=False):
 	if length2 == False:

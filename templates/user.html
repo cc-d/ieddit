@@ -3,13 +3,22 @@
 {% if vuser.admin %}
 <h6 style="color: red;"> admin </h6>
 {% endif %}
-<h6> user profile for {{ vuser.username }} </h6>
+<h6> user profile for {{ vuser.username }}</h6>
+
+{% if session['username'] != vuser.username %}
+<a href="/message/{{ vuser.username }}">send message</a>
+{% else %}
+<a href="/u/{{ session['username'] }}/messages/">view messages</a>
+{% endif %}
+
+
 {% if vuser.mods|length > 1 %}
-<h6> moderator of: 
+<small><p> moderator of: 
 {% for sub, rank in vuser.mods.items() %}
 <a href="{{ config.URL }}/r/{{ sub }}/">/r/{{ sub }}</a> {% if loop.last == False %}-{% endif %} 
-{% endfor %}</h6>
+{% endfor %}</p></small>
 {% endif %}
+<div id='user-recent'>
 <h6> recent posts </h6>
 
 {% set count = [0] %}
@@ -24,7 +33,7 @@
 {% endfor %}
 
 {% if count.pop() > 0 %}
-<p> user has additional anonymous posts </p>
+<!-- <p> user has additional anonymous posts </p> -->
 {% endif %}
 
 
@@ -43,13 +52,14 @@
 {% set cauthor_type = comment.author_type %}
 {% endif %}
 
-{% if comment.anonymous == False %}
+{% if comment.anonymous == False and comment.deleted == False %}
 <li class="media sub-comment media-body">
 	<div class='media-body comment-media-body'>
 		<div class="row post-row">
 			<div class="col inner-div">
             <small>
             {% if cauthor_type == 'admin' %}
+            {% if comment.edited %}* {% endif %}
             <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[a]{{ cauthor }}</a>
             {% elif cauthor_type == 'mod' %}
             <i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[m]{{ post.author }}</a>
@@ -89,15 +99,31 @@
 				<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
 				{% endif %}
 			</div>
-		</div>
+
+
+			<div class="inner-div">
+				<a class="comment-link comment-reply" href="{{ comment.permalink }}" comment_id="{{ comment.id }}">reply</a>
+            {% if session['username'] == comment.author %}
+            <div class='mod-option-wrapper user-options'>
+                <small>
+                    <a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' class='mod-option-button'>edit</button>
+                    </a>
+                    <form action='{{ config.URL }}/user/delete/comment/{{ comment.id}}' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button'>delete</button>
+                    </form>
+                </small>
+            </div>
+            {% endif %}
+				{% if loop.depth0 == 4 and value|length > 0 %}
+					<a class="comment-link  comment-more" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
+						more>>
+					</a>
+				{% endif %}
+			</div>
+</div>
             {% if session['username'] in comment.mods %}
             <div class='mod-option-wrapper-comments'><small>
-                    <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
-                    </form>|
-                    <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>lock</button>
-                    </form>|
                     <form action='{{ config.URL }}/mod/delete/' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|
@@ -114,7 +140,8 @@
 {% endfor %}
 
 {% if count.pop() > 0 %}
-<p> user has additional anonymous comments </p>
+<!-- <p> user has additional anonymous comments </p> -->
 {% endif %}
 </ul>
+</div>
 {% endblock %}

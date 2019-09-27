@@ -1,3 +1,5 @@
 __pycache__/
 test.db
 *.pyc
+real-config.py
+proxies.txt

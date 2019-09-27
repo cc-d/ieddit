@@ -51,6 +51,7 @@ class Post(db.Model):
 	locked = db.Column(db.Boolean, default=False, nullable=False)
 	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 	edited = db.Column(db.Boolean, default=False, nullable=False)
+	locked = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Post %r>' % self.id

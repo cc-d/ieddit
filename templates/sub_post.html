@@ -16,9 +16,17 @@
   <li class="media sub-post">
     <div class="post-image-container">
         {% if post.post_type == 'url' %}
+        <a href="{{ post.url }}">
+            {% if post.thumbnail %}
+            <img class="mr-3 post-image" src="{{ url_for('static', filename=post.thumbnail) }}" alt="Generic placeholder image">
+            {% else %}
             <img class="mr-3 post-image" src="{{ url_for('static', filename='globe.png') }}" alt="Generic placeholder image">
+            {% endif %}
+        </a>
         {% else %}
+        <a href="{{ post.permalink }}">
             <img class="mr-3 post-image" src="{{ url_for('static', filename='comment.png') }}" alt="Generic placeholder image">
+        </a>
         {% endif %}
 
     </div>
@@ -29,6 +37,7 @@
             <i class="fa fa-thumb-tack" style="margin-right: 0.5rem;"></i>
             {% endif %}
             <small>
+            {% if post.edited %}* {% endif %}
             {% if pauther_type == 'admin' %}
             <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[a]{{ pauther }}</a>
             {% elif pauther_type == 'mod' %}
@@ -38,7 +47,7 @@
             {% endif %}
             </small>
             <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/r/{{ post.sub }}">/r/{{ post.sub }}</a></small>
-            <small class="created-ago">{{ post.created_ago }}</small>
+            <small class="created-ago"><a class="comment-link" href="{{ post.permalink }}">{{ post.created_ago }}</a></small>
     	</div>
     </div>
     <div class="sub-post-title">
@@ -91,8 +100,9 @@
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>unsticky</button>
                     </form>|
                 {% endif %}
-                    <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>lock</button>
+                    <form action='{{ config.URL }}/mod/lock/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>
+                        {% if post.locked == True %}unlock{% else %}lock{% endif %}</button>
                     </form>|
                     <form action='{{ config.URL }}/mod/delete/post/' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
@@ -112,7 +122,8 @@
 <z><a href="{{ session.prev_off_url }}" class="sub-posts-prev"><< prev</a></z>
 
 {% endif %}
+{% if post.more %}
 <z><a href="{{ session.off_url }}" class="sub-posts-next">next >></a></z>
-
+{% endif %}
 {% endif %}
 {% endif %}

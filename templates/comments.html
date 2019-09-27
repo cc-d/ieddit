@@ -19,6 +19,7 @@
 			<div class="row post-row row-space">
 				<div class="col inner-div">
             <small>
+            	{% if post.edited %}* {% endif %}
             {% if pauthor_type == 'admin' and post.anonymous == False %}
             <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[a]{{ pauthor }}</a>
             {% elif pauthor_type == 'mod' and post.anonymous == False %}
@@ -178,6 +179,7 @@
 		<div class="row post-row">
 			<div class="col inner-div">
             <small>
+            {% if comment.edited %}* {% endif %}
             {% if cauthor_type == 'admin' %}
             <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[a]{{ cauthor }}</a>
             {% elif cauthor_type == 'mod' %}
@@ -218,16 +220,14 @@
 </div>
 			<div class="inner-div">
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>
-            {% if session['username'] == post.author %}
+            {% if session['username'] == comment.author %}
             <div class='mod-option-wrapper user-options'>
                 <small>
-                    {% if post.self_text %}
                     <a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' class='mod-option-button'>edit</button>
                     </a>
-                    {% endif %}
-                    <form action='{{ config.URL }}/user/delete/post/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
+                    <form action='{{ config.URL }}/user/delete/comment/{{ comment.id}}' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                        <button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button'>delete</button>
                     </form>
                 </small>
             </div>
@@ -241,9 +241,6 @@
 			</div>
             {% if session['username'] in post.mods %}
             <div class='mod-option-wrapper-comments'><small>
-                    <form action='{{ config.URL }}/mod/sticky/' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ comment.id }}' class='mod-option-button post-sticky-button'>sticky</button>
-                    </form>|
                     <form action='{{ config.URL }}/mod/delete/comment/' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|

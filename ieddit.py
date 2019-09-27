@@ -6,10 +6,15 @@ from flask_caching import Cache
 from flask_session import Session
 from flask_session_captcha import FlaskSessionCaptcha
 from datetime import timedelta, datetime
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 import time
 import re
 import config
+import base64
+import os
+import urllib.parse
 
 from models import *
 from functions import *
@@ -23,9 +28,16 @@ db = SQLAlchemy(app)
 Session(app)
 captcha = FlaskSessionCaptcha(app)
 
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=config.LIMITER_DEFAULTS
+)
+
 @app.before_request
 def before_request():
-	g.start = time.time()
+	if app.debug:
+		g.start = time.time()
 	session.permanent = True
 
 @app.after_request
@@ -37,8 +49,9 @@ def apply_headers(response):
 		has_messages(session['username'])
 		session['last_url'] = request.url
 	if app.debug:
-		load_time = str(time.time() - g.start)
-		print('\n[Load: %s]' % load_time)
+		if hasattr(g, 'start'):
+			load_time = str(time.time() - g.start)
+			print('\n[Load: %s]' % load_time)
 	return response
 
 @cache.memoize(600)
@@ -183,7 +196,10 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		else:
 			posts = db.session.query(Post).filter_by(deleted=False).order_by((Post.ups - Post.downs).desc())
 		
-
+	more = False
+	pc = posts.count()
+	if pc > limit:
+		more = True
 	posts = posts.limit(limit).offset(offset)
 	posts = [post for post in posts]
 
@@ -200,8 +216,13 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		if sticky:
 			posts.insert(0, sticky)
 
+	if more and len(posts) > 0:
+		posts[len(posts)-1].more = True
+
 	p = []
 	for post in posts:
+		if thumb_exists(post.id):
+			post.thumbnail = 'thumb-' + str(post.id) + '.JPEG'
 		post.mods = get_sub_mods(post.sub)
 		post.created_ago = time_ago(post.created)
 		if subi != 'all':
@@ -575,6 +596,10 @@ def create_post(postsub=None):
 
 		db.session.add(new_post)
 		db.session.commit()
+
+		if post_type == 'url':
+			os.system('python3 get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)))
+
 		new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 		if is_admin(session['username']) and anonymous == False:
 			new_post.author_type = 'admin'
@@ -591,7 +616,7 @@ def create_post(postsub=None):
 	if request.method == 'GET':
 		if request.referrer:
 			subref = re.findall('\/r\/([a-zA-z1-9-_]*)', request.referrer)
-		if subref != None:
+		if 'subref' in locals():
 			if len(subref) == 1:
 				if len(subref[0]) > 0:
 					postsub = subref[0]

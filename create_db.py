@@ -16,6 +16,9 @@ fake = Faker()
 #os.system('rm -rf test.db')
 os.system('bash recreate_psql_db.sh')
 
+# nothing else should have this extension...
+os.system('rm -rf static/thumb-*.JPEG')
+
 # force clear user sessions by changing key
 with open('config.py', 'r+') as f:
 	ctext = f.read()
