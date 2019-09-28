@@ -1,14 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
 
-
-
 {% if request.is_mod %}
 <nav class="nav mod-page-controls">
   <a class="nav-link">Mod Controls: </a>
   <a class="nav-link" href="/r/{{ request.sub }}/mods/">Mod Log</a>
   <a class="nav-link" href="/r/{{ request.sub }}/mods/banned/">Banned Users</a>
   <a class="nav-link" href="/r/{{ request.sub }}/mods/add/">Manage Mods</a>
+  <a class="nav-link" href="/r/{{ request.sub }}/settings/">Settings</a>
 </nav>
 {% endif %}
 
@@ -20,24 +19,43 @@
 </nav>
 
 
+{% if settings %}
+<div id="subsettings" style="margin-left: 1rem;">
+<h3> sub settings </h3>
+<form action='/mod/settings' method='POST'>
+<input type='hidden' name='sub' value='{{ request.sub }}'>
+<ul class="list-group" style="max-width: 20rem;">
+  <li class="list-group-item"><input type='checkbox' name='marknsfw' value='nsfw' {% if nsfw %}checked{% endif %}> Mark All Posts NSFW?</li>
+  <br>
+  <button type='submit' name='sub' style="max-width: 6rem;" value='{{ request.sub }}' class="btn btn-outline-primary" type="button">Update</button>
+</ul>
+</form>
+</div>
+{% endif %}
+
+
 {% if desc %}
-{% if request.subtitle != None %}<h6 style="margin-left: 1rem;">{{ request.subtitle }}</h6>{% endif %}
+<h6 style="margin-left: 1rem;">{% if request.subtitle != None %}Title: {{ request.subtitle }}{% else %}no title{% endif %}</h6>
 <form action='/mod/title' method='POST' style="margin-left: 1rem;">
 <div class="input-group mb-3">
   <input type='hidden' name='sub' value='{{ request.sub }}'>
   {% if request.subtitle != None %}
-  <input type="text" name='title' class="form-control" aria-describedby="basic-addon1" value="{{ request.subtitle }}">
+  <input type="text" style="max-width: 20rem;" name='title' class="form-control" aria-describedby="basic-addon1" value="{{ request.subtitle }}">
   {% else %}
-  <input type="text" name='title' class="form-control" placeholder="Example: A place for friends." aria-label="Username" aria-describedby="basic-addon1">
+  <input type="text" style="max-width: 20rem;" name='title' class="form-control" placeholder="Example: A place for friends." aria-label="Username" aria-describedby="basic-addon1">
   {% endif %}
 <button type='submit' class="btn btn-outline-secondary" type="button">Edit Title</button>
 </div>
 </form>
 <div id='display-rules'>
 
-<h3>Description</h3>
+<h3 style="">Description</h3>
 <selftext>
+{% if rules %}
 {{ rules|safe }}
+{% else %}
+No Description
+{% endif %}
 </selftext>
 </div>
 {% if request.is_mod %}
@@ -63,7 +81,7 @@
     <span class="input-group-text" id="basic-addon1">/u/</span>
   </div>
   <input type='hidden' name='sub' value='{{ request.sub }}'>
-  <input type="text" name='username' class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+  <input type="text" name='username' class="form-control" style="max-width: 20rem;" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
 <button type='submit' class="btn btn-outline-secondary" type="button">Add User To Mods</button>
 </div>
 </form>
@@ -75,7 +93,7 @@
     <span class="input-group-text" id="basic-addon1">/u/</span>
   </div>
   <input type='hidden' name='sub' value='{{ request.sub }}'>
-  <input type="text" name='username' class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+  <input style="max-width: 20rem;" type="text" name='username' class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
 </div>
 </form>
 {% endif %}

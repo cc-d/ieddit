@@ -19,16 +19,17 @@
 </div>
 
 	<div class="form-group form-input-text border-top">
+	<div class="form-group form-input-text">
+	<label for="create-post-title">Title</label>
+	<input name='title' type="text" class="form-control" id="create-post-title" placeholder="Example: Look at this site I found.">
+	<a id='suggest-title' href="javascript:suggestTitle();"></a>
+	</div>
 	<label for="create-post-sub">Sub</label>
 	{% if request.sub %}
 	<input name='sub' type="text" class="form-control" id="create-post-sub" placeholder="Example: baseball" value='{{ request.sub }}'>
 	{% else %}
 	<input name='sub' type="text" class="form-control" id="create-post-sub" placeholder="Example: baseball" value='{{ postsub }}'>
 	{% endif %}
-	</div>
-	<div class="form-group form-input-text">
-	<label for="create-post-title">Title</label>
-	<input name='title' type="text" class="form-control" id="create-post-title" placeholder="Example: Look at this site I found.">
 	</div>
 	<div class="captcha-div">
 	{% if config.CAPTCHA_ENABLE %}

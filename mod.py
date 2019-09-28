@@ -169,11 +169,8 @@ def ban_user():
 	iid = request.form.get('iid')
 	itype = request.form.get('itype')
 
-	if session['admin']:
-		is_mod = True
-	else:
-		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-					Moderator.sub.like(post.sub)).exists()).scalar()
+	is_mod = True
+
 	if is_mod:
 		if itype == 'post':
 			obj = db.session.query(Post).filter_by(id=iid).first()
@@ -181,10 +178,24 @@ def ban_user():
 			obj = db.session.query(Comment).filter_by(id=iid).first()
 		
 		if hasattr(obj, 'sub_name'):
+			is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
+					Moderator.sub.like(obj.sub_name)).exists()).scalar()
+			if is_mod == False:
+				if session['admin']:
+					is_mod = True
+			if is_mod != True:
+				return '403'
 			new_ban = Ban(sub=obj.sub_name, username=obj.author)
 			sub = obj.sub_name
 			db.session.add(new_ban)
 		else:
+			is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
+					Moderator.sub.like(obj.sub)).exists()).scalar()
+			if is_mod == False:
+				if session['admin']:
+					is_mod = True
+			if is_mod != True:
+				return '403'
 			new_ban = Ban(sub=obj.sub, username=obj.author)
 			sub = obj.sub
 			db.session.add(new_ban)
@@ -213,7 +224,7 @@ def unban_user():
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-					Moderator.sub.like(post.sub)).exists()).scalar()
+					Moderator.sub.like(sub)).exists()).scalar()
 	if is_mod:
 		uban = db.session.query(Ban).filter_by(username=username, sub=sub)
 		uban.delete()
@@ -240,7 +251,7 @@ def addmod():
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-					Moderator.sub.like(post.sub)).exists()).scalar()
+					Moderator.sub.like(sub)).exists()).scalar()
 	if is_mod:
 		new_mod = Moderator(sub=sub, username=username)
 		db.session.add(new_mod)
@@ -268,7 +279,7 @@ def removemod():
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-					Moderator.sub.like(post.sub)).exists()).scalar()
+					Moderator.sub.like(sub)).exists()).scalar()
 	if is_mod:
 		sub = normalize_sub(sub)
 		delmod = db.session.query(Moderator).filter_by(username=username, sub=sub).first()
@@ -342,14 +353,16 @@ def title():
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
 
-	if len(title) < 1 or len(title) > 20000:
+	if len(title) > 1000:
 		return 'invalid title lngth'
+	elif len(title) == 0:
+		title = None
 
 	if session['admin']:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-					Moderator.sub.like(post.sub)).exists()).scalar()
+					Moderator.sub.like(sub)).exists()).scalar()
 	if is_mod:
 		desc = db.session.query(Sub).filter_by(name=sub).first()
 		desc.title = title
@@ -358,5 +371,35 @@ def title():
 		flash('successfully updated title')
 		cache.clear()
 		return(redirect('/r/' + sub + '/info/'))
+	else:
+		return 403
+
+@bp.route('/settings', methods=['POST'])
+def settings():
+	sub = request.form.get('sub')
+	marknsfw = 	request.form.get('marknsfw')
+	if 'username' not in session:
+		flash('not logged in', 'error')
+		return redirect(url_for('login'))
+
+	if session['admin']:
+		is_mod = True
+	else:
+		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
+					Moderator.sub.like(sub)).exists()).scalar()
+	if is_mod:
+		sub = db.session.query(Sub).filter_by(name=sub).first()
+		
+		if marknsfw != None:
+			if marknsfw == 'nsfw':
+				sub.nsfw = True
+		else:
+			sub.nsfw = False
+
+		db.session.add(sub)
+		db.session.commit()
+		flash('successfully updated settings', 'success')
+		cache.clear()
+		return(redirect('/r/' + sub.name + '/info/'))
 	else:
 		return 403

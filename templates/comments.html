@@ -10,13 +10,13 @@
 <div id="comment-page-wrapper">
 <ul class="list-unstyled">
 	<li class="media sub-post">
-		{% if post.post_type == 'url' and post.nsfw == False %}
-			<img class="mr-3 comment-image" src="{{ url_for('static', filename='globe.png') }}">
-		{% elif post.nsfw == True %}
-			<img class="mr-3 comment-image" src="{{ url_for('static', filename='nsfw.png') }}">
-		{% else %}
-			<img class="mr-3 comment-image self-post-image" src="{{ url_for('static', filename='comment.png') }}">
-		{% endif %}
+            {% if post.thumbnail and post.nsfw == True %}
+            <img class="mr-3 post-image" src="{{ url_for('static', filename=post.thumbnail) }}" alt="Generic placeholder image">
+            {% elif post.nsfw == False and post.thumbnail %}
+            <img class="mr-3 post-image" src="{{ url_for('static', filename='nsfw.png') }}" alt="Generic placeholder image">
+            {% else %}
+            <img class="mr-3 post-image" src="{{ url_for('static', filename='globe.png') }}" alt="Generic placeholder image">
+            {% endif %}
 		<div class="media-body">
 			<div class="row post-row row-space">
 				<div class="col inner-div">

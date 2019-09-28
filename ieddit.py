@@ -45,19 +45,22 @@ def before_request():
 	except:
 		request.sub = False
 
+	request.is_mod = False
+
 	uri = request.environ['REQUEST_URI']
 	if len(uri) > 2:
 		if uri[:3] == '/r/':
 			getsub = re.findall('\/r\/([a-zA-Z1-9-_]*)', request.environ['REQUEST_URI'])
 			if len(getsub) > 0:
-				oldsub = request.sub
-				request.sub = getsub[0]
-				if 'username' in session:
-					if session['username'] in get_sub_mods(request.sub):
-						request.is_mod = True
+				if getsub[0] != 'all':
+					oldsub = request.sub
+					request.sub = getsub[0]
+					if 'username' in session:
+						if session['username'] in get_sub_mods(request.sub):
+							request.is_mod = True
 
-				if oldsub != request.sub:
-					request.subtitle = get_subtitle(request.sub)
+					if oldsub != request.sub:
+						request.subtitle = get_subtitle(request.sub)
 
 	if 'username' in session:
 		has_messages(session['username'])
@@ -74,6 +77,29 @@ def apply_headers(response):
 			load_time = str(time.time() - g.start)
 			print('\n[Load: %s]' % load_time)
 	return response
+
+# i hate sending external requests
+@app.route('/suggest_title')
+@limiter.limit("5/minute")
+def suggest_title(url=None):
+	import requests
+	from bs4 import BeautifulSoup
+	import urllib.parse
+	url = request.args.get('u')
+	url = urllib.parse.unquote(url)
+	r = requests.get(url, proxies=config.PROXIES)
+	if r.status_code == 200:
+		try:
+			soup = BeautifulSoup(r.text)
+			title = soup.find('meta', property='og:title')
+			if title != None:
+				title = title.get('content', None)
+				return title
+			else:
+				return soup.title.string
+		except Exception as e:
+			return ''
+	return ''
 
 @cache.memoize(600)
 def get_subtitle(sub):
@@ -220,8 +246,7 @@ def index():
 	return subi('all', nsfw=False)
 
 @cache.memoize(600)
-def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=None, d=None, s=None):
-
+def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=True, d=None, s=None):
 	if offset != None:
 		offset = int(offset)
 
@@ -265,6 +290,10 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		posts.sort(key=lambda x: x.hot, reverse=True)
 	#posts = [post for post in posts if post.created > ago]
 	
+
+	if nsfw == False:
+		posts = [p for p in posts if p.nsfw == False]
+
 	more = False
 	pc = len(posts)
 	if pc > limit:
@@ -317,7 +346,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	return p
 
 @app.route('/r/<subi>/')
-def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=None, show_top=True, s=None, d=None):
+def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, show_top=True, s=None, d=None):
 	offset = request.args.get('offset')
 	d = request.args.get('d')
 	s = request.args.get('s')
@@ -338,22 +367,21 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=None, sh
 	if request.url.find('offset=') == -1:
 		session['prev_off_url'] = False
 
-	prefix = '&'
 
-	session['top_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=top'
-	session['new_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=new'
-	session['hot_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=hot'
+	session['top_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=top'
+	session['new_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=new'
+	session['hot_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=hot'
 
-	session['hour_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=hour'
-	session['day_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=day'	
-	session['week_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=week'
-	session['month_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=month'
+	session['hour_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=hour'
+	session['day_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=day'
+	session['week_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=week'
+	session['month_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=month'
 
 	for a in ['top_url', 'new_url', 'day_url', 'week_url', 'hour_url', 'month_url', 'hot_url']:
 		if session[a].find('/&') != -1:
 			session[a] = session[a].replace('/&', '/?')
 
-	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only, deleted=False, offset=offset, limit=15, d=d, s=s)
+	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only, deleted=False, offset=offset, limit=15, d=d, s=s, nsfw=nsfw)
 	if type(sub_posts) == dict:
 		if 'error' in sub_posts.keys():
 			flash(sub_posts['error'], 'danger')
@@ -515,6 +543,7 @@ def create_sub():
 			db.session.commit()
 			cache.delete_memoized(get_subi)
 			set_rate_limit()
+			flash('You have created a new sub! Mod actions are under the "info" tab.', 'success')
 			return redirect(config.URL + '/r/' + subname, 302)
 		return 'invalid'
 	elif request.method == 'GET':
@@ -666,6 +695,11 @@ def create_post(postsub=None):
 			flash('invalid sub', 'danger')
 			return redirect('/create_post')
 
+		if sub.nsfw:
+			nsfw = True
+		else:
+			nsfw = False
+
 		sub = sub.name
 
 		if anonymous != None:
@@ -697,14 +731,14 @@ def create_post(postsub=None):
 			if len(prot) != 1:
 				url = 'https://' + url
 			new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'],
-						author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous)
+						author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw)
 
 		elif post_type == 'self_post':
 			if len(self_post_text) < 1 or len(self_post_text) > 20000:
 				flash('invalid self post length', 'danger')
 				return redirect(url_for('create_post'))
 			new_post = Post(self_text=self_post_text, title=title, inurl_title=convert_ied(title),
-				author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous)
+				author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw)
 
 		db.session.add(new_post)
 		db.session.commit()
@@ -979,6 +1013,12 @@ def description(sub=None):
 			rtext = False
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
 
+@app.route('/r/<sub>/settings/', methods=['GET'])
+def settings(sub=None):
+	subr = db.session.query(Sub).filter_by(name=sub).first()
+	if request.is_mod:
+		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw)
+	return '403'
 
 @app.route('/explore/', methods=['GET'])
 def explore():

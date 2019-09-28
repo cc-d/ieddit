@@ -29,6 +29,7 @@ class Sub(db.Model):
 	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 	rules = db.Column(db.String(20000), nullable=True, default=None)
 	title = db.Column(db.String(1000), nullable=True, default=None)
+	nsfw = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Sub %r>' % self.name

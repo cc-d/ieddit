@@ -14,7 +14,7 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
 	<script src="{{ url_for('static', filename='main.js') }}"></script>
 	<link rel="shortcut icon" href="{{ url_for('static', filename='globe.png') }}">
-	{% if request.sub %}
+	{% if request.sub and request.sub != 'all' %}
 	<title>/r/{{ request.sub}} {% if request.subtitle != None %} - {{ request.subtitle }}{% endif %}</title>
 	{% else %}
 	<title>ieddit</title>
@@ -35,7 +35,7 @@
 					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-outline-secondary">Create Post</button></a>
 				</li>
 
-				{% if request.sub %}
+				{% if request.sub and request.sub != 'all' %}
 				<li class="nav-item active">
 					<a class="nav-link" href="/r/{{ request.sub }}"><button type="button" class="btn btn-sm btn-outline-primary">/r/{{ request.sub }}</button></a>
 				</li>

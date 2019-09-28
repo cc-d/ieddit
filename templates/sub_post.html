@@ -22,9 +22,9 @@
     <div class="post-image-container">
         {% if post.post_type == 'url' %}
         <a href="{{ post.url }}">
-            {% if post.thumbnail and post.nsfw == False %}
+            {% if post.thumbnail and post.nsfw == True %}
             <img class="mr-3 post-image" src="{{ url_for('static', filename=post.thumbnail) }}" alt="Generic placeholder image">
-            {% elif post.nsfw == True %}
+            {% elif post.nsfw == False and post.thumbnail %}
             <img class="mr-3 post-image" src="{{ url_for('static', filename='nsfw.png') }}" alt="Generic placeholder image">
             {% else %}
             <img class="mr-3 post-image" src="{{ url_for('static', filename='globe.png') }}" alt="Generic placeholder image">

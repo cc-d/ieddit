@@ -162,9 +162,8 @@
 float: left;
 }
 #display-rules {
-	margin-top: -3rem;
 	margin-left: 1rem;
-	white-space: pre-wrap;
+	white-space: inherit;
 	max-height: 250rem;
 	overflow: hidden;
 	word-break: break-word;
@@ -231,7 +230,7 @@ float: left;
 }
 
 selftext {
-	white-space: pre-wrap;
+	white-space: white-space: inherit;
 	max-height: 200rem;
 	overflow: hidden;
 	word-break: break-word;
@@ -262,6 +261,10 @@ selftext {
 }
 .media-body-explore {
 	margin: 0.5rem;
+	max-height: 100rem;
+	overflow: hidden;
+	word-break: break-word;
+	white-space: inherit;
 }
 .created-ago {
 	margin-left: 1rem;
@@ -294,7 +297,8 @@ selftext {
 }
 
 .comment-text-text {
-	white-space: pre-wrap;
+	white-space: white-space: inherit;;
+	word-break: break-word;
 	max-height: 100rem;
 	overflow: hidden;
 }

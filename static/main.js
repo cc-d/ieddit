@@ -142,4 +142,31 @@ $(document).ready(function() {
 	}, 5000);
 });
 
+
+
+var c = false;
+setInterval(lookForChange, 1000);
+
+function lookForChange()
+{
+	var re = new RegExp('^https?:\/\/')
+    var utext = document.getElementById("create-post-url").value;
+    if (re.test(utext)) {
+    	if ($('#suggest-title').text() != 'suggest title') {
+        	$('#suggest-title').text('suggest title');
+        }
+    }
+}
+
+function suggestTitle() {
+	var re = new RegExp('^https?:\/\/')
+	var utext = document.getElementById("create-post-url").value;
+	if (re.test(utext)) {
+		$.get('/suggest_title?u=' + utext, function(data, status) {
+			$('#create-post-title').val(data);
+		});
+	}
+}
+
+
 console.log('loaded');
