@@ -828,16 +828,22 @@ def create_comment():
 		new_comment.author_type = 'admin'
 	elif is_mod(post.sub, session['username']) and anonymous == False:
 		new_comment.author_type = 'mod'
+	else:
+		new_comment.author_type = 'user'
 
 	db.session.commit()
 
-	if parent_id:
-		cparent = db.session.query(Comment).filter_by(id=parent_id).first()
-		new_message = Message(title='comment reply', text=new_comment.text, sender=session['username'], sent_to=cparent.author, in_reply_to=cparent.permalink)
+	sender = new_comment.author
+
+	if new_comment.parent_id:
+		cparent = db.session.query(Comment).filter_by(id=new_comment.parent_id).first()
+		new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
+			sent_to=cparent.author, in_reply_to=cparent.permalink, anonymous=anonymous)
 		db.session.add(new_message)
 		db.session.commit()
 	else:
-		new_message = Message(title='comment reply', text=new_comment.text, sender=session['username'], sent_to=post.author, in_reply_to=post.permalink)
+		new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
+			sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous)
 		db.session.add(new_message)
 		db.session.commit()
 

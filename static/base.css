@@ -235,7 +235,9 @@ selftext {
 	overflow: hidden;
 	word-break: break-word;
 }
-
+.reply-fa-user {
+	margin-top: 4px;
+}
 
 .nsfw {
 	display: inline;

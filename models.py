@@ -120,6 +120,8 @@ class Message(db.Model):
 	sender = db.Column(db.String(20), db.ForeignKey('iuser.username'), default=None, nullable=True)
 	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 	in_reply_to = db.Column(db.String(400), default=None, nullable=True)
+	anonymous = db.Column(db.Boolean, default=False, nullable=False)
+	sender_type = db.Column(db.String(20), default='user', nullable=False)
 
 	def __repr__(self):
 		return '<Message %r>' % self.id

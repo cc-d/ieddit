@@ -1,0 +1,37 @@
+<div class="media">
+  <div class="media-body message-body rounded">
+  	<div class="message-text-body">
+  	{% if message.sender %}
+  	<div class="row message-top-row">
+      {% if message.sender_type == 'admin' and message.anonymous == False %}
+      <i style="color: red;" class="fa fa-user reply-fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}">[a]{{ message.sender }}</a>
+      {% elif message.sender_type == 'mod' and message.anonymous == False %}
+      <i style="color: blue;" class="fa fa-user reply-fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}">[m]{{ message.sender }}</a>
+      {% elif message.anonymous == True %}
+      <i class="fa fa-user reply-fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/Anonymous">Anonymous</a>
+      {% else %}
+      <i class="fa fa-user reply-fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}">{{ message.sender }}</a>
+      {% endif %}
+  		
+
+      {% if message.in_reply_to != None %}
+  		<div class="in-reply-to">
+  		<small><a class="user-icon-link" href="{{ message.in_reply_to }}">{{ message.ppath }}</a></small>
+  		</div>
+  		{% endif %}
+  	</div>
+  	{% endif %}
+    <h5 class="mt-0 message-title">{{ message.title }}</h5>
+		{{ message.text|safe }}
+	{% if message.in_reply_to != None %}
+	<div class="row message-bottom-row">
+	<small><a class="user-icon-link" href="{{ message.in_reply_to }}">reply</a></small>
+	</div>
+	{% elif message.sender != None %}
+	<div class="row message-bottom-row">
+	<small><a class="user-icon-link" href="reply/{{ message.id }}">reply</a></small>
+	</div>
+	{% endif %}
+	</div>
+  </div>
+</div>

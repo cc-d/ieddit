@@ -27,11 +27,13 @@
 			<i class="fa fa-lock" style="margin-right: 0.5rem;"></i>
 			{% endif %}
 			<small>
-				{% if post.edited %}* {% endif %}
+			{% if post.edited %}* {% endif %}
 			{% if pauthor_type == 'admin' and post.anonymous == False %}
 			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[a]{{ pauthor }}</a>
 			{% elif pauthor_type == 'mod' and post.anonymous == False %}
 			<i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[m]{{ pauthor }}</a>
+			{% elif post.anonymous %}
+			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/Anonymous">{{ pauthor }}</a>
 			{% else %}
 			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">{{ pauthor }}</a>
 			{% endif %}
@@ -218,11 +220,11 @@
 			<small>
 			{% if comment.edited %}* {% endif %}
 			{% if cauthor_type == 'admin' %}
-			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[a]{{ cauthor }}</a>
+			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
 			{% elif cauthor_type == 'mod' %}
-			<i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[m]{{ pauthor }}</a>
+			<i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ pauthor }}</a>
 			{% else %}
-			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">{{ cauthor }}</a>
+			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
 			{% endif %}
 			</small>
 			<a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
