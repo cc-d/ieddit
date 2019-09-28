@@ -18,7 +18,7 @@
   	</div>
   	{% endif %}
     <h5 class="mt-0 message-title">{{ message.title }}</h5>
-		{{ message.text }}
+		{{ message.text|safe }}
 	{% if message.in_reply_to != None %}
 	<div class="row message-bottom-row">
 	<small><a class="user-icon-link" href="{{ message.in_reply_to }}">reply</a></small>
@@ -53,7 +53,7 @@
   	</div>
   	{% endif %}
     <h5 class="mt-0 message-title">{{ message.title }}</h5>
-		{{ message.text }}
+		{{ message.text|safe }}
 	{% if message.in_reply_to != None %}
 	<div class="row message-bottom-row">
 	<small><a class="user-icon-link" href="{{ message.in_reply_to }}">reply</a></small>

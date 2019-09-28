@@ -303,7 +303,7 @@ def editrules():
 					Moderator.sub.like(post.sub)).exists()).scalar()
 	if is_mod:
 		desc = db.session.query(Sub).filter_by(name=sub).first()
-		desc.description = rtext
+		desc.rules = rtext
 		db.session.add(desc)
 		db.session.commit()
 		cache.clear()

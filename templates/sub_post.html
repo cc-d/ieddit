@@ -7,14 +7,17 @@
 {% endif %}
 
 {% if loop is defined %}
-{% if loop.last %}
+{% if loop.last and not loop.first %}
 <ul class="list-unstyled sub-list rounded" style="margin-bottom: 5px;">
 {% elif loop.first %}
 <ul class="list-unstyled sub-list rounded" style="margin-top: 5px;">
 {% else %}
-<ul class="list-unstyled sub-list rounded">
+<ul class="list-unstyled sub-list rounded" style="margin-top: 0px;">
 {% endif %}
+{% else %}
+<ul class="list-unstyled sub-list rounded" style="margin-top: 0px;">
 {% endif %}
+
   <li class="media sub-post rounded">
     <div class="post-image-container">
         {% if post.post_type == 'url' %}

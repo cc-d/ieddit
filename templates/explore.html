@@ -1,10 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
 
-
 {% for sub in subs %}
-{{ sub.name }}
-
+<div class="media explore-sub rounded">
+  <div class="media-body media-body-explore">
+    <h5 class="mt-0"><a href="{{ config.URL }}/r/{{ sub.name }}">/r/{{ sub.name }} {% if sub.title != None %} - {{ sub.title }}{% endif %}</a></h5>
+    {% if sub.rules %}
+    {{ sub.rules|safe }}
+    {% else %}
+    This sub has no description.
+    {% endif %}
+    <br>
+    <a class="explore-link" href="{{ config.URL }}/r/{{ sub.name }}">({{sub.posts}}) posts</a><a><a/><a class="explore-link" href="{{ config.URL }}/r/{{ sub.name }}">({{sub.comments}}) comments</a> 
+  </div>
+</div>
 {% endfor %}
 
 {% endblock %}

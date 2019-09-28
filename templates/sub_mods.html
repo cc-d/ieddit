@@ -35,21 +35,23 @@
 </form>
 <div id='display-rules'>
 
-<h3>info</h3>
+<h3>Description</h3>
 <selftext>
 {{ rules|safe }}
 </selftext>
 </div>
 {% if request.is_mod %}
 <div id='rules'>
-<form style="margin-left: 1rem;" action='/mod/edit/rules' method='POST'>
+<form style="margin-left: 1rem;" action='/mod/edit/description' method='POST'>
   <div class="form-group">
-    <label for="exampleFormControlTextarea1"><h3>Edit Info</h3></label>
+    <label for="exampleFormControlTextarea1"><h3>Edit Description</h3></label>
     <textarea name='rtext' class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
   </div>
   <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-outline-primary" type="button">Save Info</button>
 </form>
 </div>
+<br>
+<br>
 {% endif %}
 {% endif %}
 

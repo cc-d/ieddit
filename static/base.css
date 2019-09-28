@@ -156,14 +156,16 @@
 	margin-right: 1em;
 }
 .top-sort {
+	margin-top: 0.25rem;
 }
 #prev-button {
 float: left;
 }
 #display-rules {
+	margin-top: -3rem;
 	margin-left: 1rem;
 	white-space: pre-wrap;
-	max-height: 200rem;
+	max-height: 250rem;
 	overflow: hidden;
 	word-break: break-word;
 }
@@ -247,17 +249,26 @@ selftext {
 	margin-top: 1rem;
 	border: 1px solid black;
 }
-
+.explore-link {
+	margin-right: 1rem;
+}
 .sub-post-title-url {
 	font-size: 0.8rem;
 	color: #212529;
 }
-
+.explore-sub {
+	margin-top: 1rem;
+	border: 1px solid black;
+}
+.media-body-explore {
+	margin: 0.5rem;
+}
 .created-ago {
 	margin-left: 1rem;
 }
 
 .sub-comment {
+	margin-bottom: 0.25rem;
 	border: 1px solid gray;
 	word-break: break-word;
 }

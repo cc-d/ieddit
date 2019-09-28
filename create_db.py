@@ -48,7 +48,7 @@ for i in range(20):
 	db.session.add(new_user)
 db.session.commit()
 
-new_sub = Sub(name='test', created_by='test', created_by_id=1)
+new_sub = Sub(name='test', created_by='test', created_by_id=1, title='for testing')
 db.session.add(new_sub)
 db.session.commit()
 new_mod = Moderator(username='test', sub='test')

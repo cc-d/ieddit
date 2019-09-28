@@ -518,6 +518,9 @@ def create_sub():
 			return redirect(config.URL + '/r/' + subname, 302)
 		return 'invalid'
 	elif request.method == 'GET':
+		if 'username' not in session:
+			flash('please log in to create subs', 'danger')
+			return redirect('/login/')
 		return render_template('create.html')
 
 @app.route('/u/<username>/', methods=['GET'])
@@ -689,8 +692,13 @@ def create_post(postsub=None):
 			if len(url) > 2000 or len(url) < 1:
 				flash('invalid url length', 'danger')
 				return redirect(url_for('create_post'))
+
+			prot = re.findall('^https?:\/\/', url)
+			if len(prot) != 1:
+				url = 'https://' + url
 			new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'],
 						author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous)
+
 		elif post_type == 'self_post':
 			if len(self_post_text) < 1 or len(self_post_text) > 20000:
 				flash('invalid self post length', 'danger')
@@ -718,6 +726,9 @@ def create_post(postsub=None):
 		return redirect(url, 302)
 
 	if request.method == 'GET':
+		if 'username' not in session:
+			flash('please log in to create new posts', 'danger')
+			return redirect('/login/')
 		if request.referrer:
 			subref = re.findall('\/r\/([a-zA-z1-9-_]*)', request.referrer)
 		if 'subref' in locals():
@@ -835,6 +846,7 @@ def user_messages(username=None):
 			read = db.session.query(Message).filter_by(sent_to=username, read=True).all()
 			unread = db.session.query(Message).filter_by(sent_to=username, read=False).all()
 			for r in read:
+				r.text = pseudo_markup(r.text)
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
 			
@@ -847,6 +859,7 @@ def user_messages(username=None):
 			db.session.commit()
 
 			for r in unread:
+				r.text = pseudo_markup(r.text)
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
 
@@ -866,6 +879,7 @@ def reply_message(username=None, mid=None):
 		flash('invalid message id', 'danger')
 		return redirect('/')
 	else:
+		m.text = pseudo_markup(m.text)
 		if hasattr(m, 'in_reply_to'):
 			if m.in_reply_to != None:
 				m.ppath = m.in_reply_to.replace(config.URL, '')
@@ -956,19 +970,25 @@ def removemod(sub=None):
 @app.route('/r/<sub>/info/', methods=['GET'])
 def description(sub=None):
 	subr = db.session.query(Sub).filter_by(name=sub).first()
-	if hasattr(subr, 'description') == False:
+	if hasattr(subr, 'rules') == False:
 		rtext = False
 	else:
 		if subr.rules != None:
 			rtext = pseudo_markup(subr.rules)
 		else:
 			rtext = False
-	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rtext=rtext)
+	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
 
 
 @app.route('/explore/', methods=['GET'])
 def explore():
 	subs = db.session.query(Sub).all()
+	for sub in subs:
+		if hasattr(sub, 'rules'):
+			if sub.rules != None:
+				sub.rules = pseudo_markup(sub.rules)
+		sub.posts = db.session.query(Post).filter_by(sub=sub.name).count()
+		sub.comments = db.session.query(Comment).filter_by(sub_name=sub.name).count()
 	return render_template('explore.html', subs=subs)
 
 

@@ -37,13 +37,10 @@
 
 				{% if request.sub %}
 				<li class="nav-item active">
-					<a class="nav-link" href="/r/{{ request.sub }}">/r/{{ request.sub }}</a>
+					<a class="nav-link" href="/r/{{ request.sub }}"><button type="button" class="btn btn-sm btn-outline-primary">/r/{{ request.sub }}</button></a>
 				</li>
 				<li class="nav-item active">
-					<a class="nav-link" href="/r/{{ request.sub }}/info/">info</a>
-				</li>
-				<li class="nav-item active">
-					<a class="nav-link" href="/r/{{ request.sub }}/mods/">mods</a>
+					<a class="nav-link" href="/r/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-outline-primary">info</button></a>
 				</li>
 				{% else %}
 				<li class="nav-item">
@@ -65,7 +62,7 @@
 				</li>
 				{% else %}
 				<li class="nav-item">
-					<a class="nav-link" href="/login/"><button type="button" class="btn btn-sm btn-outline-success">Login</button></a>
+					<a class="nav-link" href="/login/"><button type="button" class="btn btn-sm btn-outline-secondary">Login</button></a>
 				</li>
 				{% endif %}
 			</ul>
