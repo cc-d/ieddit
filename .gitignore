@@ -3,3 +3,4 @@ test.db
 *.pyc
 real-config.py
 proxies.txt
+static/thumb-
