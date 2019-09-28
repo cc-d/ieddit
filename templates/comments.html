@@ -47,7 +47,7 @@
 	{% else %}
 <div class="media">
   <div class="media-body">
-	<h5 class="mt-0">{{ post.title }}</h5>
+	<h5 class="mt-0 post-title-h5">{{ post.title }}</h5>
 	<selftext>{{ post.self_text|safe }}<selftext>
   </div>
 </div>
@@ -84,8 +84,6 @@
 					<form action='{{ config.URL }}/user/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
 						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>nsfw</button>
 					</form>
-					{% else %}
-						<nsfw style="color: red;">nsfw</nsfw>
 					{% endif %}
 				</small>
 			</div>
@@ -239,7 +237,7 @@
 			</a>
 			</div>
 		</div>
-		<div clss="comment-text">
+		<div class="comment-text">
 		<p class="comment-text-text">{{ comment.text|safe }}</p>
 	</div>
 			<div class="row post-row comment-bottom">

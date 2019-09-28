@@ -28,6 +28,7 @@ class Sub(db.Model):
 	created_by_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
 	created = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 	rules = db.Column(db.String(20000), nullable=True, default=None)
+	title = db.Column(db.String(1000), nullable=True, default=None)
 
 	def __repr__(self):
 		return '<Sub %r>' % self.name

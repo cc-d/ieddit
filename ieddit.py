@@ -40,16 +40,24 @@ def before_request():
 		g.start = time.time()
 	session.permanent = True
 	
-	request.sub = False
+	try:
+		request.sub
+	except:
+		request.sub = False
+
 	uri = request.environ['REQUEST_URI']
 	if len(uri) > 2:
 		if uri[:3] == '/r/':
 			getsub = re.findall('\/r\/([a-zA-Z1-9-_]*)', request.environ['REQUEST_URI'])
 			if len(getsub) > 0:
+				oldsub = request.sub
 				request.sub = getsub[0]
 				if 'username' in session:
 					if session['username'] in get_sub_mods(request.sub):
 						request.is_mod = True
+
+				if oldsub != request.sub:
+					request.subtitle = get_subtitle(request.sub)
 
 	if 'username' in session:
 		has_messages(session['username'])
@@ -66,6 +74,11 @@ def apply_headers(response):
 			load_time = str(time.time() - g.start)
 			print('\n[Load: %s]' % load_time)
 	return response
+
+@cache.memoize(600)
+def get_subtitle(sub):
+	title = db.session.query(Sub).filter_by(name=sub).first()
+	return title.title
 
 @cache.memoize(600)
 def get_sub_mods(sub, admin=True):
@@ -208,10 +221,10 @@ def index():
 
 @cache.memoize(600)
 def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=None, d=None, s=None):
-	if type(offset) == int:
+
+	if offset != None:
 		offset = int(offset)
-	else:
-		offset = 0
+
 	if subi != 'all':
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 		if subname == None:
@@ -241,8 +254,10 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 
 	if s == 'top':
 		posts = posts.order_by((Post.ups - Post.downs).desc())
+		posts = posts.all()
 	elif s == 'new':
 		posts = posts.order_by((Post.created).desc())
+		posts = posts.all()
 	else:
 		posts = posts.all()
 		for p in posts:
@@ -254,17 +269,23 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	pc = len(posts)
 	if pc > limit:
 		more = True
-	
+
+	try:
+		offset + 1
+	except:
+		offset = 0
+
 	posts = posts[offset:]
-	posts = posts[:limit]
+	posts = posts[offset:offset+limit]
 
 	stid = False
 	for p in posts:
 		if p.stickied == True:
 			stid = p.id
 
-	if stid:
-		posts = [post for post in posts if post.id != stid]
+	if subi != 'all':
+		if stid:
+			posts = [post for post in posts if post.id != stid]
 
 	if subi != 'all':
 		sticky = db.session.query(Post).filter(func.lower(Post.sub) == subi.lower(), Post.stickied == True).first()
@@ -301,9 +322,6 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=None, sh
 	d = request.args.get('d')
 	s = request.args.get('s')
 
-	if type(offset) == None:
-		offset = 0
-
 	if request.environ['QUERY_STRING'] == '':
 		session['off_url'] = request.url + '?offset=15'
 		session['prev_off_url'] = request.url
@@ -324,14 +342,14 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=None, sh
 
 	session['top_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=top'
 	session['new_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=new'
-	session['new_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=hot'
+	session['hot_url'] = re.sub('[&\?]?s=\w+', '', request.url) + prefix + 's=hot'
 
 	session['hour_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=hour'
 	session['day_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=day'	
 	session['week_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=week'
 	session['month_url'] = re.sub('[&\?]?d=\w+', '', request.url) + prefix + 'd=month'
 
-	for a in ['top_url', 'new_url', 'day_url', 'week_url', 'hour_url', 'month_url']:
+	for a in ['top_url', 'new_url', 'day_url', 'week_url', 'hour_url', 'month_url', 'hot_url']:
 		if session[a].find('/&') != -1:
 			session[a] = session[a].replace('/&', '/?')
 
@@ -488,7 +506,8 @@ def create_sub():
 				flash('sub already exists', 'danger')
 				return redirect('/create')
 
-			new_sub = Sub(name=subname, created_by=session['username'], created_by_id=session['user_id'])
+			title = request.form.get('title')
+			new_sub = Sub(name=subname, created_by=session['username'], created_by_id=session['user_id'], title=title)
 			db.session.add(new_sub)
 			db.session.commit()
 			new_mod = Moderator(username=new_sub.created_by, sub=new_sub.name)
@@ -691,7 +710,7 @@ def create_post(postsub=None):
 		elif is_mod(new_post, session['username']) and anonymous == False:
 			new_post.author_type = 'mod'
 		db.session.commit()
-		url = config.URL + '/r/' + sub
+		url = new_post.permalink
 		set_rate_limit()
 
 		cache.delete_memoized(get_subi)
@@ -762,16 +781,20 @@ def create_comment():
 
 	if is_admin(session['username']) and anonymous == False:
 		new_comment.author_type = 'admin'
-	elif is_mod(new_comment, session['username']) and anonymous == False:
+	elif is_mod(post.sub, session['username']) and anonymous == False:
 		new_comment.author_type = 'mod'
 
 	db.session.commit()
 
 	if parent_id:
 		cparent = db.session.query(Comment).filter_by(id=parent_id).first()
-		sendmsg(title='comment reply', text=new_comment.text, sender=session['username'], sent_to=cparent.author)
+		new_message = Message(title='comment reply', text=new_comment.text, sender=session['username'], sent_to=cparent.author, in_reply_to=cparent.permalink)
+		db.session.add(new_message)
+		db.session.commit()
 	else:
-		sendmsg(title='comment reply', text=new_comment.text, sender=session['username'], sent_to=post.author)
+		new_message = Message(title='comment reply', text=new_comment.text, sender=session['username'], sent_to=post.author, in_reply_to=post.permalink)
+		db.session.add(new_message)
+		db.session.commit()
 
 
 	cache.delete_memoized(get_subi)	
@@ -783,7 +806,7 @@ def create_comment():
 
 	return redirect(post_url, 302)
 
-def send_message(title, text, sent_to, sender=None, in_reply_to=None):
+def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=None):
 	new_message = Message(title=title, text=text, sent_to=sent_to, sender=sender, in_reply_to=in_reply_to)
 	db.session.add(new_message)
 	db.session.commit()
@@ -930,17 +953,24 @@ def removemod(sub=None):
 			return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
 	return '403'
 
-@app.route('/r/<sub>/rules/', methods=['GET'])
-def rules(sub=None):
+@app.route('/r/<sub>/info/', methods=['GET'])
+def description(sub=None):
 	subr = db.session.query(Sub).filter_by(name=sub).first()
-	if hasattr(subr, 'rules') == False:
+	if hasattr(subr, 'description') == False:
 		rtext = False
 	else:
 		if subr.rules != None:
 			rtext = pseudo_markup(subr.rules)
 		else:
 			rtext = False
-	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), rules=True, rtext=rtext)
+	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rtext=rtext)
+
+
+@app.route('/explore/', methods=['GET'])
+def explore():
+	subs = db.session.query(Sub).all()
+	return render_template('explore.html', subs=subs)
+
 
 from mod import bp
 app.register_blueprint(bp)

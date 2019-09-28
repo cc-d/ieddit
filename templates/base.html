@@ -15,7 +15,7 @@
 	<script src="{{ url_for('static', filename='main.js') }}"></script>
 	<link rel="shortcut icon" href="{{ url_for('static', filename='globe.png') }}">
 	{% if request.sub %}
-	<title>/r/{{ request.sub}}</title>
+	<title>/r/{{ request.sub}} {% if request.subtitle != None %} - {{ request.subtitle }}{% endif %}</title>
 	{% else %}
 	<title>ieddit</title>
 	{% endif %}
@@ -34,20 +34,25 @@
 				<li class="nav-item">
 					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-outline-secondary">Create Post</button></a>
 				</li>
+
 				{% if request.sub %}
 				<li class="nav-item active">
 					<a class="nav-link" href="/r/{{ request.sub }}">/r/{{ request.sub }}</a>
 				</li>
 				<li class="nav-item active">
-					<a class="nav-link" href="/r/{{ request.sub }}/rules/">rules</a>
+					<a class="nav-link" href="/r/{{ request.sub }}/info/">info</a>
 				</li>
 				<li class="nav-item active">
 					<a class="nav-link" href="/r/{{ request.sub }}/mods/">mods</a>
 				</li>
+				{% else %}
+				<li class="nav-item">
+					<a class="nav-link" href="/explore/"><button type="button" class="btn btn-sm btn-outline-success">Explore</button></a>
+				</li>
 				{% endif %}
 				{% if session['username'] %}
-				<li class="nav-item">
-					<a class="nav-link" href="/logout"><button type="button" class="btn btn-sm btn-outline-danger">logout</button></a>
+				<li class="nav-item active">
+					<a class="nav-link" href="/logout">logout</a>
 				</li>
 				{% endif %}
 			</ul>
@@ -60,7 +65,7 @@
 				</li>
 				{% else %}
 				<li class="nav-item">
-					<a class="nav-link" href="/login">login</a>
+					<a class="nav-link" href="/login/"><button type="button" class="btn btn-sm btn-outline-success">Login</button></a>
 				</li>
 				{% endif %}
 			</ul>

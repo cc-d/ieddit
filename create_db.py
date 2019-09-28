@@ -55,6 +55,7 @@ new_mod = Moderator(username='test', sub='test')
 db.session.add(new_mod)
 db.session.commit()
 
+'''
 for i in range(10):
 	new_sub = Sub(name=rstring(3, 10), created_by='test', created_by_id=1)
 	db.session.add(new_sub)
@@ -62,6 +63,7 @@ for i in range(10):
 	new_mod = Moderator(username=new_sub.created_by, sub=new_sub.name)
 	db.session.add(new_mod)
 	db.session.commit()
+'''
 
 new_post = Post(url='https://google.com', title='Test Title', inurl_title=convert_ied('Test Title'),
  author='test', author_id=1, sub='test', ups=randint(100,200), downs=randint(1,5), post_type='url', 
@@ -72,7 +74,7 @@ new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) 
 db.session.commit()
 test_perma = new_post.permalink
 fp = new_post
-
+'''
 for i in range(50):
 	title = fake.text()[:randint(10,200)]
 	new_post = Post(url='https://google.com/' + rstring(5, 10), title=title, inurl_title=convert_ied(title), 
@@ -89,7 +91,7 @@ for i in range(50):
 	db.session.commit()
 	new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 	db.session.commit()
-
+'''
 db.session.commit()
 
 new_comment = Comment(post_id=1, sub_name='test', text='this is comment text', author='test', author_id=1, ups=randint(1,20), downs=randint(1,5),
@@ -111,7 +113,7 @@ new_comment.permalink = post.permalink + str(new_comment.id)
 db.session.commit()
 
 comments = list(Comment.query.all())
-
+'''
 for i in range(50):
 	if choice([x for x in range(3)]) == 0:
 		pid = None
@@ -128,7 +130,7 @@ for i in range(50):
 	new_comment.permalink = post.permalink + str(new_comment.id)
 	db.session.commit()	
 	comments.append(new_comment)
-
+'''
 new_message = Message(sent_to='a', sender='test', title='this is a title', text='this is text')
 db.session.add(new_message)
 db.session.commit()

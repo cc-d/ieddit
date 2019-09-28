@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 <form class="needs-validation" novalidate method='post'>
-	<div class="form-group form-input-text" style="max-width: 25rem;">
-	<label for="create-post-title">Create Sub</label>
-	<input name='subname' type="text" class="form-control" id="create-post-title" placeholder="Enter Sub Name">
+	<div class="form-group form-input-text" style="max-width: 20rem;">
+	<label for="create-post-title">Sub Name</label>
+	<input name='subname' type="text" class="form-control" id="create-post-title" placeholder="Example: baseball">
 	</div>
-
+	<div class="form-group form-input-text" style="max-width: 25rem;">
+	<label for="create-post-title">Sub Title (optional)</label>
+	<input name='subname' type="text" class="form-control" id="create-post-title" placeholder="Example: A place to discuss baseball!">
+	</div>
 	<div class="captcha-div">
 	{% if config.CAPTCHA_ENABLE %}
 	{{ captcha() }}

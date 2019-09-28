@@ -206,6 +206,7 @@ def unban_user():
 		return redirect(url_for('login'))
 
 	username = request.form.get('username')
+	username = normalize_username(username)
 	sub = request.form.get('sub')
 
 	if session['admin']:
@@ -284,7 +285,7 @@ def removemod():
 		flash('deleted mod')
 		return redirect('/r/' + sub + '/mods/')
 
-@bp.route('/edit/rules', methods=['POST'])
+@bp.route('/edit/description', methods=['POST'])
 def editrules():
 	sub = request.form.get('sub')
 	rtext = request.form.get('rtext')
@@ -301,12 +302,13 @@ def editrules():
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
 					Moderator.sub.like(post.sub)).exists()).scalar()
 	if is_mod:
-		rules = db.session.query(Sub).filter_by(name=sub).first()
-		rules.rules = rtext
-		db.session.add(rules)
+		desc = db.session.query(Sub).filter_by(name=sub).first()
+		desc.description = rtext
+		db.session.add(desc)
 		db.session.commit()
-		flash('successfully updated rules')
-		return(redirect('/r/' + sub + '/rules/'))
+		cache.clear()
+		flash('successfully updated description')
+		return(redirect('/r/' + sub + '/info/'))
 	else:
 		return 403
 
@@ -331,3 +333,30 @@ def marknsfw():
 		db.session.commit()
 		cache.clear()
 		return redirect(post.permalink)
+
+@bp.route('/title', methods=['POST'])
+def title():
+	sub = request.form.get('sub')
+	title = request.form.get('title')
+	if 'username' not in session:
+		flash('not logged in', 'error')
+		return redirect(url_for('login'))
+
+	if len(title) < 1 or len(title) > 20000:
+		return 'invalid title lngth'
+
+	if session['admin']:
+		is_mod = True
+	else:
+		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
+					Moderator.sub.like(post.sub)).exists()).scalar()
+	if is_mod:
+		desc = db.session.query(Sub).filter_by(name=sub).first()
+		desc.title = title
+		db.session.add(desc)
+		db.session.commit()
+		flash('successfully updated title')
+		cache.clear()
+		return(redirect('/r/' + sub + '/info/'))
+	else:
+		return 403

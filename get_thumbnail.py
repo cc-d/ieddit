@@ -9,6 +9,7 @@ import urllib.parse
 
 def create_thumbnail(r, tid):
 	#r.raw.decode_content = True
+
 	b = BytesIO(r.content)
 	im = Image.open(b)
 	size = 128, 128

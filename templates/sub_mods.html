@@ -20,22 +20,34 @@
 </nav>
 
 
-{% if rules %}
+{% if desc %}
+{% if request.subtitle != None %}<h6 style="margin-left: 1rem;">{{ request.subtitle }}</h6>{% endif %}
+<form action='/mod/title' method='POST' style="margin-left: 1rem;">
+<div class="input-group mb-3">
+  <input type='hidden' name='sub' value='{{ request.sub }}'>
+  {% if request.subtitle != None %}
+  <input type="text" name='title' class="form-control" aria-describedby="basic-addon1" value="{{ request.subtitle }}">
+  {% else %}
+  <input type="text" name='title' class="form-control" placeholder="Example: A place for friends." aria-label="Username" aria-describedby="basic-addon1">
+  {% endif %}
+<button type='submit' class="btn btn-outline-secondary" type="button">Edit Title</button>
+</div>
+</form>
 <div id='display-rules'>
-<h3>rules</h3>
+
+<h3>info</h3>
 <selftext>
-{{ rtext|safe }}
+{{ rules|safe }}
 </selftext>
 </div>
-<br><br>
 {% if request.is_mod %}
 <div id='rules'>
 <form style="margin-left: 1rem;" action='/mod/edit/rules' method='POST'>
   <div class="form-group">
-    <label for="exampleFormControlTextarea1"><h3>Edit Rules</h3></label>
+    <label for="exampleFormControlTextarea1"><h3>Edit Info</h3></label>
     <textarea name='rtext' class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
   </div>
-  <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-outline-primary" type="button">Save Rules</button>
+  <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-outline-primary" type="button">Save Info</button>
 </form>
 </div>
 {% endif %}

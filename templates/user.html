@@ -6,17 +6,22 @@
 <h6> user profile for {{ vuser.username }}</h6>
 
 {% if session['username'] != vuser.username %}
-<a href="/message/{{ vuser.username }}">send message</a>
+
+<a href="/message/{{ vuser.username }}"><button type="button" class="btn btn-sm btn-outline-secondary">send message</a></button>
 {% else %}
-<a href="/u/{{ session['username'] }}/messages/">view messages</a>
+<a href="/u/{{ session['username'] }}/messages/"><button type="button" class="btn btn-sm btn-outline-secondary">view messages</a></button>
 {% endif %}
 
-
-{% if vuser.mods|length > 1 %}
-<small><p> moderator of: 
+<br><br>
+{% if vuser.mods|length > 0 %}
+<ul class="list-group">
+<li class="list-group-item">moderator of</li>
+<li class="list-group-item"> 
 {% for sub, rank in vuser.mods.items() %}
-<a href="{{ config.URL }}/r/{{ sub }}/">/r/{{ sub }}</a> {% if loop.last == False %}-{% endif %} 
-{% endfor %}</p></small>
+  <a href="{{ config.URL }}/r/{{ sub }}/">/r/{{ sub }}</a>
+{% endfor %}
+ </li>
+</ul>
 {% endif %}
 <div id='user-recent'>
 <h6> recent posts </h6>
