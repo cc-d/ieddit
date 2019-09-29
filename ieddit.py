@@ -779,6 +779,17 @@ def create_post(postsub=None):
 		if sub in get_banned_subs(session['username']):
 			deleted = True
 
+		subs = get_all_subs()
+		if subs != None:
+			for s in subs:
+				s.get_comments()
+				s.get_posts()
+				if s.comments != None and s.posts != None:
+					s.rank = s.comments.count() + s.posts.count()
+				else:
+					s.rank = 0
+			subs = [s for s in subs][:10]
+			subs.sort(key=lambda x: x.rank, reverse=True)
 
 		if post_type == 'url':
 			if len(url) > 2000 or len(url) < 1:
