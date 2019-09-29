@@ -50,6 +50,8 @@ def convert_ied(url):
 	url = url.replace(' ', '_')
 	url = url.replace('/', '')
 	url = urllib.parse.quote(url)[:40]
+	if url[-1] == '%':
+		url = [:-1]
 	return url
 
 def post_url_parse(url):
