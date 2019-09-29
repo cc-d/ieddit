@@ -238,8 +238,9 @@ selftext {
 .reply-fa-user {
 	margin-top: 4px;
 }
+
 blockquote {
-	background-color: lightgrey;
+   background-color: lightgrey;
 }
 .nsfw {
 	display: inline;

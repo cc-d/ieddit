@@ -74,6 +74,11 @@ def apply_headers(response):
 	#response.headers["X-Frame-Options"] = "SAMEORIGIN"
 	#response.headers["X-XSS-Protection"] = "1; mode=block"
 	#response.headers['X-Content-Type-Options'] = 'nosniff'
+
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    response.headers['Cache-Control'] = 'public, max-age=0'
 	session['last_url'] = request.url
 	if app.debug:
 		if hasattr(g, 'start'):
