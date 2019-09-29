@@ -8,7 +8,7 @@ def mod_action(username, action, url, sub):
 	db.session.add(new_action)
 	db.session.commit()
 
-@bp.route('/delete/post/',  methods=['POST'])
+@bp.route('/delete/post',  methods=['POST'])
 def delete_post():
 	if 'username' not in session:
 		flash('not logged in', 'error')
@@ -32,7 +32,7 @@ def delete_post():
 	else:
 		return '403'
 
-@bp.route('/delete/comment/', methods=['POST'])
+@bp.route('/delete/comment', methods=['POST'])
 def delete_comment():
 	if 'username' not in session:
 		flash('not logged in', 'error')
@@ -57,7 +57,7 @@ def delete_comment():
 	else:
 		return '403'
 
-@bp.route('/sticky/post/', methods=['POST'])
+@bp.route('/sticky/post', methods=['POST'])
 def sticky_post():
 	if 'username' not in session:
 		flash('not logged in', 'error')
@@ -89,7 +89,7 @@ def sticky_post():
 		return '403'
 
 
-@bp.route('/unsticky/post/', methods=['POST'])
+@bp.route('/unsticky/post', methods=['POST'])
 def unsticky_post():
 	if 'username' not in session:
 		flash('not logged in', 'error')

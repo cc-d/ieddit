@@ -3,7 +3,7 @@ import json
 
 ubp = Blueprint('user', 'user', url_prefix='/user')
 
-@ubp.route('/delete/post/',  methods=['POST'])
+@ubp.route('/delete/post',  methods=['POST'])
 def delete_post():
 	if 'username' not in session:
 		flash('not logged in', 'error')
@@ -21,14 +21,14 @@ def delete_post():
 	else:
 		return '403'
 
-@ubp.route('/delete/comment/',  methods=['POST'])
+@ubp.route('/delete/comment',  methods=['POST'])
 def delete_comment():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
 	cid = request.form.get('comment_id')
-	comment = db.session.query(Post).filter_by(id=cid).first()
-	post = db.session.query(Post).filter_by(id=comment.parent_id).first()
+	comment = db.session.query(Comment).filter_by(id=cid).first()
+	post = db.session.query(Post).filter_by(id=comment.post_id).first()
 
 	if comment.author == session['username']:
 		comment.deleted = True
