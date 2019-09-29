@@ -117,6 +117,11 @@ No Description
 
 
 {% if modactions %}
+<div style="margin-left: 1rem;">
+{% if allactions %}
+{% else %}
+<a href="/r/test/actions/">view full log</a>
+{% endif %}
 <table class="table table-sm mod-actions-table">
   <thead>
     <tr>
@@ -128,13 +133,13 @@ No Description
   <tbody>
 {% for ma in modactions %}
     <tr>
-      <td>{{ ma.username }}</td>
+      <td><a href="/u/{{ ma.username }}">{{ ma.username }}</a></td>
       <td>{{ ma.action }}</td>
-      <td>{{ ma.url }}</td>
+      <td><a href="{{ ma.url }}">{{ ma.url}}</a></td>
     </tr>
  {% endfor %}
   </tbody>
 </table>
 {% endif %}
-
+</div>
 {% endblock %}

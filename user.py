@@ -19,7 +19,7 @@ def delete_post():
 		flash('post deleted', category='success')
 		return redirect(sub_url)
 	else:
-		return 403
+		return '403'
 
 @ubp.route('/delete/comment/',  methods=['POST'])
 def delete_comment():
@@ -37,7 +37,7 @@ def delete_comment():
 		flash('post deleted', category='success')
 		return redirect(post.permalink)
 	else:
-		return 403
+		return '403'
 
 
 @ubp.route('/edit/<itype>/<iid>/', methods=['GET'])
@@ -50,7 +50,7 @@ def get_edit(itype, iid):
 		if hasattr(obj, 'self_text'):
 			etext = obj.self_text
 		else:
-			return 403
+			return '403'
 	elif itype == 'comment':
 		obj = db.session.query(Comment).filter_by(id=iid).first()
 		etext = obj.text
@@ -88,7 +88,7 @@ def edit_post():
 		return 'bad itype'
 
 	if obj.author != session['username']:
-		return 403
+		return '403'
 
 	if hasattr(obj, 'self_text'):
 		obj.self_text = etext
@@ -105,7 +105,7 @@ def edit_post():
 		flash('comment edited', category='succes')
 		return redirect(obj.permalink)
 	else:
-		return 403
+		return '403'
 
 @ubp.route('/nsfw',  methods=['POST'])
 def marknsfw(pid=None):

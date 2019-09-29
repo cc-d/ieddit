@@ -13,8 +13,11 @@ import time
 import re
 import config
 import base64
+#from subprocess import call
 import os
+import _thread
 import urllib.parse
+from functools import wraps
 
 from models import *
 from functions import *
@@ -116,6 +119,13 @@ def get_sub_mods(sub, admin=True):
 		mod_subs.append(a)
 	return [m.username for m in mod_subs]
 
+def get_banned_subs(username):
+	subs = db.session.query(Ban).filter_by(username=username).all()
+	b = []
+	for s in subs:
+		b.append(s.sub)
+	return b
+
 def is_mod(obj, username):
 	if hasattr(obj, 'inurl_title'):
 		post = obj
@@ -131,7 +141,7 @@ def is_mod(obj, username):
 def is_admin(username):
 	#if db.session.query(db.session.query(Iuser).filter_by(admin=True, username=username).exists()).scalar():
 	if 'admin' in session:
-		if session['admin'] == True:
+		if 'admin' in session == True:
 			return True
 	return False
 
@@ -246,6 +256,13 @@ def index():
 	return subi('all', nsfw=False)
 
 @cache.memoize(600)
+def is_sub_nsfw(sub):
+	s = db.session.query(Sub).filter_by(name=sub).first()
+	if s.nsfw:
+		return True
+	return False
+
+@cache.memoize(600)
 def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=True, d=None, s=None):
 	if offset != None:
 		offset = int(offset)
@@ -326,10 +343,16 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 
 	p = []
 	for post in posts:
+		if is_sub_nsfw(post.sub):
+			post.sub_nsfw = True
+		else:
+			post.sub_nsfw = False
+
 		if hasattr(post, 'text'):
 			post.text = pseudo_markup(post.text)
 		if thumb_exists(post.id):
 			post.thumbnail = 'thumb-' + str(post.id) + '.JPEG'
+
 		post.mods = get_sub_mods(post.sub)
 		post.created_ago = time_ago(post.created)
 		if subi != 'all':
@@ -405,6 +428,18 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 			post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
 			post.created_ago = time_ago(post.created)
 			post.remote_url_parsed = post_url_parse(post.url)
+
+			if is_sub_nsfw(post.sub):
+				post.sub_nsfw = True
+			else:
+				post.sub_nsfw = False
+			if hasattr(post, 'text'):
+				post.text = pseudo_markup(post.text)
+			if thumb_exists(post.id):
+				post.thumbnail = 'thumb-' + str(post.id) + '.JPEG'
+			if hasattr(post, 'self_text'):
+				if post.self_text != None:
+					post.self_text = pseudo_markup(post.self_text)
 		else:
 			post = None
 		if 'user_id' in session:
@@ -545,6 +580,10 @@ def create_sub():
 			set_rate_limit()
 			flash('You have created a new sub! Mod actions are under the "info" tab.', 'success')
 			return redirect(config.URL + '/r/' + subname, 302)
+
+		if verify_subname(subname) == False:
+			flash('Invalid sub name. Valid Characters are A-Z 1-9 - _ ')
+			return(redirect(config.URL + '/create'))
 		return 'invalid'
 	elif request.method == 'GET':
 		if 'username' not in session:
@@ -561,11 +600,12 @@ def view_user(username):
 		mods[s.sub] = s.rank
 	vuser.mods = mods
 	posts = subi('all', user_id=vuser.id, posts_only=True)
+	posts = posts[:10]
 	for p in posts:
 		p.mods = get_sub_mods(p.sub)
 	#sub, post_id, inurl_title, comment_id=False, sort_by=None, comments_only=False, user_id=None):
 	comments_with_posts = []
-	comments = get_comments(comments_only=True, user_id=vuser.id)[:15]
+	comments = get_comments(comments_only=True, user_id=vuser.id)[:10]
 	for c in comments:
 		c.mods = get_sub_mods(c.sub_name)
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
@@ -692,7 +732,7 @@ def create_post(postsub=None):
 
 		sub = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
 		if sub == None:
-			flash('invalid sub', 'danger')
+			flash('sub does not exist', 'danger')
 			return redirect('/create_post')
 
 		if sub.nsfw:
@@ -722,6 +762,10 @@ def create_post(postsub=None):
 			flash('invalid title/sub length', 'danger')
 			return redirect(url_for('create_post'))
 
+		deleted = False
+		if sub in get_banned_subs(session['username']):
+			deleted = True
+
 		if post_type == 'url':
 			if len(url) > 2000 or len(url) < 1:
 				flash('invalid url length', 'danger')
@@ -731,20 +775,24 @@ def create_post(postsub=None):
 			if len(prot) != 1:
 				url = 'https://' + url
 			new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'],
-						author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw)
+						author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
+						deleted=deleted)
 
 		elif post_type == 'self_post':
 			if len(self_post_text) < 1 or len(self_post_text) > 20000:
 				flash('invalid self post length', 'danger')
 				return redirect(url_for('create_post'))
 			new_post = Post(self_text=self_post_text, title=title, inurl_title=convert_ied(title),
-				author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw)
+				author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
+				deleted=deleted)
 
 		db.session.add(new_post)
 		db.session.commit()
 
 		if post_type == 'url':
-			os.system('python3 get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)))
+			#os.system('python3 get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)))
+			#call(['python3', 'get_thumbnail.py', str(new_post.id), urllib.parse.quote(url)])
+			_thread.start_new_thread(os.system, ('python3 get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
 
 		new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 		if is_admin(session['username']) and anonymous == False:
@@ -757,7 +805,7 @@ def create_post(postsub=None):
 
 		cache.delete_memoized(get_subi)
 
-		return redirect(url, 302)
+		return redirect(url)
 
 	if request.method == 'GET':
 		if 'username' not in session:
@@ -814,11 +862,20 @@ def create_comment():
 
 	post = db.session.query(Post).filter_by(id=post_id).first()
 	if post.locked == True:
-		flash('post is locked')
+		flash('post is locked', 'danger')
 		return redirect(post.permalink)
 
+	deleted = False
+	sub = normalize_sub(sub_name)
+	if sub in get_banned_subs(session['username']):
+		deleted = True
+		#flash('you are banned from commenting', 'danger')
+		#return redirect(post.permalink)
+	sub_name = sub
+
 	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=text,
-		author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level, anonymous=anonymous)
+		author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level,
+		anonymous=anonymous, deleted=deleted)
 	db.session.add(new_comment)
 	db.session.commit()
 
@@ -835,17 +892,18 @@ def create_comment():
 
 	sender = new_comment.author
 
-	if new_comment.parent_id:
+	if new_comment.parent_id and not deleted:
 		cparent = db.session.query(Comment).filter_by(id=new_comment.parent_id).first()
 		new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
 			sent_to=cparent.author, in_reply_to=cparent.permalink, anonymous=anonymous)
 		db.session.add(new_message)
 		db.session.commit()
 	else:
-		new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
-			sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous)
-		db.session.add(new_message)
-		db.session.commit()
+		if not deleted:
+			new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
+				sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous)
+			db.session.add(new_message)
+			db.session.commit()
 
 
 	cache.delete_memoized(get_subi)	
@@ -883,8 +941,10 @@ def user_messages(username=None):
 			flash('you are not that user', 'danger')
 			return redirect('/')
 		else:
-			read = db.session.query(Message).filter_by(sent_to=username, read=True).all()
-			unread = db.session.query(Message).filter_by(sent_to=username, read=False).all()
+			read = db.session.query(Message).filter_by(sent_to=username, read=True)
+			unread = db.session.query(Message).filter_by(sent_to=username, read=False)
+			read = read.order_by((Message.created).desc()).limit(50).all()
+			unread = unread.order_by((Message.created).desc()).limit(50).all()
 			for r in read:
 				r.text = pseudo_markup(r.text)
 				if r.in_reply_to != None:
@@ -895,7 +955,7 @@ def user_messages(username=None):
 
 			for r in unread:
 				r.read = True
-				session
+			
 			db.session.commit()
 
 			for r in unread:
@@ -923,7 +983,7 @@ def reply_message(username=None, mid=None):
 		if hasattr(m, 'in_reply_to'):
 			if m.in_reply_to != None:
 				m.ppath = m.in_reply_to.replace(config.URL, '')
-		return render_template('message_reply.html', message=m, sendto=False)
+		return render_template('message_reply.html', message=pseudo_markup(m), sendto=False)
 
 def sendmsg(title, text, sender, sent_to):
 	cache.delete_memoized(has_messages)
@@ -981,10 +1041,18 @@ def msg(username=None):
 
 @app.route('/r/<sub>/mods/', methods=['GET'])
 def submods(sub=None):
-	modactions = db.session.query(Mod_action).filter_by(sub=sub).all()
+	modactions = db.session.query(Mod_action).filter_by(sub=sub).limit(5).all()
 	if type(modactions) != None:
 		modactions = [m for m in modactions]
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions)
+
+@app.route('/r/<sub>/actions/', methods=['GET'])
+def subactions(sub=None):
+	modactions = db.session.query(Mod_action).filter_by(sub=sub).all()
+	if type(modactions) != None:
+		modactions = [m for m in modactions]
+	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions, allactions=True)
+
 
 @app.route('/r/<sub>/mods/banned/', methods=['GET'])
 def bannedusers(sub=None):
@@ -1037,6 +1105,17 @@ def explore():
 		sub.comments = db.session.query(Comment).filter_by(sub_name=sub.name).count()
 	return render_template('explore.html', subs=subs)
 
+@app.route('/clear_cache', methods=['GET'])
+def ccache():
+	if request.remote_addr == '127.0.0.1':	
+		cache.clear()
+		return 'cleared'
+
+@app.route('/about/', methods=['GET'])
+def about():
+	from markdown import markdown
+	with open('README.md') as r:
+		return render_template('about.html', about=markdown(r.read()))
 
 from mod import bp
 app.register_blueprint(bp)

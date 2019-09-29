@@ -3,15 +3,6 @@ import json
 
 bp = Blueprint('mod', 'mod', url_prefix='/mod')
 
-@bp.route('/actions/')
-def hello():
-	a = ''
-	actions = db.session.query(Mod_action).all()
-	for act in actions:
-		a += '<br>'.join(['Mod ' + act.username, 'Action ' + act.action, 'Permalink ' + act.url])
-		a += '<br><br>'
-	return a
-
 def mod_action(username, action, url, sub):
 	new_action = Mod_action(username=username, action=action, url=url, sub=sub)
 	db.session.add(new_action)
@@ -25,7 +16,7 @@ def delete_post():
 	pid = request.form.get('post_id')
 	post = db.session.query(Post).filter_by(id=pid).first()
 	sub_url = config.URL + '/r/' + post.sub
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -39,7 +30,7 @@ def delete_post():
 		flash('post deleted', category='success')
 		return redirect(sub_url)
 	else:
-		return 403
+		return '403'
 
 @bp.route('/delete/comment/', methods=['POST'])
 def delete_comment():
@@ -50,7 +41,7 @@ def delete_comment():
 	comment = db.session.query(Comment).filter_by(id=cid).first()
 	post = db.session.query(Post).filter_by(id=comment.post_id).first()
 
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -64,7 +55,7 @@ def delete_comment():
 		flash('comment deleted', category='success')
 		return redirect(post.permalink)		
 	else:
-		return 403
+		return '403'
 
 @bp.route('/sticky/post/', methods=['POST'])
 def sticky_post():
@@ -75,7 +66,7 @@ def sticky_post():
 	pid = request.form.get('post_id')
 	post = db.session.query(Post).filter_by(id=pid).first()
 
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -95,7 +86,7 @@ def sticky_post():
 		flash('stickied post', category='success')
 		return redirect(config.URL + '/r/' + post.sub)
 	else:
-		return 403
+		return '403'
 
 
 @bp.route('/unsticky/post/', methods=['POST'])
@@ -107,7 +98,7 @@ def unsticky_post():
 	pid = request.form.get('post_id')
 	post = db.session.query(Post).filter_by(id=pid).first()
 
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -121,7 +112,7 @@ def unsticky_post():
 		flash('unstickied post', category='success')
 		return redirect(config.URL + '/r/' + post.sub)
 	else:
-		return 403
+		return '403'
 
 @bp.route('/lock/post', methods=['POST'])
 def lock_post():
@@ -137,7 +128,7 @@ def lock_post():
 	else:
 		action = 'unlock'
 
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -157,7 +148,7 @@ def lock_post():
 		cache.clear()
 		return redirect(post.permalink)
 	else:
-		return 403
+		return '403'
 
 
 @bp.route('/ban', methods=['POST'])
@@ -181,7 +172,7 @@ def ban_user():
 			is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
 					Moderator.sub.like(obj.sub_name)).exists()).scalar()
 			if is_mod == False:
-				if session['admin']:
+				if 'admin' in session:
 					is_mod = True
 			if is_mod != True:
 				return '403'
@@ -192,7 +183,7 @@ def ban_user():
 			is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
 					Moderator.sub.like(obj.sub)).exists()).scalar()
 			if is_mod == False:
-				if session['admin']:
+				if 'admin' in session:
 					is_mod = True
 			if is_mod != True:
 				return '403'
@@ -208,7 +199,7 @@ def ban_user():
 		flash('banned ' + obj.author + ' from ' + sub, category='success')
 		return redirect(config.URL + '/r/' + sub)
 	else:
-		return 403
+		return '403'
 
 @bp.route('/unban', methods=['POST'])
 def unban_user():
@@ -220,7 +211,7 @@ def unban_user():
 	username = normalize_username(username)
 	sub = request.form.get('sub')
 
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -229,7 +220,8 @@ def unban_user():
 		uban = db.session.query(Ban).filter_by(username=username, sub=sub)
 		uban.delete()
 		db.session.commit()
-		flash('unbanned ' + username, 'succes')
+		mod_action(session['username'], 'unban', username, sub)
+		flash('unbanned ' + username, 'success')
 		return redirect('/r/' + sub + '/mods/banned/')
 
 @bp.route('/add', methods=['POST'])
@@ -247,7 +239,7 @@ def addmod():
 		flash('Mod already added', 'error')
 		return redirect('/r/%s/mods/' % sub)
 
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -275,7 +267,7 @@ def removemod():
 		flash ('invalid username', 'error')
 		return redirect('/r/' + sub + '/mods/')
 
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -307,7 +299,7 @@ def editrules():
 	if len(rtext) < 1 or len(rtext) > 20000:
 		return 'invalid rules text lngth'
 
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -321,7 +313,7 @@ def editrules():
 		flash('successfully updated description')
 		return(redirect('/r/' + sub + '/info/'))
 	else:
-		return 403
+		return '403'
 
 @bp.route('/nsfw',  methods=['POST'])
 def marknsfw():
@@ -333,7 +325,7 @@ def marknsfw():
 	post = db.session.query(Post).filter_by(id=post_id).first()
 
 
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -358,7 +350,7 @@ def title():
 	elif len(title) == 0:
 		title = None
 
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -372,7 +364,7 @@ def title():
 		cache.clear()
 		return(redirect('/r/' + sub + '/info/'))
 	else:
-		return 403
+		return '403'
 
 @bp.route('/settings', methods=['POST'])
 def settings():
@@ -382,7 +374,7 @@ def settings():
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
 
-	if session['admin']:
+	if 'admin' in session:
 		is_mod = True
 	else:
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
@@ -402,4 +394,4 @@ def settings():
 		cache.clear()
 		return(redirect('/r/' + sub.name + '/info/'))
 	else:
-		return 403
+		return '403'

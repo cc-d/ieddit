@@ -18,7 +18,7 @@
   		{% endif %}
   	</div>
     <h5 class="mt-0 message-title">{{ message.title }}</h5>
-		{{ message.text }}
+		{{ message.text|safe }}
 	</div>
   </div>
 </div>
@@ -48,4 +48,4 @@
 </form>
 {% endif %}
 
-{% endblock %}
+{% endblock %}  

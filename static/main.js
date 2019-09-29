@@ -142,9 +142,9 @@ $(document).ready(function() {
 	}, 5000);
 });
 
+var re = new RegExp('.*\..*\/create_post')
+if (re.test(window.location)) {
 
-
-var c = false;
 setInterval(lookForChange, 1000);
 
 function lookForChange()
@@ -168,5 +168,5 @@ function suggestTitle() {
 	}
 }
 
-
+}
 console.log('loaded');

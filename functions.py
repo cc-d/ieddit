@@ -8,6 +8,7 @@ import jinja2
 import html
 import config
 import os.path
+import os
 from markdown import markdown
 from bleach import clean
 
@@ -19,7 +20,8 @@ legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_
 
 def thumb_exists(tid):
 	if os.path.exists('static/thumb-%s.JPEG' % str(tid)):
-		return True
+		if int(os.stat('static/thumb-%s.JPEG' % str(tid)).st_size) > 10:
+			return True
 	return False
 
 def rstring(length1, length2=False):
@@ -46,6 +48,7 @@ def verify_subname(subname):
 def convert_ied(url):
 	url = url.lower()
 	url = url.replace(' ', '_')
+	url = url.replace('/', '')
 	url = urllib.parse.quote(url)[:40]
 	return url
 
