@@ -31,6 +31,12 @@ class Sub(db.Model):
 	title = db.Column(db.String(1000), nullable=True, default=None)
 	nsfw = db.Column(db.Boolean, default=False, nullable=False)
 
+	def get_comments(self):
+		self.comments = db.session.query(Comment).filter_by(sub_name=self.name)
+
+	def get_posts(self):
+		self.posts = db.session.query(Post).filter_by(sub=self.name)
+
 	def __repr__(self):
 		return '<Sub %r>' % self.name
 

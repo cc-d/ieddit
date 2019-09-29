@@ -142,7 +142,9 @@ $(document).ready(function() {
 	}, 5000);
 });
 
+// Suggest Title
 var re = new RegExp('.*\..*\/create_post')
+
 if (re.test(window.location)) {
 
 setInterval(lookForChange, 1000);
@@ -164,9 +166,19 @@ function suggestTitle() {
 	if (re.test(utext)) {
 		$.get('/suggest_title?u=' + utext, function(data, status) {
 			$('#create-post-title').val(data);
-		});
+			});
+		}
 	}
 }
 
+// Suggest Title
+
+
+function setSub(sub) {
+	$('#create-post-sub').val(sub.replace('/r/', ''));
 }
+
+
+
+
 console.log('loaded');

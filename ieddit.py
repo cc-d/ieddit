@@ -165,6 +165,9 @@ def normalize_sub(sub):
 		return sub.name
 	return False
 
+def get_all_subs():
+	return db.session.query(Sub).all()
+
 @app.route('/login/',  methods=['GET', 'POST'])
 def login():
 	if request.method == 'GET':
@@ -716,13 +719,19 @@ def vote(post_id=None, comment_id=None, vote=None):
 
 @app.route('/create_post', methods=['POST', 'GET'])
 def create_post(postsub=None):
+	if 'previous_post_form' not in session:
+		session['previous_post_form'] = None
+
 	if request.method == 'POST':
 		title = request.form.get('title')
 		url = request.form.get('url')
 		sub = request.form.get('sub')
 		#if db.session.query(db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).exists()).scalar():
-
 		self_post_text = request.form.get('self_post_text')
+
+		session['previous_post_form'] = {'title':title, 'url':url, 'sub':sub, 'self_post_text':self_post_text}
+		print(session['previous_post_form'])
+
 		anonymous = request.form.get('anonymous')
 		if config.CAPTCHA_ENABLE:
 			if captcha.validate() == False:
@@ -770,6 +779,7 @@ def create_post(postsub=None):
 		if sub in get_banned_subs(session['username']):
 			deleted = True
 
+
 		if post_type == 'url':
 			if len(url) > 2000 or len(url) < 1:
 				flash('invalid url length', 'danger')
@@ -780,7 +790,7 @@ def create_post(postsub=None):
 				url = 'https://' + url
 			new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'],
 						author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
-						deleted=deleted)
+						deleted=deleted, subs=subs)
 
 		elif post_type == 'self_post':
 			if len(self_post_text) < 1 or len(self_post_text) > 20000:
@@ -788,7 +798,7 @@ def create_post(postsub=None):
 				return redirect(url_for('create_post'))
 			new_post = Post(self_text=self_post_text, title=title, inurl_title=convert_ied(title),
 				author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
-				deleted=deleted)
+				deleted=deleted, subs=subs)
 
 		db.session.add(new_post)
 		db.session.commit()
@@ -808,7 +818,8 @@ def create_post(postsub=None):
 		set_rate_limit()
 		
 		cache.delete_memoized(get_subi)
-
+		if 'previous_post_form' in session:
+			session['previous_post_form'] = None
 		return redirect(url)
 
 	if request.method == 'GET':
@@ -821,7 +832,20 @@ def create_post(postsub=None):
 			if len(subref) == 1:
 				if len(subref[0]) > 0:
 					postsub = subref[0]
-		return render_template('create_post.html', postsub=postsub)
+
+		subs = get_all_subs()
+		for s in subs:
+			s.get_comments()
+			s.get_posts()
+			if s.comments != None and s.posts != None:
+				s.rank = s.comments.count() + s.posts.count()
+			else:
+				s.rank = 0
+		subs = [s for s in subs][:10]
+		subs.sort(key=lambda x: x.rank, reverse=True)
+		sppf = session['previous_post_form']
+		session['previous_post_form'] = None
+		return render_template('create_post.html', postsub=postsub, subs=subs, sppf=sppf)
 
 @app.route('/create_comment', methods=['POST'])
 def create_comment():
