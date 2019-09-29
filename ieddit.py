@@ -144,8 +144,8 @@ def is_mod(obj, username):
 	return False
 
 def is_admin(username):
-	#if db.session.query(db.session.query(Iuser).filter_by(admin=True, username=username).exists()).scalar():
-	if 'admin' in session:
+	if db.session.query(db.session.query(Iuser).filter_by(admin=True, username=username).exists()).scalar():
+	#if 'admin' in session:
 		return True
 	return False
 
