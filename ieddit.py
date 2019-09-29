@@ -104,12 +104,12 @@ def suggest_title(url=None):
 			return ''
 	return ''
 
-@cache.memoize(600)
+#@cache.memoize(600)
 def get_subtitle(sub):
 	title = db.session.query(Sub).filter_by(name=sub).first()
 	return title.title
 
-@cache.memoize(600)
+#@cache.memoize(600)
 def get_sub_mods(sub, admin=True):
 	mod_subs = db.session.query(Moderator).filter_by(sub=sub).all()
 	if admin == False:
@@ -141,8 +141,7 @@ def is_mod(obj, username):
 def is_admin(username):
 	#if db.session.query(db.session.query(Iuser).filter_by(admin=True, username=username).exists()).scalar():
 	if 'admin' in session:
-		if 'admin' in session == True:
-			return True
+		return True
 	return False
 
 def set_rate_limit():
@@ -255,14 +254,14 @@ def register():
 def index():
 	return subi('all', nsfw=False)
 
-@cache.memoize(600)
+#@cache.memoize(600)
 def is_sub_nsfw(sub):
 	s = db.session.query(Sub).filter_by(name=sub).first()
 	if s.nsfw:
 		return True
 	return False
 
-@cache.memoize(600)
+#@cache.memoize(600)
 def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=True, d=None, s=None):
 	if offset != None:
 		offset = int(offset)
@@ -417,7 +416,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 
 	#return str(hasattr(request.environ, 'QUERY_STRING'))#str(vars(request))
 
-@cache.memoize(600)
+#@cache.memoize(600)
 def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
 	post = None
 	parent_comment = None
@@ -516,7 +515,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 # need to entirely rewrite how comments are handled once everything else is complete
 # this sort of recursion KILLS performance, especially when combined with the already
 # terrible comment_structure function.
-@cache.memoize(600)
+#@cache.memoize(600)
 def list_of_child_comments(comment_id, sort_by=None):
 	comments = {}
 	current_comments = []
@@ -920,7 +919,7 @@ def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=N
 	db.session.add(new_message)
 	db.session.commit()
 
-@cache.memoize(600)
+#@cache.memoize(600)
 def has_messages(username):
 	if 'username' in session:
 		messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
