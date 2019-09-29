@@ -612,7 +612,7 @@ def view_user(username):
 	return render_template('user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts)
 
 @app.route('/vote', methods=['GET', 'POST'])
-def vote():
+def vote(post_id=None, comment_id=None, vote=None):
 	if request.method == 'POST':
 		post_id = request.form.get('post_id')
 		comment_id = request.form.get('comment_id')
@@ -801,7 +801,7 @@ def create_post(postsub=None):
 		db.session.commit()
 		url = new_post.permalink
 		set_rate_limit()
-
+		
 		cache.delete_memoized(get_subi)
 
 		return redirect(url)
