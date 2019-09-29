@@ -63,7 +63,7 @@ No Description
 <form style="margin-left: 1rem;" action='/mod/edit/description' method='POST'>
   <div class="form-group">
     <label for="exampleFormControlTextarea1"><h3>Edit Description</h3></label>
-    <textarea name='rtext' class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+    <textarea name='rtext' class="form-control" id="exampleFormControlTextarea1" rows="3">{% if rules %}{{ rules|safe }}{% endif %}</textarea>
   </div>
   <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-outline-primary" type="button">Save Info</button>
 </form>
