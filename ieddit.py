@@ -779,18 +779,6 @@ def create_post(postsub=None):
 		if sub in get_banned_subs(session['username']):
 			deleted = True
 
-		subs = get_all_subs()
-		if subs != None:
-			for s in subs:
-				s.get_comments()
-				s.get_posts()
-				if s.comments != None and s.posts != None:
-					s.rank = s.comments.count() + s.posts.count()
-				else:
-					s.rank = 0
-			subs = [s for s in subs][:10]
-			subs.sort(key=lambda x: x.rank, reverse=True)
-
 		if post_type == 'url':
 			if len(url) > 2000 or len(url) < 1:
 				flash('invalid url length', 'danger')
@@ -801,7 +789,7 @@ def create_post(postsub=None):
 				url = 'https://' + url
 			new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'],
 						author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
-						deleted=deleted, subs=subs)
+						deleted=deleted)
 
 		elif post_type == 'self_post':
 			if len(self_post_text) < 1 or len(self_post_text) > 20000:
@@ -809,7 +797,7 @@ def create_post(postsub=None):
 				return redirect(url_for('create_post'))
 			new_post = Post(self_text=self_post_text, title=title, inurl_title=convert_ied(title),
 				author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
-				deleted=deleted, subs=subs)
+				deleted=deleted)
 
 		db.session.add(new_post)
 		db.session.commit()
