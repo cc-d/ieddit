@@ -181,4 +181,68 @@ function setSub(sub) {
 
 
 
+/* I have no idea what is going on, but it works. */
+
+var q = false
+function sortSearch(a, az) {
+	console.log(a, az)
+	aza = {}
+	for (i=0; i<az.length; i++) {
+		aza[az[i]] = 0;
+	}
+	newa = '';
+	for (i=0; i<a.length; i++) {
+		newa = newa + a[i];
+
+		for (ii=0; ii<az.length; ii++) {
+			console.log(az[ii].indexOf(newa))
+			if (az[ii].indexOf(newa) != -1) {
+				aza[az[ii]] += 1
+			}
+		}
+	}
+	return aza
+}
+
+$(document).ready(function(){
+	aza = []
+	drop = $('.sublist-dropdown');
+	for(i=0; i<drop.length; i++) {
+		aza.push($(drop[i]).text())
+	}
+	q = aza
+  $("#sub-dropdown-search").on("keyup", function() {
+  	aza = q
+    var value = $(this).val().toLowerCase();
+    z = swap(sortSearch(value, q));
+
+  });
+});
+
+
+function search() {
+	$("#sub-dropdown-search").on("keyup", function() {
+		var value = $(this).val().toLowerCase();
+	});
+}
+
+function swap(sS) {
+var items = Object.keys(sS).map(function(key) {
+  return [key, sS[key]];
+});
+items.sort(function(first, second) {
+  return second[1] - first[1];
+});
+z = ''
+for(i=0; i<items.length; i++){
+	console.log(items[i])
+	z = z +'<a class="dropdown-item sublist-dropdown" href="javascript:setSub(\'' + items[i][0] + '\')">' + items[i][0] + '</a>';
+}
+$('#menu-items').html($(z));
+}
+
+
+/* Not complaining. */
+
+
 console.log('loaded');

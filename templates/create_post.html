@@ -48,10 +48,13 @@
 
   <div class="input-group-prepend">
     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">select</button>
-    <div class="dropdown-menu">
+    <div class="dropdown-menu" id='sub-drop-menu'>
+    	<div id='menu-items'>
     {% for s in subs %}
-      <a class="dropdown-item" href="javascript:setSub('{{ s.name }}')">/r/{{ s.name }}</a>
+      <a class="dropdown-item sublist-dropdown" href="javascript:setSub('{{ s.name }}')">/r/{{ s.name }}</a>
      {% endfor %}
+ </div>
+     <input type='text' id='sub-dropdown-search' placeholder='search' onload='search()'>
     </div>
   </div>
 </div>

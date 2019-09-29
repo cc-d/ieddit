@@ -2,11 +2,20 @@
 .inner-div {
 	border:0px solid green;
 }
+#sub-dropdown-search{
+	margin-left: 1rem;
+	margin-right: 1rem;
+}
 
 .post-row {
 	margin-right: 0px;
 	max-height: 1rem;
 	margin-bottom: 8px;
+}
+
+#menu-items {
+	max-height: 8rem;
+	overflow: auto;
 }
 
 .post-row-top {
