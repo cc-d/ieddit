@@ -66,7 +66,7 @@ I may have misjudged the demand for such a platform, if so I'll have lost no mor
 
 Currently everything is running on google cloud, due to $90 of credit I had on the platform (and they block outgoing port 25... annoying af but hey, it's free). Once this credit runs out, I will not be able to sustain the site under any real amount of use for long financially.
 
-To contribute to server operations, for now the most practical option is crypto. If there ends up being significant demand for a platform like this, I'll go through the motions of creating a patreon/etc account.
+To contribute to server operations, for now the most practical option is crypto. If there ends up being significant demand for a platform like this, I'll go through the motions of creating a patreon/etc account. Server credit would also be immensely helpful, especially if it's on one of the big guys like aws.
 
 Bitcoin: 1698YXgDhYdoNqqcjxsGjrPrLb81XWNML5
 
