@@ -350,7 +350,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		if hasattr(post, 'text'):
 			post.text = pseudo_markup(post.text)
 		if thumb_exists(post.id):
-			post.thumbnail = 'thumb-' + str(post.id) + '.JPEG'
+			post.thumbnail = 'thumb-' + str(post.id) + '.PNG'
 
 		post.mods = get_sub_mods(post.sub)
 		post.created_ago = time_ago(post.created)
@@ -435,7 +435,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 			if hasattr(post, 'text'):
 				post.text = pseudo_markup(post.text)
 			if thumb_exists(post.id):
-				post.thumbnail = 'thumb-' + str(post.id) + '.JPEG'
+				post.thumbnail = 'thumb-' + str(post.id) + '.PNG'
 			if hasattr(post, 'self_text'):
 				if post.self_text != None:
 					post.self_text = pseudo_markup(post.self_text)
