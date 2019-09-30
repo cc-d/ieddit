@@ -10,7 +10,7 @@
 {% set cauthor_type = comment.author_type %}
 {% endif %}
 
-{% if comment.anonymous == False and comment.deleted == False %}
+{% if comment.deleted == False %}
 {% if no_posts %}
 <div class="allcomment-comment">
 {% endif %}
