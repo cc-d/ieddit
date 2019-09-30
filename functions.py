@@ -57,8 +57,12 @@ def convert_ied(url):
 def post_url_parse(url):
 	return urllib.parse.urlparse(url).netloc
 
+def get_time():
+	from datetime import datetime
+	return datetime.now()
+
 def time_ago(dt):
-	diff = datetime.now() - dt
+	diff = get_time() - dt
 	if diff.seconds < 60:
 		return str(int(diff.seconds)) + 's'#econds ago'
 	if diff.seconds > 60 and diff.seconds < 3600:
