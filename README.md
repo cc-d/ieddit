@@ -51,6 +51,7 @@ No Spam.
 
 Nothing that violates US law, or anything that would be considered 'gray area'. US speech protections are some of the strongest and most liberal in the world, if your content pushes the boundries of these laws, you should probably reconsider posting it.
 
+* To clarify, this rule is aimed mainly at anything which could be considered 'borderline cp'. Loli/Shota, jailbait, &etc. This is not the place for that type of content.
 
 ### Finally
 
