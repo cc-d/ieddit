@@ -1147,14 +1147,18 @@ def settings(sub=None):
 @app.route('/explore/', methods=['GET'])
 def explore():
 	#sub = normalize_sub(sub)
+	esubs = []
 	subs = db.session.query(Sub).all()
 	for sub in subs:
 		if hasattr(sub, 'rules'):
 			if sub.rules != None:
 				sub.rules = pseudo_markup(sub.rules)
 		sub.posts = db.session.query(Post).filter_by(sub=sub.name).count()
+		if sub.posts == 0:
+			continue
 		sub.comments = db.session.query(Comment).filter_by(sub_name=sub.name).count()
-	return render_template('explore.html', subs=subs)
+		esubs.append(sub)
+	return render_template('explore.html', subs=esubs)
 
 @app.route('/clear_cache', methods=['GET'])
 def ccache():
