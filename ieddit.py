@@ -1143,9 +1143,10 @@ def settings(sub=None):
 		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw)
 	return '403'
 
+@cache.memoize(60)
 @app.route('/explore/', methods=['GET'])
 def explore():
-	sub = normalize_sub(sub)
+	#sub = normalize_sub(sub)
 	subs = db.session.query(Sub).all()
 	for sub in subs:
 		if hasattr(sub, 'rules'):
