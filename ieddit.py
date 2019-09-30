@@ -111,8 +111,12 @@ def suggest_title(url=None):
 
 #@cache.memoize(600)
 def get_subtitle(sub):
-	title = db.session.query(Sub).filter_by(name=sub).first()
-	return title.title
+	try:
+		title = db.session.query(Sub).filter_by(name=sub).first()
+		title = title.title
+	except:
+		title = None
+	return title
 
 #@cache.memoize(600)
 def get_sub_mods(sub, admin=True):
