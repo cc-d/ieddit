@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% if request.is_mod %}
 <nav class="nav mod-page-controls">
   <a class="nav-link">Mod Controls: </a>
   <a class="nav-link" href="/r/{{ request.sub }}/mods/">Mod Log</a>
   <a class="nav-link" href="/r/{{ request.sub }}/mods/banned/">Banned Users</a>
+ {% if request.is_mod %}
   <a class="nav-link" href="/r/{{ request.sub }}/mods/add/">Manage Mods</a>
   <a class="nav-link" href="/r/{{ request.sub }}/settings/">Settings</a>
-</nav>
 {% endif %}
+</div>
+
 
 <nav class="nav mod-page-controls">
 <p class="nav-link">Mods</p>
@@ -105,11 +106,13 @@ No Description
 <ul class="list-group list-group-horizontal-sm">
 {% for ban in banned %}
 <li class="list-group-item">User: {{ ban.username }} 
+	{% if request.is_mod %}
 	<form action='/mod/unban' method='POST'>
 		<input type='hidden' value='{{ ban.username }}' name='username'>
 		<input type='hidden' value='{{ request.sub }}' name='sub'>
 		<button type="submit" class="btn btn-dark btn-sm">Unban</button>
 	</form>
+	{% endif %}
 </li>
 {% endfor %}
 </ul>
