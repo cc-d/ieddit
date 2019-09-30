@@ -56,6 +56,7 @@ def before_request():
 			getsub = re.findall('\/r\/([a-zA-Z1-9-_]*)', request.environ['REQUEST_URI'])
 			if len(getsub) > 0:
 				if getsub[0] != 'all':
+					getsub[0] = normalize_sub(getsub[0])
 					oldsub = request.sub
 					request.sub = getsub[0]
 					if 'username' in session:
@@ -164,11 +165,10 @@ def normalize_username(username):
 	return False
 
 def normalize_sub(sub):
-	sub = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
-	if sub != None:
-		return sub.name
-	return False
-
+	subl = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
+	if subl != None:
+		return subl.name
+	return sub
 def get_all_subs():
 	return db.session.query(Sub).all()
 
@@ -264,7 +264,7 @@ def register():
 
 @app.route('/')
 def index():
-	return subi('all', nsfw=False)
+	return subi(subi='all', nsfw=False)
 
 #@cache.memoize(600)
 def is_sub_nsfw(sub):
@@ -384,7 +384,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 	offset = request.args.get('offset')
 	d = request.args.get('d')
 	s = request.args.get('s')
-
+	subi = normalize_sub(subi)
 	if request.environ['QUERY_STRING'] == '':
 		session['off_url'] = request.url + '?offset=15'
 		session['prev_off_url'] = request.url
@@ -510,6 +510,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 		int(comment_id)
 	except:
 		comment_id = False
+	sub = normalize_sub(sub)
 
 	comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
 	
@@ -1082,6 +1083,7 @@ def msg(username=None):
 
 @app.route('/r/<sub>/mods/', methods=['GET'])
 def submods(sub=None):
+	sub = normalize_sub(sub)
 	modactions = db.session.query(Mod_action).filter_by(sub=sub).limit(5).all()
 	if type(modactions) != None:
 		modactions = [m for m in modactions]
@@ -1089,6 +1091,7 @@ def submods(sub=None):
 
 @app.route('/r/<sub>/actions/', methods=['GET'])
 def subactions(sub=None):
+	sub = normalize_sub(sub)
 	modactions = db.session.query(Mod_action).filter_by(sub=sub).all()
 	if type(modactions) != None:
 		modactions = [m for m in modactions]
@@ -1097,6 +1100,7 @@ def subactions(sub=None):
 
 @app.route('/r/<sub>/mods/banned/', methods=['GET'])
 def bannedusers(sub=None):
+	sub = normalize_sub(sub)
 	banned = db.session.query(Ban).filter_by(sub=sub).all()
 	if type(banned) != None:
 		banned = [b for b in banned]
@@ -1104,6 +1108,7 @@ def bannedusers(sub=None):
 
 @app.route('/r/<sub>/mods/add/', methods=['GET'])
 def addmod(sub=None):
+	sub = normalize_sub(sub)
 	if hasattr(request, 'is_mod'):
 		if request.is_mod:
 			return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
@@ -1111,6 +1116,7 @@ def addmod(sub=None):
 
 @app.route('/r/<sub>/mods/remove/', methods=['GET'])
 def removemod(sub=None):
+	sub = normalize_sub(sub)
 	if hasattr(request, 'is_mod'):
 		if request.is_mod:
 			return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
@@ -1118,6 +1124,7 @@ def removemod(sub=None):
 
 @app.route('/r/<sub>/info/', methods=['GET'])
 def description(sub=None):
+	sub = normalize_sub(sub)
 	subr = db.session.query(Sub).filter_by(name=sub).first()
 	if hasattr(subr, 'rules') == False:
 		rtext = False
@@ -1130,6 +1137,7 @@ def description(sub=None):
 
 @app.route('/r/<sub>/settings/', methods=['GET'])
 def settings(sub=None):
+	sub = normalize_sub(sub)
 	subr = db.session.query(Sub).filter_by(name=sub).first()
 	if request.is_mod:
 		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw)
@@ -1137,6 +1145,7 @@ def settings(sub=None):
 
 @app.route('/explore/', methods=['GET'])
 def explore():
+	sub = normalize_sub(sub)
 	subs = db.session.query(Sub).all()
 	for sub in subs:
 		if hasattr(sub, 'rules'):
