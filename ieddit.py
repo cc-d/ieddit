@@ -1243,7 +1243,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
 		comments_with_posts.append((c, cpost))
 		c.hot = hot(c.ups, c.downs, c.created)
-
+		c.created_ago = datetime.now() - c.created
 
 	print(offset)
 
