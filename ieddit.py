@@ -75,10 +75,10 @@ def apply_headers(response):
 	#response.headers["X-XSS-Protection"] = "1; mode=block"
 	#response.headers['X-Content-Type-Options'] = 'nosniff'
 
-	response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-	response.headers["Pragma"] = "no-cache"
-	response.headers["Expires"] = "0"
-	response.headers['Cache-Control'] = 'public, max-age=0'
+	#response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+	#response.headers["Pragma"] = "no-cache"
+	#response.headers["Expires"] = "0"
+	#response.headers['Cache-Control'] = 'public, max-age=0'
 	session['last_url'] = request.url
 	if app.debug:
 		if hasattr(g, 'start'):
@@ -155,7 +155,7 @@ def is_admin(username):
 
 def set_rate_limit():
 	if 'username' in session:
-		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME * 60)
+		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME)
 
 def normalize_username(username):
 	username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
@@ -629,6 +629,7 @@ def view_user(username):
 		comments_with_posts.append((c, cpost))
 	return render_template('user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts)
 
+@limiter.limit('10 per minute')
 @app.route('/vote', methods=['GET', 'POST'])
 def vote(post_id=None, comment_id=None, vote=None):
 	if request.method == 'POST':
@@ -851,13 +852,14 @@ def create_post(postsub=None):
 					s.rank = s.comments.count() + s.posts.count()
 				else:
 					s.rank = 0
-			subs = [s for s in subs][:10]
+			subs = [s for s in subs]
 			subs.sort(key=lambda x: x.rank, reverse=True)
 		
 		sppf = session['previous_post_form']
 		session['previous_post_form'] = None
 		return render_template('create_post.html', postsub=postsub, subs=subs, sppf=sppf)
 
+@limiter.limit('1 per minute')
 @app.route('/create_comment', methods=['POST'])
 def create_comment():
 	text = request.form.get('comment_text')
