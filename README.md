@@ -57,7 +57,7 @@ Nothing that violates US law, or anything that would be considered 'gray area'. 
 
 [You can find the site code here: https://github.com/cc-d/ieddit](https://github.com/cc-d/ieddit)
 
-######Who am I?
+### Who am I?
 
 I'm just a random person who can write bad code and is fairly frustrated at the state the internet as of late, especially when it comes to the issues of censorship and privacy. Decentralized platforms are not an ideal solution for internet communities. TOR is also not an answer, the technical barrier in accessing hidden services alone disqualifies them as a practical alternative, before even considering the bandwidth/latency limitations.
 
