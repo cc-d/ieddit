@@ -57,6 +57,7 @@
 
 .comment-reply-box-expand {
     width: -webkit-fill-available;
+    min-height: 8rem;
 }
 
 #comment-reply-box {
