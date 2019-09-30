@@ -6,7 +6,9 @@
 	margin-left: 1rem;
 	margin-right: 1rem;
 }
-
+.allcomment-comment {
+	margin-top: 0.5rem;
+}
 .post-row {
 	margin-right: 0px;
 	max-height: 1rem;

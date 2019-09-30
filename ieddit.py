@@ -1172,6 +1172,133 @@ def about():
 	with open('README.md') as r:
 		return render_template('about.html', about=markdown(r.read()))
 
+
+@app.route('/comments/', methods=['GET'])
+@app.route('/r/<sub>/comments/', methods=['GET'])
+def subcomments(sub=None, offset=0, limit=15, s=None):
+	# code is copy pasted from user page... the post stuff can probably be gotten rid of.
+	vuser = db.session.query(Iuser).filter_by(username=session['username']).first()
+	mod_of = db.session.query(Moderator).filter_by(username=vuser.username).all()
+	mods = {}
+
+	offset = request.args.get('offset')
+	if offset == None:
+		offset = 0
+
+	offset = int(offset)
+
+	s = request.args.get('s')
+	if s == None:
+		s = 'new'
+
+	for mm in mod_of:
+		mods[mm.sub] = mm.rank
+	vuser.mods = mods
+
+	if sub == 'all':
+		posts = subi('all', posts_only=True, nsfw=True)
+	elif sub != None:
+		posts = subi(sub, posts_only=True)
+	else:
+		posts = subi('all', posts_only=True, nsfw=False)
+
+
+	posts = posts[offset:]
+	posts = posts[0:limit]
+
+	for p in posts:
+		p.mods = get_sub_mods(p.sub)
+
+	comments_with_posts = []
+
+	if sub == None:
+		sub = 'all'
+
+	if sub == 'all':
+		comments = db.session.query(Comment)
+		comcount = db.session.query(Comment).count()
+	else:
+		comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub))
+		comcount = comments.count()
+
+
+	if comcount <= offset:
+		more = comcount
+	
+
+
+	if s == 'top':
+		print('top')
+		comments = comments.order_by((Comment.ups - Comment.downs).desc())
+		comments = comments.offset(offset).limit(limit).all()
+	elif s == 'new':
+		print('new')
+		comments = comments.order_by((Comment.created).desc())
+		comments = comments.offset(offset).limit(limit).all()
+	else:
+		comments = comments.offset(offset).limit(limit).all()
+
+	for c in comments:
+		c.mods = get_sub_mods(c.sub_name)
+		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
+		comments_with_posts.append((c, cpost))
+		c.hot = hot(c.ups, c.downs, c.created)
+
+
+	print(offset)
+
+	if request.environ['QUERY_STRING'] == '':
+		session['off_url'] = request.url + '?offset=15'
+		session['prev_off_url'] = request.url
+		print(1)
+	else:
+		if offset == None:
+			session['off_url'] = request.url + '&offset=15'
+			session['prev_off_url'] = request.url
+			print(2)
+		else:
+			offset = str(offset)
+
+			if (int(offset) - 15) > 0:
+				print(3)
+				session['prev_off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) -15))
+			else:
+				print(4)
+				session['prev_off_url'] = re.sub('[&\?]?offset=(\d+)', '', request.url)
+			print(5, offset)
+			session['off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) +15))
+			print(session['off_url'])
+	if request.url.find('offset=') == -1:
+		session['off_url'] = request.url + '&offset=15'
+		session['prev_off_url'] = False
+
+	session['top_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=top'
+	session['new_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=new'
+	session['hot_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=hot'
+
+	session['hour_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=hour'
+	session['day_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=day'
+	session['week_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=week'
+	session['month_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=month'
+
+	for a in ['top_url', 'new_url', 'day_url', 'week_url', 'hour_url', 'month_url', 'hot_url']:
+		if session[a].find('/&') != -1:
+			session[a] = session[a].replace('/&', '/?')
+
+	if 'prev_off_url' in session:
+		if session['prev_off_url']:
+			if session['prev_off_url'].find('/&'):
+				session['prev_off_url'] = session['prev_off_url'].replace('/&', '/?')
+
+	if 'off_url' in session:
+		if session['off_url']:
+			session['off_url'] = session['off_url'].replace('/&', '/?')
+
+	if s == 'hot':
+			comments.sort(key=lambda x: x.hot, reverse=True)
+
+	return render_template('recentcomments.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
+
 from mod import bp
 app.register_blueprint(bp)
 
