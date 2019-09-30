@@ -155,7 +155,7 @@ def is_admin(username):
 
 def set_rate_limit():
 	if 'username' in session:
-		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME)
+		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME * 60)
 
 def normalize_username(username):
 	username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
@@ -333,7 +333,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		offset = 0
 
 	posts = posts[offset:]
-	posts = posts[0:limit]#offset:offset+limit]
+	posts = posts[0:offset+limit]
 
 	stid = False
 	for p in posts:
@@ -397,6 +397,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 				session['prev_off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) -15))
 			else:
 				session['prev_off_url'] = re.sub('[&\?]?offset=(\d+)', '', request.url)
+
 			session['off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) +15))
 	if request.url.find('offset=') == -1:
 		session['prev_off_url'] = False
@@ -414,6 +415,12 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 	for a in ['top_url', 'new_url', 'day_url', 'week_url', 'hour_url', 'month_url', 'hot_url']:
 		if session[a].find('/&') != -1:
 			session[a] = session[a].replace('/&', '/?')
+
+	flash(request.environ)
+	if 'prev_off_url' in session:
+		if session['prev_off_url']:
+			if session['prev_off_url'].find('/&'):
+				session['prev_off_url'] = session['prev_off_url'].replace('/&', '/?')
 
 	sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only, deleted=False, offset=offset, limit=15, d=d, s=s, nsfw=nsfw)
 	if type(sub_posts) == dict:
