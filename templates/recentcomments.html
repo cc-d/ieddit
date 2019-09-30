@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="comment-sort-top">
+{% include 'sort-top.html' %}
+</div>
+	
+
+{% include 'combase.html' %}
+
+
+
+
+{% if session.prev_off_url %}
+<a href="{{ session.prev_off_url }}" id="prev-button" class="sub-posts-next"><button type="button" class="btn btn-outline-secondary">prev</button></a>
+{% endif %}
+
+{% if session.off_url %}
+
+<a href="{{ session.off_url }}" class="sub-posts-next"><button type="button" class="btn btn-outline-secondary">next</button></a>
+{% endif %}
+
+{% endblock %}
