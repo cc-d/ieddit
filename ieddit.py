@@ -1024,7 +1024,7 @@ def reply_message(username=None, mid=None):
 		if hasattr(m, 'in_reply_to'):
 			if m.in_reply_to != None:
 				m.ppath = m.in_reply_to.replace(config.URL, '')
-		return render_template('message_reply.html', message=pseudo_markup(m), sendto=False)
+		return render_template('message_reply.html', message=m, sendto=False)
 
 def sendmsg(title, text, sender, sent_to):
 	cache.delete_memoized(has_messages)
