@@ -1228,11 +1228,9 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 
 
 	if s == 'top':
-		print('top')
 		comments = comments.order_by((Comment.ups - Comment.downs).desc())
 		comments = comments.offset(offset).limit(limit).all()
 	elif s == 'new':
-		print('new')
 		comments = comments.order_by((Comment.created).desc())
 		comments = comments.offset(offset).limit(limit).all()
 	else:
@@ -1243,31 +1241,24 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
 		comments_with_posts.append((c, cpost))
 		c.hot = hot(c.ups, c.downs, c.created)
-		c.created_ago = datetime.now() - c.created
+		c.created_ago = time_ago(c.created)
 
-	print(offset)
 
 	if request.environ['QUERY_STRING'] == '':
 		session['off_url'] = request.url + '?offset=15'
 		session['prev_off_url'] = request.url
-		print(1)
 	else:
 		if offset == None:
 			session['off_url'] = request.url + '&offset=15'
 			session['prev_off_url'] = request.url
-			print(2)
 		else:
 			offset = str(offset)
 
 			if (int(offset) - 15) > 0:
-				print(3)
 				session['prev_off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) -15))
 			else:
-				print(4)
 				session['prev_off_url'] = re.sub('[&\?]?offset=(\d+)', '', request.url)
-			print(5, offset)
 			session['off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) +15))
-			print(session['off_url'])
 	if request.url.find('offset=') == -1:
 		session['off_url'] = request.url + '&offset=15'
 		session['prev_off_url'] = False
