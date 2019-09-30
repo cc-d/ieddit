@@ -1237,6 +1237,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 		comments = comments.offset(offset).limit(limit).all()
 
 	for c in comments:
+		c.text = pseudo_markup(c.text)
 		c.mods = get_sub_mods(c.sub_name)
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
 		comments_with_posts.append((c, cpost))
