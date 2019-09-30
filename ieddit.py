@@ -569,7 +569,7 @@ def create_sub():
 			if 'rate_limit' in session and config.RATE_LIMIT == True:
 				rl = session['rate_limit'] - time.time()
 				if rl > 0:
-					flash('rate limited, try again in %s seconds' % str(rl))
+					flash('rate limited, try again in %s seconds' % str(rl), 'danger')
 					return redirect('/')
 		if subname != None and verify_subname(subname) and 'username' in session:
 			if len(subname) > 30 or len(subname) < 1:
