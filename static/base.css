@@ -312,7 +312,7 @@ blockquote {
 }
 
 .comment-text-text {
-	white-space: white-space: inherit;;
+	white-space: pre-wrap;
 	word-break: break-word;
 	max-height: 100rem;
 	overflow: hidden;

@@ -416,7 +416,6 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 		if session[a].find('/&') != -1:
 			session[a] = session[a].replace('/&', '/?')
 
-	flash(request.environ)
 	if 'prev_off_url' in session:
 		if session['prev_off_url']:
 			if session['prev_off_url'].find('/&'):
