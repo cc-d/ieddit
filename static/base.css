@@ -240,7 +240,7 @@ float: left;
 }
 
 selftext {
-	white-space: inherit;
+	white-space: pre-wrap;
 	max-height: 200rem;
 	overflow: hidden;
 	word-break: break-word;
