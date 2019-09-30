@@ -1,6 +1,6 @@
 # **ieddit.com**
 
-###### This is an __alpha__ version of this website. It's the result of a few thousand lines of code written in only two weeks, there are a LOT of bugs, and the design is nowhere near final. I focused on getting __something__ out as fast as possible, in order to guage interest. Even the name isn't set in stone.
+###### This is an __alpha__ version of this website. It's the result of a few thousand lines of code written in only two weeks, there are a LOT of bugs, and the design is nowhere near final. I focused on getting __something__ out as fast as possible, in order to gauge interest. Even the name isn't set in stone.
 ### About
 
 The idea behind this project was to offer a website with functionality similar to reddit's, with a focus on transparency, privacy, freedom of expression, and so on, while also trimming down the massive amount of design bloat reddit has accumulated over the years. To attempt to preserve these operating principles, this site will not pursue any form of monetization which would violate the privacy of users, regardless of growth. Additionally, this allows the site to operate fully independently without being beholden to the demands of advertisers.
