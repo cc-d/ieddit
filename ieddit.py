@@ -7,7 +7,6 @@ from flask_session import Session
 from flask_session_captcha import FlaskSessionCaptcha
 from datetime import timedelta, datetime
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 
 import time
 import re
@@ -18,6 +17,7 @@ import os
 import _thread
 import urllib.parse
 from functools import wraps
+from utils import get_md5_user_agent
 
 from models import *
 from functions import *
@@ -33,7 +33,7 @@ captcha = FlaskSessionCaptcha(app)
 
 limiter = Limiter(
     app,
-    key_func=get_remote_address,
+    key_func=get_md5_user_agent,
     default_limits=config.LIMITER_DEFAULTS
 )
 
