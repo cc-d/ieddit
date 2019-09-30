@@ -155,7 +155,7 @@ def is_admin(username):
 
 def set_rate_limit():
 	if 'username' in session:
-		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME * 60)
+		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME)
 
 def normalize_username(username):
 	username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
@@ -333,7 +333,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		offset = 0
 
 	posts = posts[offset:]
-	posts = posts[offset:offset+limit]
+	posts = posts[0:limit]#offset:offset+limit]
 
 	stid = False
 	for p in posts:
