@@ -629,7 +629,7 @@ def view_user(username):
 		comments_with_posts.append((c, cpost))
 	return render_template('user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts)
 
-@limiter.limit('10 per minute')
+@limiter.limit('100 per minute')
 @app.route('/vote', methods=['GET', 'POST'])
 def vote(post_id=None, comment_id=None, vote=None):
 	if request.method == 'POST':
@@ -859,7 +859,7 @@ def create_post(postsub=None):
 		session['previous_post_form'] = None
 		return render_template('create_post.html', postsub=postsub, subs=subs, sppf=sppf)
 
-@limiter.limit('1 per minute')
+@limiter.limit('25 per minute')
 @app.route('/create_comment', methods=['POST'])
 def create_comment():
 	text = request.form.get('comment_text')
