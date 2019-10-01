@@ -16,6 +16,19 @@ button {
 	color: #bbb;
 }
 
+#about-wrap {
+	background-color: #262626!important;
+}
+
+#inner-about {
+	margin: 1rem;
+
+}
+
+.comment-reply-list {
+	background-color: #343a40;
+}
+
 .btn-dark {
 	background-color: #262626;
 }
@@ -51,8 +64,8 @@ textarea {
 }
 
 
-ul {
-	background-color: #262626;
+.sub-list {
+	background-color: #262626!important;
 }
 
 html {
