@@ -10,12 +10,12 @@ The wikimedia foundation has proven that such a model is feasible even at the up
 ### How To Install
 The following instructions worked on a fresh debian 9 vps.
 
-sudo bash install.sh
-edit config.py to the proper values (you should only need to change config.URL)
+```sudo bash install.sh```
+edit ```config.py``` to the proper values (you should only need to change config.URL)
 
-run python3 create\_db.py
+run ```python3 create_db.py```
 
-start with python3 run.py
+start with ```python3 run.py```
 
 the site should be running on localhost:80 - the default username/password for an admin account is 'a' 'a'
 
