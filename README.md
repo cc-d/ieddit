@@ -10,7 +10,8 @@ The wikimedia foundation has proven that such a model is feasible even at the up
 ### How To Install
 The following instructions worked on a fresh debian 9 vps.
 
-```sudo bash install.sh```
+run ```sudo bash install.sh```
+
 edit ```config.py``` to the proper values (you should only need to change config.URL)
 
 run ```python3 create_db.py```
