@@ -74,7 +74,7 @@ def before_request():
 	if 'set_darkmode_initial' not in session:
 		session['darkmode'] = True
 		if 'username' in session:
-			u = db.session.query(User).filter_by(username=session['username'])
+			u = db.session.query(Iuser).filter_by(username=session['username'])
 			u.darkmode = True
 			db.session.commit()
 
