@@ -11,6 +11,10 @@
 {% endif %}
 
 {% if comment.deleted == False %}
+{% if userpage and comment.anonymous %}
+
+{% else %}
+
 {% if no_posts %}
 <div class="allcomment-comment">
 {% endif %}
@@ -98,7 +102,11 @@
 {% if no_posts %}
 </div>
 {% endif %}
+
 {% endif %}
+
+{% endif %}
+
 {% else %}
 <p> no comments </p>
 {% endfor %}

@@ -628,7 +628,7 @@ def view_user(username):
 		c.mods = get_sub_mods(c.sub_name)
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
 		comments_with_posts.append((c, cpost))
-	return render_template('user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts)
+	return render_template('user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts, userpage=True)
 
 @limiter.limit('25 per minute')
 @app.route('/vote', methods=['GET', 'POST'])
