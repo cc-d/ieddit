@@ -1,0 +1,15 @@
+requests
+sqlalchemy
+faker
+captcha
+flask
+flask-caching
+Flask-Sessionstore
+flask-session
+flask-session-captcha
+flask-limiter
+pillow
+beautifulsoup4
+bleach
+markdown
+psycopg2
