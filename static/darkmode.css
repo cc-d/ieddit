@@ -21,7 +21,8 @@ input {
 }
 
 textarea {
-	background-color: #dedede!important;
+    background-color: #a6a6a6a6!important;
+    color: #dededede;
 }
 
 .list-group-item {
