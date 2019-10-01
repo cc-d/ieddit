@@ -7,6 +7,16 @@ The idea behind this project was to offer a website with functionality similar t
 
 The wikimedia foundation has proven that such a model is feasible even at the upper echelons of scale, if one is willing to operate leanly without the express pursuit of profit.
 
+### How To Install
+The following instructions worked on a fresh debian 9 vps.
+
+sudo bash install.sh
+edit config.py to the proper values (you should only need to change config.URL)
+
+run with python3 run.py
+
+the site should be running on localhost:80 - the default username/password for an admin account is 'a' 'a'
+
 ### Features
 
 * Fully Transparent Mod/Admin Action Logs

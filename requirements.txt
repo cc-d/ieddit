@@ -16,14 +16,15 @@ distro-info==0.21
 entrypoints==0.3
 Faker==2.0.2
 Flask==1.1.1
+flask==1.1.1
 Flask-Caching==1.7.2
 Flask-Limiter==1.0.1
 Flask-Session==0.3.1
 flask-session-captcha==1.1.0
 Flask-Sessionstore==0.4.5
 Flask-SQLAlchemy==2.4.1
+flask-sqlalchemy==2.4.1
 future==0.16.0
-google-compute-engine==20190916.0
 idna==2.6
 itsdangerous==1.1.0
 Jinja2==2.10.1
