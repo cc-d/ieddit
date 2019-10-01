@@ -1291,6 +1291,8 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 
 	return render_template('recentcomments.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
+
+
 from mod import bp
 app.register_blueprint(bp)
 

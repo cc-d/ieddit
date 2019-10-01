@@ -126,4 +126,33 @@ def marknsfw(pid=None):
 	return redirect(post.permalink)
 
 
+@ubp.route('/darkmode', methods=['POST'])
+def darkmode(username=None):
+	if 'username' not in session:
+		flash('not logged in', 'danger')
+		return redirect(url_for('login'))
+
+	if username is None:
+		user = db.session.query(Iuser).filter_by(username=session['username']).first()
+
+	action = request.form.get('action')
+
+	if action == 'disable':	
+		user.darkmode = False
+		mode = 'light'
+		session['darkmode'] = False
+	elif action == 'enable':
+		user.darkmode = True
+		mode = 'dark'
+		session['darkmode'] = True
+	else:
+		return 'bad action'
+
+	flash('switched to %s mode' % mode, 'success')
+	db.session.add(user)
+	db.session.commit()
+	cache.clear()
+	return redirect('/u/' + user.username)
+
+
 

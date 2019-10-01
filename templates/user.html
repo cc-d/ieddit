@@ -5,11 +5,29 @@
 {% endif %}
 <h6> user profile for {{ vuser.username }}</h6>
 
+
+<div class="btn-group" role="group">
 {% if session['username'] != vuser.username %}
-<a href="/message/{{ vuser.username }}"><button type="button" class="btn btn-sm btn-outline-secondary">send message</button></a>
+<a href="/message/{{ vuser.username }}"><button type="button" class="btn btn-sm btn-outline-secondary user-opt">send message</button></a>
 {% else %}
-<a href="/u/{{ session['username'] }}/messages/"><button type="button" class="btn btn-sm btn-outline-secondary">view messages</button></a>
+
+<a href="/u/{{ session['username'] }}/messages/"><button type="button" class="btn btn-sm btn-outline-secondary user-opt">view messages</button></a>
+
+<form action='/user/darkmode' method='POST'>
+{% if session['darkmode'] == False %}
+    <input type='hidden' name='action' value='enable'>
+    <button type="submit" class="btn btn-sm btn-outline-secondary user-opt">enable darkmode</button></a>
+{% else %}
+    <input type='hidden' name='action' value='disable'>
+    <button type="submit" class="btn btn-sm btn-outline-secondary user-opt">disable darkmode</button></a>
 {% endif %}
+</form>
+
+{% endif %}
+
+</div>
+
+
 
 <br><br>
 {% if vuser.mods|length > 0 %}

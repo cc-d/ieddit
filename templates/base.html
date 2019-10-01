@@ -14,6 +14,11 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}?6">
 	<script src="{{ url_for('static', filename='main.js') }}?2"></script>
 	<link rel="shortcut icon" href="{{ url_for('static', filename='globe.png') }}?2">
+
+	{% if session['darkmode'] %}
+	<link rel="stylesheet" href="{{ url_for('static', filename='darkmode.css') }}?6">
+	{% endif %}
+
 	{% if request.sub and request.sub != 'all' %}
 	<title>/r/{{ request.sub}} {% if request.subtitle != None %} - {{ request.subtitle }}{% endif %}</title>
 	{% else %}
