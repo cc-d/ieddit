@@ -76,11 +76,11 @@ html {
 
 .list-group-item {
 	background-color: #262626;
-	border-color: #bbb;
+	border-color: black;
 }
 
 .sub-list {
-	border: 1px solid #bbb;
+	border: 1px solid black;
 }
 
 .user-icon-link {
@@ -137,7 +137,7 @@ html {
 
 .comment-post-container {
 	background-color: #262626;
-	border: 1px solid white;
+	border: 1px solid black;
 
 }
 
