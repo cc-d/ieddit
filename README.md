@@ -13,7 +13,9 @@ The following instructions worked on a fresh debian 9 vps.
 sudo bash install.sh
 edit config.py to the proper values (you should only need to change config.URL)
 
-run with python3 run.py
+run python3 create\_db.py
+
+start with python3 run.py
 
 the site should be running on localhost:80 - the default username/password for an admin account is 'a' 'a'
 
