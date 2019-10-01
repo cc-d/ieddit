@@ -21,11 +21,11 @@
             <small>
             {% if cauthor_type == 'admin' %}
             {% if comment.edited %}* {% endif %}
-            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
+            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[a]{{ cauthor }}</a>
             {% elif cauthor_type == 'mod' %}
             <i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[m]{{ post.author }}</a>
             {% else %}
-            <i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">{{ cauthor }}</a>
+            <i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
             {% endif %}
             </small>
                 <a href="{{ config.URL }}/r/{{ post.sub }}/" style="margin-left: 0.5rem;">
