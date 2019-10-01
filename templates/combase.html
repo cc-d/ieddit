@@ -21,7 +21,7 @@
             <small>
             {% if cauthor_type == 'admin' %}
             {% if comment.edited %}* {% endif %}
-            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[a]{{ cauthor }}</a>
+            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
             {% elif cauthor_type == 'mod' %}
             <i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[m]{{ post.author }}</a>
             {% else %}
@@ -85,7 +85,7 @@
 </div>
             {% if session['username'] in comment.mods %}
             <div class='mod-option-wrapper-comments'><small>
-                    <form action='{{ config.URL }}/mod/delete/post' method='POST' class='post-mod-option-form post-mod-delete-form'>
+                    <form action='{{ config.URL }}/mod/delete' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|
                     <form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
