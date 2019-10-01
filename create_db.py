@@ -1,3 +1,4 @@
+import logging
 from flask import Flask, render_template, session, request
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,12 +11,24 @@ from random import randint, choice
 from faker import Faker
 import json
 import config
+import psycopg2
+
 fake = Faker()
 
-#su postgres
-#os.system('rm -rf test.db')
 if config.DB_TYPE == 'postgres':
-    os.system('bash recreate_psql_db.sh')
+	conn = psycopg2.connect(host=config.PG_HOST, database=config.DATABASE, user=config.PG_USER, password=config.PG_PASSWORD)
+	conn.set_session(autocommit=True)
+	cur = conn.cursor()
+	logging.info('connected to {0} on database {1}'.format(config.PG_HOST, config.DATABASE))
+	cur.execute("DROP SCHEMA public CASCADE;")
+	cur.execute("CREATE SCHEMA public;")
+	# commented queries below throw errors about not existing
+	#cur.execute("GRANT ALL ON SCHEMA public TO postgres;")
+	cur.execute("GRANT ALL ON SCHEMA public TO public;")
+	cur.execute("COMMENT ON SCHEMA public IS 'standard public schema';")
+	#cur.execute("CREATE USER test WITH PASSWORD 'test';")
+	#cur.execute("ALTER SCHEMA public OWNER to postgres;")
+	logging.info('Succesfully provisioned database')
 
 # force clear user sessions by changing key
 with open('config.py', 'r+') as f:

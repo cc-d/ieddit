@@ -1,17 +1,19 @@
 DEBUG = True
 
-DB_TYPE = 'postgres'
-#DATABASE_URI = 'sqlite:///test.db'
-#SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+DATABASE = 'ieddit'
+PG_USER = 'test'
+PG_PASSWORD = 'test'
+PG_HOST = 'localhost'
+
 
 DB_TYPE = 'postgres'
-DATABASE_URI = 'postgres://test:test@localhost:5432/ieddit'
-SQLALCHEMY_DATABASE_URI = 'postgres://test:test@localhost:5432/ieddit'
+DATABASE_URI = 'postgres://{0}:{1}@{2}:5432/{3}'.format(PG_USER, PG_PASSWORD, PG_HOST, DATABASE)
+SQLALCHEMY_DATABASE_URI = 'postgres://{0}:{1}@{2}:5432/{3}'.format(PG_USER, PG_PASSWORD, PG_HOST, DATABASE)
 
 # This will be unique every time create_db.py is ran when testing
 # to force clear sessions
 
-SECRET_KEY = 'not-a-real-key-|r|grTnBM0eFD|r|'
+SECRET_KEY = 'not-a-real-key-|r|TusB-M8hZt|r|'
 
 # Chhange this to your local URL. IE http://127.0.0.1
 URL = 'http://dev.ieddit.com'
