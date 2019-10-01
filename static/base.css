@@ -1,4 +1,3 @@
-
 .inner-div {
 	border:0px solid green;
 }
@@ -9,6 +8,11 @@
 .allcomment-comment {
 	margin-top: 0.5rem;
 }
+
+.user-opt {
+	margin-right: 0.5rem;
+}
+
 .post-row {
 	margin-right: 0px;
 	max-height: 1rem;
@@ -262,7 +266,8 @@ blockquote {
 }
 
 .sub-list {
-	margin-bottom: 0.5rem;
+	margin-bottom: 1rem;
+	margin-top: 1rem;
 	border: 1px solid black;
 }
 .explore-link {
@@ -334,7 +339,7 @@ blockquote {
 }
 
 .mod-option-button {
-	background-color: #fff;
+	background-color: rgb(0,0,0,0);
 	margin-bottom: 1px;
 	padding: 0px;
 	margin: 0px;
@@ -357,7 +362,7 @@ blockquote {
 .bottom-subposts {
 	margin: 0;
 }
-.user-opt {
+.user-options {
 	margin-left: 1rem;
 }
 #user-recent {

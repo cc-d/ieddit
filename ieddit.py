@@ -204,6 +204,7 @@ def login():
 				if hasattr(login_user, 'anonymous'):
 					if login_user.anonymous:
 						session['anonymous'] = True
+				session['darkmode'] = login_user.darkmode
 
 				return redirect(url_for('index'), 302)
 

@@ -1,6 +1,42 @@
 body {
 	background-color: #262626;
+	color: #a6a6a6;
 }
+
+.bg-light {
+	background-color: #343a40!important;
+}
+
+body a {
+	background-color: rgba(0,0,0,0);
+	color: #a6a6a6;
+}
+
+button {
+	color: #a6a6a6;
+}
+
+input {
+	background-color: #dedede!important;
+}
+
+textarea {
+	background-color: #dedede!important;
+}
+
+.list-group-item {
+	background-color: #262626;
+	border-color: #a6a6a6;
+}
+
+.sub-list {
+	border: 1px solid #a6a6a6;
+}
+
+.user-icon-link {
+	color: #a6a6a6;
+}
+
 .sub-post-title-link {
 	color: #dedede;
 }
@@ -27,3 +63,17 @@ body {
 .comment-text-text {
 	color: #a6a6a6;
 }
+
+.btn-outline-secondary {
+    color: #a6a6a6;
+    border-color: #a6a6a6;
+}
+
+.nav-link {
+	color: #a6a6a6!important;
+}
+
+.navbar-brand {
+	color: #a6a6a6!important;
+}
+
