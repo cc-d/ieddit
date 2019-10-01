@@ -25,9 +25,11 @@
 	<title>ieddit</title>
 	{% endif %}
 </head>
-<body>
-	<div id="page" class="mx-auto">
-	<nav class="navbar navbar-expand-lg navbar-light bg-light rounded">
+<body class="bg-light">
+<div class='background-contain'>
+<div class='page-continer'>
+<div class="page mx-auto">
+	<nav class="navbar navbar-expand-lg navbar-light rounded">
 		<a class="navbar-brand" href="/">ieddit<small style="font-size:50%;"> alpha</small></a>
 
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -96,8 +98,8 @@
 		</button>
 
 		</div>
-
-	</nav>
+</nav>
+</div>
 	{% with messages = get_flashed_messages(with_categories=true) %}
 		{% if messages %}
 			<ul class='flashes generic-alert' onload="autoFadeAlert()">
@@ -112,10 +114,18 @@
 			</ul>
 		{% endif %}
 	{% endwith %}
-	<div id="content">
+</div>
+</div>
+<div class='page-container bg-light'>
+<div class="mx-auto bg-light page">
+	<div id="content" class="bg-light">
 		{% block content %}
 		{% endblock %}
 	</div>
 </div>
+</div>
+
+
+<!-- ? -->
 </body>
 </html>

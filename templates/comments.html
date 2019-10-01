@@ -8,7 +8,7 @@
 {% set pauthor_type = post.author_type %}
 {% endif %}
 <div id="comment-page-wrapper">
-<ul class="list-unstyled">
+<ul class="list-unstyled comment-post-container rounded">
 	<li class="media sub-post">
         {% if post.post_type == 'url' %}
         <a href="{{ post.url }}">
@@ -26,7 +26,7 @@
         </a>
         {% else %}
         <a href="{{ post.permalink }}">
-            <img class="mr-3 post-image" src="{{ url_for('static', filename='comment.png') }}" alt="Generic placeholder image">
+            <img class="mr-3 post-image" src="{{ url_for('static', filename='comment-white.png') }}" alt="Generic placeholder image">
         </a>
         {% endif %}
 		<div class="media-body">

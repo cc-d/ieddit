@@ -1,6 +1,6 @@
 body {
 	background-color: #262626;
-	color: #a6a6a6;
+	color: #bbb;
 }
 
 .bg-light {
@@ -9,11 +9,19 @@ body {
 
 body a {
 	background-color: rgba(0,0,0,0);
-	color: #a6a6a6;
+	color: #bbb;
 }
 
 button {
-	color: #a6a6a6;
+	color: #bbb;
+}
+
+.btn-dark {
+	background-color: #262626;
+}
+
+.btn-background {
+	background-color: #262626!important;
 }
 
 input {
@@ -21,60 +29,118 @@ input {
 }
 
 textarea {
-    background-color: #a6a6a6a6!important;
+    background-color: #a6a6a6!important;
     color: #dededede;
+}
+
+.message-body {
+	background-color: #262626;
+}
+
+.mod-page-controls {
+	background-color: #262626;
+}
+
+.mod-settings-page {
+	background-color: #262626;
+	padding-bottom: 1rem;
+}
+.add-mod {
+	margin-left: 1rem;
+}
+
+
+ul {
+	background-color: #262626;
+}
+
+html {
+	background-color: #343a40;
+}
+
+#content {
+	margin-top: 0.5rem;
+}
+
+.explore-sub {
+	background-color: #262626;
+}
+
+.top-sort {
+	background-color: #262626;
+}
+
+.form-control:focus {
+	color: #dedede;
 }
 
 .list-group-item {
 	background-color: #262626;
-	border-color: #a6a6a6;
+	border-color: #bbb;
 }
 
 .sub-list {
-	border: 1px solid #a6a6a6;
+	border: 1px solid #bbb;
 }
 
 .user-icon-link {
-	color: #a6a6a6;
+	color: #bbb;
 }
 
 .sub-post-title-link {
 	color: #dedede;
 }
 .sub-post-title-url {
-	color: #a6a6a6;
+	color: #bbb;
 }
 
 .top-of-post {
-	color: #a6a6a6;
+	color: #bbb;
 }
 
 .comment-link {
-	color: #a6a6a6;
+	color: #bbb;
 }
 
 .fa-arrow-up {
-	color: #a6a6a6;
+	color: #bbb;
 }
 
 .fa-arrow-down {
-	color: #a6a6a6;
+	color: #bbb;
 }
 
 .comment-text-text {
-	color: #a6a6a6;
+	color: #bbb;
 }
 
 .btn-outline-secondary {
-    color: #a6a6a6;
-    border-color: #a6a6a6;
+    color: #bbb;
+    border-color: #bbb;
 }
 
 .nav-link {
-	color: #a6a6a6!important;
+	color: #bbb!important;
 }
 
 .navbar-brand {
-	color: #a6a6a6!important;
+	color: #bbb!important;
 }
 
+.sub-comment {
+	background-color: #262626;
+}
+
+.user-opt {
+	background-color: #262626;
+}
+
+.comment-post-container {
+	background-color: #262626;
+	border: 1px solid white;
+
+}
+
+.background-contain {
+	background-color: #262626;
+}

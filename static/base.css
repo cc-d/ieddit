@@ -190,8 +190,12 @@ float: left;
 	margin-left: 0.5em;
 }
 
-#page {
+.page {
 	max-width: 1024px;
+}
+
+.mod-add-button {
+	margin-right: 1rem;
 }
 
 #comment-page-wrapper{

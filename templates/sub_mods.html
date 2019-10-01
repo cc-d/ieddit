@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<div class="mod-settings-page">
+
 <nav class="nav mod-page-controls">
   <a class="nav-link">Mod Controls: </a>
   <a class="nav-link" href="/r/{{ request.sub }}/mods/">Mod Log</a>
@@ -9,7 +11,7 @@
   <a class="nav-link" href="/r/{{ request.sub }}/mods/add/">Manage Mods</a>
   <a class="nav-link" href="/r/{{ request.sub }}/settings/">Settings</a>
 {% endif %}
-</div>
+</nav>
 
 
 <nav class="nav mod-page-controls">
@@ -45,7 +47,7 @@
   {% else %}
   <input type="text" style="max-width: 20rem;" name='title' class="form-control" placeholder="Example: A place for friends." aria-label="Username" aria-describedby="basic-addon1">
   {% endif %}
-<button type='submit' class="btn btn-outline-secondary" type="button">Edit Title</button>
+<button type='submit' class="btn btn-outline-secondary btn-background" type="button">Edit Title</button>
 </div>
 </form>
 <div id='display-rules'>
@@ -66,7 +68,7 @@ No Description
     <label for="exampleFormControlTextarea1"><h3>Edit Description</h3></label>
     <textarea name='rtext' class="form-control" id="exampleFormControlTextarea1" rows="3">{% if rules %}{{ rules|safe }}{% endif %}</textarea>
   </div>
-  <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-outline-primary" type="button">Save Info</button>
+  <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-outline-primary btn-background" type="button">Save Info</button>
 </form>
 </div>
 <br>
@@ -76,20 +78,21 @@ No Description
 
 
 {% if addmod %}
+<div class='add-mod'>
 <form action='/mod/add' method='POST'>
 <div class="input-group mb-3">
+  <button type='submit' class="btn btn-primary mod-add-button" type="button" >Add User To Mods</button>
   <div class="input-group-prepend">
     <span class="input-group-text" id="basic-addon1">/u/</span>
   </div>
   <input type='hidden' name='sub' value='{{ request.sub }}'>
   <input type="text" name='username' class="form-control" style="max-width: 20rem;" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-<button type='submit' class="btn btn-outline-secondary" type="button">Add User To Mods</button>
 </div>
 </form>
 
 <form action='/mod/remove' method='POST'>
 <div class="input-group mb-3">
-	<button type='submit' class="btn btn-danger" type="button">Remove Mod</button>
+	<button type='submit' class="btn btn-danger mod-add-button" type="button">Remove Mod</button>
   <div class="input-group-prepend">
     <span class="input-group-text" id="basic-addon1">/u/</span>
   </div>
@@ -97,6 +100,7 @@ No Description
   <input style="max-width: 20rem;" type="text" name='username' class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
 </div>
 </form>
+</div>
 {% endif %}
 
 
@@ -144,5 +148,7 @@ No Description
   </tbody>
 </table>
 {% endif %}
+
 </div>
+
 {% endblock %}

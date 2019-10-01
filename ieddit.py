@@ -68,7 +68,15 @@ def before_request():
 
 	if 'username' in session:
 		has_messages(session['username'])
-	#flash(str(vars(request)))
+
+
+	# enabled darkmode by deffault
+	if 'set_darkmode_initial' not in session:
+		session['darkmode'] = True
+		if 'username' in session:
+			u = db.session.query(User).filter_by(username=session['username'])
+			u.darkmode = True
+			db.session.commit()
 
 @app.after_request
 def apply_headers(response):
