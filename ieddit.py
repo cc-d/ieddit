@@ -611,7 +611,7 @@ def create_sub():
 
 @app.route('/u/<username>/', methods=['GET'])
 def view_user(username):
-	vuser = db.session.query(Iuser).filter_by(username=username).first()
+	vuser = db.session.query(Iuser).filter(func.lower(Iuser.name) == func.lower(username)).first()
 	mod_of = db.session.query(Moderator).filter_by(username=vuser.username).all()
 	mods = {}
 	for s in mod_of:
