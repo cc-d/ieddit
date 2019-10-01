@@ -12,6 +12,7 @@ from faker import Faker
 import json
 import config
 import psycopg2
+import os
 
 fake = Faker()
 
@@ -29,6 +30,9 @@ if config.DB_TYPE == 'postgres':
 	#cur.execute("CREATE USER test WITH PASSWORD 'test';")
 	#cur.execute("ALTER SCHEMA public OWNER to postgres;")
 	logging.info('Succesfully provisioned database')
+elif config.DB_TYPE == 'sqlite':
+    os.remove('{0}.db'.format(config.PG_USER))
+
 
 # force clear user sessions by changing key
 with open('config.py', 'r+') as f:
