@@ -74,7 +74,7 @@ def before_request():
 	if 'set_darkmode_initial' not in session:
 		session['darkmode'] = True
 		if 'username' in session:
-			u = db.session.query(Iuser).filter_by(username=session['username'])
+			u = db.session.query(User).filter_by(username=session['username'])
 			u.darkmode = True
 			db.session.commit()
 		session['set_darkmode_initial'] = True
@@ -343,8 +343,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	except:
 		offset = 0
 
-	posts = posts[offset:]
-	posts = posts[0:offset+limit]
+	posts = posts[offset:offset+limit]
 
 	stid = False
 	for p in posts:
@@ -1214,8 +1213,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 		posts = subi('all', posts_only=True, nsfw=False)
 
 
-	posts = posts[offset:]
-	posts = posts[0:limit]
+	posts = posts[offset:offset+limit]
 
 	for p in posts:
 		p.mods = get_sub_mods(p.sub)
