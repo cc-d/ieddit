@@ -138,7 +138,7 @@ def pseudo_markup(text):
 	mtext = text.splitlines()
 	for i in range(0, len(mtext)):
 		mtext[i] = clean(markdown(mtext[i]), strip=True)
-	mtext = '\n'.join(mtext)
+	mtext = '\n'.join([x for x in mtext])
 
 
 	#links = re.findall('<a href="https?:\/\/.*\..*">', mtext)

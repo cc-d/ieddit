@@ -250,6 +250,15 @@ float: left;
 	color: orange;
 }
 
+ul, li{
+	white-space: normal;
+}
+
+.safe-markup-text ul {
+
+	display: inline-block;
+}
+
 selftext {
 	white-space: pre-wrap;
 	max-height: 200rem;
