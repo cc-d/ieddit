@@ -295,27 +295,25 @@ if (re.test(window.location)) {
 function hideComments(comment) {
 	parent = $(comment).parents('.sub-comment')
 
-	if (parent != undefined) {
-		parent.css('overflow','hidden');
-		parent.css('height','2rem');
-		comment.text('[+]');
-		comment.removeClass('hide-comment')
-		comment.addClass('show-comment')
+	if ($(parent) != undefined) {
+		$(parent).css('overflow','hidden');
+		$(parent).css('height','2rem');
 
-		loop = getAttributes(parent)['loop']
+		$(comment).text('[+]');
+		$(comment).removeClass('hide-comment')
+		$(comment).addClass('show-comment')
 
-		if (loop !== undefined) {
-			loop = loop.split(' ');
-		} else {
-			return 0;
-		}
-	
-		nl = loop[0] + ' ' + (parseInt(loop[1]) + 1);
+		plevel = $(parent).attr('level')
 
-		child = $('[loop="' + nl + '"]');
+
+		child = $(parent).next()
 
 		if (child != undefined) {
-			hideComments(child.find('.hide-comment'));
+			clevel = $(child).attr('level');
+			console.log(clevel, plevel);
+			if (clevel >= plevel ) {
+				hideComments($(child).find('.hide-comment'));
+			}
 		}
 
 	}
@@ -333,24 +331,22 @@ function showComments(comment) {
 	if (parent != undefined) {
 		parent.css('overflow','');
 		parent.css('height','');
+
 		comment.text('[-]');
 		comment.removeClass('show-comment')
 		comment.addClass('hide-comment')
 
-		loop = getAttributes(parent)['loop']
+		plevel = parent.attr('level')
 
-		if (loop !== undefined) {
-			loop = loop.split(' ');
-		} else {
-			return 0;
-		}
-	
-		nl = loop[0] + ' ' + (parseInt(loop[1]) + 1);
 
-		child = $('[loop="' + nl + '"]');
-
+		child = parent.next()
+		
 		if (child != undefined) {
-			showComments(child.find('.show-comment'));
+			clevel = child.attr('level');
+			console.log(clevel, plevel);
+			if (clevel >= plevel ) {
+				showComments(child.find('.show-comment'));
+			}
 		}
 
 	}
