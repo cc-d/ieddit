@@ -154,5 +154,29 @@ def darkmode(username=None):
 	cache.clear()
 	return redirect('/u/' + user.username)
 
+@ubp.route('/anonymous', methods=['POST'])
+def uanonymous(username=None):
+	if 'username' not in session:
+		flash('not logged in', 'danger')
+		return redirect(url_for('login'))
 
+	if username is None:
+		user = db.session.query(Iuser).filter_by(username=session['username']).first()
+
+	action = request.form.get('action')
+
+	if action == 'disable':	
+		user.anonymous = False
+		session['anonymous'] = False
+	elif action == 'enable':
+		user.anonymous = True
+		session['anonymous'] = True
+	else:
+		return 'bad action'
+
+	flash('toggled anonymous' % mode, 'success')
+	db.session.add(user)
+	db.session.commit()
+	cache.clear()
+	return redirect('/u/' + user.username)
 

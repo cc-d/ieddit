@@ -1167,7 +1167,12 @@ def explore():
 		if sub.posts == 0:
 			continue
 		sub.comments = db.session.query(Comment).filter_by(sub_name=sub.name).count()
+		sub.score = sub.comments + sub.posts
+
 		esubs.append(sub)
+
+	esubs.sort(key=lambda x: x.score, reverse=True)
+
 	return render_template('explore.html', subs=esubs)
 
 @app.route('/clear_cache', methods=['GET'])
