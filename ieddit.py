@@ -946,16 +946,18 @@ def create_comment():
 
 	if new_comment.parent_id and not deleted:
 		cparent = db.session.query(Comment).filter_by(id=new_comment.parent_id).first()
-		new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
-			sent_to=cparent.author, in_reply_to=cparent.permalink, anonymous=anonymous)
-		db.session.add(new_message)
-		db.session.commit()
-	else:
-		if not deleted:
+		if cparent.author != session['username']:
 			new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
-				sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous)
+				sent_to=cparent.author, in_reply_to=cparent.permalink, anonymous=anonymous)
 			db.session.add(new_message)
 			db.session.commit()
+	else:
+		if not deleted:
+			if post.author != session['username']:
+				new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
+					sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous)
+				db.session.add(new_message)
+				db.session.commit()
 
 
 	cache.delete_memoized(get_subi)	
