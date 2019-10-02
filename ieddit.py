@@ -74,7 +74,7 @@ def before_request():
 	if 'set_darkmode_initial' not in session:
 		session['darkmode'] = True
 		if 'username' in session:
-			u = db.session.query(User).filter_by(username=session['username'])
+			u = db.session.query(Iuser).filter_by(username=session['username'])
 			u.darkmode = True
 			db.session.commit()
 		session['set_darkmode_initial'] = True
@@ -1187,8 +1187,9 @@ def about():
 @app.route('/r/<sub>/comments/', methods=['GET'])
 def subcomments(sub=None, offset=0, limit=15, s=None):
 	# code is copy pasted from user page... the post stuff can probably be gotten rid of.
-	vuser = db.session.query(Iuser).filter_by(username=session['username']).first()
-	mod_of = db.session.query(Moderator).filter_by(username=vuser.username).all()
+	# the username stuff can be gotten rid of too
+
+
 	mods = {}
 
 	offset = request.args.get('offset')
@@ -1200,10 +1201,6 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	s = request.args.get('s')
 	if s == None:
 		s = 'new'
-
-	for mm in mod_of:
-		mods[mm.sub] = mm.rank
-	vuser.mods = mods
 
 	if sub == 'all':
 		posts = subi('all', posts_only=True, nsfw=True)
@@ -1298,7 +1295,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	if s == 'hot':
 			comments.sort(key=lambda x: x.hot, reverse=True)
 
-	return render_template('recentcomments.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
+	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
 
 
