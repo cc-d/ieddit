@@ -853,22 +853,10 @@ def create_post(postsub=None):
 			if len(subref) == 1:
 				if len(subref[0]) > 0:
 					postsub = subref[0]
-
-		subs = get_all_subs()
-		if subs != None:
-			for s in subs:
-				s.get_comments()
-				s.get_posts()
-				if s.comments != None and s.posts != None:
-					s.rank = s.comments.count() + s.posts.count()
-				else:
-					s.rank = 0
-			subs = [s for s in subs]
-			subs.sort(key=lambda x: x.rank, reverse=True)
 		
 		sppf = session['previous_post_form']
 		session['previous_post_form'] = None
-		return render_template('create_post.html', postsub=postsub, subs=subs, sppf=sppf)
+		return render_template('create_post.html', postsub=postsub, sppf=sppf)
 
 
 @cache.memoize(600)
