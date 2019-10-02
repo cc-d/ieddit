@@ -24,7 +24,7 @@
 </form>
 
 <form action='/user/anonymous' method='POST'>
-{% if vuser.darkmode == False %}
+{% if vuser.anonymous == False %}
     <input type='hidden' name='action' value='enable'>
     <button type="submit" class="btn btn-sm btn-outline-secondary user-opt">enable default anonymous</button></a>
 {% else %}
