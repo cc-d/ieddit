@@ -100,6 +100,10 @@ blockquote {
     margin-left: 0.5rem;
 }
 
+.safe-markup-text a {
+	text-decoration: underline;
+}
+
 .sub-list {
 	border: 1px solid black;
 }

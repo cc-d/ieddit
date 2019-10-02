@@ -62,7 +62,7 @@
 <div class="media">
   <div class="media-body">
 	<h5 class="mt-0 post-title-h5">{{ post.title }}</h5>
-	<selftext>{{ post.self_text|safe }}</selftext>
+	<selftext class="safe-markup-text">{{ post.self_text|safe }}</selftext>
   </div>
 </div>
 	{% endif %}
@@ -260,7 +260,7 @@
 			</div>
 		</div>
 		<div class="comment-text">
-		<p class="comment-text-text">{{ comment.text|safe }}</p>
+		<p class="comment-text-text safe-markup-text">{{ comment.text|safe }}</p>
 	</div>
 			<div class="row post-row comment-bottom">
 

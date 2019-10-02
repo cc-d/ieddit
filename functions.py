@@ -134,7 +134,18 @@ def split_link(sst, s):
 	return new_s
 
 def pseudo_markup(text):
-	return clean(markdown(text), strip=True)
+	# preserve more than 1 newline
+	mtext = text.splitlines()
+	for i in range(0, len(mtext)):
+		mtext[i] = clean(markdown(mtext[i]), strip=True)
+	mtext = '\n'.join(mtext)
+
+
+	#links = re.findall('<a href="https?:\/\/.*\..*">', mtext)
+	# add class for markup link styling
+	#for link in links:
+		#mtext.replace(link, link.split(' ')[0] + ' class="markup-text-link" ' + link.split(' ')[1:])
+	return mtext
 
 epoch = datetime(1970, 1, 1)
 
