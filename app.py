@@ -11,7 +11,7 @@ from flask_limiter.util import get_remote_address, get_ipaddr
 
 import time
 import re
-import config
+#import config
 import base64
 #from subprocess import call
 import os
@@ -22,7 +22,18 @@ from functools import wraps
 from models import *
 from functions import *
 
-app = Flask(__name__)
+
+import os
+
+os.system('pwd')
+print('current dir')
+print(os.listdir("./"))
+print('../ dir')
+print(os.listdir("../"))
+print('script name is ')
+print(__name__)
+
+
 app.config.from_object('config')
 cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
 
@@ -1301,8 +1312,6 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 			comments.sort(key=lambda x: x.hot, reverse=True)
 
 	return render_template('recentcomments.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
-
-
 
 from mod import bp
 app.register_blueprint(bp)

@@ -1,4 +1,4 @@
-from ieddit import *
+from app import *
 import json
 
 ubp = Blueprint('user', 'user', url_prefix='/user')
