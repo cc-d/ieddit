@@ -55,7 +55,7 @@
             {% if pauther_type == 'admin' %}
             <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[a]{{ pauther }}</a>
             {% elif pauther_type == 'mod' %}
-           <i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[m]{{ pauther }}</a>
+           <i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[m]{{ pauther }}</a>
             {% else %}
     		<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">{{ pauther }}</a>
             {% endif %}

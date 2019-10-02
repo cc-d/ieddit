@@ -6,7 +6,9 @@
   <div class="media-body media-body-explore">
     <h5 class="mt-0"><a href="{{ config.URL }}/r/{{ sub.name }}">/r/{{ sub.name }} {% if sub.nsfw %}<a style="color: red;">nsfw</a>{% endif %} {% if sub.title != None %} - {{ sub.title }}{% endif %}</a></h5>
     {% if sub.rules %}
+    <div class="safe-markup-text">
     {{ sub.rules|safe }}
+</div>
     {% else %}
     This sub has no description.
     {% endif %}

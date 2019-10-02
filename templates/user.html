@@ -14,12 +14,22 @@
 <a href="/u/{{ session['username'] }}/messages/"><button type="button" class="btn btn-sm btn-outline-secondary user-opt">view messages</button></a>
 
 <form action='/user/darkmode' method='POST'>
-{% if vuser.darkmode == False %}
+{% if vuser.darkmode == False and session['darkmod'] != True %}
     <input type='hidden' name='action' value='enable'>
     <button type="submit" class="btn btn-sm btn-outline-secondary user-opt">enable darkmode</button></a>
 {% else %}
     <input type='hidden' name='action' value='disable'>
     <button type="submit" class="btn btn-sm btn-outline-secondary user-opt">disable darkmode</button></a>
+{% endif %}
+</form>
+
+<form action='/user/anonymous' method='POST'>
+{% if vuser.anonymous == False %}
+    <input type='hidden' name='action' value='enable'>
+    <button type="submit" class="btn btn-sm btn-outline-secondary user-opt">enable default anonymous</button></a>
+{% else %}
+    <input type='hidden' name='action' value='disable'>
+    <button type="submit" class="btn btn-sm btn-outline-secondary user-opt">disable default anonymous</button></a>
 {% endif %}
 </form>
 
@@ -47,7 +57,7 @@
 
 {% for post in posts %}
 {% if count.append(count.pop() + 1) %}{% endif %}
-{% if post.anonymous == False %}
+{% if post.anonymous == False and post.author != 'Anonymous' %}
     {% include 'sub_post.html' %}
 {% endif %}
 {% else %}

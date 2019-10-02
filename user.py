@@ -4,7 +4,7 @@ import json
 ubp = Blueprint('user', 'user', url_prefix='/user')
 
 @ubp.route('/delete/post',  methods=['POST'])
-def delete_post():
+def user_delete_post():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -22,7 +22,7 @@ def delete_post():
 		return '403'
 
 @ubp.route('/delete/comment',  methods=['POST'])
-def delete_comment():
+def user_delete_comment():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -41,7 +41,7 @@ def delete_comment():
 
 
 @ubp.route('/edit/<itype>/<iid>/', methods=['GET'])
-def get_edit(itype, iid):
+def user_get_edit(itype, iid):
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -59,7 +59,7 @@ def get_edit(itype, iid):
 	return render_template('edit.html', itype=itype, iid=iid, etext=etext)
 
 @ubp.route('/edit',  methods=['POST'])
-def edit_post():
+def user_edit_post():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -108,7 +108,7 @@ def edit_post():
 		return '403'
 
 @ubp.route('/nsfw',  methods=['POST'])
-def marknsfw(pid=None):
+def user_marknsfw(pid=None):
 	if 'username' not in session:
 		flash('not logged in', 'danger')
 		return redirect(url_for('login'))
@@ -127,7 +127,7 @@ def marknsfw(pid=None):
 
 
 @ubp.route('/darkmode', methods=['POST'])
-def darkmode(username=None):
+def user_darkmode(username=None):
 	if 'username' not in session:
 		flash('not logged in', 'danger')
 		return redirect(url_for('login'))
@@ -154,5 +154,29 @@ def darkmode(username=None):
 	cache.clear()
 	return redirect('/u/' + user.username)
 
+@ubp.route('/anonymous', methods=['POST'])
+def user_uanonymous(username=None):
+	if 'username' not in session:
+		flash('not logged in', 'danger')
+		return redirect(url_for('login'))
 
+	if username is None:
+		user = db.session.query(Iuser).filter_by(username=session['username']).first()
+
+	action = request.form.get('action')
+
+	if action == 'disable':	
+		user.anonymous = False
+		session['anonymous'] = False
+	elif action == 'enable':
+		user.anonymous = True
+		session['anonymous'] = True
+	else:
+		return 'bad action'
+
+	flash('toggled anonymous', 'success')
+	db.session.add(user)
+	db.session.commit()
+	cache.clear()
+	return redirect('/u/' + user.username)
 

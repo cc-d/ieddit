@@ -18,7 +18,7 @@
   		{% endif %}
   	</div>
     <h5 class="mt-0 message-title">{{ message.title }}</h5>
-		{{ message.text|safe }}
+		<div class="safe-markup-text">{{ message.text|safe }}</div>
 	</div>
   </div>
 </div>

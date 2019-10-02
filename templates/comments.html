@@ -43,7 +43,7 @@
 			{% if pauthor_type == 'admin' and post.anonymous == False %}
 			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[a]{{ pauthor }}</a>
 			{% elif pauthor_type == 'mod' and post.anonymous == False %}
-			<i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[m]{{ pauthor }}</a>
+			<i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">[m]{{ pauthor }}</a>
 			{% elif post.anonymous %}
 			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/Anonymous">{{ pauthor }}</a>
 			{% else %}
@@ -62,7 +62,7 @@
 <div class="media">
   <div class="media-body">
 	<h5 class="mt-0 post-title-h5">{{ post.title }}</h5>
-	<selftext>{{ post.self_text|safe }}</selftext>
+	<selftext class="safe-markup-text">{{ post.self_text|safe }}</selftext>
   </div>
 </div>
 	{% endif %}
@@ -171,7 +171,11 @@
 	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
 	<input class="post-text-area-button" type='submit' value='new comment'>
 	<small> anonymous? </small>
+	{% if session['anonymous'] %}
+	<input type='checkbox' name='anonymous' value='1' checked>
+	{% else %}
 	<input type='checkbox' name='anonymous' value='1'>
+	{% endif %}
 </form>
 
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
@@ -185,7 +189,11 @@
 	<input type='hidden' name='parent_id' id='parent_id'>
 	<input class="comment-text-area-button" type='submit' value='reply'>
 	<small> anonymous? </small>
+	{% if session['anonymous'] %}
+	<input type='checkbox' name='anonymous' value='1' checked>
+	{% else %}
 	<input type='checkbox' name='anonymous' value='1'>
+	{% endif %}
 </form>
 {% else %}
 <form id='post-reply-box' action='/create_comment' method='POST'>
@@ -234,7 +242,7 @@
 			{% if cauthor_type == 'admin' %}
 			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
 			{% elif cauthor_type == 'mod' %}
-			<i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ pauthor }}</a>
+			<i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ pauthor }}</a>
 			{% else %}
 			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
 			{% endif %}
@@ -252,7 +260,7 @@
 			</div>
 		</div>
 		<div class="comment-text">
-		<p class="comment-text-text">{{ comment.text|safe }}</p>
+		<p class="comment-text-text safe-markup-text">{{ comment.text|safe }}</p>
 	</div>
 			<div class="row post-row comment-bottom">
 
@@ -317,7 +325,11 @@
 	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
 	<input class="comment-text-area-button" type='submit' value='reply'>
 	<small> anonymous? </small>
+	{% if session['anonymous'] %}
+	<input type='checkbox' name='anonymous' value='1' checked>
+	{% else %}
 	<input type='checkbox' name='anonymous' value='1'>
+	{% endif %}
 </form>
 	{% endif %}
 	{% endif %}

@@ -27,7 +27,7 @@
             {% if comment.edited %}* {% endif %}
             <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[a]{{ cauthor }}</a>
             {% elif cauthor_type == 'mod' %}
-            <i style="color: blue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[m]{{ post.author }}</a>
+            <i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ comment['author'] }}">[m]{{ post.author }}</a>
             {% else %}
             <i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
             {% endif %}
@@ -48,7 +48,7 @@
             </div>
         </div>
         <div clss="comment-text">
-            <p class="comment-text-text">{{ comment.text|safe }}</p>
+            <p class="comment-text-text safe-markup-text">{{ comment.text|safe }}</p>
         </div>
         <div class="row post-row comment-bottom">
             <div class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="session['user_id']" has_voted="{{ comment.has_voted }}">

@@ -6,7 +6,7 @@
       {% if message.sender_type == 'admin' and message.anonymous == False %}
       <i style="color: red;" class="fa fa-user reply-fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}">[a]{{ message.sender }}</a>
       {% elif message.sender_type == 'mod' and message.anonymous == False %}
-      <i style="color: blue;" class="fa fa-user reply-fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}">[m]{{ message.sender }}</a>
+      <i style="color: lightblue;" class="fa fa-user reply-fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}">[m]{{ message.sender }}</a>
       {% elif message.anonymous == True %}
       <i class="fa fa-user reply-fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/Anonymous">Anonymous</a>
       {% else %}
@@ -22,7 +22,7 @@
   	</div>
   	{% endif %}
     <h5 class="mt-0 message-title">{{ message.title }}</h5>
-		{{ message.text|safe }}
+		<div class="safe-markup-text">{{ message.text|safe }}</div>
 	{% if message.in_reply_to != None %}
 	<div class="row message-bottom-row">
 	<small><a class="user-icon-link" href="{{ message.in_reply_to }}">reply</a></small>

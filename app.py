@@ -354,8 +354,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	except:
 		offset = 0
 
-	posts = posts[offset:]
-	posts = posts[0:offset+limit]
+	posts = posts[offset:offset+limit]
 
 	stid = False
 	for p in posts:
@@ -958,16 +957,18 @@ def create_comment():
 
 	if new_comment.parent_id and not deleted:
 		cparent = db.session.query(Comment).filter_by(id=new_comment.parent_id).first()
-		new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
-			sent_to=cparent.author, in_reply_to=cparent.permalink, anonymous=anonymous)
-		db.session.add(new_message)
-		db.session.commit()
-	else:
-		if not deleted:
+		if cparent.author != session['username']:
 			new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
-				sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous)
+				sent_to=cparent.author, in_reply_to=new_comment.permalink, anonymous=anonymous)
 			db.session.add(new_message)
 			db.session.commit()
+	else:
+		if not deleted:
+			if post.author != session['username']:
+				new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
+					sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous)
+				db.session.add(new_message)
+				db.session.commit()
 
 
 	cache.delete_memoized(get_subi)	
@@ -1179,7 +1180,12 @@ def explore():
 		if sub.posts == 0:
 			continue
 		sub.comments = db.session.query(Comment).filter_by(sub_name=sub.name).count()
+		sub.score = sub.comments + sub.posts
+
 		esubs.append(sub)
+
+	esubs.sort(key=lambda x: x.score, reverse=True)
+
 	return render_template('explore.html', subs=esubs)
 
 @app.route('/clear_cache', methods=['GET'])
@@ -1199,8 +1205,9 @@ def about():
 @app.route('/r/<sub>/comments/', methods=['GET'])
 def subcomments(sub=None, offset=0, limit=15, s=None):
 	# code is copy pasted from user page... the post stuff can probably be gotten rid of.
-	vuser = db.session.query(Iuser).filter_by(username=session['username']).first()
-	mod_of = db.session.query(Moderator).filter_by(username=vuser.username).all()
+	# the username stuff can be gotten rid of too
+
+
 	mods = {}
 
 	offset = request.args.get('offset')
@@ -1213,10 +1220,6 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	if s == None:
 		s = 'new'
 
-	for mm in mod_of:
-		mods[mm.sub] = mm.rank
-	vuser.mods = mods
-
 	if sub == 'all':
 		posts = subi('all', posts_only=True, nsfw=True)
 	elif sub != None:
@@ -1225,8 +1228,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 		posts = subi('all', posts_only=True, nsfw=False)
 
 
-	posts = posts[offset:]
-	posts = posts[0:limit]
+	posts = posts[offset:offset+limit]
 
 	for p in posts:
 		p.mods = get_sub_mods(p.sub)
@@ -1311,7 +1313,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	if s == 'hot':
 			comments.sort(key=lambda x: x.hot, reverse=True)
 
-	return render_template('recentcomments.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
+	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
 from mod import bp
 app.register_blueprint(bp)
