@@ -948,7 +948,7 @@ def create_comment():
 		cparent = db.session.query(Comment).filter_by(id=new_comment.parent_id).first()
 		if cparent.author != session['username']:
 			new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
-				sent_to=cparent.author, in_reply_to=cparent.permalink, anonymous=anonymous)
+				sent_to=cparent.author, in_reply_to=new_comment.permalink, anonymous=anonymous)
 			db.session.add(new_message)
 			db.session.commit()
 	else:
