@@ -181,7 +181,13 @@ function setSub(sub) {
 
 
 
+
+
 /* I have no idea what is going on, but it works. */
+
+
+/* Score a list of strings based on how many characters they share in common with
+the input string */
 
 var q = false
 function sortSearch(a, az) {
@@ -204,6 +210,9 @@ function sortSearch(a, az) {
 	return aza
 }
 
+/* wait for keychange event in the sub select searchbox andthen
+send the entered string to sortSearch */
+
 $(document).ready(function(){
 	aza = []
 	drop = $('.sublist-dropdown');
@@ -220,11 +229,15 @@ $(document).ready(function(){
 });
 
 
+/* search in menu for a match */
+
 function search() {
 	$("#sub-dropdown-search").on("keyup", function() {
 		var value = $(this).val().toLowerCase();
 	});
 }
+
+/* swap menu objects */
 
 function swap(sS) {
 var items = Object.keys(sS).map(function(key) {
@@ -243,6 +256,22 @@ $('#menu-items').html($(z));
 
 
 /* Not complaining. */
+
+var re = new RegExp('.*\..*\/create_post')
+
+if (re.test(window.location)) {
+	function getSubLinks() {
+		$.get('/get_sub_list', function(data, status) {
+			$('#menu-items').html(data);
+		});
+	}
+
+	getSubLinks();
+}
+
+
+
+
 
 
 console.log('loaded');

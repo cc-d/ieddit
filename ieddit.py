@@ -870,6 +870,31 @@ def create_post(postsub=None):
 		session['previous_post_form'] = None
 		return render_template('create_post.html', postsub=postsub, subs=subs, sppf=sppf)
 
+
+@cache.memoize(600)
+@app.route('/get_sub_list', methods=['GET'])
+def get_sub_list():
+	subs = get_all_subs()
+	if subs != None:
+		for s in subs:
+			s.get_comments()
+			s.get_posts()
+			if s.comments != None and s.posts != None:
+				s.rank = s.comments.count() + s.posts.count()
+			else:
+				s.rank = 0
+		subs = [s for s in subs]
+		subs.sort(key=lambda x: x.rank, reverse=True)
+		sublinks = []
+		for s in subs:
+			sublinks.append('<a class="dropdown-item sublist-dropdown"' +
+			' href="javascript:setSub(\'%s\')">/r/%s</a>' % (s.name, s.name))
+		return '\n'.join(sublinks)
+	else:
+		return ''
+
+
+
 @limiter.limit('5 per minute')
 @app.route('/create_comment', methods=['POST'])
 def create_comment():
