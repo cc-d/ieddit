@@ -242,7 +242,7 @@
 			{% if cauthor_type == 'admin' %}
 			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
 			{% elif cauthor_type == 'mod' %}
-			<i style="color: lightblue;" class="fa fa-user"></i><a style="color: blue;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ pauthor }}</a>
+			<i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ pauthor }}</a>
 			{% else %}
 			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
 			{% endif %}
