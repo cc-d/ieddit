@@ -9,7 +9,7 @@ def mod_action(username, action, url, sub):
 	db.session.commit()
 
 @bp.route('/delete/post',  methods=['POST'])
-def delete_post():
+def mod_delete_post():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -33,7 +33,7 @@ def delete_post():
 		return '403'
 
 @bp.route('/delete/comment', methods=['POST'])
-def delete_comment():
+def mod_delete_comment():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -58,7 +58,7 @@ def delete_comment():
 		return '403'
 
 @bp.route('/sticky/post', methods=['POST'])
-def sticky_post():
+def mod_sticky_post():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -90,7 +90,7 @@ def sticky_post():
 
 
 @bp.route('/unsticky/post', methods=['POST'])
-def unsticky_post():
+def mod_unsticky_post():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -115,7 +115,7 @@ def unsticky_post():
 		return '403'
 
 @bp.route('/lock/post', methods=['POST'])
-def lock_post():
+def mod_lock_post():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -152,7 +152,7 @@ def lock_post():
 
 
 @bp.route('/ban', methods=['POST'])
-def ban_user():
+def mod_ban_user():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -202,7 +202,7 @@ def ban_user():
 		return '403'
 
 @bp.route('/unban', methods=['POST'])
-def unban_user():
+def mod_unban_user():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -225,7 +225,7 @@ def unban_user():
 		return redirect('/r/' + sub + '/mods/banned/')
 
 @bp.route('/add', methods=['POST'])
-def addmod():
+def mod_addmod():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -256,7 +256,7 @@ def addmod():
 		return '403'
 
 @bp.route('/remove', methods=['POST'])
-def removemod():
+def mod_removemod():
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -289,7 +289,7 @@ def removemod():
 		return redirect('/r/' + sub + '/mods/')
 
 @bp.route('/edit/description', methods=['POST'])
-def editrules():
+def mod_editrules():
 	sub = request.form.get('sub')
 	rtext = request.form.get('rtext')
 	if 'username' not in session:
@@ -316,7 +316,7 @@ def editrules():
 		return '403'
 
 @bp.route('/nsfw',  methods=['POST'])
-def marknsfw():
+def mod_marknsfw():
 	if 'username' not in session:
 		flash('not logged in', 'danger')
 		return redirect(url_for('login'))
@@ -338,7 +338,7 @@ def marknsfw():
 		return redirect(post.permalink)
 
 @bp.route('/title', methods=['POST'])
-def title():
+def mod_title():
 	sub = request.form.get('sub')
 	title = request.form.get('title')
 	if 'username' not in session:
@@ -367,7 +367,7 @@ def title():
 		return '403'
 
 @bp.route('/settings', methods=['POST'])
-def settings():
+def mod_settings():
 	sub = request.form.get('sub')
 	marknsfw = 	request.form.get('marknsfw')
 	if 'username' not in session:
