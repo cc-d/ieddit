@@ -31,8 +31,10 @@ if config.DB_TYPE == 'postgres':
 	#cur.execute("ALTER SCHEMA public OWNER to postgres;")
 	logging.info('Succesfully provisioned database')
 elif config.DB_TYPE == 'sqlite':
-    os.remove('{0}.db'.format(config.PG_USER))
-
+	try:
+		os.remove('{0}.db'.format(config.PG_USER))
+	except FileNotFoundError:
+		pass
 
 # force clear user sessions by changing key
 with open('config.py', 'r+') as f:
