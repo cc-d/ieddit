@@ -1,3 +1,6 @@
+var fontColor = '#bbb';
+var rgbFontColor = 'rgb(187, 187, 187)';
+
 $(document).on('click', '.comment-reply', function () {
 	var replycommid = $(this).attr('comment_id');
 	if ($('#parent_id').val() == replycommid) {
@@ -33,7 +36,7 @@ $(document).on('click', '.fa-arrow-up', function() {
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
 					$(self).css('color', 'orange');
-					$(self).parent().parent().children('a').children('.fa-arrow-down').css('color', '#212529');
+					$(self).parent().parent().children('a').children('.fa-arrow-down').css('color', fontColor);
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) + 1);
@@ -45,7 +48,7 @@ $(document).on('click', '.fa-arrow-up', function() {
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
 					$(self).css('color', 'orange');
-					$(self).parent().parent().children('a').children('.fa-arrow-down').css('color', '#212529');
+					$(self).parent().parent().children('a').children('.fa-arrow-down').css('color', fontColor);
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) + 1);
@@ -57,7 +60,7 @@ $(document).on('click', '.fa-arrow-up', function() {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
-					$(self).css('color', '#212529');
+					$(self).css('color', fontColor);
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) - 1);
@@ -68,7 +71,7 @@ $(document).on('click', '.fa-arrow-up', function() {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
-					$(self).css('color', '#212529');
+					$(self).css('color', fontColor);
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) - 1);
@@ -81,7 +84,7 @@ $(document).on('click', '.fa-arrow-down', function() {
 	var voteId = $(this).parent().parent().attr('vote-obj-id');
 	var voteDiv = $(this).parent().parent().children('vote');
 	var self = $(this);
-	if($(self).css('color') == 'rgb(33, 37, 41)') {
+	if($(self).css('color') == rgbFontColor) {
 		if (oType == 'post') {
 			$.post('/vote', {'vote':'-1', 'post_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
@@ -89,7 +92,7 @@ $(document).on('click', '.fa-arrow-down', function() {
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
 					$(self).css('color', 'rgb(173, 216, 230)');
-					$(self).parent().parent().children('a').children('.fa-arrow-up').css('color', '#212529');
+					$(self).parent().parent().children('a').children('.fa-arrow-up').css('color', fontColor);
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) - 1);
@@ -101,7 +104,7 @@ $(document).on('click', '.fa-arrow-down', function() {
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
 					$(self).css('color', 'rgb(173, 216, 230)');
-					$(self).parent().parent().children('a').children('.fa-arrow-up').css('color', '#212529');
+					$(self).parent().parent().children('a').children('.fa-arrow-up').css('color', fontColor);
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) - 1);
@@ -113,7 +116,7 @@ $(document).on('click', '.fa-arrow-down', function() {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
-					$(self).css('color', '#212529');
+					$(self).css('color', fontColor);
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) + 1);
@@ -124,7 +127,7 @@ $(document).on('click', '.fa-arrow-down', function() {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
-					$(self).css('color', '#212529');
+					$(self).css('color', fontColor);
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) + 1);
@@ -262,6 +265,19 @@ $('#menu-items').html($(z));
 
 }
 
+function getAttributes ( $node ) {
+	if ($node[0] == undefined) {
+		return 0;
+	}
+    var attrs = {};
+    $.each( $node[0].attributes, function ( index, attribute ) {
+        attrs[attribute.name] = attribute.value;
+    } );
+
+    return attrs;
+}
+
+
 var re = new RegExp('.*\..*\/create_post')
 
 if (re.test(window.location)) {
@@ -276,9 +292,80 @@ if (re.test(window.location)) {
 	getSubLinks();
 }
 
+function hideComments(comment) {
+	parent = $(comment).parents('.sub-comment')
+
+	if (parent != undefined) {
+		parent.css('overflow','hidden');
+		parent.css('height','2rem');
+		comment.text('[+]');
+		comment.removeClass('hide-comment')
+		comment.addClass('show-comment')
+
+		loop = getAttributes(parent)['loop']
+
+		if (loop !== undefined) {
+			loop = loop.split(' ');
+		} else {
+			return 0;
+		}
+	
+		nl = loop[0] + ' ' + (parseInt(loop[1]) + 1);
+
+		child = $('[loop="' + nl + '"]');
+
+		if (child != undefined) {
+			hideComments(child.find('.hide-comment'));
+		}
+
+	}
+
+	$('.show-comment').on('click', function() {
+		showComments($(this));
+	});
+
+}
 
 
+function showComments(comment) {
+	parent = $(comment).parents('.sub-comment')
+
+	if (parent != undefined) {
+		parent.css('overflow','');
+		parent.css('height','');
+		comment.text('[-]');
+		comment.removeClass('show-comment')
+		comment.addClass('hide-comment')
+
+		loop = getAttributes(parent)['loop']
+
+		if (loop !== undefined) {
+			loop = loop.split(' ');
+		} else {
+			return 0;
+		}
+	
+		nl = loop[0] + ' ' + (parseInt(loop[1]) + 1);
+
+		child = $('[loop="' + nl + '"]');
+
+		if (child != undefined) {
+			showComments(child.find('.show-comment'));
+		}
+
+	}
+
+	$('.hide-comment').on('click', function() {
+		hideComments($(this));
+	});
+
+}
 
 
+$(document).ready(function() {
+	$('.hide-comment').on('click', function() {
+		hideComments($(this));
+	});
+});
 
 console.log('loaded');

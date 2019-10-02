@@ -154,11 +154,17 @@ blockquote {
 
 .sub-comment {
 	background-color: #262626;
+	border: 1px solid black;
 }
 
 .user-opt {
 	background-color: #262626;
 }
+
+.user-icon-link:hover {
+	text-decoration: underline;
+	color: #bbb;
+}	
 
 .comment-post-container {
 	background-color: #262626;

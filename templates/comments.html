@@ -233,7 +233,7 @@
 {% set cauthor_type = comment.author_type %}
 {% endif %}
 	{% if loop.depth0 < 5 %}
-	<li class="media sub-comment media-body rounded" style="margin-left:{{ loop.depth - 1 }}rem">
+	<li class="media sub-comment media-body rounded" style="margin-left:{{ loop.depth - 1 }}rem" loop='{{ loop.index0 }} {{ loop.depth0 }}'>
 		<div class='media-body comment-media-body'>
 		<div class="row post-row">
 			<div class="col inner-div">
@@ -255,7 +255,7 @@
 			{% else %}
 			<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
 			{% endif %}
-				<small class="created-ago">parent</small>
+				<small class="created-ago">parent<a class="hide-comment" href="javascript:void(0)">[-]</a></small>
 			</a>
 			</div>
 		</div>
