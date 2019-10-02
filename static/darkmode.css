@@ -93,6 +93,13 @@ html {
 	border-color: black;
 }
 
+blockquote {
+	background-color: #343a40;
+	margin: 0 0;
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+}
+
 .sub-list {
 	border: 1px solid black;
 }
