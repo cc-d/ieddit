@@ -5,3 +5,6 @@ real-config.py
 proxies.txt
 static/thumb-*
 flask_session/
+.vscode/
+.gitignore
+venv/

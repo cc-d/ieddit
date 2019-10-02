@@ -1,4 +1,5 @@
-from ieddit import *
+from app import *
+from flask import Blueprint
 import json
 
 bp = Blueprint('mod', 'mod', url_prefix='/mod')

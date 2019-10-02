@@ -2,7 +2,7 @@ import logging
 from flask import Flask, render_template, session, request
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from ieddit import db
+from app import db
 from models import *
 from functions import *
 import os
@@ -23,12 +23,8 @@ if config.DB_TYPE == 'postgres':
 	logging.info('connected to {0} on database {1}'.format(config.PG_HOST, config.DATABASE))
 	cur.execute("DROP SCHEMA public CASCADE;")
 	cur.execute("CREATE SCHEMA public;")
-	# commented queries below throw errors about not existing
-	#cur.execute("GRANT ALL ON SCHEMA public TO postgres;")
 	cur.execute("GRANT ALL ON SCHEMA public TO public;")
 	cur.execute("COMMENT ON SCHEMA public IS 'standard public schema';")
-	#cur.execute("CREATE USER test WITH PASSWORD 'test';")
-	#cur.execute("ALTER SCHEMA public OWNER to postgres;")
 	logging.info('Succesfully provisioned database')
 elif config.DB_TYPE == 'sqlite':
 	try:
