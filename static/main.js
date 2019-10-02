@@ -213,6 +213,8 @@ function sortSearch(a, az) {
 /* wait for keychange event in the sub select searchbox andthen
 send the entered string to sortSearch */
 
+function listReady() {
+
 $(document).ready(function(){
 	aza = []
 	drop = $('.sublist-dropdown');
@@ -239,6 +241,7 @@ function search() {
 
 /* swap menu objects */
 
+
 function swap(sS) {
 var items = Object.keys(sS).map(function(key) {
   return [key, sS[key]];
@@ -257,12 +260,16 @@ $('#menu-items').html($(z));
 
 /* Not complaining. */
 
+}
+
 var re = new RegExp('.*\..*\/create_post')
 
 if (re.test(window.location)) {
 	function getSubLinks() {
 		$.get('/get_sub_list', function(data, status) {
 			$('#menu-items').html(data);
+
+			listReady();
 		});
 	}
 
