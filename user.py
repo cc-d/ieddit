@@ -174,7 +174,7 @@ def uanonymous(username=None):
 	else:
 		return 'bad action'
 
-	flash('toggled anonymous' % mode, 'success')
+	flash('toggled anonymous', 'success')
 	db.session.add(user)
 	db.session.commit()
 	cache.clear()
