@@ -2,8 +2,10 @@ from ieddit import *
 from html import escape
 
 def gl(loc, lastmod=None, changefreq=None, priority=None):
-	l = '<loc>%s</loc>' % loc
-
+	if loc != None:
+		l = '<loc>%s</loc>' % escape(loc)
+	else:
+		l = ''
 	if changefreq == None:
 		c = ''
 	else:
@@ -15,7 +17,7 @@ def gl(loc, lastmod=None, changefreq=None, priority=None):
 		p = '<priority>%s</priority>' % priority
 
 
-	return escape('<url>%s%s%s</url>' % (l, c, p))
+	return '<url>%s%s%s</url>' % (l, c, p)
 
 def main():
 	links = [gl(config.URL, priority=1)]
@@ -38,7 +40,7 @@ def main():
 
 	users = db.session.query(Iuser).all()
 	for user in users:
-		links.append(gl(config.URL + '/r/' + user.username, priority=0.7))
+		links.append(gl(config.URL + '/u/' + user.username, priority=0.7))
 
 	with open('static/sitemap.xml', 'w') as s:
 		w = '<?xml version="1.0" encoding="UTF-8"?>\n'
