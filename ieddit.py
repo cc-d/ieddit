@@ -489,7 +489,8 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 			parent_comment = db.session.query(Comment).filter_by(id=comment_id).first()
 			comments.append(parent_comment)
 	else:
-		comments = db.session.query(Comment).filter(Comment.author_id == user_id).order_by(Comment.created.desc()).all()
+		comments = db.session.query(Comment).filter(Comment.author_id == user_id,
+			Comment.deleted == False).order_by(Comment.created.desc()).all()
 
 
 	for c in comments:
