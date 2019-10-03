@@ -62,7 +62,6 @@ def get_time():
 
 def time_ago(dt):
 	diff = get_time() - dt
-	print(diff.seconds)
 	if diff.days > 0:
 		return str(int(diff.days)) + 'd'#ays ago'
 	if diff.seconds < 60:

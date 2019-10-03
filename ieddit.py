@@ -120,6 +120,17 @@ def suggest_title(url=None):
 			return ''
 	return ''
 
+
+@app.route('/fonts/<file>')
+def send_font(file=None):
+	if file != None:
+		if len(re.findall('^.*.*$', file)) != 1:
+			return str(re.findall('^.*.*$'))
+		else:
+			return app.send_static_file(file)
+	else:
+		return '403'
+
 #@cache.memoize(600)
 def get_subtitle(sub):
 	try:
@@ -661,7 +672,6 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 			username = session['username']
 
 		if comment_id != None and post_id != None:
-			print(comment_id, post_id)
 			return 'cannot vote for 2 objects'
 
 		if comment_id == None and post_id == None:
@@ -762,7 +772,6 @@ def create_post(postsub=None):
 		self_post_text = request.form.get('self_post_text')
 
 		session['previous_post_form'] = {'title':title, 'url':url, 'sub':sub, 'self_post_text':self_post_text}
-		print(session['previous_post_form'])
 
 		anonymous = request.form.get('anonymous')
 		if config.CAPTCHA_ENABLE:
