@@ -4,8 +4,14 @@
 			<div class="col inner-div">
 			<small>
 			
-			
-			<i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="http://dev.ieddit.com/u/test">[m]test</a>
+			{% if comment.edited %}* {% endif %}
+			{% if cauthor_type == 'admin' %}
+			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
+			{% elif cauthor_type == 'mod' %}
+			<i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ pauthor }}</a>
+			{% else %}
+			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
+			{% endif %}
 			
 			</small>
 			<a href="http://dev.ieddit.com/r/test/1/test_title/28/">

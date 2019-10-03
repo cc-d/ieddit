@@ -292,7 +292,11 @@ if (re.test(window.location)) {
 	getSubLinks();
 }
 
-/*
+/* Preseving this in history to remind myself I should never write code like
+	this again. The difference between these two functions, and the new
+	min hide/show, is literally a 2000%+ increase in speed due to far less 
+	computational complexity.
+
 function hideComments(comment) {
 	complete = false;
 	parent = $(comment).parents('.sub-comment')
