@@ -310,6 +310,7 @@ blockquote {
 	margin-bottom: 0.25rem;
 	border: 1px solid gray;
 	word-break: break-word;
+	min-height: 128px;
 }
 
 .comment-link {

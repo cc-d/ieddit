@@ -233,8 +233,8 @@
 {% set cauthor_type = comment.author_type %}
 {% endif %}
 	{% if loop.depth0 < 5 %}
-
-	<li class="media sub-comment media-body rounded" level="{{ loop.depth - 1 }}" style="margin-left:{{ loop.depth - 1 }}rem" loop='{{ loop.index0 }} {{ loop.depth0 }}'>
+	{% include 'collapsed.html' %}
+	<li class="media sub-comment media-body rounded" level="{{ loop.depth - 1 }}" style="margin-left:{{ loop.depth - 1 }}rem" loop='{{ loop.index0 }} {{ loop.depth0 }}' id="comment-{{ comment.id }}">
 		<div class='media-body comment-media-body'>
 		<div class="row post-row">
 			<div class="col inner-div">
@@ -259,7 +259,7 @@
 			{% endif %}parent</a>
 				</small><small class="created-ago">
 
-					<a class="hide-comment" href="javascript:void(0)">[-]</a></small>
+					<a class="hide-comment" href="javascript:minHide({{ comment.id }});">[-]</a></small>
 			
 			</div>
 		</div>

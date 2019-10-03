@@ -292,6 +292,7 @@ if (re.test(window.location)) {
 	getSubLinks();
 }
 
+/*
 function hideComments(comment) {
 	complete = false;
 	parent = $(comment).parents('.sub-comment')
@@ -358,11 +359,45 @@ function showComments(comment) {
 	}
 }
 
-
 $(document).ready(function() {
 	$('.hide-comment').on('click', function() {
 		hideComments($(this));
 	});
 });
+*/
+
+
+function minHide(cid) {
+	comment = $('#comment-' + cid);
+	hcomment = $('#hide-comment-' + cid);
+	comment.css('display', 'none');
+	hcomment.css('display', 'block');
+
+	child = comment.next().next()
+
+	clevel = child.attr('level')
+
+	if (clevel > 0)	{
+		minHide(child.attr('id').split('-')[1])
+	}
+
+}
+
+function minShow(cid) {
+	comment = $('#comment-' + cid)
+	hcomment = $('#hide-comment-' + cid);
+
+	comment.css('display', 'block');
+	hcomment.css('display', 'none');
+
+	child = comment.next().next()
+
+	clevel = child.attr('level')
+
+	if (clevel > 0)	{
+		minShow(child.attr('id').split('-')[1])
+	}
+
+}
 
 console.log('loaded');
