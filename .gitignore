@@ -5,3 +5,5 @@ real-config.py
 proxies.txt
 static/thumb-*
 flask_session/
+sitemap.xml
+static/sitemap.xml

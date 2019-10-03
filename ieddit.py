@@ -123,7 +123,6 @@ def suggest_title(url=None):
 			return ''
 	return ''
 
-
 @app.route('/fonts/<file>')
 def send_font(file=None):
 	if file != None:
@@ -133,6 +132,10 @@ def send_font(file=None):
 			return app.send_static_file(file)
 	else:
 		return '403'
+
+@app.route('/sitemap.xml')
+def sitemap():
+	return app.send_static_file('sitemap.xml')
 
 #@cache.memoize(600)
 def get_subtitle(sub):
