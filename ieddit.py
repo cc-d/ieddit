@@ -643,21 +643,30 @@ def view_user(username):
 
 @limiter.limit('25 per minute')
 @app.route('/vote', methods=['GET', 'POST'])
-def vote(post_id=None, comment_id=None, vote=None):
+def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 	if request.method == 'POST':
-		post_id = request.form.get('post_id')
-		comment_id = request.form.get('comment_id')
-		vote = request.form.get('vote')
+		if post_id == None:
+			post_id = request.form.get('post_id')
+		if comment_id == None:
+			comment_id = request.form.get('comment_id')
+		if vote == None:
+			vote = request.form.get('vote')
+		else:
+			vote = str(vote)
 	
 		if 'username' not in session or 'user_id' not in session:
 			return 'not logged in'
-		else:
+		elif user_id == None:
 			user_id = session['user_id']
 			username = session['username']
+
 		if comment_id != None and post_id != None:
+			print(comment_id, post_id)
 			return 'cannot vote for 2 objects'
+
 		if comment_id == None and post_id == None:
 			return 'no vote object'
+
 		if vote not in ['1', '-1', '0']:
 			return 'invalid vote amount'
 	
@@ -838,6 +847,13 @@ def create_post(postsub=None):
 		db.session.commit()
 		url = new_post.permalink
 		set_rate_limit()
+
+		new_vote = Vote(post_id=new_post.id, vote=1, user_id=session['user_id'], comment_id=None)
+		db.session.add(new_vote)
+
+		new_post.ups += 1
+		db.session.add(new_post)
+		db.session.commit()
 		
 		cache.delete_memoized(get_subi)
 		if 'previous_post_form' in session:
@@ -953,6 +969,14 @@ def create_comment():
 		new_comment.author_type = 'mod'
 	else:
 		new_comment.author_type = 'user'
+
+	db.session.commit()
+
+	new_vote = Vote(comment_id=new_comment.id, vote=1, user_id=session['user_id'], post_id=None)
+	db.session.add(new_vote)
+
+	new_comment.ups += 1
+	db.session.add(new_comment)
 
 	db.session.commit()
 
@@ -1169,7 +1193,7 @@ def settings(sub=None):
 		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw)
 	return '403'
 
-@cache.memoize(60)
+@cache.memoize(600)
 @app.route('/explore/', methods=['GET'])
 def explore():
 	#sub = normalize_sub(sub)
