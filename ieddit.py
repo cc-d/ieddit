@@ -137,6 +137,10 @@ def send_font(file=None):
 def sitemap():
 	return app.send_static_file('sitemap.xml')
 
+@app.route('/robots.txt')
+def robotstxt():
+	return app.send_static_file('robots.txt')
+
 #@cache.memoize(600)
 def get_subtitle(sub):
 	try:

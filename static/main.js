@@ -254,7 +254,6 @@ items.sort(function(first, second) {
 });
 z = ''
 for(i=0; i<items.length; i++){
-	console.log(items[i])
 	z = z +'<a class="dropdown-item sublist-dropdown" href="javascript:setSub(\'' + items[i][0] + '\')">' + items[i][0] + '</a>';
 }
 $('#menu-items').html($(z));
