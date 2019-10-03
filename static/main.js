@@ -293,6 +293,7 @@ if (re.test(window.location)) {
 }
 
 function hideComments(comment) {
+	complete = false;
 	parent = $(comment).parents('.sub-comment')
 
 	if ($(parent) != undefined) {
@@ -312,21 +313,22 @@ function hideComments(comment) {
 			clevel = $(child).attr('level');
 			console.log(clevel, plevel);
 			if (clevel >= plevel ) {
+				complete = true;
 				hideComments($(child).find('.hide-comment'));
 			}
 		}
-
 	}
-
-	$('.show-comment').on('click', function() {
-		showComments($(this));
-	});
-
+	if (complete == false) {
+		$(comment).on('click', function() {
+			showComments($(this));
+		});
+	}
 }
 
 
 function showComments(comment) {
 	parent = $(comment).parents('.sub-comment')
+	complete = false;
 
 	if (parent != undefined) {
 		parent.css('overflow','');
@@ -345,16 +347,16 @@ function showComments(comment) {
 			clevel = child.attr('level');
 			console.log(clevel, plevel);
 			if (clevel >= plevel ) {
+				complete = true;
 				showComments(child.find('.show-comment'));
 			}
 		}
-
 	}
-
-	$('.hide-comment').on('click', function() {
-		hideComments($(this));
-	});
-
+	if (complete == false) {
+		$(comment).on('click', function() {
+			hideComments($(this));
+		});
+	}
 }
 
 
