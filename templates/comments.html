@@ -251,12 +251,15 @@
 			<a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
 				<small class="created-ago comment-link">{{ comment.created_ago }}</small>
 			</a>
+			<small class="created-ago">
 			{% if comment.parent_id != None %}
 			<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
 			{% else %}
 			<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
-			{% endif %}</a>
-				<small class="created-ago">parent</small><small class="created-ago"><a class="hide-comment" href="javascript:void(0)">[-]</a></small>
+			{% endif %}parent</a>
+				</small><small class="created-ago">
+
+					<a class="hide-comment" href="javascript:void(0)">[-]</a></small>
 			
 			</div>
 		</div>
