@@ -312,7 +312,7 @@ function hideComments(comment) {
 		if (child != undefined) {
 			clevel = $(child).attr('level');
 			console.log(clevel, plevel);
-			if (clevel >= plevel ) {
+			if (clevel > 0 ) {
 				complete = true;
 				hideComments($(child).find('.hide-comment'));
 			}
@@ -340,13 +340,12 @@ function showComments(comment) {
 
 		plevel = parent.attr('level')
 
-
 		child = parent.next()
 		
 		if (child != undefined) {
 			clevel = child.attr('level');
 			console.log(clevel, plevel);
-			if (clevel >= plevel ) {
+			if (clevel > 0 ) {
 				complete = true;
 				showComments(child.find('.show-comment'));
 			}
