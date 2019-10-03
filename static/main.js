@@ -205,7 +205,7 @@ function sortSearch(a, az) {
 
 		for (ii=0; ii<az.length; ii++) {
 			console.log(az[ii].indexOf(newa))
-			if (az[ii].indexOf(newa) != -1) {
+			if (az[ii].indexOf(newa.toLowerCase()) != -1) {
 				aza[az[ii]] += 1
 			}
 		}
