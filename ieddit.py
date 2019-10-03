@@ -86,7 +86,7 @@ def apply_headers(response):
 	response.headers["X-XSS-Protection"] = "1; mode=block"
 	response.headers['X-Content-Type-Options'] = 'nosniff'
 	if config.CSP:
-		response.headers['Content-Security-Policy'] = 'default-src "self" *.ieddit.com; img-src *;'
+		response.headers['Content-Security-Policy'] = "default-src 'self' *.ieddit.com ieddit.com; img-src *; style-src 'self' 'unsafe-inline' *.ieddit.com ieddit.com;"
 
 	#response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
 	#response.headers["Pragma"] = "no-cache"
