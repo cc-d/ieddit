@@ -25,6 +25,9 @@ SECRET_KEY = 'not-a-real-key-|r|hqLVmN0jv-|r|'
 URL = 'http://dev.ieddit.com'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+# contet-security
+CSP = False
 SESSION_COOKIE_SAMESITE='Lax'
 
 CACHE_TYPE = 'simple'
