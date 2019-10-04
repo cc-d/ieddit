@@ -383,6 +383,10 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	except:
 		offset = 0
 
+
+	if 'blocked_subs' in session and 'username' in session:
+		posts = [c for c in posts if c.sub not in session['blocked_subs']]
+
 	posts = posts[offset:offset+limit]
 
 	stid = False
@@ -399,8 +403,6 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		if sticky:
 			posts.insert(0, sticky)
 
-	if 'blocked_subs' in session and 'username' in session:
-		posts = [c for c in posts if c.sub not in session['blocked_subs']]
 
 	if more and len(posts) > 0:
 		posts[len(posts)-1].more = True
