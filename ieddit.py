@@ -537,7 +537,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
 
 	if 'blocked_subs' in session and 'username' in session:
-		comments = [c for c in comments if s.sub_name not in session['blocked_subs']]
+		comments = [c for c in comments if c.sub_name not in session['blocked_subs']]
 
 	for c in comments:
 		c.text = pseudo_markup(c.text)
