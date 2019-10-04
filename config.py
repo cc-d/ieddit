@@ -6,7 +6,7 @@ PG_PASSWORD = 'test'
 PG_HOST = 'localhost'
 
 
-DB_TYPE = 'sqlite'
+DB_TYPE = 'postgres'
 
 if DB_TYPE == 'sqlite':
 	DATABASE_URI = 'sqlite:///{0}.db'.format(PG_USER)

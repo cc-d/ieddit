@@ -141,4 +141,16 @@ class Ban(db.Model):
 	def __repr__(self):
 		return '<Ban %r>' % self.id
 
+class Sub_block(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	sub = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
+	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
+
+	def __repr__(self):
+		return '<Sub_block %r>' % self.id
+
+
+
+
+
 

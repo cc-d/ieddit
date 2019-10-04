@@ -48,6 +48,12 @@ def before_request():
 	except:
 		request.sub = False
 
+	if 'blocked_subs' not in session:
+		if 'username' in session:
+			session['blocked_subs'] = get_blocked_subs(session['username'])
+		else:
+			session['blocked_subs'] = []
+
 	request.is_mod = False
 
 	uri = request.environ['REQUEST_URI']
@@ -393,6 +399,9 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		if sticky:
 			posts.insert(0, sticky)
 
+	if 'blocked_subs' in session and 'username' in session:
+		posts = [c for c in posts if c.sub not in session['blocked_subs']]
+
 	if more and len(posts) > 0:
 		posts[len(posts)-1].more = True
 
@@ -526,6 +535,9 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 		comments = db.session.query(Comment).filter(Comment.author_id == user_id,
 			Comment.deleted == False).order_by(Comment.created.desc()).all()
 
+
+	if 'blocked_subs' in session and 'username' in session:
+		comments = [c for c in comments if s.sub_name not in session['blocked_subs']]
 
 	for c in comments:
 		c.text = pseudo_markup(c.text)
@@ -1228,6 +1240,45 @@ def settings(sub=None):
 	if request.is_mod:
 		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw)
 	return '403'
+
+def get_blocked_subs(username=None):
+	subs = db.session.query(Sub_block).filter_by(username=session['username']).all()
+	if subs != None:
+		return [s.sub for s in subs]
+	else:
+		return []
+
+@app.route('/r/<sub>/block', methods=['GET'])
+def blocksub(sub=None):
+	if 'username' not in session:
+		flash('not logged in', 'error')
+		return redirect('/login')
+	if sub == None:
+		return '500'
+
+	blocks = db.session.query(Sub_block).filter_by(username=session['username']).all()
+	if blocks != None:
+		bsubs = [b.sub for b in blocks]
+	else:
+		bsubs = []
+
+	if blocks == None or sub not in bsubs:
+		session['blocked_subs'].append(sub)
+		new_block = Sub_block(username=session['username'], sub=sub)
+		db.session.add(new_block)
+		db.session.commit()
+		bsubs.append(sub)
+		flash('blocked %s' % sub)
+	else:
+		dblock = db.session.query(Sub_block).filter_by(username=session['username'], sub=sub).first()
+		db.session.delete(dblock)
+		db.session.commit()
+		bsubs = [b for b in bsubs if b != sub]
+		flash('unblocked %s' % sub)
+
+	session['blocked_subs'] = bsubs
+
+	return redirect('/r/%s/' % sub)
 
 @cache.memoize(600)
 @app.route('/explore/', methods=['GET'])

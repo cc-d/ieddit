@@ -43,9 +43,6 @@
 					<a class="nav-link" href="/r/all"><button type="button" class="btn btn-sm btn-outline-danger">/r/all</button></a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-outline-secondary">Create Sub</button></a>
-				</li>
-				<li class="nav-item">
 					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-outline-secondary">Create Post</button></a>
 				</li>
 
@@ -56,7 +53,22 @@
 				<li class="nav-item active">
 					<a class="nav-link" href="/r/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-outline-primary">info</button></a>
 				</li>
+				{% if session['username'] %}
+				{% if request.sub in session['blocked_subs'] %}
+				<li class="nav-item">
+					<a class="nav-link" href="/r/{{ request.sub }}/block"><button type="button" class="btn btn-sm btn-outline-danger">unblock</button></a>
+				</li>
 				{% else %}
+				<li class="nav-item">
+					<a class="nav-link" href="/r/{{ request.sub }}/block"><button type="button" class="btn btn-sm btn-outline-danger">block</button></a>
+				</li>
+				{% endif %}
+				{% endif %}
+
+				{% else %}
+				<li class="nav-item">
+					<a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-outline-secondary">Create Sub</button></a>
+				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/explore/"><button type="button" class="btn btn-sm btn-outline-success">Explore</button></a>
 				</li>
