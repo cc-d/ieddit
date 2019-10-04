@@ -235,7 +235,7 @@ def mod_addmod():
 
 	username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
 	username = username.username
-	if db.session.query(Moderator).filter(func.lower(Moderator.username) == func.lower(username)).first() != None:
+	if db.session.query(Moderator).filter(func.lower(Moderator.username) == func.lower(username), Moderator.sub == sub).first() != None:
 		flash('Mod already added', 'error')
 		return redirect('/r/%s/mods/' % sub)
 
@@ -245,7 +245,14 @@ def mod_addmod():
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
 					Moderator.sub.like(sub)).exists()).scalar()
 	if is_mod:
-		new_mod = Moderator(sub=sub, username=username)
+		mods = db.session.query(Moderator).filter_by(sub=sub).all()
+		rank = 0
+		if mods != None:
+			for x in mods:
+				if x.rank > rank:
+					rank = x.rank
+
+		new_mod = Moderator(sub=sub, username=username, rank=rank)
 		db.session.add(new_mod)
 		db.session.commit()
 		cache.delete_memoized(get_sub_mods)
