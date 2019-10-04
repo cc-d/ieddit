@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<form action='/admin/ban_and_delete' method='POST'>
+	<input type='text' name='username'>
+	<button type='submit'>ban and delete</button>
+</form>
+
+{% endblock %}

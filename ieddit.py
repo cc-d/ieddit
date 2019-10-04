@@ -100,6 +100,19 @@ def apply_headers(response):
 			print('\n[Load: %s]' % load_time)
 	return response
 
+
+def notbanned(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		if 'username' not in session:
+			return redirect('/login')
+		busers = db.session.query(Iuser).filter_by(banned=True).all()
+		bnames = [a.username for a in busers]
+		if session['username'] in bnames:
+			return redirect('/')
+		return f(*args, **kwargs)
+	return decorated_function
+
 # i hate sending external requests
 @app.route('/suggest_title')
 @limiter.limit("5/minute")
@@ -595,6 +608,7 @@ def list_of_child_comments(comment_id, sort_by=None):
 	return [comments[c] for c in comments]
 
 @app.route('/create', methods=['POST', 'GET'])
+@notbanned
 def create_sub():
 	if request.method == 'POST':
 		subname = request.form.get('subname')
@@ -664,6 +678,7 @@ def view_user(username):
 
 @limiter.limit('25 per minute')
 @app.route('/vote', methods=['GET', 'POST'])
+@notbanned
 def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 	if request.method == 'POST':
 		if post_id == None:
@@ -770,6 +785,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 		return 'get'
 
 @app.route('/create_post', methods=['POST', 'GET'])
+@notbanned
 def create_post(postsub=None):
 	if 'previous_post_form' not in session:
 		session['previous_post_form'] = None
@@ -921,6 +937,7 @@ def get_sub_list():
 
 @limiter.limit('5 per minute')
 @app.route('/create_comment', methods=['POST'])
+@notbanned
 def create_comment():
 	text = request.form.get('comment_text')
 	post_id = request.form.get('post_id')
@@ -1368,3 +1385,6 @@ app.register_blueprint(bp)
 
 from user import ubp
 app.register_blueprint(ubp)
+
+from admin import abp
+app.register_blueprint(abp)
