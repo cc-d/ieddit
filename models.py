@@ -63,6 +63,7 @@ class Post(db.Model):
 	edited = db.Column(db.Boolean, default=False, nullable=False)
 	locked = db.Column(db.Boolean, default=False, nullable=False)
 	nsfw = db.Column(db.Boolean, default=False, nullable=False)
+	remote_image_url = db.Column(db.String(2000), default=None, nullable=True)
 
 	def __repr__(self):
 		return '<Post %r>' % self.id

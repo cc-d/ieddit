@@ -7,6 +7,15 @@ from PIL import Image
 from io import BytesIO
 import urllib.parse
 import time
+from ieddit import db
+from models import Post
+
+def add_remote_image(url, tid):
+	p = db.session.query(Post).filter_by(id=tid).first()
+	p.remote_image_url = url
+	db.session.add(p)
+	db.session.commit()
+	print('post has remote image %s %s', url, tid)
 
 def create_thumbnail(r, tid):
 	#r.raw.decode_content = rue
@@ -32,6 +41,7 @@ def main():
 	if r.headers['Content-Type'].split('/')[0] == 'image':
 		#ext = r.headers['Content-Type'].split('/')[1]
 		create_thumbnail(r, tid)
+		add_remote_image(url, tid)
 		c = True
 	else:
 		soup = BeautifulSoup(r.text)
@@ -43,6 +53,7 @@ def main():
 			if r.headers['Content-Type'].split('/')[0] == 'image':
 				#ext = r.headers['Content-Type'].split('/')[1]
 				create_thumbnail(r, tid)
+				add_remote_image(iurl, tid)
 
 		except:
 			try:

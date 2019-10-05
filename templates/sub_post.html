@@ -19,7 +19,7 @@
 {% endif %}
 
   <li class="media sub-post rounded">
-    <div class="post-image-container">
+    <div class="post-image-container" id="post-thumb-{{ post.id }}">
         {% if post.post_type == 'url' %}
         <a href="{{ post.url }}">
             {% if post.thumbnail and post.nsfw == True %}
@@ -41,7 +41,7 @@
         {% endif %}
 
     </div>
-    <div class="media-body">
+    <div class="media-body posts-media-body">
     <div class="row post-row">
     	<div class="col inner-div">
             {% if post.stickied == True %}
@@ -73,7 +73,27 @@
         <small><a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">(self.text)</a></small>
     {% endif %}
     </div>
+    {% if post.remote_image_url or post.self_text %}
+    <div class='expanded-post' id='post-{{ post.id }}' style='display: none;'>
+    {% if post.remote_image_url %}
+        <img class='expanded-post-image' src="{{ post.remote_image_url }}">
+    {% else %}
+        <div class='expanded-selftext'>
+            <selftext class='safe-markup-text expanded-self-text'>{{ post.self_text|safe }}</selftext>
+        </div>
+    {% endif %}
+    </div>
+    {% endif %}
     <div class="row post-row">
+    <div class='expand-post'>
+        {% if post.post_type == 'url' %}
+            {% if post.remote_image_url %}
+            <a id="expand-button-{{ post.id }}" href="javascript:expandPost(pid={{ post.id }}, ptype='url');"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+            {% endif %}
+        {% else %}
+        <a id="expand-button-{{ post.id }}" href="javascript:expandPost(pid={{ post.id }}, ptype='selftext');"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+        {% endif %}
+    </div>
 <div class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
     {% if post.has_voted == 1 %}
     <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>

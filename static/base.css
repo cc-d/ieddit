@@ -255,8 +255,13 @@ ul, li{
 }
 
 .safe-markup-text ul {
-
 	display: inline-block;
+}
+
+.expanded-selftext {
+	margin-bottom: 1rem;
+	max-height: 100rem;
+	overflow: hidden;
 }
 
 selftext {
@@ -402,3 +407,12 @@ blockquote {
 	margin-bottom: 3rem;
 	float: right;
 }
+
+.expand-post {
+    margin-right: -8px;
+    margin-left: 0.75rem;
+    font-size: larger;
+}
+
+
+

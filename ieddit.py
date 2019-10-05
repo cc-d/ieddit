@@ -480,7 +480,12 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 	if type(sub_posts) == dict:
 		if 'error' in sub_posts.keys():
 			flash(sub_posts['error'], 'danger')
-			return redirect('/')	
+			return redirect('/')
+
+	for p in sub_posts:
+		if hasattr(p, 'self_text'):
+			if p.self_text != None:
+				p.self_text = pseudo_markup(p.self_text)
 
 	if posts_only:
 		return sub_posts
