@@ -32,7 +32,7 @@ def main():
 
 	subs = db.session.query(Sub).all()
 	for s in subs:
-		links.append(gl(config.URL + '/r/' + s.name, priority=0.9))
+		links.append(gl(config.URL + '/r/' + s.name + '/', priority=0.9))
 
 	posts = db.session.query(Post).all()
 	for post in posts:
@@ -40,7 +40,7 @@ def main():
 
 	users = db.session.query(Iuser).all()
 	for user in users:
-		links.append(gl(config.URL + '/u/' + user.username, priority=0.7))
+		links.append(gl(config.URL + '/u/' + user.username + '/', priority=0.7))
 
 	with open('static/sitemap.xml', 'w') as s:
 		w = '<?xml version="1.0" encoding="UTF-8"?>\n'
