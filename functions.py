@@ -141,9 +141,26 @@ def pseudo_markup(text):
 		mtext[i] = clean(markdown(mtext[i]), strip=True)
 
 	# code tags
-	first, last = True, True
-	start = 0
+	start, end = 0, 0
+	found = False
+
 	for i in range(len(mtext)):
+		if mtext[i].find('```') != -1:
+			print(mtext[i])
+			if not found:
+				startindex = i
+				start = mtext[i].find('```')
+				mtext[i] = mtext[i].replace('```','')
+				found = True
+			else:
+				end = mtext[i].find('```')
+				mtext[startindex] = mtext[startindex][0:start] + '<div class="inline-code"><code>' + mtext[startindex][start:]
+				mtext[i] = mtext[i][0:end] + '</code></div>' + mtext[i][end+3:]
+				found = False
+				start = 0
+				end = 0
+
+		'''
 		if mtext[i] == "```":
 			if start == 0:
 				start = i
@@ -156,7 +173,7 @@ def pseudo_markup(text):
 
 				mtext[i] = mtext[i].replace("```", '</code></div>')
 				start = 0
-
+		'''
 
 	for i in range(len(mtext)):
 		# different variations of possible links, space at start, no
@@ -179,11 +196,11 @@ def pseudo_markup(text):
 				mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))	
 
 	mtext = '\n'.join([x for x in mtext])
-	mtext = mtext.replace('\n<div class="inline-code"><code>\n', '<div class="inline-code"><code>')
-	mtext = mtext.replace('<code>\n', '<code>')
-	mtext = mtext.replace('\n</code></div>\n', '</code></div>')
-	mtext = mtext.replace('\n\n</code>', '</code>')
-	mtext = mtext.replace('\n</code>', '</code>')
+	#mtext = mtext.replace('\n<div class="inline-code"><code>\n', '<div class="inline-code"><code>')
+	#mtext = mtext.replace('<code>\n', '<code>')
+	#mtext = mtext.replace('\n</code></div>\n', '</code></div>')
+	#mtext = mtext.replace('\n\n</code>', '</code>')
+	#mtext = mtext.replace('\n</code>', '</code>')
 	#mtext = mtext.replace('</code>\n<code>', '</code><code>')
 	#mtext = mtext.replace('</code>\n', '</code>')
 
