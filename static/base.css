@@ -431,13 +431,13 @@ blockquote {
 
 .inline-code {
 	white-space: pre-wrap;
-	background-color: #333333;
+	background-color: #222222;
 	margin-top: 0.5rem;
 	margin-bottom: 0.5rem;
 	margin-right: 0.5rem;
 }
 
-code {
+.inner-code {
 	color: #bbb;
 	display: inline-block;
 }
