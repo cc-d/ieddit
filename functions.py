@@ -139,13 +139,48 @@ def pseudo_markup(text):
 	mtext = text.splitlines()
 	for i in range(0, len(mtext)):
 		mtext[i] = clean(markdown(mtext[i]), strip=True)
+
+	# code tags
+	start = 0
+	for i in range(len(mtext)):
+		if mtext[i] == '```':
+			if start == 0:
+				start = i
+			else:
+				mtext[start] = mtext[start].replace('```', '<div class="inline-code"><code>')
+				mtext[i] = mtext[i].replace('```', '</code></div>')
+				start = 0
+
+
+	for i in range(len(mtext)):
+		# different variations of possible links, space at start, no
+		# space, etc 
+		links = re.findall(' https?:\/\/.*\.\S+ ', mtext[i])
+		if len(links) > 0:
+			for link in links:
+				mtext[i] = mtext[i].replace(link, ' <a href="%s">%s</a> ' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
+		links = re.findall('^https?:\/\/.*\.\S+ ', mtext[i])		
+		if len(links) > 0:
+			for link in links:
+				mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a> ' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
+		links = re.findall('^https?:\/\/.*\.\S+$', mtext[i])		
+		if len(links) > 0:
+			for link in links:
+				mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))		
+		links = re.findall(' https?:\/\/.*\.\S+$', mtext[i])		
+		if len(links) > 0:
+			for link in links:
+				mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))	
+
 	mtext = '\n'.join([x for x in mtext])
+	mtext = mtext.replace('\n<div class="inline-code"><code>\n', '<div class="inline-code"><code>')
+	mtext = mtext.replace('<code>\n', '<code>')
+	mtext = mtext.replace('\n</code></div>\n', '</code></div>')
+	mtext = mtext.replace('\n\n</code>', '</code>')
+	mtext = mtext.replace('\n</code>', '</code>')
+	#mtext = mtext.replace('</code>\n<code>', '</code><code>')
+	#mtext = mtext.replace('</code>\n', '</code>')
 
-
-	#links = re.findall('<a href="https?:\/\/.*\..*">', mtext)
-	# add class for markup link styling
-	#for link in links:
-		#mtext.replace(link, link.split(' ')[0] + ' class="markup-text-link" ' + link.split(' ')[1:])
 	return mtext
 
 epoch = datetime(1970, 1, 1)

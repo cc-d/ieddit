@@ -6,8 +6,8 @@
 	<input type='hidden' value='{{ iid }}' name='iid'>
 	<div class="form-group">
 
-	{% if session['last_edit'] %}
-	<textarea name='etext' class="form-control form-input-text safe-markup-text edit-input" id="create-post-text">{{ session['last_edit'] }}</textarea>
+	{% if lastedit %}
+	<textarea name='etext' class="form-control form-input-text safe-markup-text edit-input" id="create-post-text">{{ lastedit }}</textarea>
 	{% else %}
 	<textarea name='etext' class="form-control form-input-text safe-markup-text edit-input" id="create-post-text">{{ etext }}</textarea>
 	{% endif %}

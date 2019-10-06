@@ -9,24 +9,24 @@
 {% endif %}
 <div id="comment-page-wrapper">
 <ul class="list-unstyled comment-post-container rounded">
-	<li class="media sub-post">
+	<li class="media sub-post sub-post-comment-page">
         {% if post.post_type == 'url' %}
         <a href="{{ post.url }}">
             {% if post.thumbnail and post.nsfw == True %}
                 {% if post.sub_nsfw %}
-                <img class="mr-3 post-image" src="{{ url_for('static', filename=post.thumbnail) }}" alt="Generic placeholder image">
+                <img class="mr-3 post-image comment-page-image" src="{{ url_for('static', filename=post.thumbnail) }}" alt="Generic placeholder image">
                 {% else %}
-                <img class="mr-3 post-image" src="{{ url_for('static', filename='nsfw.png') }}" alt="Generic placeholder image">
+                <img class="mr-3 post-image comment-page-image" src="{{ url_for('static', filename='nsfw.png') }}" alt="Generic placeholder image">
                 {% endif %}
             {% elif post.thumbnail %}
-            <img class="mr-3 post-image" src="{{ url_for('static', filename=post.thumbnail) }}" alt="Generic placeholder image">
+            <img class="mr-3 post-image comment-page-image" src="{{ url_for('static', filename=post.thumbnail) }}" alt="Generic placeholder image">
             {% else %}
-            <img class="mr-3 post-image" src="{{ url_for('static', filename='globe.png') }}" alt="Generic placeholder image">
+            <img class="mr-3 post-image comment-page-image" src="{{ url_for('static', filename='globe.png') }}" alt="Generic placeholder image">
             {% endif %}
         </a>
         {% else %}
         <a href="{{ post.permalink }}">
-            <img class="mr-3 post-image" src="{{ url_for('static', filename='comment-white.png') }}" alt="Generic placeholder image">
+            <img class="mr-3 post-image comment-page-image" src="{{ url_for('static', filename='comment-white.png') }}" alt="Generic placeholder image">
         </a>
         {% endif %}
 		<div class="media-body">

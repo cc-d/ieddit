@@ -56,7 +56,11 @@ def user_get_edit(itype, iid):
 		etext = obj.text
 	else:
 		return 'bad itype'
-	return render_template('edit.html', itype=itype, iid=iid, etext=etext)
+
+	lastedit = session['last_edit']
+	session['last_edit'] = None
+	
+	return render_template('edit.html', itype=itype, iid=iid, etext=etext, lastedit=lastedit)
 
 @ubp.route('/edit',  methods=['POST'])
 def user_edit_post():

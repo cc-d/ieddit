@@ -429,6 +429,19 @@ blockquote {
 	border: 1px solid #555555;
 }
 
+.inline-code {
+	white-space: pre-wrap;
+	background-color: #333333;
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+	margin-right: 0.5rem;
+}
+
+code {
+	color: #bbb;
+	display: inline-block;
+}
+
 .inner-selftext-wrapper {
 	margin: 0.25rem;
 }
@@ -436,3 +449,4 @@ blockquote {
 .edit-input {
 	min-height: 15rem;
 }
+
