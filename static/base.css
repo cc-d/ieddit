@@ -442,6 +442,10 @@ blockquote {
 	display: inline-block;
 }
 
+code {
+	font-family: monospace;
+}
+
 .inner-selftext-wrapper {
 	margin: 0.25rem;
 }
