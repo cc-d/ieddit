@@ -62,6 +62,8 @@
 }
 
 .comment-reply-box-expand {
+	min-width: 300px;
+	max-width: 700px;
     width: -webkit-fill-available;
     min-height: 8rem;
 }
@@ -260,7 +262,7 @@ ul, li{
 
 .expanded-selftext {
 	margin-bottom: 1rem;
-	max-height: 100rem;
+	max-height: 250rem;
 	overflow: hidden;
 }
 

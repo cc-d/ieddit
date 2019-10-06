@@ -4,7 +4,7 @@ var rgbFontColor = 'rgb(187, 187, 187)';
 $(document).on('click', '.comment-reply', function () {
 	var replycommid = $(this).attr('comment_id');
 	if ($('#parent_id').val() == replycommid) {
-		return;
+		//return;
 	}
 
 	if ($('#comment-reply-box').css('display') != 'hidden') {
@@ -16,7 +16,7 @@ $(document).on('click', '.comment-reply', function () {
 	$('#comment-reply-box').css('display', 'block');
 	$(this).parent().parent().after($('#comment-reply-box'));
 	$('#parent_id').val($(this).attr('comment_id'));
-	$(this).css('display', 'none');
+	//$(this).css('display', 'none');
 
 	if($('#reply-box').parent().attr('comment_id') !== undefined) {
 		$('#reply-box').parent().text('reply');

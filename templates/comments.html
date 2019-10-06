@@ -68,7 +68,7 @@
             <selftext class='safe-markup-text expanded-self-text'>{{ post.self_text|safe }}</selftext>
         </div>
         </div>
-        
+
   </div>
 </div>
 	{% endif %}
@@ -341,6 +341,7 @@
 	<input type='checkbox' name='anonymous' value='1'>
 	{% endif %}
 </form>
+<script> $('#comment-reply-box').css('display', 'none'); </script>
 	{% endif %}
 	{% endif %}
 	</div>
