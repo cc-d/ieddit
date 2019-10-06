@@ -42,10 +42,10 @@
 	.self-post-image {
 		display: none;
 	}
-	.post-image {
+	.comment-page-image {
 		display: none;
 	}
-	.sub-post {
+	.sub-post-comment-page {
 		margin-left: 0.5rem;
 	}
 }
