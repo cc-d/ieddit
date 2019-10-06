@@ -230,6 +230,9 @@ def login():
 		username = request.form.get('username')
 		password = request.form.get('password')
 		if config.CAPTCHA_ENABLE:
+			if request.form.get('captcha') == '':
+				flash('no captcha', 'danger')
+				return redirect(url_for('login'))
 			if captcha.validate() == False:
 				flash('invalid captcha', 'danger')
 				return redirect(url_for('login'))
@@ -271,6 +274,10 @@ def logout():
 def register():
 	if request.method == 'POST':
 		if config.CAPTCHA_ENABLE:
+			if request.form.get('captcha') == '':
+				flash('no captcha', 'danger')
+				return redirect(url_for('register'))
+
 			if captcha.validate() == False:
 				flash('invalid captcha', 'danger')
 				return redirect(url_for('login'))
@@ -635,6 +642,10 @@ def create_sub():
 			flash('reserved name')
 			return redirect(url_for('create_sub'))
 		if config.CAPTCHA_ENABLE:
+			if request.form.get('captcha') == '':
+				flash('no captcha', 'danger')
+				return redirect(url_for('create_sub'))
+
 			if captcha.validate() == False:
 				flash('invalid captcha', 'danger')
 				return redirect(url_for('create_sub'))
@@ -820,6 +831,9 @@ def create_post(postsub=None):
 
 		anonymous = request.form.get('anonymous')
 		if config.CAPTCHA_ENABLE:
+			if request.form.get('captcha') == '':
+				flash('no captcha', 'danger')
+				return redirect(url_for('create_post'))
 			if captcha.validate() == False:
 				flash('invalid captcha', 'danger')
 				return redirect(url_for('create_post'))

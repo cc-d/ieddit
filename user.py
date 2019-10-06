@@ -67,10 +67,15 @@ def user_edit_post():
 	iid = request.form.get('iid')
 	etext = request.form.get('etext')
 
+	session['last_edit'] = etext
+
 	if len(etext) < 1 or len(etext) > 20000:
 		return 'invalid edit length'
 
 	if config.CAPTCHA_ENABLE:
+		if request.form.get('captcha') == '':
+			flash('no captcha', 'danger')
+			return redirect('/user/edit/%s/%s/' % (itype, iid))
 		if captcha.validate() == False:
 			flash('invalid captcha', 'danger')
 			return redirect('/user/edit/%s/%s/' % (itype, iid))
@@ -96,6 +101,7 @@ def user_edit_post():
 		db.session.commit()
 		cache.clear()
 		flash('post edited', category='succes')
+		session['last_edit'] = None
 		return redirect(obj.permalink)
 	elif hasattr(obj, 'text'):
 		obj.edited = True
@@ -103,6 +109,7 @@ def user_edit_post():
 		db.session.commit()
 		cache.delete_memoized(c_get_comments)
 		flash('comment edited', category='succes')
+		session['last_edit'] = None
 		return redirect(obj.permalink)
 	else:
 		return '403'

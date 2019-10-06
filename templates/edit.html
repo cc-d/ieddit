@@ -5,7 +5,13 @@
 	<input type='hidden' value='{{ itype }}' name='itype'>
 	<input type='hidden' value='{{ iid }}' name='iid'>
 	<div class="form-group">
-	<textarea name='etext' class="form-control form-input-text safe-markup-text" id="create-post-text">{{ etext|safe }}</textarea>
+
+	{% if session['last_edit'] %}
+	<textarea name='etext' class="form-control form-input-text safe-markup-text" id="create-post-text">{{ session['last_edit'] }}</textarea>
+	{% else %}
+	<textarea name='etext' class="form-control form-input-text safe-markup-text" id="create-post-text">{{ etext }}</textarea>
+	{% endif %}
+
 	</div>
 	<div class="captcha-div">
 	{% if config.CAPTCHA_ENABLE %}

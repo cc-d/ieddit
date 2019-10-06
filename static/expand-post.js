@@ -12,6 +12,11 @@ $(document).ready(function() {
 });
 
 function expandPost(pid, ptype) {
+	realsource = $('#expand-src-' + pid);
+	src = realsource.attr('realsrc');
+	realsource.attr('src', src);
+	realsource.html(realsource);
+
 	post = $('#post-' + pid);
 	post.css('display', 'inline-block');
 
