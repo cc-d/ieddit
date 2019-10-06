@@ -141,14 +141,20 @@ def pseudo_markup(text):
 		mtext[i] = clean(markdown(mtext[i]), strip=True)
 
 	# code tags
+	first, last = True, True
 	start = 0
 	for i in range(len(mtext)):
-		if mtext[i] == '```':
+		if mtext[i] == "```":
 			if start == 0:
 				start = i
 			else:
-				mtext[start] = mtext[start].replace('```', '<div class="inline-code"><code>')
-				mtext[i] = mtext[i].replace('```', '</code></div>')
+				mtext[start] = mtext[start].replace("```", '<div class="inline-code"><code>')
+	
+				#if first:
+					#mtext[start] = mtext[start] + '</code>'
+					#first = True
+
+				mtext[i] = mtext[i].replace("```", '</code></div>')
 				start = 0
 
 
