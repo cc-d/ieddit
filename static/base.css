@@ -427,3 +427,6 @@ blockquote {
 	margin: 0.25rem;
 }
 
+.edit-input {
+	min-height: 15rem;
+}
