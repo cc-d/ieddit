@@ -57,7 +57,10 @@ def user_get_edit(itype, iid):
 	else:
 		return 'bad itype'
 
-	lastedit = session['last_edit']
+	if 'last_edit' in session:
+		lastedit = session['last_edit']
+	else:
+		lastedit = None
 	session['last_edit'] = None
 	
 	return render_template('edit.html', itype=itype, iid=iid, etext=etext, lastedit=lastedit)
