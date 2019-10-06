@@ -1,3 +1,4 @@
 hey, i need a job. if you use this software consider hiring me. thanks.
+if you use the software in any public facing compacity, please include a link to my github in the footer.
 
 otherwise, MIT.
