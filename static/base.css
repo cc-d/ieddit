@@ -442,10 +442,6 @@ blockquote {
 	display: inline-block;
 }
 
-code {
-	font-family: monospace;
-}
-
 .inner-selftext-wrapper {
 	margin: 0.25rem;
 }
@@ -454,3 +450,24 @@ code {
 	min-height: 15rem;
 }
 
+#footer {
+	margin-top: 5rem;
+	margin-bottom: 2rem;
+	text-align: center;
+}
+
+#footer p {
+	text-align: center;
+}
+
+#footer a {
+	text-align: center;
+}
+
+.footer-link {
+	margin: 0.5rem;
+}
+
+.expanded-post {
+	width: -webkit-fill-available;
+}
