@@ -409,10 +409,19 @@ blockquote {
 }
 
 .expand-post {
-    margin-right: -8px;
-    margin-left: 0.75rem;
+	display: inline;
+    margin-left: 0;
+    margin-right: 0.25rem;
     font-size: larger;
 }
 
+.expanded-selftext {
+	margin-top: 0.25rem;
+	background-color: #333333;
+	border: 1px solid #555555;
+}
 
+.inner-selftext-wrapper {
+	margin: 0.25rem;
+}
 

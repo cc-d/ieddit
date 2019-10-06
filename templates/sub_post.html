@@ -65,6 +65,15 @@
     	</div>
     </div>
     <div class="sub-post-title">
+    <div class='expand-post'>
+        {% if post.post_type == 'url' %}
+            {% if post.remote_image_url %}
+            <a id="expand-button-{{ post.id }}" href="javascript:expandPost(pid={{ post.id }}, ptype='url');"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+            {% endif %}
+        {% else %}
+        <a id="expand-button-{{ post.id }}" href="javascript:expandPost(pid={{ post.id }}, ptype='selftext');"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+        {% endif %}
+    </div>
     {% if post.post_type == 'url' %}
     <a class="sub-post-title-link" href="{{ post.url }}">{{ post.title }}</a> 
         <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
@@ -78,22 +87,15 @@
     {% if post.remote_image_url %}
         <img class='expanded-post-image' id='expand-src-{{ post.id }}' realsrc="{{ post.remote_image_url }}" >
     {% else %}
-        <div class='expanded-selftext'>
+        <div class='expanded-selftext rounded'>
+            <div class='inner-selftext-wrapper'>
             <selftext class='safe-markup-text expanded-self-text'>{{ post.self_text|safe }}</selftext>
+        </div>
         </div>
     {% endif %}
     </div>
     {% endif %}
     <div class="row post-row">
-    <div class='expand-post'>
-        {% if post.post_type == 'url' %}
-            {% if post.remote_image_url %}
-            <a id="expand-button-{{ post.id }}" href="javascript:expandPost(pid={{ post.id }}, ptype='url');"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
-            {% endif %}
-        {% else %}
-        <a id="expand-button-{{ post.id }}" href="javascript:expandPost(pid={{ post.id }}, ptype='selftext');"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
-        {% endif %}
-    </div>
 <div class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
     {% if post.has_voted == 1 %}
     <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
