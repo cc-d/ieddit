@@ -7,3 +7,4 @@ static/thumb-*
 flask_session/
 sitemap.xml
 static/sitemap.xml
+.idea
