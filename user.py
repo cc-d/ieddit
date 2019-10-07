@@ -198,7 +198,7 @@ def user_uanonymous(username=None):
 def reset_page():
 	return render_template('reset_password.html')
 
-@limiter.limit(['5 per hour'])
+@limiter.limit('2 per hour', methods=['POST'])
 @ubp.route('/password_reset', methods=['POST', 'GET'])
 def password_reset(email=None):
 	if request.method == 'POST':
@@ -223,7 +223,7 @@ def password_reset(email=None):
 		new_reset = Password_reset(username=user.username, rankey=key, expires=datetime.utcnow() + timedelta(hours=1))
 
 		link = config.URL + '/user/password_reset?reset=' + key
-		etext = 'Please visit this link to reset your password: <a href="%s/user/password_reset?reset=%s">LINK</a>' % (config.URL, key)
+		etext = 'Please visit this link to reset your password for account %s: <a href="%s/user/password_reset?reset=%s">LINK</a>' % (user.username, config.URL, key)
 
 		e = send_email(etext=etext, subject='Password Reset', to=email)
 
