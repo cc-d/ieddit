@@ -471,3 +471,10 @@ blockquote {
 .expanded-post {
 	width: -webkit-fill-available;
 }
+
+.col.inner-div {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 265px;
+}
