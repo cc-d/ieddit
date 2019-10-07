@@ -6,7 +6,8 @@ PG_PASSWORD = 'test'
 PG_HOST = 'localhost'
 
 
-DB_TYPE = 'postgres'
+DB_TYPE = 'sqlite'
+USE_RECREATE = False
 
 if DB_TYPE == 'sqlite':
 	DATABASE_URI = 'sqlite:///{0}.db'.format(PG_USER)
@@ -19,7 +20,7 @@ elif DB_TYPE == 'postgres':
 # This will be unique every time create_db.py is ran when testing
 # to force clear sessions
 
-SECRET_KEY = 'not-a-real-key-|r|hqLVmN0jv-|r|'
+SECRET_KEY = 'not-a-real-key-|r|R0ULUAi3OC|r|'
 
 # Chhange this to your local URL. IE http://127.0.0.1
 URL = 'http://dev.ieddit.com'
@@ -39,6 +40,12 @@ CAPTCHA_NUMERIC_DIGITS = 8
 
 SESSION_TYPE = 'filesystem'
 USE_PROXIES = False
+
+MAIL_TYPE = 'mailgun'
+MAIL_FROM = 'no-reply@ieddit.com'
+if MAIL_TYPE == 'mailgun':
+	MG_API_KEY = 'notarealkey'
+	MG_URL = 'https://api.mailgun.net/v3/ieddit.com'
 
 if USE_PROXIES:
 	with open('proxies.txt', 'r') as p:

@@ -18,6 +18,9 @@ import os
 import _thread
 import urllib.parse
 from functools import wraps
+import requests
+
+from email.mime.text import MIMEText
 
 from models import *
 from functions import *
@@ -118,6 +121,21 @@ def notbanned(f):
 			return redirect('/')
 		return f(*args, **kwargs)
 	return decorated_function
+
+
+def send_email(etext=None, subject=None, to=None, from_domain=config.MAIL_FROM):
+	if config.MAIL_TYPE == 'mailgun':
+		etext = '<html><head><body>' + etext + '</body></html>'
+		r = requests.post(config.MG_URL + '/messages',
+			auth=('api', config.MG_API_KEY),
+			data={'from': 'no-reply <%s>' % (from_domain),
+				'to': [to, from_domain], 'subject':subject, 'html':etext})
+		print('sending email %s %s %s %s' % (MIMEText(etext, 'html'), subject, to, from_domain))
+		print(r.status_code)
+		print(r.text)
+		print('email %s %s %s' % (to, from_domain, subject))
+		return True
+
 
 # i hate sending external requests
 @app.route('/suggest_title')

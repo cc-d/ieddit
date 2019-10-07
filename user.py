@@ -194,3 +194,75 @@ def user_uanonymous(username=None):
 	cache.clear()
 	return redirect('/u/' + user.username)
 
+@ubp.route('/reset_password/', methods=['GET'])
+def reset_page():
+	return render_template('reset_password.html')
+
+@limiter.limit(['5 per hour'])
+@ubp.route('/password_reset', methods=['POST', 'GET'])
+def password_reset(email=None):
+	if request.method == 'POST':
+		if config.CAPTCHA_ENABLE:
+			if request.form.get('captcha') == '':
+				flash('no captcha', 'danger')
+				return redirect('/user/reset_password/')
+
+			if captcha.validate() == False:
+				flash('invalid captcha', 'danger')
+				return redirect('/user/reset_password/')
+
+		email = request.form.get('email')
+		if email == None:
+			flash('no email', 'danger')
+			return redirect('/user/reset_password/')
+		user = db.session.query(Iuser).filter_by(email=email).first()
+		if user == None:
+			flash('no user with email', 'danger')
+			return redirect('/user/reset_password/')
+		key = rstring(30)
+		new_reset = Password_reset(username=user.username, rankey=key, expires=datetime.utcnow() + timedelta(hours=1))
+
+		link = config.URL + '/user/password_reset?reset=' + key
+		etext = 'Please visit this link to reset your password: <a href="%s/user/password_reset?reset=%s">LINK</a>' % (config.URL, key)
+
+		e = send_email(etext=etext, subject='Password Reset', to=email)
+
+		if e == True:
+			db.session.add(new_reset)
+			db.session.commit()
+			flash('password recovery email sent', 'success')
+			return redirect('/user/reset_password/')
+
+	if request.method == 'GET':
+		reset = request.args.get('reset')
+		r = db.session.query(Password_reset).filter_by(rankey=reset).first()
+		if r == None:
+			return 'invalid link'
+		return render_template('new_reset_password.html', reset=reset, username=r.username)
+
+@ubp.route('/new_reset_password', methods=['POST'])
+def new_reset_password():
+	password = request.form.get('password')
+	reset = request.form.get('reset')
+	username = request.form.get('username')
+
+	if len(password) < 1:
+		return 'no password'
+
+	r = db.session.query(Password_reset).filter_by(rankey=reset).first()
+	if r == None or r.valid == False:
+		return 'invalid key or key expired'
+	#generate_password_hash(password)
+
+	r.valid = False
+	user = db.session.query(Iuser).filter_by(username=username).first()
+
+	user.password = generate_password_hash(password)
+	db.session.add(user)
+	db.session.add(r)
+	db.session.commit()
+
+	flash('successfully reset password for %s' % username, 'success')
+	return redirect('/login/')
+
+
