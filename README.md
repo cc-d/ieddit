@@ -16,9 +16,9 @@ edit ```config.py``` to the proper values (you should only need to change config
 
 run ```python3 create_db.py```
 
-start with ```python3 run.py```
+start with ```python3 run.py``` or if you want to use a different port ```python3 run.py <PORT>```
 
-the site should be running on localhost:80 - the default username/password for an admin account is 'a' 'a'
+the site should be running on localhost:80  or the port you defined - the default username/password for an admin account is 'a' 'a'
 
 ### Features
 
