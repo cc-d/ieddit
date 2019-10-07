@@ -146,7 +146,7 @@ def pseudo_markup(text):
 
 	for i in range(len(mtext)):
 		if mtext[i].find('```') != -1:
-			print(mtext[i])
+			#print(mtext[i])
 			if not found:
 				startindex = i
 				start = mtext[i].find('```')
@@ -159,21 +159,6 @@ def pseudo_markup(text):
 				found = False
 				start = 0
 				end = 0
-
-		'''
-		if mtext[i] == "```":
-			if start == 0:
-				start = i
-			else:
-				mtext[start] = mtext[start].replace("```", '<div class="inline-code"><code>')
-	
-				#if first:
-					#mtext[start] = mtext[start] + '</code>'
-					#first = True
-
-				mtext[i] = mtext[i].replace("```", '</code></div>')
-				start = 0
-		'''
 
 	for i in range(len(mtext)):
 		# different variations of possible links, space at start, no

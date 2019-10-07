@@ -78,15 +78,15 @@ def before_request():
 	if 'username' in session:
 		has_messages(session['username'])
 
+	# disabled due to lack of use
 
-	# enabled darkmode by deffault
-	if 'set_darkmode_initial' not in session:
-		session['darkmode'] = True
-		if 'username' in session:
-			u = db.session.query(Iuser).filter_by(username=session['username'])
-			u.darkmode = True
-			db.session.commit()
-		session['set_darkmode_initial'] = True
+	#if 'set_darkmode_initial' not in session:
+	#	session['darkmode'] = True
+	#	if 'username' in session:
+	#		u = db.session.query(Iuser).filter_by(username=session['username'])
+	#		u.darkmode = True
+	#		db.session.commit()
+	#	session['set_darkmode_initial'] = True
 
 
 @app.after_request
