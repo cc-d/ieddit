@@ -297,7 +297,7 @@ ul, li{
 }
 
 selftext {
-	white-space: normal;/*pre-wrap;*/
+	white-space: pre-wrap;
 	max-height: 200rem;
 	overflow: hidden;
 	word-break: break-word;
