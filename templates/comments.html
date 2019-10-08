@@ -269,8 +269,10 @@
 			
 			</div>
 		</div>
+		<div class='comment-selftext-wrapper'>
 		<selftext class="comment-text comment-text-text safe-markup-text">{{ comment.text|safe }}</selftext>
-			<div class="row post-row comment-bottom">
+		</div>	
+		<div class="row post-row comment-bottom">
 
 <div class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="session['user_id']" has_voted="{{ comment.has_voted }}">
 	{% if comment.has_voted == 1 %}

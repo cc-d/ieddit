@@ -500,3 +500,7 @@ blockquote {
 ul {
 	list-style-type: disc;
 }
+
+.comment-selftext-wrapper {
+	min-height: 75px;
+}
