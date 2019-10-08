@@ -114,7 +114,7 @@ def notbanned(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
 		if 'username' not in session:
-			return redirect('/login')
+			return redirect('/login/')
 		busers = db.session.query(Iuser).filter_by(banned=True).all()
 		bnames = [a.username for a in busers]
 		if session['username'] in bnames:
@@ -1114,7 +1114,7 @@ def has_messages(username):
 def user_messages(username=None):
 	if 'username' not in session or username == None:
 		flash('not logged in', 'danger')
-		return redirect('/login')
+		return redirect('/login/')
 	else:
 		if session['username'] != username:
 			flash('you are not that user', 'danger')
@@ -1148,7 +1148,7 @@ def user_messages(username=None):
 def reply_message(username=None, mid=None):
 	if 'username' not in session or username == None:
 		flash('not logged in', 'danger')
-		return redirect('/login')
+		return redirect('/login/')
 	if session['username'] != username:
 		flash('you are not that user', 'danger')
 		return redirect('/')
@@ -1291,7 +1291,7 @@ def get_blocked_subs(username=None):
 def blocksub(sub=None):
 	if 'username' not in session:
 		flash('not logged in', 'error')
-		return redirect('/login')
+		return redirect('/login/')
 	if sub == None:
 		return '500'
 
