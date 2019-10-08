@@ -16,7 +16,7 @@
 .post-row {
 	margin-right: 0px;
 	max-height: 1rem;
-	margin-bottom: 8px;
+	margin-bottom: 0.75rem;
 }
 
 #menu-items {
@@ -156,6 +156,7 @@
 }
 
 .user-icon-link {
+	margin-left: 0.25rem;
 	text-decoration: none;
 	color: #212529}
 

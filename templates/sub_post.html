@@ -85,7 +85,7 @@
     {% if post.remote_image_url or post.self_text %}
     <div class='expanded-post' id='post-{{ post.id }}' style='display: none;'>
     {% if post.remote_image_url %}
-        <img class='expanded-post-image' id='expand-src-{{ post.id }}' realsrc="{{ post.remote_image_url }}" >
+       <a href="{{ post.remote_image_url }}"><img class='expanded-post-image' id='expand-src-{{ post.id }}' realsrc="{{ post.remote_image_url }}" ></a>
     {% else %}
         <div class='expanded-selftext rounded'>
             <div class='inner-selftext-wrapper'>

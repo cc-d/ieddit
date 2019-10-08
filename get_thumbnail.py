@@ -56,10 +56,11 @@ def main():
 
 		except:
 			try:
-				icon_link = soup.find("link", rel="shortcut icon")
-				r = requests.get(icon_link['href'], proxies=config.PROXIES,  allow_redirects=True)
-				soup = BeautifulSoup(r.text)
-				create_thumbnail(r, tid)
+				raise Exception
+				#icon_link = soup.find("link", rel="shortcut icon")
+				#r = requests.get(icon_link['href'], proxies=config.PROXIES,  allow_redirects=True)
+				#soup = BeautifulSoup(r.text)
+				#create_thumbnail(r, tid)
 			except:
 				i = soup.findall('img')
 				guess = 0
