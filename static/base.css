@@ -203,13 +203,10 @@
 .top-sort {
 	margin-right: 0.25rem;
 	margin-top: 0.25rem;
-	background-color: transparent;
 }
-
 #prev-button {
-	float: left;
+float: left;
 }
-
 #display-rules {
 	margin-left: 1rem;
 	white-space: inherit;
