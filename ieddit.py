@@ -114,7 +114,7 @@ def notbanned(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
 		if 'username' not in session:
-			return redirect('/login/')
+			return redirect(url_for('login'))
 		busers = db.session.query(Iuser).filter_by(banned=True).all()
 		bnames = [a.username for a in busers]
 		if session['username'] in bnames:
@@ -700,7 +700,7 @@ def create_sub():
 	elif request.method == 'GET':
 		if 'username' not in session:
 			flash('please log in to create subs', 'danger')
-			return redirect('/login/')
+			return redirect(url_for('login'))
 		return render_template('create.html')
 
 @app.route('/u/<username>/', methods=['GET'])
@@ -726,7 +726,6 @@ def view_user(username):
 
 @limiter.limit('25 per minute')
 @app.route('/vote', methods=['GET', 'POST'])
-@notbanned
 def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 	if request.method == 'POST':
 		if post_id == None:
@@ -949,7 +948,7 @@ def create_post(postsub=None):
 	if request.method == 'GET':
 		if 'username' not in session:
 			flash('please log in to create new posts', 'danger')
-			return redirect('/login/')
+			return redirect(url_for('login'))
 		if request.referrer:
 			subref = re.findall('\/r\/([a-zA-z1-9-_]*)', request.referrer)
 		if 'subref' in locals():
@@ -1114,7 +1113,7 @@ def has_messages(username):
 def user_messages(username=None):
 	if 'username' not in session or username == None:
 		flash('not logged in', 'danger')
-		return redirect('/login/')
+		return redirect(url_for('login'))
 	else:
 		if session['username'] != username:
 			flash('you are not that user', 'danger')
@@ -1148,7 +1147,7 @@ def user_messages(username=None):
 def reply_message(username=None, mid=None):
 	if 'username' not in session or username == None:
 		flash('not logged in', 'danger')
-		return redirect('/login/')
+		return redirect(url_for('login'))
 	if session['username'] != username:
 		flash('you are not that user', 'danger')
 		return redirect('/')
@@ -1175,7 +1174,7 @@ def sendmsg(title, text, sender, sent_to):
 def msg(username=None):
 	if 'username' not in session:
 		flash('not logged in', 'danger')
-		return redirect('/login/')
+		return redirect(url_for('login'))
 	if request.method == 'POST':
 		text = request.form.get('message_text')
 		title = request.form.get('message_title')
@@ -1291,7 +1290,7 @@ def get_blocked_subs(username=None):
 def blocksub(sub=None):
 	if 'username' not in session:
 		flash('not logged in', 'error')
-		return redirect('/login/')
+		return redirect(url_for('login'))
 	if sub == None:
 		return '500'
 
