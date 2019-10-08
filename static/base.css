@@ -50,6 +50,27 @@
 	}
 }
 
+#logout-right {
+    margin-right: -1rem;
+    float: right;
+    margin-left: 1rem;
+	font-size: 80%;
+    margin-top: 0.25rem;
+}
+
+#logout-left {
+	display: none;
+}
+
+@media only screen and (max-width: 992px) {
+	#logout-right {
+		display: none;
+	}
+	#logout-left {
+		display: inline-block;
+	}
+}
+
 .quoted-text {
 	background-color: lavender;
 	padding-left: 0.25rem;

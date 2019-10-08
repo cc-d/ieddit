@@ -73,7 +73,7 @@
 				{% endif %}
 				{% if session['username'] %}
 				<li class="nav-item active">
-					<a class="nav-link" href="/logout">logout</a>
+					<a class="nav-link" id='logout-left' href="/logout">logout</a>
 				</li>
 				{% endif %}
 			</ul>
@@ -98,6 +98,9 @@
 					{% else %}
 					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> (0)</a>
 					{% endif %}
+				<li class="nav-item active">
+					<a class="nav-link" id='logout-right' href="/logout">logout</a>
+				</li>
 			</ul>
 			{% endif %}
 		</div>
