@@ -1,12 +1,12 @@
 <div class="btn-group" role="group" aria-label="Basic example">
-    <a class="top-sort" href="{{ session['hot_url'] }}"><button type="button" class="btn btn-outline-secondary">Hot</button></a>
-  <a class="top-sort" href="{{ session['top_url'] }}"><button type="button" class="btn btn-outline-secondary">Top</button></a>
-  <a class="top-sort" href="{{ session['new_url'] }}"><button type="button" class="btn btn-outline-secondary">New</button></a>
+    <a class="top-sort" href="{{ session['hot_url'] }}"><button type="button" class="btn btn-secondary">Hot</button></a>
+  <a class="top-sort" href="{{ session['top_url'] }}"><button type="button" class="btn btn-secondary">Top</button></a>
+  <a class="top-sort" href="{{ session['new_url'] }}"><button type="button" class="btn btn-secondary">New</button></a>
 </div>
 <div class="btn-group">
 {% if request.sub %}
-<a class="top-sort" href="{{ config.URL }}/r/{{ request.sub }}/comments/"><button type="button" class="btn btn-outline-secondary">Comments</button></a>
+<a class="top-sort" href="{{ config.URL }}/r/{{ request.sub }}/comments/"><button type="button" class="btn btn-secondary">Comments</button></a>
 {% else %}
-<a class="top-sort" href="{{ config.URL }}/comments/"><button type="button" class="btn btn-outline-secondary">Comments</button></a>
+<a class="top-sort" href="{{ config.URL }}/comments/"><button type="button" class="btn btn-secondary">Comments</button></a>
 {% endif %}
 </div>

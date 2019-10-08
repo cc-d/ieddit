@@ -30,7 +30,7 @@
 <ul class="list-group" style="max-width: 20rem;">
   <li class="list-group-item"><input type='checkbox' name='marknsfw' value='nsfw' {% if nsfw %}checked{% endif %}> Mark All Posts NSFW?</li>
   <br>
-  <button type='submit' name='sub' style="max-width: 6rem;" value='{{ request.sub }}' class="btn btn-outline-primary" type="button">Update</button>
+  <button type='submit' name='sub' style="max-width: 6rem;" value='{{ request.sub }}' class="btn btn-primary" type="button">Update</button>
 </ul>
 </form>
 </div>
@@ -47,7 +47,7 @@
   {% else %}
   <input type="text" style="max-width: 20rem;" name='title' class="form-control" placeholder="Example: A place for friends." aria-label="Username" aria-describedby="basic-addon1">
   {% endif %}
-<button type='submit' class="btn btn-outline-secondary btn-background" type="button">Edit Title</button>
+<button type='submit' class="btn btn-secondary " type="button">Edit Title</button>
 </div>
 </form>
 <div id='display-rules'>
@@ -70,7 +70,7 @@ No Description
     <label for="exampleFormControlTextarea1"><h3>Edit Description</h3></label>
     <textarea name='rtext' class="form-control safe-markup-text" id="exampleFormControlTextarea1" rows="3">{% if rules %}{{ rules|safe }}{% endif %}</textarea>
   </div>
-  <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-outline-primary btn-background" type="button">Save Info</button>
+  <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary " type="button">Save Info</button>
 </form>
 </div>
 <br>
