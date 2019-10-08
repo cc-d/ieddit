@@ -472,9 +472,11 @@ blockquote {
 }
 
 #footer {
-	margin-top: 5rem;
-	margin-bottom: 2rem;
 	text-align: center;
+	width: 350px;
+    margin: 0 auto;
+    margin-top: 5rem;
+    margin-bottom: 2rem;
 }
 
 #footer p {
