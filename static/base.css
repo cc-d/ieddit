@@ -1,6 +1,7 @@
-.inner-div {
-	border:0px solid green;
+textarea {
+	resize: both;
 }
+
 #sub-dropdown-search{
 	margin-left: 1rem;
 	margin-right: 1rem;
@@ -374,7 +375,7 @@ blockquote {
 }
 
 .comment-text-text {
-	white-space: /*pre-wrap*/ normal;
+	white-space: pre-wrap;
 	word-break: break-word;
 	max-height: 100rem;
 	overflow: hidden;

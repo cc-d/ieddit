@@ -31,6 +31,7 @@ class Sub(db.Model):
 	rules = db.Column(db.String(20000), nullable=True, default=None)
 	title = db.Column(db.String(1000), nullable=True, default=None)
 	nsfw = db.Column(db.Boolean, default=False, nullable=False)
+	css = db.Column(db.String(20000), default=None)
 
 	def get_comments(self):
 		self.comments = db.session.query(Comment).filter_by(sub_name=self.name)

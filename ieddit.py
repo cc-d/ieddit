@@ -319,8 +319,8 @@ def register():
 			flash('invalid username', 'danger')
 			return redirect(url_for('login'))
 
-		if len(password) > 100:
-			flash('password too long', 'danger')
+		if len(password) > 100 or len(password) < 1:
+			flash('password length invalid', 'danger')
 			return redirect(url_for('login'))
 
 		if email != None and email != '':
@@ -722,6 +722,18 @@ def view_user(username):
 		c.mods = get_sub_mods(c.sub_name)
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
 		comments_with_posts.append((c, cpost))
+
+
+		if 'user_id' in session:
+			c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
+			if c.has_voted != None:
+				c.has_voted = c.has_voted.vote
+				if Comment.sub_name:
+					if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(Comment.sub_name)).exists()).scalar():
+						Comment.is_mod = True
+					else:
+						Comment.is_mod = False
+
 	return render_template('user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts, userpage=True)
 
 @limiter.limit('25 per minute')
@@ -1276,8 +1288,17 @@ def settings(sub=None):
 	sub = normalize_sub(sub)
 	subr = db.session.query(Sub).filter_by(name=sub).first()
 	if request.is_mod:
-		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw)
+		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw, sub_object=subr)
 	return '403'
+
+def get_style(sub=None):
+	if sub != None:
+		sub = db.session.query(Sub).filter_by(name=sub).first()
+		return sub.css
+	return None
+
+app.jinja_env.globals.update(get_style=get_style)
+
 
 def get_blocked_subs(username=None):
 	subs = db.session.query(Sub_block).filter_by(username=session['username']).all()
@@ -1317,6 +1338,7 @@ def blocksub(sub=None):
 	session['blocked_subs'] = bsubs
 
 	return redirect('/r/%s/' % sub)
+
 
 @cache.memoize(600)
 @app.route('/explore/', methods=['GET'])
@@ -1477,6 +1499,9 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 			comments.sort(key=lambda x: x.hot, reverse=True)
 
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
+
+
+
 
 
 

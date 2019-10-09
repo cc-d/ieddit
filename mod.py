@@ -377,6 +377,8 @@ def mod_title():
 def mod_settings():
 	sub = request.form.get('sub')
 	marknsfw = 	request.form.get('marknsfw')
+	newcss = request.form.get('newcss')
+
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -394,6 +396,10 @@ def mod_settings():
 				sub.nsfw = True
 		else:
 			sub.nsfw = False
+
+		if newcss != None:
+			if len(newcss) > 0 and len(newcss) < 20000:
+				sub.css = newcss
 
 		db.session.add(sub)
 		db.session.commit()

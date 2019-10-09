@@ -30,10 +30,20 @@
 <ul class="list-group" style="max-width: 20rem;">
   <li class="list-group-item"><input type='checkbox' name='marknsfw' value='nsfw' {% if nsfw %}checked{% endif %}> Mark All Posts NSFW?</li>
   <br>
-  <button type='submit' name='sub' style="max-width: 6rem;" value='{{ request.sub }}' class="btn btn-primary" type="button">Update</button>
 </ul>
+
+
+<div class="form-group">
+  <label for="exampleFormControlTextarea1">Subreddit CSS</label>
+  <textarea name='newcss' class="form-control" id="exampleFormControlTextarea1" rows="3" style='width: 400px; resize: both;'>{% if sub_object.css %}{{ sub_object.css }}{% endif %}</textarea>
+  </div>
+
+  <button type='submit' name='sub' style="max-width: 6rem;" value='{{ request.sub }}' class="btn btn-primary" type="button">Update</button>
+
+
 </form>
 </div>
+
 {% endif %}
 
 
@@ -68,7 +78,7 @@ No Description
 <form style="margin-left: 1rem;" action='/mod/edit/description' method='POST'>
   <div class="form-group">
     <label for="exampleFormControlTextarea1"><h3>Edit Description</h3></label>
-    <textarea name='rtext' class="form-control safe-markup-text" id="exampleFormControlTextarea1" rows="3">{% if rules %}{{ rules|safe }}{% endif %}</textarea>
+    <textarea name='rtext' class="form-control safe-markup-text" id="exampleFormControlTextarea1" rows="3" style='width: 450px; resize: both;'>{% if rules %}{{ rules|safe }}{% endif %}</textarea>
   </div>
   <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary " type="button">Save Info</button>
 </form>
