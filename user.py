@@ -86,11 +86,11 @@ def user_edit_post():
 		if captcha.validate() == False:
 			flash('invalid captcha', 'danger')
 			return redirect('/user/edit/%s/%s/' % (itype, iid))
-		if 'rate_limit' in session and config.RATE_LIMIT == True:
-			rl = session['rate_limit'] - time.time()
-			if rl > 0:
-				flash('rate limited, try again in %s seconds' % str(rl))
-				return redirect('/user/edit/%s/%s/' % (itype, iid))
+#		if 'rate_limit' in session and config.RATE_LIMIT == True:
+#			rl = session['rate_limit'] - time.time()
+#			if rl > 0:
+#				flash('rate limited, try again in %s seconds' % str(rl))
+#				return redirect('/user/edit/%s/%s/' % (itype, iid))
 
 	if itype == 'post':
 		obj = db.session.query(Post).filter_by(id=iid).first()

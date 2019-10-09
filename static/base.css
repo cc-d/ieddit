@@ -374,7 +374,7 @@ blockquote {
 }
 
 .comment-text-text {
-	white-space: pre-wrap;
+	white-space: /*pre-wrap*/ normal;
 	word-break: break-word;
 	max-height: 100rem;
 	overflow: hidden;

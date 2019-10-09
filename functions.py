@@ -179,8 +179,12 @@ def pseudo_markup(text):
 		if len(links) > 0:
 			for link in links:
 				mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))	
+	for l in range(len(mtext)):
+		if mtext[l] == '':
+			mtext[l] = '<br>'
 
 	mtext = '\n'.join([x for x in mtext])
+	
 	mtext = mtext.replace('\n<div class="inline-code"><code>\n', '<div class="inline-code"><code>')
 	mtext = mtext.replace('<code>\n', '<code>')
 	mtext = mtext.replace('\n</code></div>\n', '</code></div>')
