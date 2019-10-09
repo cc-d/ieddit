@@ -19,8 +19,8 @@ import time
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
 
 def thumb_exists(tid):
-	if os.path.exists('static/thumb-%s.PNG' % str(tid)):
-		if int(os.stat('static/thumb-%s.PNG' % str(tid)).st_size) > 10:
+	if os.path.exists('static/thumbnails/thumb-%s.PNG' % str(tid)):
+		if int(os.stat('static/thumbnails/thumb-%s.PNG' % str(tid)).st_size) > 10:
 			return True
 	return False
 
