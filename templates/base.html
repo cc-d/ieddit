@@ -19,6 +19,12 @@
 
 	{% if request.sub and request.sub != 'all' %}
 	<title>/r/{{ request.sub}} {% if request.subtitle != None %} - {{ request.subtitle }}{% endif %}</title>
+
+	{% set substyle = get_style(request.sub) %}
+	{% if substyle != None %}
+			<style type='text/css'>{{ substyle }}</style>
+	{% endif %}
+
 	{% else %}
 	<title>ieddit</title>
 	{% endif %}
