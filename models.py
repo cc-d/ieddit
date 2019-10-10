@@ -18,6 +18,7 @@ class Iuser(db.Model):
 	banned = db.Column(db.Boolean, default=False, nullable=False)
 	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 	darkmode = db.Column(db.Boolean, default=False, nullable=False)
+	hide_sub_style = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Iuser %r>' % self.username
@@ -139,6 +140,7 @@ class Ban(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	sub = db.Column(db.String(30), db.ForeignKey('sub.name'), nullable=False)
 	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
+	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Ban %r>' % self.id

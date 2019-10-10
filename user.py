@@ -326,6 +326,18 @@ def user_update_preferences():
 			user.email = new_email
 		if update_password:
 			user.password = generate_password_hash(new_password)
+
+		hss = request.form.get('hide_sub_style')
+
+		if user.hide_sub_style == True:
+			if hss == None:
+				user.hide_sub_style = False
+		elif user.hide_sub_style == False:
+			if hss != None:
+				user.hide_sub_style = True
+				
+		session['hide_sub_style'] = user.hide_sub_style
+
 		db.session.add(user)
 		db.session.commit()
 		flash('successfully updated settings', 'success')
