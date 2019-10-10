@@ -29,10 +29,10 @@ def mod_delete_post():
 			msg = 'undeleted'
 		else:
 			post.deleted = True
-		mod_action(session['username'], 'delete', post.permalink, post.sub)
+		mod_action(session['username'], msg, post.permalink, post.sub)
 		db.session.commit()
 		cache.delete_memoized(get_subi)
-		flash('post deleted', category='success')
+		flash('post %s' % msg, category='success')
 		return redirect(sub_url)
 	else:
 		return '403'
