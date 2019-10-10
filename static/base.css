@@ -302,7 +302,7 @@ ul, li{
 }
 
 selftext {
-	white-space: /*pre-wrap*/normal;
+	white-space: pre-wrap;
 	max-height: 200rem;
 	overflow: hidden;
 	word-break: break-word;
@@ -509,4 +509,8 @@ ul {
 .comment-selftext-wrapper {
 	min-height: 50px;
 	margin-bottom: 0.25rem;
+}
+
+.preference-option {
+	margin-left: 1.5rem;
 }

@@ -271,7 +271,9 @@ def login():
 				[session.pop(key) for key in list(session.keys())]
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
-				session['admin'] = login_user.admin
+				if login_user.admin:
+						session['admin'] = login_user.admin
+				session['hide_sub_style'] = login_user.hide_sub_style
 				if hasattr(login_user, 'anonymous'):
 					if login_user.anonymous:
 						session['anonymous'] = True
