@@ -23,7 +23,12 @@ def mod_delete_post():
 					Moderator.sub.like(post.sub)).exists()).scalar()
 	if is_mod:
 		#db.session.delete(post)
-		post.deleted = True
+		msg = 'deleted'
+		if post.deleted == True:
+			post.deleted = False
+			msg = 'undeleted'
+		else:
+			post.deleted = True
 		mod_action(session['username'], 'delete', post.permalink, post.sub)
 		db.session.commit()
 		cache.delete_memoized(get_subi)
