@@ -32,7 +32,7 @@
 		{% if sppf['title'] %}
 <input name='title' type="text" class="form-control" id="create-post-title" value="{{ sppf['title'] }}">
 		{% else %}
-	<input name='title' type="text" class="form-control" id="create-post-title" placeholder="Example: Look at this site I found." maxlength="30">
+	<input name='title' type="text" class="form-control" id="create-post-title" placeholder="Example: Look at this site I found." maxlength="200">
 	{% endif %}
 	<a id='suggest-title' href="javascript:suggestTitle();"></a>
 	</div>
