@@ -141,7 +141,7 @@
         {% endif %}
         {% if session['username'] in post.mods %}
             {% if session['username'] != post.author %}
-            {% if post.nsfw == False  and post.author %}#}
+            {% if post.nsfw == False  and post.author %}
                 <form action='{{ config.URL }}/mod/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                     <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>nsfw</button>
                 </form>|
