@@ -547,6 +547,12 @@ ul {
 
 .recent {
 	margin-left: 0rem;
+	margin-top: 0.25rem;
+}
+
+.recent-bottom {
+	float: right;
+	margin-right: 1rem;
 }
 
 .next-to-comments {
