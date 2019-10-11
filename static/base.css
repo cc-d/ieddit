@@ -357,6 +357,7 @@ blockquote {
 
 .comment-link {
 	color: #212529;
+	margin-right: 1rem;
 }
 
 .fa-arrow-up {
@@ -420,6 +421,7 @@ blockquote {
 	margin: 0;
 }
 .user-options {
+	display: contents;
 	margin-left: -5rem;
 }
 #user-recent {
