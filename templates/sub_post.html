@@ -8,14 +8,14 @@
 
 {% if loop is defined %}
 {% if loop.last and not loop.first %}
-<ul class="list-unstyled sub-list rounded" style="margin-bottom: 5px;">
+<ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-bottom: 5px;">
 {% elif loop.first %}
-<ul class="list-unstyled sub-list rounded" style="margin-top: 5px;">
+<ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 5px;">
 {% else %}
-<ul class="list-unstyled sub-list rounded" style="margin-top: 0px;">
+<ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
 {% endif %}
 {% else %}
-<ul class="list-unstyled sub-list rounded" style="margin-top: 0px;">
+<ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
 {% endif %}
 
   <li class="media sub-post rounded">
@@ -75,10 +75,10 @@
         {% endif %}
     </div>
     {% if post.post_type == 'url' %}
-    <a class="sub-post-title-link" href="{{ post.url }}">{{ post.title }}</a> 
+    <a class="sub-post-title-link" href="{{ post.url }}">{{ post.title }}</a>
         <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
     {% else %}
-    <a class="sub-post-title-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.title }}</a> 
+    <a class="sub-post-title-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.title }}</a>
         <small><a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">(self.text)</a></small>
     {% endif %}
     </div>
@@ -96,80 +96,77 @@
     </div>
     {% endif %}
     <div class="row post-row">
-<div class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
-    {% if post.has_voted == 1 %}
-    <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
-    {% else %}
-    <a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
-    {% endif %}
-    <vote class="score">{{ post.ups - post.downs }}</vote>
-    {% if post.has_voted == -1 %}
-    <a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
-    {% else %}
-    <a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
-    {% endif %}
-</div>
-    		<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
-            {% if session['username'] == post.author %}
-            <div class='mod-option-wrapper user-options'>
-                <small>
-                    {% if post.self_text %}
-                    <a href='{{ config.URL }}/user/edit/post/{{ post.id }}/' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>edit</button>
-                    </a>
-                    {% endif %}
-                    <form action='{{ config.URL }}/user/delete/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
-                    </form>
-                    {% if post.nsfw == False %}
-                    <form action='{{ config.URL }}/user/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>nsfw</button>
-                    </form>
-                    {% endif %}
-                </small>
-            </div>
+        <div class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
+            {% if post.has_voted == 1 %}
+            <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
+            {% else %}
+            <a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
             {% endif %}
-            {% if post.nsfw %}
-            <p class='nsfw'>nsfw</p>
+            <vote class="score">{{ post.ups - post.downs }}</vote>
+            {% if post.has_voted == -1 %}
+            <a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
+            {% else %}
+            <a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
             {% endif %}
-    	</div>
-            {% if session['username'] in post.mods %}
-            <div class='mod-option-wrapper'><small>
-                {% if post.nsfw == False %}
-                    <form action='{{ config.URL }}/mod/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>nsfw</button>
-                    </form>|
-                {% endif %}
-                {% if post.stickied == False %}
-                    <form action='{{ config.URL }}/mod/sticky/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
-                    </form>|
-                {% else %}
-                    <form action='{{ config.URL }}/mod/unsticky/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>unsticky</button>
-                    </form>|
-                {% endif %}
-                    <form action='{{ config.URL }}/mod/lock/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>
-                        {% if post.locked == True %}unlock{% else %}lock{% endif %}</button>
-                    </form>|
-                {% if post.deleted == False %}
-                    <form action='{{ config.URL }}/mod/delete/post' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
-                    </form>|
-                {% else %}
-                    <form action='{{ config.URL }}/mod/delete/post' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>undelete</button>
-                    </form>|
-                {% endif %}
-                    <form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                        <input name='iid' type='hidden' value='{{ post.id }}'>
-                        <input name='itype' type='hidden' value='post'>
-                        <button type='submit' name='post_id' value='{{ pauther }}' class='mod-option-button post-delete-button'>ban</button>
-                    </form>
-            </small></div>
-            {% endif %}
+        </div>
+        <a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
     </div>
+    <small>
+        {% if session['username'] == post.author %}
+            <div class='mod-option-wrapper user-options'>
+            {% if post.self_text %}
+                <a href='{{ config.URL }}/user/edit/post/{{ post.id }}/' class='post-mod-option-form post-mod-sticky-form'>
+                    <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>edit</button>
+                </a>|
+            {% endif %}
+            {% if session['username'] not in post.author %}
+            <form action='{{ config.URL }}/user/delete/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
+            </form>|
+                {% endif %}
+            {% if post.nsfw == False %}
+                <form action='{{ config.URL }}/user/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                    <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>nsfw</button>
+                </form>|
+            {% endif %}
+        {% endif %}
+        {% if session['username'] in post.mods %}
+
+{#            {% if post.nsfw == False  and post.author %}#}
+{#                <form action='{{ config.URL }}/mod/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>#}
+{#                    <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>nsfw</button>#}
+{#                </form>|#}
+{#            {% endif %}#}
+            {% if post.stickied == False %}
+                <form action='{{ config.URL }}/mod/sticky/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                    <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
+                </form>|
+            {% else %}
+                <form action='{{ config.URL }}/mod/unsticky/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                    <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>unsticky</button>
+                </form>|
+            {% endif %}
+            <form action='{{ config.URL }}/mod/lock/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>
+                    {% if post.locked == True %}unlock{% else %}lock{% endif %}</button>
+            </form>|
+            {% if post.deleted == False %}
+                <form action='{{ config.URL }}/mod/delete/post' method='POST' class='post-mod-option-form post-mod-delete-form'>
+                    <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
+                </form>|
+            {% else %}
+                <form action='{{ config.URL }}/mod/delete/post' method='POST' class='post-mod-option-form post-mod-delete-form'>
+                    <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>undelete</button>
+                </form>|
+            {% endif %}
+            <form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
+                <input name='iid' type='hidden' value='{{ post.id }}'>
+                <input name='itype' type='hidden' value='post'>
+                <button type='submit' name='post_id' value='{{ pauther }}' class='mod-option-button post-delete-button'>ban</button>
+            </form>
+            </small>
+            </div>
+        {% endif %}
   </li>
 </ul>
 {% if loop is defined %}

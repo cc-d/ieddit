@@ -381,7 +381,7 @@ blockquote {
 	overflow: hidden;
 }
 .mod-option-wrapper {
-	float: right;
+	/*float: right;*/
 }
 
 .mod-option-wrapper-comments {
@@ -419,7 +419,7 @@ blockquote {
 	margin: 0;
 }
 .user-options {
-	margin-left: 1rem;
+	margin-left: -5rem;
 }
 #user-recent {
 	margin-top: 3rem;
@@ -514,3 +514,15 @@ ul {
 .preference-option {
 	margin-left: 1.5rem;
 }
+.col.inner-div {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 265px;
+}
+
+.nsfwpost {
+	border: 2px solid #982b2b!important;
+}
+
+.recent {margin-left:163px}

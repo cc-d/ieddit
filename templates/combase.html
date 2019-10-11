@@ -52,53 +52,55 @@
         </div>
         <div class="row post-row comment-bottom">
             <div class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="session['user_id']" has_voted="{{ comment.has_voted }}">
-                {% if comment.has_voted == 1 %}
+{% if comment.has_voted == 1 %}
                 <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
-                {% else %}
+{% else %}
                 <a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
-                {% endif %}
+{% endif %}
                 <vote class="score">{{ comment.ups - comment.downs }}</vote>
-                {% if comment.has_voted == -1 %}
+{% if comment.has_voted == -1 %}
                 <a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
-                {% else %}
+{% else %}
                 <a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
-                {% endif %}
+{% endif %}
             </div>
+            <a class="comment-link comment-reply" href="{{ comment.permalink }}" comment_id="{{ comment.id }}">reply</a>
+            <small>
+                <div class='mod-option-wrapper user-options'>
 
-
-            <div class="inner-div">
-                <a class="comment-link comment-reply" href="{{ comment.permalink }}" comment_id="{{ comment.id }}">reply</a>
-            {% if session['username'] == comment.author %}
-            <div class='mod-option-wrapper user-options'>
-                <small>
+{% if session['username'] == comment.author %}
+                <div class='mod-option-wrapper user-options recent'>
                     <a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' class='mod-option-button'>edit</button>
-                    </a>
+                    </a>|
                     <form action='{{ config.URL }}/user/delete/comment' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button'>delete</button>
-                    </form>
-                </small>
-            </div>
-            {% endif %}
-                {% if loop.depth0 == 4 and value|length > 0 %}
-                    <a class="comment-link  comment-more" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
-                        more>>
-                    </a>
-                {% endif %}
-            </div>
-</div>
-            {% if session['username'] in comment.mods %}
-            <div class='mod-option-wrapper-comments'><small>
+                    </form>|
+
+{% endif %}
+{% if loop.depth0 == 4 and value|length > 0 %}
+                <a class="comment-link  comment-more" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
+                    more>>
+                </a>
+{% endif %}
+
+{% if session['username'] in comment.mods %}
+    {% if session['username'] not in comment.author %}
                     <form action='{{ config.URL }}/mod/delete' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|
+    {%  endif %}
                     <form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='post_id' value='{{ post.author }}' class='mod-option-button post-delete-button'>ban</button>
                     </form>
-            </small></div>
-            {% endif %}
+                </div>
+{% endif %}
+                </div>
+            </small>
+        </div>
     </div>
 </li>
+
 {% if no_posts %}
 </div>
 {% endif %}
