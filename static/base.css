@@ -431,6 +431,7 @@ blockquote {
 }
 .user-options-mod-post {
 	margin-left: 0rem;
+	float: right;
 }
 
 .comment-mod-options {
