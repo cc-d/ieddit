@@ -419,7 +419,7 @@ blockquote {
 	margin: 0;
 }
 .user-options {
-	margin-left: 1rem;
+	margin-left: -10rem;
 }
 #user-recent {
 	margin-top: 3rem;
@@ -519,4 +519,8 @@ ul {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	width: 265px;
+}
+
+.nsfwpost {
+	border: 2px solid #982b2b!important;
 }
