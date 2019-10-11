@@ -526,3 +526,17 @@ ul {
 }
 
 .recent {margin-left:163px}
+
+.mod-page-button {
+	margin-left: -0.75rem;
+	margin-right: -0.75rem;
+}
+
+.mod-log-table {
+	color: #bbb;
+}
+
+.banned-user {
+	border: 1px solid #bbb!important;
+	margin: 1rem;
+}
