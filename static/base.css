@@ -514,3 +514,9 @@ ul {
 .preference-option {
 	margin-left: 1.5rem;
 }
+.col.inner-div {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 265px;
+}
