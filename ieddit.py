@@ -1254,6 +1254,8 @@ def bannedusers(sub=None):
 	banned = db.session.query(Ban).filter_by(sub=sub).all()
 	if type(banned) != None:
 		banned = [b for b in banned]
+	else:
+		banned = []
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), banned=banned)
 
 @app.route('/r/<sub>/mods/add/', methods=['GET'])

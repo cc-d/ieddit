@@ -23,7 +23,7 @@ elif DB_TYPE == 'postgres':
 SECRET_KEY = 'not-a-real-key-|r|VeuB40o91l|r|'
 
 # Chhange this to your local URL. IE http://127.0.0.1
-URL = 'http://localhost:8888'
+URL = 'http://dev.ieddit.com'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 

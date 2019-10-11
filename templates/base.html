@@ -11,7 +11,7 @@
 	<link href="{{ url_for('static', filename='font-awesome.min.css') }}" type="text/css" rel="stylesheet">
 	<!--  end bootstrap -->
 
-	<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}?209">
+	<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}?207">
 	<script src="{{ url_for('static', filename='main.js') }}?207"></script>
 	<link rel="shortcut icon" href="{{ url_for('static', filename='globe.png') }}?207">
 
@@ -41,24 +41,26 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto navbar-right">
 
+				{% if request.sub and request.sub != 'all' %}
+				<li class="nav-item active" style="margin-top: 0.25rem;">
+					<a class="nav-link" href="/r/{{ request.sub }}">/r/{{ request.sub }}</a>
+				</li>
+				<li class="nav-item active">
+					<a class="nav-link" href="/r/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary">information</button></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success">Create Post +</button></a>
+				</li>
+				{% else %}
 				<li class="nav-item active" style="margin-top: 0.25rem;">
 					<a class="nav-link" href="/about/">about</a>
 				</li>
-
 				<li class="nav-item">
 					<a class="nav-link" href="/r/all"><button type="button" class="btn btn-sm btn-danger">/r/all</button></a>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-secondary">Create Post</button></a>
-				</li>
+				{% endif %}
 
 				{% if request.sub and request.sub != 'all' %}
-				<li class="nav-item active">
-					<a class="nav-link" href="/r/{{ request.sub }}"><button type="button" class="btn btn-sm btn-primary">/r/{{ request.sub }}</button></a>
-				</li>
-				<li class="nav-item active">
-					<a class="nav-link" href="/r/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary">info</button></a>
-				</li>
 				{% if session['username'] %}
 				{% if request.sub in session['blocked_subs'] %}
 				<li class="nav-item">
@@ -73,7 +75,7 @@
 
 				{% else %}
 				<li class="nav-item">
-					<a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-secondary">Create Sub</button></a>
+					<a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-primary">Create Sub +</button></a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/explore/"><button type="button" class="btn btn-sm btn-success">Explore</button></a>

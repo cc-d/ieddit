@@ -5,11 +5,11 @@
 
 <nav class="nav mod-page-controls">
   <a class="nav-link">Mod Controls: </a>
-  <a class="nav-link" href="/r/{{ request.sub }}/mods/">Mod Log</a>
-  <a class="nav-link" href="/r/{{ request.sub }}/mods/banned/">Banned Users</a>
+  <a class="nav-link" href="/r/{{ request.sub }}/mods/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Mod Log</button></a>
+  <a class="nav-link" href="/r/{{ request.sub }}/mods/banned/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Banned Users</button></a>
  {% if request.is_mod %}
-  <a class="nav-link" href="/r/{{ request.sub }}/mods/add/">Manage Mods</a>
-  <a class="nav-link" href="/r/{{ request.sub }}/settings/">Settings</a>
+  <a class="nav-link" href="/r/{{ request.sub }}/mods/add/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Manage Mods</button></a>
+  <a class="nav-link" href="/r/{{ request.sub }}/settings/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Settings</button></a>
 {% endif %}
 </nav>
 
@@ -17,7 +17,7 @@
 <nav class="nav mod-page-controls">
 <p class="nav-link">Mods</p>
 {% for mod in mods %}
-<a style="color: blue;" class="user-icon-link nav-link" href="{{ config.URL }}/u/{{ mod }}"><i class="fa fa-user"></i>[m]{{ mod }}</a>
+<a style="color: lightblue!important;" class="user-icon-link nav-link" href="{{ config.URL }}/u/{{ mod }}"><i class="fa fa-user" style='color: lightblue!important;'></i>[m]{{ mod }}</a>
 {% endfor %}
 </nav>
 
@@ -28,7 +28,7 @@
 <form action='/mod/settings' method='POST'>
 <input type='hidden' name='sub' value='{{ request.sub }}'>
 <ul class="list-group" style="max-width: 20rem;">
-  <li class="list-group-item"><input type='checkbox' name='marknsfw' value='nsfw' {% if nsfw %}checked{% endif %}> Mark All Posts NSFW?</li>
+  <li class="list-group-item rounded" style='border: 1px solid #bbb;'><input type='checkbox' name='marknsfw' value='nsfw' {% if nsfw %}checked{% endif %}> Mark All Posts NSFW?</li>
   <br>
 </ul>
 
@@ -53,11 +53,11 @@
 <div class="input-group mb-3">
   <input type='hidden' name='sub' value='{{ request.sub }}'>
   {% if request.subtitle != None %}
-  <input type="text" style="max-width: 20rem;" name='title' class="form-control" aria-describedby="basic-addon1" value="{{ request.subtitle }}">
+  <input type="text" style="max-width: 20rem;" name='title' class="form-control rounded" aria-describedby="basic-addon1" value="{{ request.subtitle }}">
   {% else %}
-  <input type="text" style="max-width: 20rem;" name='title' class="form-control" placeholder="Example: A place for friends." aria-label="Username" aria-describedby="basic-addon1">
+  <input type="text" style="max-width: 20rem;" name='title' class="form-control rounded" placeholder="Example: A place for friends." aria-label="Username" aria-describedby="basic-addon1">
   {% endif %}
-<button type='submit' class="btn btn-secondary " type="button">Edit Title</button>
+<button type='submit' class="btn btn-primary rounded" style='margin-left: 0.25rem;' type="button">Update Title</button>
 </div>
 </form>
 <div id='display-rules'>
@@ -74,13 +74,12 @@ No Description
 </selftext>
 </div>
 {% if request.is_mod %}
-<div id='rules'>
+<div id='rules' style='margin-top: 1rem;'>
 <form style="margin-left: 1rem;" action='/mod/edit/description' method='POST'>
   <div class="form-group">
-    <label for="exampleFormControlTextarea1"><h3>Edit Description</h3></label>
     <textarea name='rtext' class="form-control safe-markup-text" id="exampleFormControlTextarea1" rows="3" style='width: 450px; resize: both;'>{% if rules %}{{ rules|safe }}{% endif %}</textarea>
   </div>
-  <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary " type="button">Save Info</button>
+  <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary " type="button">Update description</button>
 </form>
 </div>
 <br>
@@ -118,13 +117,13 @@ No Description
 
 
 
-{% if banned %}
+{% if banned != [] and banned != None %}
 <ul class="list-group list-group-horizontal-sm">
 {% for ban in banned %}
 {% if ban.anonymous %}
-<li class="list-group-item">User: Anonymous #{{ ban.id }}
+<li class="list-group-item banned-user">User: Anonymous #{{ ban.id }}
 {% else %}
-<li class="list-group-item">User: {{ ban.username }} 
+<li class="list-group-item banned-user">User: {{ ban.username }} 
 {% endif %}
 	{% if request.is_mod %}
 	<form action='/mod/unban' method='POST'>
@@ -142,6 +141,8 @@ No Description
 </li>
 {% endfor %}
 </ul>
+{% elif banned == [] %}
+<h6 style='margin-left: 1rem;'> no banned users </h6>
 {% endif %}
 
 
@@ -152,19 +153,19 @@ No Description
 <a href="/r/{{ request.sub }}/actions/">view full log</a>
 {% endif %}
 <table class="table table-sm mod-actions-table">
-  <thead>
-    <tr>
-      <th scope="col">Mod</th>
-      <th scope="col">Action</th>
-      <th scope="col">Permalink</th>
+  <thead class='mod-log-table'>
+    <tr class='mod-log-table'>
+      <th scope="col" class='mod-log-table'>Mod</th>
+      <th scope="col" class='mod-log-table'>Action</th>
+      <th scope="col" class='mod-log-table'>Permalink</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody class='mod-log-table'>
 {% for ma in modactions %}
-    <tr>
-      <td><a href="/u/{{ ma.username }}">{{ ma.username }}</a></td>
-      <td>{{ ma.action }}</td>
-      <td><a href="{{ ma.url }}">{{ ma.url}}</a></td>
+    <tr class='mod-log-table'>
+      <td class='mod-log-table'><a href="/u/{{ ma.username }}">{{ ma.username }}</a></td>
+      <td class='mod-log-table'>{{ ma.action }}</td>
+      <td class='mod-log-table'><a href="{{ ma.url }}">{{ ma.url}}</a></td>
     </tr>
  {% endfor %}
   </tbody>
