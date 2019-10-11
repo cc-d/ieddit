@@ -86,11 +86,11 @@ def user_edit_post():
 		if captcha.validate() == False:
 			flash('invalid captcha', 'danger')
 			return redirect('/user/edit/%s/%s/' % (itype, iid))
-		if 'rate_limit' in session and config.RATE_LIMIT == True:
-			rl = session['rate_limit'] - time.time()
-			if rl > 0:
-				flash('rate limited, try again in %s seconds' % str(rl))
-				return redirect('/user/edit/%s/%s/' % (itype, iid))
+#		if 'rate_limit' in session and config.RATE_LIMIT == True:
+#			rl = session['rate_limit'] - time.time()
+#			if rl > 0:
+#				flash('rate limited, try again in %s seconds' % str(rl))
+#				return redirect('/user/edit/%s/%s/' % (itype, iid))
 
 	if itype == 'post':
 		obj = db.session.query(Post).filter_by(id=iid).first()
@@ -198,7 +198,7 @@ def user_uanonymous(username=None):
 def reset_page():
 	return render_template('reset_password.html')
 
-@limiter.limit('2 per hour', methods=['POST'])
+@limiter.limit(['5 per hour'])
 @ubp.route('/password_reset', methods=['POST', 'GET'])
 def password_reset(email=None):
 	if request.method == 'POST':
@@ -223,7 +223,7 @@ def password_reset(email=None):
 		new_reset = Password_reset(username=user.username, rankey=key, expires=datetime.utcnow() + timedelta(hours=1))
 
 		link = config.URL + '/user/password_reset?reset=' + key
-		etext = 'Please visit this link to reset your password for account %s: <a href="%s/user/password_reset?reset=%s">LINK</a>' % (user.username, config.URL, key)
+		etext = 'Please visit this link to reset your password: <a href="%s/user/password_reset?reset=%s">LINK</a>' % (config.URL, key)
 
 		e = send_email(etext=etext, subject='Password Reset', to=email)
 
@@ -264,5 +264,93 @@ def new_reset_password():
 
 	flash('successfully reset password for %s' % username, 'success')
 	return redirect('/login/')
+
+@ubp.route('/preferences/', methods=['GET'])
+def user_preferences():
+	if 'username' not in session:
+		flash('not logged in', 'danger')
+		return redirect('/login/')
+	user = db.session.query(Iuser).filter_by(username=session['username']).first()
+
+	return render_template('preferences.html', user=user)
+
+@ubp.route('/update_preferences', methods=['POST'])
+def user_update_preferences():
+	if 'username' not in session:
+		flash('not logged in', 'danger')
+		return redirect('/login/')	
+
+	user = db.session.query(Iuser).filter_by(username=session['username']).first()
+
+	new_email = request.form.get('new_email')
+	new_password = request.form.get('new_password')
+	con_new_password = request.form.get('con_new_password')
+
+	cur_password = request.form.get('cur_password')
+
+	update_email, update_password = False, False
+
+	if cur_password == None or cur_password == '':
+		flash('enter current password', 'danger')
+		return redirect('/user/preferences/')
+
+	if new_email != None and new_email != '':
+		if len(new_email.split('@')) != 2:
+			flash('invalid email format', 'danger')
+			return redirect('/user/preferences/')
+		else:
+			if len((new_email.split('@')[1]).split('.')) < 2:
+				flash('invalid email format', 'danger')
+				return redirect('/user/preferences/')
+			else:
+				if len(new_email) < 75:
+					update_email = True
+				else:
+					flash('email too long', 'danger')
+					return redirect('/user/preferences/')
+
+	if new_password != None and new_password != '':
+		if new_password == con_new_password:
+			if len(new_password) > 0 and len(new_password) < 200:
+				update_password = True
+			else:
+				flash('invalid password length', 'danger')
+				return redirect('/user/preferences/')
+		else:
+			flash('passwords do not match', 'danger')
+			return redirect('/user/preferences/')
+
+	hashed_pw = user.password
+	if check_password_hash(hashed_pw, cur_password):
+		if update_email:
+			user.email = new_email
+		if update_password:
+			user.password = generate_password_hash(new_password)
+
+		hss = request.form.get('hide_sub_style')
+
+		if user.hide_sub_style == True:
+			if hss == None:
+				user.hide_sub_style = False
+		elif user.hide_sub_style == False:
+			if hss != None:
+				user.hide_sub_style = True
+				
+		session['hide_sub_style'] = user.hide_sub_style
+
+		db.session.add(user)
+		db.session.commit()
+		flash('successfully updated settings', 'success')
+		return redirect('/user/preferences/')
+	else:
+		flash('incorrect current password', 'danger')
+		return redirect('/user/preferences/')
+
+
+
+
+
+
+
 
 

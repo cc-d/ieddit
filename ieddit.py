@@ -78,15 +78,15 @@ def before_request():
 	if 'username' in session:
 		has_messages(session['username'])
 
+	# disabled due to lack of use
 
-	# enabled darkmode by deffault
-	if 'set_darkmode_initial' not in session:
-		session['darkmode'] = True
-		if 'username' in session:
-			u = db.session.query(Iuser).filter_by(username=session['username'])
-			u.darkmode = True
-			db.session.commit()
-		session['set_darkmode_initial'] = True
+	#if 'set_darkmode_initial' not in session:
+	#	session['darkmode'] = True
+	#	if 'username' in session:
+	#		u = db.session.query(Iuser).filter_by(username=session['username'])
+	#		u.darkmode = True
+	#		db.session.commit()
+	#	session['set_darkmode_initial'] = True
 
 
 @app.after_request
@@ -114,7 +114,7 @@ def notbanned(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
 		if 'username' not in session:
-			return redirect('/login')
+			return redirect(url_for('login'))
 		busers = db.session.query(Iuser).filter_by(banned=True).all()
 		bnames = [a.username for a in busers]
 		if session['username'] in bnames:
@@ -271,7 +271,9 @@ def login():
 				[session.pop(key) for key in list(session.keys())]
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
-				session['admin'] = login_user.admin
+				if login_user.admin:
+						session['admin'] = login_user.admin
+				session['hide_sub_style'] = login_user.hide_sub_style
 				if hasattr(login_user, 'anonymous'):
 					if login_user.anonymous:
 						session['anonymous'] = True
@@ -319,8 +321,8 @@ def register():
 			flash('invalid username', 'danger')
 			return redirect(url_for('login'))
 
-		if len(password) > 100:
-			flash('password too long', 'danger')
+		if len(password) > 100 or len(password) < 1:
+			flash('password length invalid', 'danger')
 			return redirect(url_for('login'))
 
 		if email != None and email != '':
@@ -442,7 +444,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		if hasattr(post, 'text'):
 			post.text = pseudo_markup(post.text)
 		if thumb_exists(post.id):
-			post.thumbnail = 'thumb-' + str(post.id) + '.PNG'
+			post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
 
 		post.mods = get_sub_mods(post.sub)
 		post.created_ago = time_ago(post.created)
@@ -538,7 +540,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 			if hasattr(post, 'text'):
 				post.text = pseudo_markup(post.text)
 			if thumb_exists(post.id):
-				post.thumbnail = 'thumb-' + str(post.id) + '.PNG'
+				post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
 			if hasattr(post, 'self_text'):
 				if post.self_text != None:
 					post.self_text = pseudo_markup(post.self_text)
@@ -700,7 +702,7 @@ def create_sub():
 	elif request.method == 'GET':
 		if 'username' not in session:
 			flash('please log in to create subs', 'danger')
-			return redirect('/login/')
+			return redirect(url_for('login'))
 		return render_template('create.html')
 
 @app.route('/u/<username>/', methods=['GET'])
@@ -722,11 +724,22 @@ def view_user(username):
 		c.mods = get_sub_mods(c.sub_name)
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
 		comments_with_posts.append((c, cpost))
+
+
+		if 'user_id' in session:
+			c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
+			if c.has_voted != None:
+				c.has_voted = c.has_voted.vote
+				if Comment.sub_name:
+					if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(Comment.sub_name)).exists()).scalar():
+						Comment.is_mod = True
+					else:
+						Comment.is_mod = False
+
 	return render_template('user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts, userpage=True)
 
 @limiter.limit('25 per minute')
 @app.route('/vote', methods=['GET', 'POST'])
-@notbanned
 def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 	if request.method == 'POST':
 		if post_id == None:
@@ -949,7 +962,7 @@ def create_post(postsub=None):
 	if request.method == 'GET':
 		if 'username' not in session:
 			flash('please log in to create new posts', 'danger')
-			return redirect('/login/')
+			return redirect(url_for('login'))
 		if request.referrer:
 			subref = re.findall('\/r\/([a-zA-z1-9-_]*)', request.referrer)
 		if 'subref' in locals():
@@ -1114,7 +1127,7 @@ def has_messages(username):
 def user_messages(username=None):
 	if 'username' not in session or username == None:
 		flash('not logged in', 'danger')
-		return redirect('/login')
+		return redirect(url_for('login'))
 	else:
 		if session['username'] != username:
 			flash('you are not that user', 'danger')
@@ -1148,7 +1161,7 @@ def user_messages(username=None):
 def reply_message(username=None, mid=None):
 	if 'username' not in session or username == None:
 		flash('not logged in', 'danger')
-		return redirect('/login')
+		return redirect(url_for('login'))
 	if session['username'] != username:
 		flash('you are not that user', 'danger')
 		return redirect('/')
@@ -1175,7 +1188,7 @@ def sendmsg(title, text, sender, sent_to):
 def msg(username=None):
 	if 'username' not in session:
 		flash('not logged in', 'danger')
-		return redirect('/login/')
+		return redirect(url_for('login'))
 	if request.method == 'POST':
 		text = request.form.get('message_text')
 		title = request.form.get('message_title')
@@ -1277,8 +1290,17 @@ def settings(sub=None):
 	sub = normalize_sub(sub)
 	subr = db.session.query(Sub).filter_by(name=sub).first()
 	if request.is_mod:
-		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw)
+		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw, sub_object=subr)
 	return '403'
+
+def get_style(sub=None):
+	if sub != None:
+		sub = db.session.query(Sub).filter_by(name=sub).first()
+		return sub.css
+	return None
+
+app.jinja_env.globals.update(get_style=get_style)
+
 
 def get_blocked_subs(username=None):
 	subs = db.session.query(Sub_block).filter_by(username=session['username']).all()
@@ -1291,7 +1313,7 @@ def get_blocked_subs(username=None):
 def blocksub(sub=None):
 	if 'username' not in session:
 		flash('not logged in', 'error')
-		return redirect('/login')
+		return redirect(url_for('login'))
 	if sub == None:
 		return '500'
 
@@ -1318,6 +1340,7 @@ def blocksub(sub=None):
 	session['blocked_subs'] = bsubs
 
 	return redirect('/r/%s/' % sub)
+
 
 @cache.memoize(600)
 @app.route('/explore/', methods=['GET'])
@@ -1421,6 +1444,17 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 		c.hot = hot(c.ups, c.downs, c.created)
 		c.created_ago = time_ago(c.created)
 
+		if 'user_id' in session:
+			c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
+			if c.has_voted != None:
+				c.has_voted = c.has_voted.vote
+				if Comment.sub_name:
+					if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(Comment.sub_name)).exists()).scalar():
+						Comment.is_mod = True
+					else:
+						Comment.is_mod = False
+
+
 
 	if request.environ['QUERY_STRING'] == '':
 		session['off_url'] = request.url + '?offset=15'
@@ -1467,6 +1501,9 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 			comments.sort(key=lambda x: x.hot, reverse=True)
 
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
+
+
+
 
 
 

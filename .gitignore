@@ -4,6 +4,7 @@ test.db
 real-config.py
 proxies.txt
 static/thumb-*
+static/thumbnails/*
 flask_session/
 sitemap.xml
 static/sitemap.xml

@@ -25,17 +25,16 @@ def create_thumbnail(r, tid):
 	size = 128, 128
 	im.thumbnail(size)
 	#im.save('thumbnails/' + str(tid) + '.JPEG', 'JPEG')
-	im.save('static/thumb-' + str(tid) + '.PNG', 'PNG')
-	r = requests.get('http://127.0.0.1/clear_cache')
+	im.save('static/thumbnails/thumb-' + str(tid) + '.PNG', 'PNG')
+	#r = requests.get('http://127.0.0.1/clear_cache')
 	print(r.text)
 
 def main():
-	#url = 'https://imgur.com/a/LpH5UiD'
-	#tid = 1
 	c = False
 	tid = int(sys.argv[1])
 	url = urllib.parse.unquote(sys.argv[2])
-
+	#url = 'https://i.redd.it/8ex7on41uzq31.png'
+	#tid = 1
 	r = requests.get(url, proxies=config.PROXIES,  allow_redirects=True)
 
 	if r.headers['Content-Type'].split('/')[0] == 'image':
@@ -57,10 +56,11 @@ def main():
 
 		except:
 			try:
-				icon_link = soup.find("link", rel="shortcut icon")
-				r = requests.get(icon_link['href'], proxies=config.PROXIES,  allow_redirects=True)
-				soup = BeautifulSoup(r.text)
-				create_thumbnail(r, tid)
+				raise Exception
+				#icon_link = soup.find("link", rel="shortcut icon")
+				#r = requests.get(icon_link['href'], proxies=config.PROXIES,  allow_redirects=True)
+				#soup = BeautifulSoup(r.text)
+				#create_thumbnail(r, tid)
 			except:
 				i = soup.findall('img')
 				guess = 0

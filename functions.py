@@ -19,8 +19,8 @@ import time
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
 
 def thumb_exists(tid):
-	if os.path.exists('static/thumb-%s.PNG' % str(tid)):
-		if int(os.stat('static/thumb-%s.PNG' % str(tid)).st_size) > 10:
+	if os.path.exists('static/thumbnails/thumb-%s.PNG' % str(tid)):
+		if int(os.stat('static/thumbnails/thumb-%s.PNG' % str(tid)).st_size) > 10:
 			return True
 	return False
 
@@ -146,7 +146,7 @@ def pseudo_markup(text):
 
 	for i in range(len(mtext)):
 		if mtext[i].find('```') != -1:
-			print(mtext[i])
+			#print(mtext[i])
 			if not found:
 				startindex = i
 				start = mtext[i].find('```')
@@ -159,21 +159,6 @@ def pseudo_markup(text):
 				found = False
 				start = 0
 				end = 0
-
-		'''
-		if mtext[i] == "```":
-			if start == 0:
-				start = i
-			else:
-				mtext[start] = mtext[start].replace("```", '<div class="inline-code"><code>')
-	
-				#if first:
-					#mtext[start] = mtext[start] + '</code>'
-					#first = True
-
-				mtext[i] = mtext[i].replace("```", '</code></div>')
-				start = 0
-		'''
 
 	for i in range(len(mtext)):
 		# different variations of possible links, space at start, no
@@ -194,8 +179,12 @@ def pseudo_markup(text):
 		if len(links) > 0:
 			for link in links:
 				mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))	
+	for l in range(len(mtext)):
+		if mtext[l] == '':
+			mtext[l] = '<br>'
 
 	mtext = '\n'.join([x for x in mtext])
+	
 	mtext = mtext.replace('\n<div class="inline-code"><code>\n', '<div class="inline-code"><code>')
 	mtext = mtext.replace('<code>\n', '<code>')
 	mtext = mtext.replace('\n</code></div>\n', '</code></div>')

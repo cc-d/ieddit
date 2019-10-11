@@ -23,11 +23,16 @@ def mod_delete_post():
 					Moderator.sub.like(post.sub)).exists()).scalar()
 	if is_mod:
 		#db.session.delete(post)
-		post.deleted = True
-		mod_action(session['username'], 'delete', post.permalink, post.sub)
+		msg = 'deleted'
+		if post.deleted == True:
+			post.deleted = False
+			msg = 'undeleted'
+		else:
+			post.deleted = True
+		mod_action(session['username'], msg, post.permalink, post.sub)
 		db.session.commit()
 		cache.delete_memoized(get_subi)
-		flash('post deleted', category='success')
+		flash('post %s' % msg, category='success')
 		return redirect(sub_url)
 	else:
 		return '403'
@@ -168,6 +173,11 @@ def mod_ban_user():
 		elif itype == 'comment':
 			obj = db.session.query(Comment).filter_by(id=iid).first()
 		
+		if obj.anonymous:
+			anon = True
+		else:
+			anon = False
+
 		if hasattr(obj, 'sub_name'):
 			is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
 					Moderator.sub.like(obj.sub_name)).exists()).scalar()
@@ -176,7 +186,7 @@ def mod_ban_user():
 					is_mod = True
 			if is_mod != True:
 				return '403'
-			new_ban = Ban(sub=obj.sub_name, username=obj.author)
+			new_ban = Ban(sub=obj.sub_name, username=obj.author, anonymous=anon)
 			sub = obj.sub_name
 			db.session.add(new_ban)
 		else:
@@ -187,7 +197,7 @@ def mod_ban_user():
 					is_mod = True
 			if is_mod != True:
 				return '403'
-			new_ban = Ban(sub=obj.sub, username=obj.author)
+			new_ban = Ban(sub=obj.sub, username=obj.author, anonymous=anon)
 			sub = obj.sub
 			db.session.add(new_ban)
 
@@ -209,6 +219,7 @@ def mod_unban_user():
 
 	username = request.form.get('username')
 	username = normalize_username(username)
+	ban_id = request.form.get('ban_id')
 	sub = request.form.get('sub')
 
 	if 'admin' in session:
@@ -217,7 +228,7 @@ def mod_unban_user():
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
 					Moderator.sub.like(sub)).exists()).scalar()
 	if is_mod:
-		uban = db.session.query(Ban).filter_by(username=username, sub=sub)
+		uban = db.session.query(Ban).filter_by(id=ban_id, sub=sub)
 		uban.delete()
 		db.session.commit()
 		mod_action(session['username'], 'unban', username, sub)
@@ -377,6 +388,8 @@ def mod_title():
 def mod_settings():
 	sub = request.form.get('sub')
 	marknsfw = 	request.form.get('marknsfw')
+	newcss = request.form.get('newcss')
+
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
@@ -394,6 +407,10 @@ def mod_settings():
 				sub.nsfw = True
 		else:
 			sub.nsfw = False
+
+		if newcss != None:
+			if len(newcss) < 20000:
+				sub.css = newcss
 
 		db.session.add(sub)
 		db.session.commit()

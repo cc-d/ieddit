@@ -1,6 +1,7 @@
-.inner-div {
-	border:0px solid green;
+textarea {
+	resize: both;
 }
+
 #sub-dropdown-search{
 	margin-left: 1rem;
 	margin-right: 1rem;
@@ -16,7 +17,7 @@
 .post-row {
 	margin-right: 0px;
 	max-height: 1rem;
-	margin-bottom: 8px;
+	margin-bottom: 0.75rem;
 }
 
 #menu-items {
@@ -31,10 +32,13 @@
 .post-image {
 	margin-left: 0.5rem;
 	margin-right: 0.5rem!important;
+	min-height: 1.5rem;
+	min-width: 1.5rem;
 	max-height: 5rem;
 	max-width: 5rem;
 }
 .post-image-container {
+	min-height: 6rem;
 	min-width: 6rem;
 }
 
@@ -47,6 +51,27 @@
 	}
 	.sub-post-comment-page {
 		margin-left: 0.5rem;
+	}
+}
+
+#logout-right {
+    margin-right: -1rem;
+    float: right;
+    margin-left: 1rem;
+	font-size: 80%;
+    margin-top: 0.25rem;
+}
+
+#logout-left {
+	display: none;
+}
+
+@media only screen and (max-width: 992px) {
+	#logout-right {
+		display: none;
+	}
+	#logout-left {
+		display: inline-block;
 	}
 }
 
@@ -135,6 +160,7 @@
 }
 
 .user-icon-link {
+	margin-left: 0.25rem;
 	text-decoration: none;
 	color: #212529}
 
@@ -182,10 +208,13 @@
 .top-sort {
 	margin-right: 0.25rem;
 	margin-top: 0.25rem;
+	background-color: transparent;
 }
+
 #prev-button {
-float: left;
+	float: left;
 }
+
 #display-rules {
 	margin-left: 1rem;
 	white-space: inherit;
@@ -273,7 +302,7 @@ ul, li{
 }
 
 selftext {
-	white-space: pre-wrap;
+	white-space: normal/*pre-wrap*/;
 	max-height: 200rem;
 	overflow: hidden;
 	word-break: break-word;
@@ -323,7 +352,6 @@ blockquote {
 	margin-bottom: 0.25rem;
 	border: 1px solid gray;
 	word-break: break-word;
-	min-height: 128px;
 }
 
 .comment-link {
@@ -347,7 +375,7 @@ blockquote {
 }
 
 .comment-text-text {
-	white-space: pre-wrap;
+	white-space: /*pre-wrap*/ normal;
 	word-break: break-word;
 	max-height: 100rem;
 	overflow: hidden;
@@ -451,9 +479,11 @@ blockquote {
 }
 
 #footer {
-	margin-top: 5rem;
-	margin-bottom: 2rem;
 	text-align: center;
+	width: 350px;
+    margin: 0 auto;
+    margin-top: 5rem;
+    margin-bottom: 2rem;
 }
 
 #footer p {
@@ -472,9 +502,15 @@ blockquote {
 	width: -webkit-fill-available;
 }
 
-.col.inner-div {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	width: 265px;
+ul {
+	list-style-type: disc;
+}
+
+.comment-selftext-wrapper {
+	min-height: 50px;
+	margin-bottom: 0.25rem;
+}
+
+.preference-option {
+	margin-left: 1.5rem;
 }

@@ -85,7 +85,7 @@
     {% if post.remote_image_url or post.self_text %}
     <div class='expanded-post' id='post-{{ post.id }}' style='display: none;'>
     {% if post.remote_image_url %}
-        <img class='expanded-post-image' id='expand-src-{{ post.id }}' realsrc="{{ post.remote_image_url }}" >
+       <a href="{{ post.remote_image_url }}"><img class='expanded-post-image' id='expand-src-{{ post.id }}' realsrc="{{ post.remote_image_url }}" ></a>
     {% else %}
         <div class='expanded-selftext rounded'>
             <div class='inner-selftext-wrapper'>
@@ -153,9 +153,15 @@
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>
                         {% if post.locked == True %}unlock{% else %}lock{% endif %}</button>
                     </form>|
+                {% if post.deleted == False %}
                     <form action='{{ config.URL }}/mod/delete/post' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|
+                {% else %}
+                    <form action='{{ config.URL }}/mod/delete/post' method='POST' class='post-mod-option-form post-mod-delete-form'>
+                        <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>undelete</button>
+                    </form>|
+                {% endif %}
                     <form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <input name='iid' type='hidden' value='{{ post.id }}'>
                         <input name='itype' type='hidden' value='post'>
@@ -170,11 +176,11 @@
 {% if loop.last %}
 
 {% if session.prev_off_url %}
-<a href="{{ session.prev_off_url }}" id="prev-button" class="sub-posts-next"><button type="button" class="btn btn-outline-secondary btn-background">prev</button></a>
+<a href="{{ session.prev_off_url }}" id="prev-button" class="sub-posts-next"><button type="button" class="btn btn-secondary ">prev</button></a>
 
 {% endif %}
 {% if post.more %}
-<a href="{{ session.off_url }}" class="sub-posts-next"><button type="button" class="btn btn-outline-secondary btn-background">next</button></a>
+<a href="{{ session.off_url }}" class="sub-posts-next"><button type="button" class="btn btn-secondary ">next</button></a>
 {% endif %}
 {% endif %}
 {% endif %}
