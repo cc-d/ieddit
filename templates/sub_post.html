@@ -119,7 +119,7 @@
                     <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>edit</button>
                 </a>|
             {% endif %}
-            {% if session['username'] not in post.author %}
+            {% if session['username'] == post.author %}
             <form action='{{ config.URL }}/user/delete/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                 <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
             </form>|
@@ -127,7 +127,7 @@
             {% if post.nsfw == False %}
                 <form action='{{ config.URL }}/user/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                     <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>nsfw</button>
-                </form>|
+                </form>
             {% endif %}
         {% endif %}
         {% if session['username'] in post.mods %}
@@ -138,6 +138,7 @@
 {#                </form>|#}
 {#            {% endif %}#}
             {% if post.stickied == False %}
+            |
                 <form action='{{ config.URL }}/mod/sticky/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                     <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
                 </form>|
