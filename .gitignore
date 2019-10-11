@@ -9,3 +9,4 @@ flask_session/
 sitemap.xml
 static/sitemap.xml
 .idea
+config.py
