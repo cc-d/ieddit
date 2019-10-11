@@ -11,8 +11,11 @@ textarea {
 }
 
 .user-opt {
-	display: contents;
 	margin-right: 0.5rem;
+}
+
+.user-options-comments {
+	display: contents;
 }
 
 .post-row {
@@ -86,6 +89,10 @@ textarea {
 .generic-alert {
 	padding-left: 1rem;
 	padding-right: 1rem;
+}
+
+.comment-reply {
+	margin-right: 0.75rem;
 }
 
 .comment-reply-box-wrapper {
@@ -357,7 +364,6 @@ blockquote {
 
 .comment-link {
 	color: #212529;
-	margin-right: 1rem;
 }
 
 .fa-arrow-up {
@@ -421,7 +427,6 @@ blockquote {
 	margin: 0;
 }
 .user-options {
-	display: contents;
 	margin-left: -5rem;
 }
 #user-recent {
@@ -528,7 +533,9 @@ ul {
 	border: 2px solid #982b2b!important;
 }
 
-.recent {margin-left:163px}
+.recent {
+	margin-left: 0rem;
+}
 
 .mod-page-button {
 	margin-left: -0.75rem;

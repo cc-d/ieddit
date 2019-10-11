@@ -89,26 +89,6 @@
 </div>
 			<div class="inner-div">
 				<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
-			{% if session['username'] == post.author %}
-			<div class='mod-option-wrapper user-options'>
-				<small>
-					{% if post.self_text %}
-					<a href='{{ config.URL }}/user/edit/post/{{ post.id }}/' class='post-mod-option-form post-mod-sticky-form'>
-						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>edit</button>
-					</a>
-					{% endif %}
-					<form action='{{ config.URL }}/user/delete/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
-					</form>
-					{% if nsfw == False %}
-					<form action='{{ config.URL }}/user/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>nsfw</button>
-					</form>
-					{% endif %}
-				</small>
-			</div>
-			{% endif %}
-
 
 			{% if post.nsfw %}
 			<p class='nsfw'>nsfw</p>
@@ -119,7 +99,23 @@
 			</div>
 			{% if session['username'] in post.mods %}
 			<div class='mod-option-wrapper'><small>
-				{% if post.nsfw == False %}
+					{% if post.self_text %}
+					{% if session['username'] == post.author %}
+					<a href='{{ config.URL }}/user/edit/post/{{ post.id }}/' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>edit</button>
+					</a> |
+					{% endif %}
+					{% endif %}
+
+					<form action='{{ config.URL }}/user/delete/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
+					</form> |
+					{% if post.nsfw == False and session['username'] == post.author %}
+					<form action='{{ config.URL }}/user/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>nsfw</button>
+					</form> |
+					{% endif %}
+				{% if post.nsfw == False and session['username'] != post.author %}
 					<form action='{{ config.URL }}/mod/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
 						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>nsfw</button>
 					</form>|
@@ -137,11 +133,11 @@
 						<button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>
 						{% if post.locked == True %}unlock{% else %}lock{% endif %}</button>
 					</form>|
-                {% if post.deleted == False %}
+                {% if post.deleted == False and session['username'] != post.author %}
                     <form action='{{ config.URL }}/mod/delete/post' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
                     </form>|
-                {% else %}
+                {% elif post.deleted == True %}
                     <form action='{{ config.URL }}/mod/delete/post' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>undelete</button>
                     </form>|
@@ -298,7 +294,7 @@
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>
 				{% endif %}
 			{% if session['username'] == comment.author %}
-			<div class='mod-option-wrapper user-options'>
+			<div class='mod-option-wrapper user-options user-options-comments'>
 				<small>
 					<a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
 						<button type='submit' class='mod-option-button'>edit</button>

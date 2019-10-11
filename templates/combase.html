@@ -65,10 +65,10 @@
 {% endif %}
             </div>
             <a class="comment-link comment-reply" href="{{ comment.permalink }}" comment_id="{{ comment.id }}">reply</a>
-            <small>
-                <div class='mod-option-wrapper user-options'>
+        </div>
+{% if session['username'] == comment.author or session['username'] in comment.mods %}
+<small>
 
-{% if session['username'] == comment.author %}
                 <div class='mod-option-wrapper user-options recent'>
                     <a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
                         <button type='submit' class='mod-option-button'>edit</button>
@@ -94,15 +94,14 @@
                         <button type='submit' name='post_id' value='{{ post.author }}' class='mod-option-button post-delete-button'>ban</button>
                     </form>
                 </div>
-{% endif %}
                 </div>
             </small>
-        </div>
+{% endif %}
     </div>
 </li>
 
-{% if no_posts %}
-</div>
+{% if no_posts and userpage == False %}
+    </div>
 {% endif %}
 
 {% endif %}
