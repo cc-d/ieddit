@@ -15,7 +15,7 @@
 <ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
 {% endif %}
 {% else %}
-<ul class="list-unstyled sub-list rounded poooo{{ 'nsfwpost' if post.nsfw else 'gahNotNSQF'}}" style="margin-top: 0px;">
+<ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
 {% endif %}
 
   <li class="media sub-post rounded">
@@ -119,9 +119,11 @@
                     <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>edit</button>
                 </a>|
             {% endif %}
+            {% if session['username'] not in post.author %}
             <form action='{{ config.URL }}/user/delete/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                 <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
             </form>|
+                {% endif %}
             {% if post.nsfw == False %}
                 <form action='{{ config.URL }}/user/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
                     <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>nsfw</button>
