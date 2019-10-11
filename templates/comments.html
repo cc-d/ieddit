@@ -50,7 +50,7 @@
 			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauthor }}">{{ pauthor }}</a>
 			{% endif %}
 			</small>
-					<small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/r/{{ post.sub }}">/r/{{ post.sub }}</a></small>
+					<small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/i/{{ post.sub }}">/i/{{ post.sub }}</a></small>
 					<small class="created-ago"><a class="comment-link" href="{{ post.permalink }}">{{ post.created_ago }}</a></small>
 				</div>
 			</div>
@@ -88,7 +88,7 @@
 	{% endif %}
 </div>
 			<div class="inner-div">
-				<a class="comment-link left-of-mod-options" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
+				<a class="comment-link left-of-mod-options" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
 {% if session['username'] == post.author %}
 			<div class='mod-option-wrapper comment-mod-options'><small>
 					{% if post.self_text %}
@@ -260,14 +260,14 @@
 			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
 			{% endif %}
 			</small>
-			<a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
+			<a href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
 				<small class="created-ago comment-link">{{ comment.created_ago }}</small>
 			</a>
 			<small class="created-ago">
 			{% if comment.parent_id != None %}
-			<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
+			<a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
 			{% else %}
-			<a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
+			<a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
 			{% endif %}parent</a>
 				</small><small class="created-ago">
 
@@ -310,7 +310,7 @@
 			</div>
 			{% endif %}
 				{% if loop.depth0 == 4 and value|length > 0 %}
-					<a class="comment-link  comment-more" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
+					<a class="comment-link  comment-more" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
 						more>>
 					</a>
 				{% endif %}

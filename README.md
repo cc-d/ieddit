@@ -52,7 +52,7 @@ If you're familiar with reddit, you already know how to use this site.  Whenever
 
 When creating a post, users have the option between creating a post with text, or a url. Every post must go to a sub.
 
-The index page contains all posts from all subs that are not marked nsfw. /r/all contains all posts, including those that are not safe for work.
+The index page contains all posts from all subs that are not marked nsfw. /i/all contains all posts, including those that are not safe for work.
 
 Users can vote up/down posts and comments. The higher vote total a post/comment has, the higher it appears on the page.
 

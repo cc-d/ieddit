@@ -5,11 +5,11 @@
 
 <nav class="nav mod-page-controls">
   <a class="nav-link">Mod Controls: </a>
-  <a class="nav-link" href="/r/{{ request.sub }}/mods/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Mod Log</button></a>
-  <a class="nav-link" href="/r/{{ request.sub }}/mods/banned/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Banned Users</button></a>
+  <a class="nav-link" href="/i/{{ request.sub }}/mods/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Mod Log</button></a>
+  <a class="nav-link" href="/i/{{ request.sub }}/mods/banned/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Banned Users</button></a>
  {% if request.is_mod %}
-  <a class="nav-link" href="/r/{{ request.sub }}/mods/add/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Manage Mods</button></a>
-  <a class="nav-link" href="/r/{{ request.sub }}/settings/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Settings</button></a>
+  <a class="nav-link" href="/i/{{ request.sub }}/mods/add/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Manage Mods</button></a>
+  <a class="nav-link" href="/i/{{ request.sub }}/settings/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Settings</button></a>
 {% endif %}
 </nav>
 
@@ -150,7 +150,7 @@ No Description
 <div style="margin-left: 1rem;">
 {% if allactions %}
 {% else %}
-<a href="/r/{{ request.sub }}/actions/">view full log</a>
+<a href="/i/{{ request.sub }}/actions/">view full log</a>
 {% endif %}
 <table class="table table-sm mod-actions-table">
   <thead class='mod-log-table'>

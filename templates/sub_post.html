@@ -60,7 +60,7 @@
     		<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">{{ pauther }}</a>
             {% endif %}
             </small>
-            <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/r/{{ post.sub }}">/r/{{ post.sub }}</a></small>
+            <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/i/{{ post.sub }}">/i/{{ post.sub }}</a></small>
             <small class="created-ago"><a class="comment-link" href="{{ post.permalink }}">{{ post.created_ago }}</a></small>
     	</div>
     </div>
@@ -78,8 +78,8 @@
     <a class="sub-post-title-link" href="{{ post.url }}">{{ post.title }}</a>
         <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
     {% else %}
-    <a class="sub-post-title-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.title }}</a>
-        <small><a href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">(self.text)</a></small>
+    <a class="sub-post-title-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.title }}</a>
+        <small><a href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">(self.text)</a></small>
     {% endif %}
     </div>
     {% if post.remote_image_url or post.self_text %}
@@ -109,7 +109,7 @@
             <a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
             {% endif %}
         </div>
-        <a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
+        <a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
         <div class='mod-option-wrapper user-options next-to-comments'><small>
         {% if session['username'] == post.author %}
         

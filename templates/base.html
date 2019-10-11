@@ -21,7 +21,7 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='darkmode.css') }}?212">
 
 	{% if request.sub and request.sub != 'all' %}
-	<title>/r/{{ request.sub}} {% if request.subtitle != None %} - {{ request.subtitle }}{% endif %}</title>
+	<title>/i/{{ request.sub}} {% if request.subtitle != None %} - {{ request.subtitle }}{% endif %}</title>
 
 	{% if session['hide_sub_style'] != True %}
 	{% set substyle = get_style(request.sub) %}
@@ -46,10 +46,10 @@
 
 				{% if request.sub and request.sub != 'all' %}
 				<li class="nav-item active" style="margin-top: 0.25rem;">
-					<a class="nav-link" href="/r/{{ request.sub }}">/r/{{ request.sub }}</a>
+					<a class="nav-link" href="/i/{{ request.sub }}">/i/{{ request.sub }}</a>
 				</li>
 				<li class="nav-item active">
-					<a class="nav-link" href="/r/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary">information</button></a>
+					<a class="nav-link" href="/i/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary">information</button></a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success">Create Post +</button></a>
@@ -59,7 +59,7 @@
 					<a class="nav-link" href="/about/">about</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="/r/all"><button type="button" class="btn btn-sm btn-danger">/r/all</button></a>
+					<a class="nav-link" href="/i/all"><button type="button" class="btn btn-sm btn-danger">/i/all</button></a>
 				</li>
 				{% endif %}
 
@@ -67,11 +67,11 @@
 				{% if session['username'] %}
 				{% if request.sub in session['blocked_subs'] %}
 				<li class="nav-item">
-					<a class="nav-link" href="/r/{{ request.sub }}/block"><button type="button" class="btn btn-sm btn-danger">unblock</button></a>
+					<a class="nav-link" href="/i/{{ request.sub }}/block"><button type="button" class="btn btn-sm btn-danger">unblock</button></a>
 				</li>
 				{% else %}
 				<li class="nav-item">
-					<a class="nav-link" href="/r/{{ request.sub }}/block"><button type="button" class="btn btn-sm btn-danger">block</button></a>
+					<a class="nav-link" href="/i/{{ request.sub }}/block"><button type="button" class="btn btn-sm btn-danger">block</button></a>
 				</li>
 				{% endif %}
 				{% endif %}

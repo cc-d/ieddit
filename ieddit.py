@@ -61,8 +61,8 @@ def before_request():
 
 	uri = request.environ['REQUEST_URI']
 	if len(uri) > 2:
-		if uri[:3] == '/r/':
-			getsub = re.findall('\/r\/([a-zA-Z1-9-_]*)', request.environ['REQUEST_URI'])
+		if uri[:3] == '/i/':
+			getsub = re.findall('\/i\/([a-zA-Z1-9-_]*)', request.environ['REQUEST_URI'])
 			if len(getsub) > 0:
 				if getsub[0] != 'all':
 					getsub[0] = normalize_sub(getsub[0])
@@ -449,7 +449,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		post.mods = get_sub_mods(post.sub)
 		post.created_ago = time_ago(post.created)
 		if subi != 'all':
-			post.site_url = config.URL + '/r/' + subi + '/' + str(post.id) + '/' + post.inurl_title
+			post.site_url = config.URL + '/i/' + subi + '/' + str(post.id) + '/' + post.inurl_title
 		post.remote_url_parsed = post_url_parse(post.url)
 		post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
 		if 'user_id' in session and 'username' in session:
@@ -461,7 +461,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		p.append(post)
 	return p
 
-@app.route('/r/<subi>/')
+@app.route('/i/<subi>/')
 def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, show_top=True, s=None, d=None):
 	offset = request.args.get('offset')
 	d = request.args.get('d')
@@ -589,10 +589,10 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
 	return comments, post, parent_comment
 
-@app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/sort-<sort_by>')
-@app.route('/r/<sub>/<post_id>/<inurl_title>/<comment_id>/')
-@app.route('/r/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
-@app.route('/r/<sub>/<post_id>/<inurl_title>/')
+@app.route('/i/<sub>/<post_id>/<inurl_title>/<comment_id>/sort-<sort_by>')
+@app.route('/i/<sub>/<post_id>/<inurl_title>/<comment_id>/')
+@app.route('/i/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
+@app.route('/i/<sub>/<post_id>/<inurl_title>/')
 def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
 	if sub == None or post_id == None or inurl_title == None:
 		if not comments_only:
@@ -619,7 +619,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 
 	tree = comment_structure(comments, tree)
 	return render_template('comments.html', comments=comments, post_id=post_id, 
-		post_url='%s/r/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), 
+		post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), 
 		post=post, tree=tree, parent_comment=parent_comment)
 
 # need to entirely rewrite how comments are handled once everything else is complete
@@ -693,7 +693,7 @@ def create_sub():
 			cache.delete_memoized(get_subi)
 			set_rate_limit()
 			flash('You have created a new sub! Mod actions are under the "info" tab.', 'success')
-			return redirect(config.URL + '/r/' + subname, 302)
+			return redirect(config.URL + '/i/' + subname, 302)
 
 		if verify_subname(subname) == False:
 			flash('Invalid sub name. Valid Characters are A-Z 1-9 - _ ')
@@ -938,7 +938,7 @@ def create_post(postsub=None):
 			#call(['python3', 'get_thumbnail.py', str(new_post.id), urllib.parse.quote(url)])
 			_thread.start_new_thread(os.system, ('python3 get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
 
-		new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
+		new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 		if is_admin(session['username']) and anonymous == False:
 			new_post.author_type = 'admin'
 		elif is_mod(new_post, session['username']) and anonymous == False:
@@ -964,7 +964,7 @@ def create_post(postsub=None):
 			flash('please log in to create new posts', 'danger')
 			return redirect(url_for('login'))
 		if request.referrer:
-			subref = re.findall('\/r\/([a-zA-z1-9-_]*)', request.referrer)
+			subref = re.findall('\/i\/([a-zA-z1-9-_]*)', request.referrer)
 		if 'subref' in locals():
 			if len(subref) == 1:
 				if len(subref[0]) > 0:
@@ -992,7 +992,7 @@ def get_sub_list():
 		sublinks = []
 		for s in subs:
 			sublinks.append('<a class="dropdown-item sublist-dropdown"' +
-			' href="javascript:setSub(\'%s\')">/r/%s</a>' % (s.name, s.name))
+			' href="javascript:setSub(\'%s\')">/i/%s</a>' % (s.name, s.name))
 		return '\n'.join(sublinks)
 	else:
 		return ''
@@ -1223,7 +1223,7 @@ def msg(username=None):
 				flash('invalid username')
 				return redirect('/')
 		if request.referrer:
-			ru = re.findall('\/r\/([a-zA-z1-9-_]*)', request.referrer)
+			ru = re.findall('\/i\/([a-zA-z1-9-_]*)', request.referrer)
 			if ru != None:
 				if len(ru) == 1:
 					if len(ru[0]) > 0:
@@ -1231,7 +1231,7 @@ def msg(username=None):
 		return render_template('message_reply.html', sendto=username, message=None)
 
 
-@app.route('/r/<sub>/mods/', methods=['GET'])
+@app.route('/i/<sub>/mods/', methods=['GET'])
 def submods(sub=None):
 	sub = normalize_sub(sub)
 	modactions = db.session.query(Mod_action).filter_by(sub=sub).limit(5).all()
@@ -1239,7 +1239,7 @@ def submods(sub=None):
 		modactions = [m for m in modactions]
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions)
 
-@app.route('/r/<sub>/actions/', methods=['GET'])
+@app.route('/i/<sub>/actions/', methods=['GET'])
 def subactions(sub=None):
 	sub = normalize_sub(sub)
 	modactions = db.session.query(Mod_action).filter_by(sub=sub).all()
@@ -1248,7 +1248,7 @@ def subactions(sub=None):
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions, allactions=True)
 
 
-@app.route('/r/<sub>/mods/banned/', methods=['GET'])
+@app.route('/i/<sub>/mods/banned/', methods=['GET'])
 def bannedusers(sub=None):
 	sub = normalize_sub(sub)
 	banned = db.session.query(Ban).filter_by(sub=sub).all()
@@ -1258,7 +1258,7 @@ def bannedusers(sub=None):
 		banned = []
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), banned=banned)
 
-@app.route('/r/<sub>/mods/add/', methods=['GET'])
+@app.route('/i/<sub>/mods/add/', methods=['GET'])
 def addmod(sub=None):
 	sub = normalize_sub(sub)
 	if hasattr(request, 'is_mod'):
@@ -1266,7 +1266,7 @@ def addmod(sub=None):
 			return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
 	return '403'
 
-@app.route('/r/<sub>/mods/remove/', methods=['GET'])
+@app.route('/i/<sub>/mods/remove/', methods=['GET'])
 def removemod(sub=None):
 	sub = normalize_sub(sub)
 	if hasattr(request, 'is_mod'):
@@ -1274,7 +1274,7 @@ def removemod(sub=None):
 			return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
 	return '403'
 
-@app.route('/r/<sub>/info/', methods=['GET'])
+@app.route('/i/<sub>/info/', methods=['GET'])
 def description(sub=None):
 	sub = normalize_sub(sub)
 	subr = db.session.query(Sub).filter_by(name=sub).first()
@@ -1287,7 +1287,7 @@ def description(sub=None):
 			rtext = False
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
 
-@app.route('/r/<sub>/settings/', methods=['GET'])
+@app.route('/i/<sub>/settings/', methods=['GET'])
 def settings(sub=None):
 	sub = normalize_sub(sub)
 	subr = db.session.query(Sub).filter_by(name=sub).first()
@@ -1311,7 +1311,7 @@ def get_blocked_subs(username=None):
 	else:
 		return []
 
-@app.route('/r/<sub>/block', methods=['GET'])
+@app.route('/i/<sub>/block', methods=['GET'])
 def blocksub(sub=None):
 	if 'username' not in session:
 		flash('not logged in', 'error')
@@ -1341,7 +1341,7 @@ def blocksub(sub=None):
 
 	session['blocked_subs'] = bsubs
 
-	return redirect('/r/%s/' % sub)
+	return redirect('/i/%s/' % sub)
 
 
 @cache.memoize(600)
@@ -1380,7 +1380,7 @@ def about():
 
 
 @app.route('/comments/', methods=['GET'])
-@app.route('/r/<sub>/comments/', methods=['GET'])
+@app.route('/i/<sub>/comments/', methods=['GET'])
 def subcomments(sub=None, offset=0, limit=15, s=None):
 	# code is copy pasted from user page... the post stuff can probably be gotten rid of.
 	# the username stuff can be gotten rid of too
