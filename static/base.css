@@ -216,7 +216,7 @@ textarea {
 .top-sort {
 	margin-right: 0.25rem;
 	margin-top: 0.25rem;
-	background-color: transparent;
+	background-color: #343a40!important;
 }
 
 #prev-button {
