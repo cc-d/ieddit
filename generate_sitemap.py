@@ -32,7 +32,7 @@ def main():
 
 	subs = db.session.query(Sub).all()
 	for s in subs:
-		links.append(gl(config.URL + '/r/' + s.name + '/', priority=0.9))
+		links.append(gl(config.URL + '/i/' + s.name + '/', priority=0.9))
 
 	posts = db.session.query(Post).all()
 	for post in posts:

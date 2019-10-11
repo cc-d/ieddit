@@ -15,7 +15,7 @@ def mod_delete_post():
 		return redirect(url_for('login'))
 	pid = request.form.get('post_id')
 	post = db.session.query(Post).filter_by(id=pid).first()
-	sub_url = config.URL + '/r/' + post.sub
+	sub_url = config.URL + '/i/' + post.sub
 	if 'admin' in session:
 		is_mod = True
 	else:
@@ -89,7 +89,7 @@ def mod_sticky_post():
 		cache.clear()
 		mod_action(session['username'], 'stickied', post.permalink, post.sub)
 		flash('stickied post', category='success')
-		return redirect(config.URL + '/r/' + post.sub)
+		return redirect(config.URL + '/i/' + post.sub)
 	else:
 		return '403'
 
@@ -115,7 +115,7 @@ def mod_unsticky_post():
 		cache.delete_memoized(get_subi)
 		cache.clear()
 		flash('unstickied post', category='success')
-		return redirect(config.URL + '/r/' + post.sub)
+		return redirect(config.URL + '/i/' + post.sub)
 	else:
 		return '403'
 
@@ -207,7 +207,7 @@ def mod_ban_user():
 		cache.delete_memoized(get_subi)
 		cache.clear()
 		flash('banned ' + obj.author + ' from ' + sub, category='success')
-		return redirect(config.URL + '/r/' + sub)
+		return redirect(config.URL + '/i/' + sub)
 	else:
 		return '403'
 
@@ -233,7 +233,7 @@ def mod_unban_user():
 		db.session.commit()
 		mod_action(session['username'], 'unban', username, sub)
 		flash('unbanned ' + username, 'success')
-		return redirect('/r/' + sub + '/mods/banned/')
+		return redirect('/i/' + sub + '/mods/banned/')
 
 @bp.route('/add', methods=['POST'])
 def mod_addmod():
@@ -248,7 +248,7 @@ def mod_addmod():
 	username = username.username
 	if db.session.query(Moderator).filter(func.lower(Moderator.username) == func.lower(username), Moderator.sub == sub).first() != None:
 		flash('Mod already added', 'error')
-		return redirect('/r/%s/mods/' % sub)
+		return redirect('/i/%s/mods/' % sub)
 
 	if 'admin' in session:
 		is_mod = True
@@ -269,7 +269,7 @@ def mod_addmod():
 		cache.delete_memoized(get_sub_mods)
 		cache.clear()
 		flash('new moderator ' + username, 'succes')
-		return redirect('/r/' + sub + '/mods/')
+		return redirect('/i/' + sub + '/mods/')
 	else:
 		return '403'
 
@@ -283,7 +283,7 @@ def mod_removemod():
 	sub = request.form.get('sub')
 	if not username:
 		flash ('invalid username', 'error')
-		return redirect('/r/' + sub + '/mods/')
+		return redirect('/i/' + sub + '/mods/')
 
 	if 'admin' in session:
 		is_mod = True
@@ -297,14 +297,14 @@ def mod_removemod():
 
 		if delmod.rank < you.rank:
 			flash('cannot delete mod of higher rank')
-			return redirect('/r/' + sub + '/mods/')
+			return redirect('/i/' + sub + '/mods/')
 
 		db.session.query(Moderator).filter_by(username=delmod.username, sub=sub).delete()
 		db.	session.commit()
 		cache.delete_memoized(get_sub_mods)
 		cache.clear()
 		flash('deleted mod')
-		return redirect('/r/' + sub + '/mods/')
+		return redirect('/i/' + sub + '/mods/')
 
 @bp.route('/edit/description', methods=['POST'])
 def mod_editrules():
@@ -329,7 +329,7 @@ def mod_editrules():
 		db.session.commit()
 		cache.clear()
 		flash('successfully updated description')
-		return(redirect('/r/' + sub + '/info/'))
+		return(redirect('/i/' + sub + '/info/'))
 	else:
 		return '403'
 
@@ -380,7 +380,7 @@ def mod_title():
 		db.session.commit()
 		flash('successfully updated title')
 		cache.clear()
-		return(redirect('/r/' + sub + '/info/'))
+		return(redirect('/i/' + sub + '/info/'))
 	else:
 		return '403'
 
@@ -416,6 +416,6 @@ def mod_settings():
 		db.session.commit()
 		flash('successfully updated settings', 'success')
 		cache.clear()
-		return(redirect('/r/' + sub.name + '/info/'))
+		return(redirect('/i/' + sub.name + '/info/'))
 	else:
 		return '403'

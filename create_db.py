@@ -91,7 +91,7 @@ new_post = Post(url='https://google.com', title='Test Title', inurl_title=conver
  author_type='mod', stickied=True)
 db.session.add(new_post)
 db.session.commit()
-new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
+new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 db.session.commit()
 test_perma = new_post.permalink
 fp = new_post
@@ -102,7 +102,7 @@ for i in range(50):
 		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='url', author_type='mod')
 	db.session.add(new_post)
 	db.session.commit()
-	new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
+	new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 	db.session.commit()
 for i in range(50):
 	title = fake.text()[:randint(10,200)]
@@ -110,7 +110,7 @@ for i in range(50):
 		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='self_post', author_type='mod')
 	db.session.add(new_post)
 	db.session.commit()
-	new_post.permalink = config.URL + '/r/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
+	new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 	db.session.commit()
 
 db.session.commit()
