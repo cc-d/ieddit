@@ -110,12 +110,9 @@
             {% endif %}
         </div>
         <a class="comment-link" href="{{ config.URL }}/r/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.comment_count }} comments</a>
-    </div>
-    <small>
-        {% if session['username'] == post.author or session['username'] in post.mods %}
-            <div class='mod-option-wrapper user-options'>
-        {% endif %}
+        <div class='mod-option-wrapper user-options next-to-comments'><small>
         {% if session['username'] == post.author %}
+        
             {% if post.self_text %}
                 <a href='{{ config.URL }}/user/edit/post/{{ post.id }}/' class='post-mod-option-form post-mod-sticky-form'>
                     <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>edit</button>
@@ -134,12 +131,11 @@
                     <button type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>nsfw</button>
                 </form>
             {% endif %}
-            {% if session['username'] == post.author or session['username'] in post.mods %}
-            |
-            {% endif %}
-
         {% endif %}
+        </small></div>
+    </div>
         {% if session['username'] in post.mods %}
+        <div class='mod-option-wrapper user-options user-options-mod-post'><small>
             {% if session['username'] != post.author %}
             {% if post.nsfw == False  and post.author %}
                 <form action='{{ config.URL }}/mod/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
@@ -176,9 +172,10 @@
                 <input name='itype' type='hidden' value='post'>
                 <button type='submit' name='post_id' value='{{ pauther }}' class='mod-option-button post-delete-button'>ban</button>
             </form>
-            </div>
+            </small>
+        </div>
+
         {% endif %}
-        </small>
   </li>
 </ul>
 {% if loop is defined %}

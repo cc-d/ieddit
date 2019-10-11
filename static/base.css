@@ -429,6 +429,18 @@ blockquote {
 .user-options {
 	margin-left: -5rem;
 }
+.user-options-mod-post {
+	margin-left: 0rem;
+}
+
+.comment-mod-options {
+	display: contents;
+}
+
+.left-of-mod-options {
+	margin-right: 1rem;
+}
+
 #user-recent {
 	margin-top: 3rem;
 	border-top: 1px solid black;
@@ -535,6 +547,10 @@ ul {
 
 .recent {
 	margin-left: 0rem;
+}
+
+.next-to-comments {
+	margin-left: 1rem;
 }
 
 .mod-page-button {
