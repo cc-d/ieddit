@@ -17,7 +17,7 @@ import os
 fake = Faker()
 
 if config.DB_TYPE == 'postgres':
-	if config.USE_RECREATE:
+	if config.USE_RECREATE == False:
 		conn = psycopg2.connect(host=config.PG_HOST, database=config.DATABASE, user=config.PG_USER, password=config.PG_PASSWORD)
 		conn.set_session(autocommit=True)
 		cur = conn.cursor()
