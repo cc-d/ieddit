@@ -16,7 +16,7 @@
 <a href="/user/preferences/"><button type="button" class="btn btn-sm btn-secondary user-opt">preferences</button></a>
 
 <a href="/user/pgp/"><button type="button" class="btn btn-sm btn-secondary user-opt">pgp</button></a>
-
+</div>
 <!-- Disabled for now due to lack of use 
 <form action='/user/darkmode' method='POST'>
 {% if vuser.darkmode == False and session['darkmod'] != True %}
@@ -57,7 +57,7 @@
 </ul>
 {% endif %}
 <div id='user-recent'>
-<h6> recent posts </h6>
+<h6 class='margin-lr'> recent posts </h6>
 
 {% set count = [0] %}
 
@@ -67,7 +67,7 @@
     {% include 'sub_post.html' %}
 {% endif %}
 {% else %}
-	<p> no posts </p>
+	<p class='margin-lr'> no posts </p>
 {% endfor %}
 
 {% if count.pop() > 0 %}
@@ -75,7 +75,7 @@
 {% endif %}
 
 
-<h6> recent comments </h6>
+<h6 class='margin-lr'> recent comments </h6>
 <ul class="list-unstyled">
 {% include 'combase.html' %}
 </ul>

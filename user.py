@@ -384,7 +384,7 @@ def user_add_pgp():
 	db.session.commit()
 
 	flash('updated pgp key', 'success')
-	return redirect('/u/' + username)
+	return redirect('/u/' + user.username)
 
 
 
