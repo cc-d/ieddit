@@ -6,8 +6,8 @@ PG_PASSWORD = 'test'
 PG_HOST = 'localhost'
 
 
-DB_TYPE = 'sqlite'
-USE_RECREATE = False
+DB_TYPE = 'postgres'
+USE_RECREATE = True
 
 if DB_TYPE == 'sqlite':
 	DATABASE_URI = 'sqlite:///{0}.db'.format(PG_USER)
@@ -20,7 +20,7 @@ elif DB_TYPE == 'postgres':
 # This will be unique every time create_db.py is ran when testing
 # to force clear sessions
 
-SECRET_KEY = 'not-a-real-key-|r|VeuB40o91l|r|'
+SECRET_KEY = 'not-a-real-key-|r|uhvvv6U_a9|r|'
 
 # Chhange this to your local URL. IE http://127.0.0.1
 URL = 'http://dev.ieddit.com'
