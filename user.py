@@ -347,6 +347,47 @@ def user_update_preferences():
 		return redirect('/user/preferences/')
 
 
+@ubp.route('/pgp/', methods=['GET'])
+def user_pgp():
+	if 'username' not in session:
+		flash('not logged in', 'danger')
+		return redirect('/login/')
+	user = db.session.query(Iuser).filter_by(username=session['username']).first()
+
+	return render_template('pgp.html', user=user)
+
+@ubp.route('/addpgp', methods=['POST'])
+def user_add_pgp():
+	if 'username' not in session:
+		flash('not logged in', 'danger')
+		return redirect('/login/')
+	user = db.session.query(Iuser).filter_by(username=session['username']).first()
+
+	if user == None:
+		return 'invalid user'
+
+	pgp = db.session.query(Pgp).filter_by(username=session['username']).first()
+
+	if pgp != None:
+		db.session.delete(pgp)
+		db.session.commit()
+
+	privkey = request.form.get('privkey')
+	pubkey = request.form.get('pubkey')
+
+	if privkey == None or privkey == '' or pubkey == None or pubkey == '':
+		flash('pubkey or privkey empty', 'danger')
+		return redirect('/user/pgp/')
+
+	new_pgp = Pgp(username=user.username, privkey=privkey, pubkey=pubkey)
+	db.session.add(new_pgp)
+	db.session.commit()
+
+	flash('updated pgp key', 'success')
+	return redirect('/u/' + username)
+
+
+
 
 
 

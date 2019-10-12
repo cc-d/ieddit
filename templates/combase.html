@@ -48,7 +48,7 @@
             </div>
         </div>
         <div clss="comment-text">
-            <p class="comment-text-text safe-markup-text">{{ comment.text|safe }}</p>
+            <selftext class="comment-text-text safe-markup-text">{{ comment.text|safe }}</selftext>
         </div>
         <div class="row post-row comment-bottom">
             <div class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="session['user_id']" has_voted="{{ comment.has_voted }}">

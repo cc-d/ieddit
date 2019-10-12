@@ -2,16 +2,16 @@
 {% block content %}
 
 {% if unread != None %}
-<h2> unread messages </h2>
+<h2 class='margin-lr'> unread messages </h2>
 {% for message in unread %}
 {% include 'message.html' %}
 {% else %}
-<p> no unread messages</p><br><br>
+<p class='margin-lr'> no unread messages</p><br><br>
 {% endfor %}
 {% endif %}
 
 {% if read != None %}
-<h2> read messages </h2>
+<h2 class='margin-lr'> read messages </h2>
 {% for message in read %}
 {% include 'message.html' %}
 {% else %}

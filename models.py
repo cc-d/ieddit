@@ -19,6 +19,7 @@ class Iuser(db.Model):
 	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 	darkmode = db.Column(db.Boolean, default=False, nullable=False)
 	hide_sub_style = db.Column(db.Boolean, default=False, nullable=False)
+	pgp = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Iuser %r>' % self.username
@@ -132,6 +133,7 @@ class Message(db.Model):
 	in_reply_to = db.Column(db.String(400), default=None, nullable=True)
 	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 	sender_type = db.Column(db.String(20), default='user', nullable=False)
+	encrypted = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Message %r>' % self.id
@@ -162,5 +164,19 @@ class Password_reset(db.Model):
 
 	def __repr__(self):
 		return '<Password_reset %r>' % self.id
+
+
+class Pgp(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
+	pubkey = db.Column(db.String(20000), nullable=False)
+	privkey = db.Column(db.String(20000), nullable=False)
+
+	def __repr__(self):
+		return '<Pgp %r>' % self.id
+
+
+
+
 
 
