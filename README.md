@@ -8,6 +8,8 @@ The idea behind this project was to offer a website with functionality similar t
 The wikimedia foundation has proven that such a model is feasible even at the upper echelons of scale, if one is willing to operate leanly without the express pursuit of profit.
 
 ### How To Install
+
+#### Linux
 The following instructions worked on a fresh debian 9 vps.
 
 run ```sudo bash install.sh```
@@ -19,6 +21,25 @@ run ```python3 create_db.py```
 start with ```python3 run.py``` or if you want to use a different port ```python3 run.py <PORT>```
 
 the site should be running on localhost:80  or the port you defined - the default username/password for an admin account is 'a' 'a'
+
+#### Windows
+
+If you do not have Python 3 on your machine, install it:
+https://www.python.org/downloads/
+
+Run ```install.sh``` script using Bash. If needed, a fast way to set Bash up is by 
+installing Git for Windows from: https://git-scm.com/download/win
+
+You can then run it by double clicking the file or opening Git Bash and running ```./install.sh``` in the folder.
+
+Edit ```config.py``` to the proper values (you should only need to change config.URL)
+
+Run Windows Powershell as admin (right click on powershell, run as administrator), navigate to the project's root folder, 
+then run:
+
+```py .\create_db.py```
+
+```py .\run.py```
 
 ### Features
 
