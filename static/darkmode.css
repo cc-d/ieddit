@@ -39,7 +39,7 @@ button {
 
 input {
 	background-color: #dedede;
-	color: black;
+	color: black!important;
 }
 
 textarea {
