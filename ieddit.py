@@ -29,6 +29,16 @@ app = Flask(__name__)
 app.config.from_object('config')
 cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
 
+if (config.SENTRY_ENABLED):
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import \
+        FlaskIntegration
+
+    sentry_sdk.init(
+        config.SENTRY_DSN,
+        integrations=[FlaskIntegration()]
+    )
+
 db = SQLAlchemy(app)
 
 Session(app)
