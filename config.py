@@ -6,7 +6,7 @@ PG_PASSWORD = 'test'
 PG_HOST = 'localhost'
 
 
-DB_TYPE = 'sqlite'
+DB_TYPE = 'postgres'
 USE_RECREATE = False
 
 if DB_TYPE == 'sqlite':

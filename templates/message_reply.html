@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 
+{% if session['pgp_enabled'] %}
+{% include 'keys.html' %}
+{% include 'crypto.html' %}
+<script src="{{ url_for('static', filename='encrypt-message-button.js') }}{{ g.cache_bust }}"></script>
+{% endif %}
+
 {% if message %}
 <div class="media">
   <div class="media-body message-body rounded">
@@ -29,23 +35,24 @@
   <input type='hidden' name='message_title' value='RE: {{ message.title }}'>
   <input type='hidden' name='sent_to' value='{{ message.sender }}'>
   <div class="comment-reply-box-wrapper">
-    <textarea class="comment-reply-box-expand" name="message_text"></textarea>
+    <textarea id='message-textarea' class="rounded comment-reply-box-expand" name="message_text"></textarea>
   </div>
-  <input class="post-text-area-button" type='submit' value='reply'>
-</form>
 {% else %}
 <form id='comment-reply-box' action='/message/{{ sendto }}' method='POST'>
   <label>message title</label><br>
-  <input type='text' name='message_title'><br><br>
+  <input type='text' class='rounded' name='message_title'><br><br>
   <label> send to </label><br>
 
-  <input type='text' name='sent_to' value='{% if sendto != None %}{{ sendto }}{% endif %}'><br><br>
+  <input type='text' class='rounded' name='sent_to' value='{% if sendto != None %}{{ sendto }}{% endif %}'><br><br>
   <label> message text </label><br>
   <div class="comment-reply-box-wrapper">
-    <textarea class="comment-reply-box-expand" name="message_text"></textarea>
+    <textarea id='message-textarea' class="comment-reply-box-expand rounded" name="message_text"></textarea>
   </div>
-  <input class="post-text-area-button" type='submit' value='send message'>
-</form>
 {% endif %}
+  <input class="btn btn-primary rounded" type='submit' value='send message'>
+  {% if session['pgp_enabled'] %}
+  <button type="button" onclick='encryptText()' class="btn btn-sm btn-success"><i class='fa fa-lock'></i> encrypt</button>
+  {% endif %}
+</form>
 
 {% endblock %}  

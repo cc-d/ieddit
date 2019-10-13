@@ -40,8 +40,12 @@ limiter = Limiter(
     default_limits=config.LIMITER_DEFAULTS
 )
 
+cache_bust = '?' + str(time.time()).split('.')[0]
+
 @app.before_request
 def before_request():
+	g.cache_bust = cache_bust
+
 	if app.debug:
 		g.start = time.time()
 	session.permanent = True
@@ -226,9 +230,11 @@ def set_rate_limit():
 	if 'username' in session:
 		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME)
 
-def normalize_username(username):
+def normalize_username(username, dbuser=False):
 	username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
 	if username != None:
+		if dbuser:
+			return username
 		return username.username
 	return False
 
@@ -237,8 +243,21 @@ def normalize_sub(sub):
 	if subl != None:
 		return subl.name
 	return sub
+
 def get_all_subs():
 	return db.session.query(Sub).all()
+
+
+def get_pgp_from_username(username):
+	pgp = db.session.query(Pgp).filter_by(username=normalize_username(session['username'])).first()
+	if pgp != None:
+		return pgp
+	return False
+
+def get_user_from_name(username):
+	if username == '' or username == False or username == None:
+		return False
+	return normalize_username(username, dbuser=True)
 
 @app.route('/login/',  methods=['GET', 'POST'])
 def login():
@@ -273,11 +292,16 @@ def login():
 				session['user_id'] = login_user.id
 				if login_user.admin:
 						session['admin'] = login_user.admin
+
 				session['hide_sub_style'] = login_user.hide_sub_style
+
 				if hasattr(login_user, 'anonymous'):
 					if login_user.anonymous:
 						session['anonymous'] = True
 				session['darkmode'] = login_user.darkmode
+
+				if login_user.pgp:
+					session['pgp_enabled'] = True
 
 				return redirect(url_for('index'), 302)
 
@@ -1107,7 +1131,7 @@ def create_comment():
 
 	return redirect(post_url, 302)
 
-def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=None):
+def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=None, encrypted=False):
 	new_message = Message(title=title, text=text, sent_to=sent_to, sender=sender, in_reply_to=in_reply_to)
 	db.session.add(new_message)
 	db.session.commit()
@@ -1175,7 +1199,8 @@ def reply_message(username=None, mid=None):
 		if hasattr(m, 'in_reply_to'):
 			if m.in_reply_to != None:
 				m.ppath = m.in_reply_to.replace(config.URL, '')
-		return render_template('message_reply.html', message=m, sendto=False)
+		return render_template('message_reply.html', message=m, sendto=False, other_pgp=get_pgp_from_username(m.sender),
+								other_user=get_user_from_name(m.sender))
 
 def sendmsg(title, text, sender, sent_to):
 	cache.delete_memoized(has_messages)
@@ -1193,6 +1218,13 @@ def msg(username=None):
 		text = request.form.get('message_text')
 		title = request.form.get('message_title')
 		sent_to = request.form.get('sent_to')
+		encrypted = request.form.get('encrypted')
+
+		if encrypted != None:
+			encrypted = True
+		else:
+			encrypted = False
+
 		if sent_to == None:
 			sent_to = username
 
@@ -1212,7 +1244,7 @@ def msg(username=None):
 
 		sender = session['username']
 
-		sendmsg(title=title, text=text, sender=session['username'], sent_to=sent_to)
+		sendmsg(title=title, text=text, sender=session['username'], sent_to=sent_to, encrypted=encrypted)
 		set_rate_limit()
 		flash('sent message', category='success')
 		return redirect(url_for('msg'))
@@ -1228,7 +1260,8 @@ def msg(username=None):
 				if len(ru) == 1:
 					if len(ru[0]) > 0:
 						username = ru[0]
-		return render_template('message_reply.html', sendto=username, message=None)
+		return render_template('message_reply.html', sendto=username, message=None, other_pgp=get_pgp_from_username(username),
+								other_user=get_user_from_name(username), self_pgp=get_pgp_from_username(session['username']))
 
 
 @app.route('/i/<sub>/mods/', methods=['GET'])

@@ -6,12 +6,12 @@ var privKey = undefined;
 var pubKey = undefined;
 var loadedKeys = false;
 
-function callbackKey(key, username) {
+function callbackKey(secret, username) {
 	var options = {
 		userIds: [{ name: username, email: username + '@ieddit.com' }],
 		numBits: 4096,
 		curve: 'ed25519',
-		passphrase: key
+		passphrase: secret
 	}
 
 	openpgp.generateKey(options).then(key => {
@@ -21,17 +21,36 @@ function callbackKey(key, username) {
 		setTimeout(function() {
 			$('#privkey').text(privKey);
 			$('#pubkey').text(pubKey);
+			$('#passphrase').css('display', 'block');
+			$('#gen-key-btn').css('display', 'none');
+			/*
 			openpgp.key.readArmored(privKey).then(function(pkey) {
-				pkey.keys[0].decrypt(key).then(function(decrypted) {
+				console.log(pkey.keys[0]);
+				pkey.keys[0].decrypt(secret).then(function(decrypted) {
 					console.log(decrypted);
 				});
 			});
+			*/
 		})
 	);
 
 }
 
+/* to generate a mnemonic */
+function generatePassphrase() {
+	let phrase = '';
+	for (i=0; i<6; i++) {
+		if (i == 5) {
+			phrase = phrase + wordList[Math.floor(Math.random()*wordList.length)];
+		} else {
+			phrase = phrase + wordList[Math.floor(Math.random()*wordList.length)] + ' ';
+		}
+	}
+	return phrase;
+}
+
 function generateKeyPairFromText(username) {
-	var key = $('#secret').val();
-	callbackKey(key, username);
+	var secret = generatePassphrase();
+	$('#secret').val(secret);
+	callbackKey(secret, username);
 }

@@ -3,17 +3,29 @@
 
 {% include 'crypto.html' %}
 <div class='margin-lr'>
-<h6> Enter Passphrase </h6>
-<input type='text' style='width: 300px;' class='rounded' id='secret'><br>
-<a href='javascript:void(0)' onclick='generateKeyPairFromText("{{ session["username"] }}");'><button style='margin-top: 0.25rem;' class='rounded btn btn-success'>generate keypair</button></a>
+{% if pgp.privkey %}
+<h5 style='color:red;'> WARNING: You are generating a NEW keypair.</h5>
+<h6 style='color:red;'> This will OVERWRITE your existing keypair. </h6><br>
+{% endif %}
+<div id='passphrase' style='display: none;'>
+<h6 style='color:yellow;'>Press 'UPDATE KEY' at the bottom of page to save a new key.</h6>
+<h6> Passphrase </h6>
+<small><p> This is how you will decrypt messages. <br> Write it down somewhere safe or (preferably) memorize it.</p></small>
+<textarea style='width: 300px;' class='rounded' id='secret' readonly></textarea><br>
+</div>
+{% if pgp.privkey %}
+<a href='javascript:void(0)' id='gen-key-btn' onclick='generateKeyPairFromText("{{ session["username"] }}");'><button style='margin-top: 0.25rem;' class='rounded btn btn-danger'>generate NEW keypair</button></a>
+{% else %}
+<a href='javascript:void(0)' id='gen-key-btn' onclick='generateKeyPairFromText("{{ session["username"] }}");'><button style='margin-top: 0.25rem;' class='rounded btn btn-success'>generate keypair</button></a>
+{% endif %}
 <br><br>
 </div>
 
 <form class='margin-lr' action='/user/addpgp' method='POST'>
 	<h6> Private Key </h6>
-	<textarea class='rounded' id='privkey' name='privkey' style='height: 200px; min-width: 300px; width: -webkit-fill-available;'></textarea><br>
+	<textarea class='rounded' id='privkey' name='privkey' readonly style='height: 200px; min-width: 300px; width: -webkit-fill-available;'>{% if pgp.privkey %}{{ pgp.privkey }}{% else %}{% endif %}</textarea><br>
 	<h6> Public Key </h6>
-	<textarea class='rounded' id='pubkey' name='pubkey' style='height: 200px; min-width: 300px; width: -webkit-fill-available;'></textarea><br>
+	<textarea class='rounded' id='pubkey' name='pubkey' readonly style='height: 200px; min-width: 300px; width: -webkit-fill-available;'>{% if pgp.privkey %}{{ pgp.privkey }}{% else %}{% endif %}</textarea><br>
 	<button type='submit' class='btn btn-primary rounded'>update pgp key</button>
 </form>
 

@@ -353,8 +353,9 @@ def user_pgp():
 		flash('not logged in', 'danger')
 		return redirect('/login/')
 	user = db.session.query(Iuser).filter_by(username=session['username']).first()
+	pgp = db.session.query(Pgp).filter_by(username=session['username']).first()
 
-	return render_template('pgp.html', user=user)
+	return render_template('pgp.html', user=user, pgp=pgp)
 
 @ubp.route('/addpgp', methods=['POST'])
 def user_add_pgp():
@@ -382,6 +383,8 @@ def user_add_pgp():
 	new_pgp = Pgp(username=user.username, privkey=privkey, pubkey=pubkey)
 	db.session.add(new_pgp)
 	db.session.commit()
+
+	session['pgp_enabled'] = True
 
 	flash('updated pgp key', 'success')
 	return redirect('/u/' + user.username)

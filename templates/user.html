@@ -12,11 +12,16 @@
 {% else %}
 
 <a href="/u/{{ session['username'] }}/messages/"><button type="button" class="btn btn-sm btn-secondary user-opt">view messages</button></a>
+</div>
+
 
 <a href="/user/preferences/"><button type="button" class="btn btn-sm btn-secondary user-opt">preferences</button></a>
 
+<div class='btn-group' role='group'>
 <a href="/user/pgp/"><button type="button" class="btn btn-sm btn-secondary user-opt">pgp</button></a>
-</div>
+
+
+
 <!-- Disabled for now due to lack of use 
 <form action='/user/darkmode' method='POST'>
 {% if vuser.darkmode == False and session['darkmod'] != True %}
@@ -32,17 +37,16 @@
 <form action='/user/anonymous' method='POST'>
 {% if vuser.anonymous == False %}
     <input type='hidden' name='action' value='enable'>
-    <button type="submit" class="btn btn-sm btn-secondary user-opt">enable default anonymous</button></a>
+    <button type="submit" class="btn btn-sm btn-success user-opt">enable default anonymous</button></a>
 {% else %}
     <input type='hidden' name='action' value='disable'>
-    <button type="submit" class="btn btn-sm btn-secondary user-opt">disable default anonymous</button></a>
+    <button type="submit" class="btn btn-sm btn-danger user-opt">disable default anonymous</button></a>
 {% endif %}
 </form>
 
 {% endif %}
 
 </div>
-
 
 
 <br><br>
