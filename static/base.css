@@ -390,7 +390,7 @@ blockquote {
 	overflow: hidden;
 }
 .mod-option-wrapper {
-	/*float: right;*/
+	float: right;
 }
 
 .mod-option-wrapper-comments {
