@@ -20,6 +20,12 @@ start with ```python3 run.py``` or if you want to use a different port ```python
 
 the site should be running on localhost:80  or the port you defined - the default username/password for an admin account is 'a' 'a'
 
+#### Error monitoring
+
+##### Sentry
+You can setup Sentry monitoring on your instance by setting ```SENTRY_ENABLED``` to ```True``` and filling in 
+```SENTRY_DSN``` in ```config.py```.
+
 ### Features
 
 * Fully Transparent Mod/Admin Action Logs
