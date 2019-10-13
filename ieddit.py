@@ -1212,9 +1212,9 @@ def reply_message(username=None, mid=None):
 		return render_template('message_reply.html', message=m, sendto=False, other_pgp=get_pgp_from_username(m.sender),
 								other_user=get_user_from_name(m.sender))
 
-def sendmsg(title, text, sender, sent_to):
+def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False):
 	cache.delete_memoized(has_messages)
-	new_message = Message(title=title, text=text, sender=sender, sent_to=sent_to)
+	new_message = Message(title=title, text=text, sender=sender, sent_to=sent_to, encrypted=encrypted)
 	db.session.add(new_message)
 	db.session.commit()
 
