@@ -5,6 +5,16 @@ $(document).ready(function() {
 	$('#replacePrivateKey').click(function(){
 		generateKeyPairFromText($("#generateNewPublicKey").attr('aria-label'));
 	});
+
+	$("#secret").click(function(e){
+		console.log("SEASDFASDFASDFSADF", e);
+		e.target.select();
+		document.execCommand("copy");
+		$('#secret').parent().append("<div id=\'copiedText\''>copied to clipboard</div>")
+		window.setTimeout(function(){
+			$('#copiedText').fadeOut();
+		}, 2000)
+	});
 });
 
 var privKey = undefined;
