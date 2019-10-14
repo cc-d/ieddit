@@ -1,5 +1,10 @@
 $(document).ready(function() {
-
+	$('#generateNewPublicKey').click(function(){
+		generateKeyPairFromText('{{ session["username"] }}');
+	});
+	$('#replacePrivateKey').click(function(){
+		generateKeyPairFromText('{{ session["username"] }}');
+	});
 });
 
 var privKey = undefined;
