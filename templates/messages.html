@@ -15,7 +15,7 @@
 <script src="{{ url_for('static', filename='decrypt-message-button.js') }}{{ g.cache_bust }}"></script>
 {% endif %}
 
-<button class='margin-lr btn btn-success'><i class='fa fa-lock'></i> read encrypted messages</button>
+<button onclick='decryptAll()' class='margin-lr btn btn-success'><i class='fa fa-lock'></i> read encrypted messages</button>
 {% endif %}
 {% endif %}
 
