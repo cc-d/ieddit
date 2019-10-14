@@ -25,7 +25,7 @@
 	<h6> Private Key </h6>
 	<textarea class='rounded' id='privkey' name='privkey' readonly style='height: 200px; min-width: 300px; width: -webkit-fill-available;'>{% if pgp.privkey %}{{ pgp.privkey }}{% else %}{% endif %}</textarea><br>
 	<h6> Public Key </h6>
-	<textarea class='rounded' id='pubkey' name='pubkey' readonly style='height: 200px; min-width: 300px; width: -webkit-fill-available;'>{% if pgp.privkey %}{{ pgp.privkey }}{% else %}{% endif %}</textarea><br>
+	<textarea class='rounded' id='pubkey' name='pubkey' readonly style='height: 200px; min-width: 300px; width: -webkit-fill-available;'>{% if pgp.privkey %}{{ pgp.pubkey }}{% else %}{% endif %}</textarea><br>
 	<button type='submit' class='btn btn-primary rounded'>update pgp key</button>
 </form>
 

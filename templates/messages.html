@@ -1,6 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
 
+{% if unread != None or read != None %}
+{% if has_encrypted %}
+
+{% if session['pgp_enabled'] %}
+
+<textarea id='self-pgp-username' style='display: none;'>{% if self_pgp.username %}{{ self_pgp.username }}{% else %}{% endif %}</textarea>
+<textarea id='self-pgp-privkey' style='display: none;'>{% if self_pgp.privkey %}{{ self_pgp.privkey }}{% else %}{% endif %}</textarea>
+<textarea id='self-pgp-pubkey' style='display: none;'>{% if self_pgp.pubkey %}{{ self_pgp.pubkey }}{% else %}{% endif %}</textarea>
+
+
+{% include 'crypto.html' %}
+<script src="{{ url_for('static', filename='decrypt-message-button.js') }}{{ g.cache_bust }}"></script>
+{% endif %}
+
+<button class='margin-lr btn btn-success'><i class='fa fa-lock'></i> read encrypted messages</button>
+{% endif %}
+{% endif %}
+
 {% if unread != None %}
 <h2 class='margin-lr'> unread messages </h2>
 {% for message in unread %}

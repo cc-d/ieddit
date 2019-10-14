@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% if session['pgp_enabled'] %}
+{% if self_pgp %}
 {% include 'keys.html' %}
 {% include 'crypto.html' %}
 <script src="{{ url_for('static', filename='encrypt-message-button.js') }}{{ g.cache_bust }}"></script>
@@ -38,20 +38,31 @@
     <textarea id='message-textarea' class="rounded comment-reply-box-expand" name="message_text"></textarea>
   </div>
 {% else %}
+{{ self_pgp }}{{ other_pgp }}
 <form id='comment-reply-box' action='/message/{{ sendto }}' method='POST'>
   <label>message title</label><br>
   <input type='text' class='rounded' name='message_title'><br><br>
+  {% if self_pgp == False and sendto %}
   <label> send to </label><br>
-
+  <input type='text' class='rounded' name='sent_to' value='{% if sendto != None %}{{ sendto }}{% endif %}' readonly><br><br>
+  {% elif self_pgp != False and other_pgp != False %}
+  <label> send to</label> <i class='fa fa-lock' style='color: green; margin-left: 1rem;'> (PGP SUPPORT ENABLED)</i><br>
+  <input type='text' class='rounded' name='sent_to' value='{{ other_pgp.username }}' readonly><br><br>
+  {% else %}
+  <label> send to </label><br>
   <input type='text' class='rounded' name='sent_to' value='{% if sendto != None %}{{ sendto }}{% endif %}'><br><br>
-  <label> message text </label><br>
+  {% endif %}
+  <label id='messagebox-label'> message text </label><br>
   <div class="comment-reply-box-wrapper">
     <textarea id='message-textarea' class="comment-reply-box-expand rounded" name="message_text"></textarea>
   </div>
+  <input name='not-encrypted' id='encrypt' value='' type='hidden'>
 {% endif %}
-  <input class="btn btn-primary rounded" type='submit' value='send message'>
-  {% if session['pgp_enabled'] %}
+  <input class="btn btn-primary rounded" style='color: white!important;' type='submit' value='send message'>
+  {% if self_pgp %}
+  {% if other_pgp.username %}
   <button type="button" onclick='encryptText()' class="btn btn-sm btn-success"><i class='fa fa-lock'></i> encrypt</button>
+  {% endif %}
   {% endif %}
 </form>
 

@@ -259,7 +259,7 @@ def get_all_subs():
 
 
 def get_pgp_from_username(username):
-	pgp = db.session.query(Pgp).filter_by(username=normalize_username(session['username'])).first()
+	pgp = db.session.query(Pgp).filter_by(username=normalize_username(username)).first()
 	if pgp != None:
 		return pgp
 	return False
@@ -1142,7 +1142,7 @@ def create_comment():
 	return redirect(post_url, 302)
 
 def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=None, encrypted=False):
-	new_message = Message(title=title, text=text, sent_to=sent_to, sender=sender, in_reply_to=in_reply_to)
+	new_message = Message(title=title, text=text, sent_to=sent_to, sender=sender, in_reply_to=in_reply_to, encrypted=encrypted)
 	db.session.add(new_message)
 	db.session.commit()
 
@@ -1167,14 +1167,24 @@ def user_messages(username=None):
 			flash('you are not that user', 'danger')
 			return redirect('/')
 		else:
+			has_encrypted = False
+
 			read = db.session.query(Message).filter_by(sent_to=username, read=True)
 			unread = db.session.query(Message).filter_by(sent_to=username, read=False)
 			read = read.order_by((Message.created).desc()).limit(50).all()
 			unread = unread.order_by((Message.created).desc()).limit(50).all()
+
+
 			for r in read:
-				r.text = pseudo_markup(r.text)
+				if r.encrypted == False:
+					r.text = pseudo_markup(r.text)
+				else:
+					#r.text = r.text.replace('<br>', '')
+					r.sender_pgp = get_pgp_from_username(r.sender)
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
+				if r.encrypted == True:
+					has_encrypted = True
 			
 			session['has_messages'] = False
 			session['unread_messages'] = None
@@ -1185,11 +1195,23 @@ def user_messages(username=None):
 			db.session.commit()
 
 			for r in unread:
-				r.text = pseudo_markup(r.text)
+				if r.encrypted == False:
+					r.text = pseudo_markup(r.text)
+				else:
+					#r.text = r.text.replace('<br>');
+					r.sender_pgp = get_pgp_from_username(r.sender)
+					#r.sender_pubkey = r.sender_pubkey = r.sender_pubkey.pubkey
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
+				if r.encrypted == True:
+					has_encrypted = True
 
-			return render_template('messages.html', read=read, unread=unread)
+			if session['pgp_enabled']:
+				self_pgp = get_pgp_from_username(session['username'])
+			else:
+				self_pgp = False
+
+			return render_template('messages.html', read=read, unread=unread, has_encrypted=has_encrypted, self_pgp=self_pgp)
 
 @app.route('/u/<username>/messages/reply/<mid>', methods=['GET'])
 def reply_message(username=None, mid=None):
@@ -1209,8 +1231,8 @@ def reply_message(username=None, mid=None):
 		if hasattr(m, 'in_reply_to'):
 			if m.in_reply_to != None:
 				m.ppath = m.in_reply_to.replace(config.URL, '')
-		return render_template('message_reply.html', message=m, sendto=False, other_pgp=get_pgp_from_username(m.sender),
-								other_user=get_user_from_name(m.sender))
+		return render_template('message_reply.html', message=m, sendto=False, self_pgp=get_pgp_from_username(session['username']),
+			other_pgp=get_pgp_from_username(m.sender), other_user=get_user_from_name(username))
 
 def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False):
 	cache.delete_memoized(has_messages)

@@ -53,10 +53,13 @@ function getOptions() {
 function encryptText() {
 	if (getPhrase()) {
 		getOptions().then(function(opts) {
-			console.log(opts);
 			openpgp.encrypt(opts).then(encryptedData => {
-				console.log(encryptedData);
-				$('#message-textarea').val(encryptedData.data);
+				$('#messagebox-label').text('MESSAGE ENCRYPTED ');
+				$('#messagebox-label').css('color', 'green');
+				$('#messagebox-label').append('<i class="fa fa-lock"></i> ');
+				$('#message-textarea').val(encryptedData.data.trim());
+				$('#message-textarea').attr('readonly', '');
+				$('#encrypt').attr('name', 'encrypted');
 			});
 		});
 	}
