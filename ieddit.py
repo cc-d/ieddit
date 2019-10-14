@@ -1206,7 +1206,7 @@ def user_messages(username=None):
 				if r.encrypted == True:
 					has_encrypted = True
 
-			if session['pgp_enabled']:
+			if 'pgp_enabled' in session:
 				self_pgp = get_pgp_from_username(session['username'])
 			else:
 				self_pgp = False
