@@ -14,12 +14,18 @@
 <textarea style='width: 300px;' class='rounded' id='secret' readonly></textarea><br>
 </div>
 {% if pgp.privkey %}
-<button style='margin-top: 0.25rem;' class='rounded btn btn-danger' id="generateNewPublicKey">generate NEW keypair</button>
+<button style='margin-top: 0.25rem;' class='rounded btn btn-danger' id="generateNewPublicKey" aria-label="{{ session["username"] }}">generate NEW keypair</button>
 {% else %}
-<button style='margin-top: 0.25rem;' class='rounded btn btn-success' id="replacePrivateKey">generate keypair</button>
+<button style='margin-top: 0.25rem;' class='rounded btn btn-success' id="replacePrivateKey" aria-label="{{ session["username"] }}">generate keypair</button>
 {% endif %}
 <br><br>
 </div>
+
+{#
+test passphrase
+pursuant select carlo damages visiting lodging
+#}
+
 
 <form class='margin-lr' action='/user/addpgp' method='POST'>
 	<h6> Private Key </h6>

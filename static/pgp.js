@@ -1,9 +1,9 @@
 $(document).ready(function() {
 	$('#generateNewPublicKey').click(function(){
-		generateKeyPairFromText('{{ session["username"] }}');
+		generateKeyPairFromText($("#generateNewPublicKey").attr('aria-label'));
 	});
 	$('#replacePrivateKey').click(function(){
-		generateKeyPairFromText('{{ session["username"] }}');
+		generateKeyPairFromText($("#generateNewPublicKey").attr('aria-label'));
 	});
 });
 
@@ -56,6 +56,7 @@ function generatePassphrase() {
 
 function generateKeyPairFromText(username) {
 	var secret = generatePassphrase();
+	console.log("set secret", username)
 	$('#secret').val(secret);
 	callbackKey(secret, username);
 }
