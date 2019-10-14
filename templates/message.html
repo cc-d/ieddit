@@ -3,7 +3,6 @@
 <textara style='display: none;' class='emessage' id='encrypted-message-{{ message.id }}'>{{ message.text }}</textara>
 <div style='border: 1px solid green;' class="media-body message-body rounded">
 <textarea id='other-pgp-pubkey-{{ message.id }}' style='display: none;'>{{ message.sender_pgp.pubkey }}</textarea>
-<textarea id='other-pgp-privkey-{{ message.id }}' style='display: none;'>{{ message.sender_pgp.privkey }}</textarea>
 {% else %}
 <div class="media-body message-body rounded">
 {% endif %}
