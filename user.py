@@ -386,13 +386,12 @@ def user_add_pgp():
 
 	privkey = request.form.get('privkey')
 	pubkey = request.form.get('pubkey')
-	useremail = request.form.get('useremail')
 
 	if privkey == None or privkey == '' or pubkey == None or pubkey == '':
 		flash('pubkey or privkey empty', 'danger')
 		return redirect('/user/pgp/')
 
-	new_pgp = Pgp(username=user.username, privkey=privkey, pubkey=pubkey, useremail=useremail)
+	new_pgp = Pgp(username=user.username, privkey=privkey, pubkey=pubkey)
 	db.session.add(new_pgp)
 	db.session.commit()
 
