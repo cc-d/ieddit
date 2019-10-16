@@ -1370,13 +1370,9 @@ def msg(username=None):
 		text = request.form.get('message_text')
 		title = request.form.get('message_title')
 		sent_to = request.form.get('sent_to')
-		encrypted = request.form.get('encrypted')
+		encrypted = request.form.get('msgencrypted')
 
-		if encrypted != None:
-			encrypted = True
-		else:
-			encrypted = False
-
+		encrypted = True if encrypted else False
 		if sent_to == None:
 			sent_to = username
 

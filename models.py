@@ -182,6 +182,7 @@ class Pgp(db.Model):
 	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
 	pubkey = db.Column(db.String(20000), nullable=False)
 	privkey = db.Column(db.String(20000), nullable=False)
+	useremail = db.Column(db.String(255), nullable=False)
 
 	def __repr__(self):
 		return '<Pgp %r>' % self.id

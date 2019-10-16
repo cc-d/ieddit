@@ -301,4 +301,3 @@ def get_youtube_vid_id(url):
 		return url.split('.be/')[1]
 
 	return False
-

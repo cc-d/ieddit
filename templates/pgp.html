@@ -23,6 +23,8 @@
 
 
 <form class='margin-lr' action='/user/addpgp' method='POST'>
+    <input type="hidden" id="useremail" name="useremail" value="{{ user.username }}@ieddit.com" />
+    <input type="hidden" id="username" name="username" value="{{ user.username }}" />
 	<h6> Private Key </h6>
 	<textarea class='rounded' id='privkey' name='privkey' readonly style='height: 200px; min-width: 300px; width: -webkit-fill-available;'>{% if pgp.privkey %}{{ pgp.privkey }}{% else %}{% endif %}</textarea><br>
 	<h6> Public Key </h6>

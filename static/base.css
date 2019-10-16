@@ -644,3 +644,14 @@ ul {
 .post-inner-div {
 	margin-top: -0.5rem!important;
 }
+
+
+.decryptedContent {
+	display: none;
+	padding: 10px;
+	border: 1px solid #666;
+	border-radius: 5px;
+	margin: 10px;
+
+}
+
