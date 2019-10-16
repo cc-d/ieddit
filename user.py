@@ -15,7 +15,7 @@ def user_delete_post():
 	if post.author == session['username']:
 		post.deleted = True
 		db.session.commit()
-		cache.delete_memoized(get_subi)
+
 		flash('post deleted', category='success')
 		return redirect(sub_url)
 	else:
@@ -33,13 +33,13 @@ def user_delete_comment():
 	if comment.author == session['username']:
 		comment.deleted = True
 		db.session.commit()
-		cache.delete_memoized(get_subi)
+
 		flash('post deleted', category='success')
 		return redirect(post.permalink)
 	else:
 		return '403'
 
-
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 @ubp.route('/edit/<itype>/<iid>/', methods=['GET'])
 def user_get_edit(itype, iid):
 	if 'username' not in session:
@@ -106,7 +106,7 @@ def user_edit_post():
 		obj.self_text = etext
 		obj.edited = True
 		db.session.commit()
-		cache.clear()
+		
 		flash('post edited', category='succes')
 		session['last_edit'] = None
 		return redirect(obj.permalink)
@@ -114,7 +114,7 @@ def user_edit_post():
 		obj.edited = True
 		obj.text = etext
 		db.session.commit()
-		cache.delete_memoized(c_get_comments)
+
 		flash('comment edited', category='succes')
 		session['last_edit'] = None
 		return redirect(obj.permalink)
@@ -136,7 +136,7 @@ def user_marknsfw(pid=None):
 	post.nsfw = True
 	flash('marked as nsfw')
 	db.session.commit()
-	cache.clear()
+	
 	return redirect(post.permalink)
 
 
@@ -165,7 +165,7 @@ def user_darkmode(username=None):
 	flash('switched to %s mode' % mode, 'success')
 	db.session.add(user)
 	db.session.commit()
-	cache.clear()
+	
 	return redirect('/u/' + user.username)
 
 @ubp.route('/anonymous', methods=['POST'])
@@ -191,15 +191,17 @@ def user_uanonymous(username=None):
 	flash('toggled anonymous', 'success')
 	db.session.add(user)
 	db.session.commit()
-	cache.clear()
+	
 	return redirect('/u/' + user.username)
 
 @ubp.route('/reset_password/', methods=['GET'])
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def reset_page():
 	return render_template('reset_password.html')
 
 @limiter.limit(['5 per hour'])
 @ubp.route('/password_reset', methods=['POST', 'GET'])
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def password_reset(email=None):
 	if request.method == 'POST':
 		if config.CAPTCHA_ENABLE:
@@ -230,6 +232,7 @@ def password_reset(email=None):
 		if e == True:
 			db.session.add(new_reset)
 			db.session.commit()
+			
 			flash('password recovery email sent', 'success')
 			return redirect('/user/reset_password/')
 
@@ -262,10 +265,14 @@ def new_reset_password():
 	db.session.add(r)
 	db.session.commit()
 
+
+	
+
 	flash('successfully reset password for %s' % username, 'success')
 	return redirect('/login/')
 
 @ubp.route('/preferences/', methods=['GET'])
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def user_preferences():
 	if 'username' not in session:
 		flash('not logged in', 'danger')
@@ -340,6 +347,9 @@ def user_update_preferences():
 
 		db.session.add(user)
 		db.session.commit()
+
+		
+
 		flash('successfully updated settings', 'success')
 		return redirect('/user/preferences/')
 	else:
@@ -348,6 +358,7 @@ def user_update_preferences():
 
 
 @ubp.route('/pgp/', methods=['GET'])
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def user_pgp():
 	if 'username' not in session:
 		flash('not logged in', 'danger')
@@ -386,6 +397,8 @@ def user_add_pgp():
 	db.session.commit()
 
 	session['pgp_enabled'] = True
+
+	
 
 	flash('updated pgp key', 'success')
 	return redirect('/u/' + user.username)

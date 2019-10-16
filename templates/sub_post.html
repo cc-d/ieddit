@@ -66,12 +66,27 @@
     </div>
     <div class="sub-post-title">
     <div class='expand-post'>
+        {% set fclass = '' %}
+        {% set vid = 'false' %}
+        {% if pre_expand == True %}
+            {% set ftype = 'collapsePost' %}
+            {% set square = 'minus-square-o' %}
+        {% else %}
+            {% set square = 'plus-square-o' %}
+            {% set ftype = 'expandPost' %}
+            {% if post.video %}
+                {% set square = 'play' %}
+                {% set fclass = 'class="video-play-btn rounded"' %}
+                {% set vid = 'true' %}
+            {% endif %}
+        {% endif %}
+
         {% if post.post_type == 'url' %}
             {% if post.remote_image_url %}
-            <a id="expand-button-{{ post.id }}" href="javascript:expandPost(pid={{ post.id }}, ptype='url');"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+            <a id="expand-button-{{ post.id }}" {{ fclass|safe }} href="javascript:{{ ftype }}(pid={{ post.id }}, ptype='url', vid='{{ vid }}');"><i class="fa fa-{{ square }}"aria-hidden="true"></i></a>
             {% endif %}
         {% else %}
-        <a id="expand-button-{{ post.id }}" href="javascript:expandPost(pid={{ post.id }}, ptype='selftext');"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+        <a id="expand-button-{{ post.id }}" {{ fclass|safe }} href="javascript:{{ ftype }}(pid={{ post.id }}, ptype='selftext', vid='{{ vid }}');"><i class="fa fa-{{ square }}" aria-hidden="true"></i></a>
         {% endif %}
     </div>
     {% if post.post_type == 'url' %}
@@ -82,9 +97,23 @@
         <small><a href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">(self.text)</a></small>
     {% endif %}
     </div>
+
+
     {% if post.remote_image_url or post.self_text %}
+    {% if pre_expand == True %}
+    <div class='expanded-post' id='post-{{ post.id }}' style='display: inline-block;'>
+    {% else %}
     <div class='expanded-post' id='post-{{ post.id }}' style='display: none;'>
-    {% if post.remote_image_url %}
+    {% endif %}
+
+    {% if post.video %}
+        {% if pre_expand == True %}
+        <iframe id='vid-{{ post.id }}' class='vidembed' width="420" height="315" realsrc="{{ post.video }}" src='{{ post.video }}'></iframe>
+        <div style='display: none;' vidid='{{ post.id }}' id='is-pre-expanded'></div>
+        {% else %}
+        <iframe id='vid-{{ post.id }}' style='display: none;' class='vidembed' width="420" height="315" realsrc="{{ post.video }}"></iframe>
+        {% endif %}
+    {% elif post.remote_image_url %}
        <a href="{{ post.remote_image_url }}"><img class='expanded-post-image' id='expand-src-{{ post.id }}' realsrc="{{ post.remote_image_url }}" ></a>
     {% else %}
         <div class='expanded-selftext rounded'>

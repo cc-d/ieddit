@@ -111,6 +111,9 @@ Currently everything is running on google cloud, due to $90 of credit I had on t
 
 To contribute to server operations, for now the most practical option is crypto. If there ends up being significant demand for a platform like this, I'll go through the motions of setting up additional donation options. Server credit would also be immensely helpful, especially if it's on one of the big guys like aws.
 
+
+### Additional Info
+
 Code contributions are HIGHLY welcome.
 
 Patreon: [https://www.patreon.com/ieddit](https://www.patreon.com/ieddit)
@@ -123,6 +126,7 @@ I can be contacted at the email in my github profile, or on HN/Reddit/this site 
 
 If you have read this far, I genuinely appreciate your time.
 
+A page with all releveant site usage stats can be found here: [http://dev.ieddit.com/stats/](http://dev.ieddit.com/stats/)
 
 <br>
 <br>

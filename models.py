@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, session, request
 from datetime import datetime, timedelta
 from flask_caching import Cache
+from functions import *
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -88,6 +89,16 @@ class Comment(db.Model):
 	permalink = db.Column(db.String(2000), nullable=True)
 	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 	edited = db.Column(db.Boolean, default=False, nullable=False)
+
+	def get_children(self, deleted=False):
+		if deleted == None:
+			return db.session.query(Comment).filter_by(parent_id=self.id).all()
+		return db.session.query(Comment).filter_by(parent_id=self.id, deleted=deleted).all()
+
+	def child_count(self, deleted=False):
+		if deleted == None:
+			return db.session.query(Comment).filter_by(parent_id=self.id).count()
+		return db.session.query(Comment).filter_by(parent_id=self.id, deleted=deleted).count()
 
 	def __repr__(self):
 		return '<Comment %r>' % self.id

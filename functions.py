@@ -14,7 +14,7 @@ from bleach import clean
 
 from datetime import datetime, timedelta
 from math import log
-import time 
+import time
 
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
 
@@ -137,8 +137,28 @@ def split_link(sst, s):
 def pseudo_markup(text):
 	# preserve more than 1 newline
 	mtext = text.splitlines()
+
 	for i in range(0, len(mtext)):
-		mtext[i] = clean(markdown(mtext[i]), strip=True)
+		mtext[i] = clean(markdown(mtext[i]), strip=True) 
+		regstrs = ['<[^liu].*>.*<\/[^liu]>', '^<[^liu].*>', '<\/[^liu].*>$']
+
+		reg2 = ['<li>.*<\/li>', '<ul>.*<\/ul>', '<code>.*<\/code>', '<blockquote>.*<\/blockquote>']
+
+		addbr = True
+		addbr2 = True
+
+		for reg in regstrs:
+				if len(re.findall(reg, mtext[i])) != 0:
+					addbr2 = True
+					for r2 in reg2:
+						if len(re.findall(r2, mtext[i])) != 0:
+							addbr2 = False
+				else:
+					addbr = True
+
+		if addbr and addbr2:
+			if len(re.findall('^https?:\/\/.*.*$', mtext[i])) == 0:
+					mtext[i] = mtext[i] + '<br>'
 
 	# code tags
 	start, end = 0, 0
@@ -164,27 +184,62 @@ def pseudo_markup(text):
 		# different variations of possible links, space at start, no
 		# space, etc 
 		links = re.findall(' https?:\/\/.*\.\S+ ', mtext[i])
+
 		if len(links) > 0:
 			for link in links:
 				mtext[i] = mtext[i].replace(link, ' <a href="%s">%s</a> ' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
+		
+
 		links = re.findall('^https?:\/\/.*\.\S+ ', mtext[i])		
 		if len(links) > 0:
 			for link in links:
 				mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a> ' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
+		
+
 		links = re.findall('^https?:\/\/.*\.\S+$', mtext[i])		
 		if len(links) > 0:
 			for link in links:
 				mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))		
+		
+
 		links = re.findall(' https?:\/\/.*\.\S+$', mtext[i])		
 		if len(links) > 0:
 			for link in links:
-				mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))	
-	for l in range(len(mtext)):
-		if mtext[l] == '':
-			mtext[l] = '<br>'
+				mtext[i] = mtext[i].replace(link, '<a href="%s"> %s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))	
+		
+
+		links = re.findall(' https?:\/\/.*\.\S+$', mtext[i])		
+		if len(links) > 0:
+			for link in links:
+				mtext[i] = mtext[i].replace(link, '<a href="%s"> %s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))	
+
+
+		if mtext[i].find('<br>') == -1:
+			if len(re.findall('$<a> href=".*"<br>', mtext[i])) == 0:
+				mtext[i] += '<br>'
+
+
 
 	mtext = '\n'.join([x for x in mtext])
-	
+
+	'''
+	for i in range(len(mtext)):
+		if mtext[i][-1:] == '\n':
+			if mtext[i][-2:] != '>\n':
+				mtext[i].replace('\n','<br>')
+	'''
+
+	repstrings = ['</blockquote>']
+	for i in range(len(mtext)):
+		if i > 0:
+			past = mtext[i-1]
+			for rep in repstrings:
+				if past.find(rep) == -1:
+					pass
+				else:
+					mtext[i].replace('<br>', '')
+
+
 	mtext = mtext.replace('\n<div class="inline-code"><code>\n', '<div class="inline-code"><code>')
 	mtext = mtext.replace('<code>\n', '<code>')
 	mtext = mtext.replace('\n</code></div>\n', '</code></div>')
@@ -194,7 +249,24 @@ def pseudo_markup(text):
 	#mtext = mtext.replace('</code>\n', '</code>')
 
 	#mtext = mtext.replace('\n<code>', '\n    </code>')
-	mtext = mtext.replace('<code>', '<code>    ')
+	mtext = mtext.replace('<code>', '<code>&nbsp;&nbsp;&nbsp;&nbsp;')
+
+	mtext = mtext.replace('</blockquote>\n<br>', '</blockquote>\n')
+	mtext = mtext.replace('</blockquote><br>', '</blockquote>')
+
+	mtext = mtext.replace('</pre><br>', '</pre>')
+
+
+	mtext = mtext.replace('<br>' +'</a>', '')
+	mtext = mtext.replace('<br>">', '">')
+	mtext = mtext.replace('&lt;br&gt;">', '">')
+	mtext = mtext.replace('&amp;lt;br&amp;gt;', '')
+	mtext = mtext.replace('</a></a>', '')
+	mtext = mtext.replace('&lt;/a&gt;">', '">')
+	mtext = mtext.replace('&lt;/a&gt;</a>', '</a>')
+
+	if mtext == '':
+		return '<br>'
 
 	return mtext
 
@@ -214,8 +286,27 @@ def hot(ups, downs, date):
 	seconds = epoch_seconds(date) - 1134028003
 	return round(sign * order + seconds / 45000, 7)
 
+<<<<<<< HEAD
 
 def mark_all_posts_nsfw(sub):
 
 	for post in sub:
 		post.nsfw = True
+=======
+def get_youtube_vid_id(url):
+	if url == None:
+		return False
+	if url.find('youtube.com/watch?v=') != -1:
+		return url.split('=')[1]
+	if url.find('youtube.com/v/') != -1:
+			url = url.split('/v/')[1]
+			if url.find('?') == -1:
+					return url.split('?')[0]
+			else:
+				return url
+	if url.find('youtu.be/') != -1:
+		return url.split('.be/')[1]
+
+	return False
+
+>>>>>>> master

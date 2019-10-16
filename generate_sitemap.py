@@ -29,6 +29,7 @@ def main():
 	links.append(gl(config.URL + '/create', priority=1))
 	links.append(gl(config.URL + '/create_posts', priority=1))
 	links.append(gl(config.URL + '/explore/', priority=1))
+	links.append(gl(config.URL + '/stats/', priority=0.9))
 
 	subs = db.session.query(Sub).all()
 	for s in subs:
