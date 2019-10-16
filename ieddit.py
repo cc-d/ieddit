@@ -1503,13 +1503,13 @@ def blocksub(sub=None):
 		db.session.add(new_block)
 		db.session.commit()
 		bsubs.append(sub)
-		flash('blocked %s' % sub, 'success')
+		flash('unsubscribed from %s' % sub, 'success')
 	else:
 		dblock = db.session.query(Sub_block).filter_by(username=session['username'], sub=sub).first()
 		db.session.delete(dblock)
 		db.session.commit()
 		bsubs = [b for b in bsubs if b != sub]
-		flash('unblocked %s' % sub, 'success')
+		flash('subscribed to %s' % sub, 'success')
 
 	session['blocked_subs'] = bsubs
 

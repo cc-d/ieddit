@@ -44,7 +44,6 @@ textarea {
 }
 
 .post-image-container {
-	margin-top: -0.25rem;
 	min-height: 6rem;
 	min-width: 6rem;
 }
@@ -569,7 +568,7 @@ ul {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	width: 265px;
-	margin-top: -0.5rem!important;
+	/*margin-top: -0.5rem!important;*/
 }
 
 .nsfwpost {
@@ -640,4 +639,8 @@ ul {
 	.sub-post.rounded {
 		margin-left: 0rem;
 	}
+}
+
+.post-inner-div {
+	margin-top: -0.5rem!important;
 }
