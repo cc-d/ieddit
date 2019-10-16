@@ -397,16 +397,15 @@ def mod_settings():
 					Moderator.sub.like(sub)).exists()).scalar()
 	if is_mod:
 		sub = db.session.query(Sub).filter_by(name=sub).first()
-		
-		if marknsfw != None:
-			if marknsfw == 'nsfw':
-				if request.form.get('alsoposts'):
-					for p in db.session.query(Post).filter_by(sub=subr):
-						p.nsfw = True
-					db.session.commit()
-				sub.nsfw = True
+
+		if marknsfw:
+			if request.form.get('alsoposts'):
+				for p in db.session.query(Post).filter_by(sub=subr):
+					p.nsfw = True
+				db.session.commit()
+			sub.nsfw = True
 		else:
-			if not request.form.get('alsoposts'):
+			if request.form.get('alsoposts'):
 				for p in db.session.query(Post).filter_by(sub=subr):
 					p.nsfw = False
 				db.session.commit()

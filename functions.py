@@ -286,13 +286,6 @@ def hot(ups, downs, date):
 	seconds = epoch_seconds(date) - 1134028003
 	return round(sign * order + seconds / 45000, 7)
 
-<<<<<<< HEAD
-
-def mark_all_posts_nsfw(sub):
-
-	for post in sub:
-		post.nsfw = True
-=======
 def get_youtube_vid_id(url):
 	if url == None:
 		return False
@@ -308,5 +301,3 @@ def get_youtube_vid_id(url):
 		return url.split('.be/')[1]
 
 	return False
-
->>>>>>> master
