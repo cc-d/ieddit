@@ -38,7 +38,6 @@
     <textarea id='message-textarea' class="rounded comment-reply-box-expand" name="message_text"></textarea>
   </div>
 {% else %}
-{{ self_pgp }}{{ other_pgp }}
 <form id='comment-reply-box' action='/message/{{ sendto }}' method='POST'>
   <label>message title</label><br>
   <input type='text' class='rounded' name='message_title'><br><br>

@@ -280,6 +280,8 @@ def set_rate_limit():
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def normalize_username(username, dbuser=False):
+	if username == None:
+		return False
 	username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
 	if username != None:
 		if dbuser:
@@ -301,7 +303,13 @@ def get_all_subs():
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_pgp_from_username(username):
-	pgp = db.session.query(Pgp).filter_by(username=normalize_username(username)).first()
+	u = normalize_username(username)
+	if u == False:
+		return False
+
+	else:
+		pgp = db.session.query(Pgp).filter_by(username=normalize_username(username)).first()
+	
 	if pgp != None:
 		return pgp
 	return False
@@ -514,7 +522,13 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	if subi != 'all':
 		sticky = db.session.query(Post).filter(func.lower(Post.sub) == subi.lower(), Post.stickied == True).first()
 		if sticky:
-			posts.insert(0, sticky)
+			if 'blocked_subs' in session:
+				if sticky.sub in session['blocked_subs']:
+					pass
+				else:
+					posts.insert(0, sticky)
+			else:
+				posts.insert(0, sticky)
 
 
 	if more and len(posts) > 0:
@@ -1334,6 +1348,8 @@ def reply_message(username=None, mid=None):
 		if hasattr(m, 'in_reply_to'):
 			if m.in_reply_to != None:
 				m.ppath = m.in_reply_to.replace(config.URL, '')
+
+
 		return render_template('message_reply.html', message=m, sendto=False, self_pgp=get_pgp_from_username(session['username']),
 			other_pgp=get_pgp_from_username(m.sender), other_user=get_user_from_name(username))
 

@@ -632,7 +632,7 @@ ul {
 }
 
 .comment-color-1 {
-	background-color: #303030!important;
+	background-color: #333333!important;
 }
 
 @media only screen and (max-width: 992px) {
@@ -645,6 +645,7 @@ ul {
 	margin-top: -0.5rem!important;
 }
 
+
 .decryptedContent {
 	display: none;
 	padding: 10px;
@@ -653,3 +654,4 @@ ul {
 	margin: 10px;
 
 }
+
