@@ -1589,7 +1589,20 @@ def get_stats():
 	votes = db.session.query(Vote).all()
 
 	daycoms = [c for c in comments if ((datetime.now() - c.created).total_seconds()) < 86400]
+
+
+	dayusers = []
+
+	for u in daycoms:
+		if u.author not in dayusers:
+			dayusers.append(u.author)
+
 	dayposts = [p for p in posts if ((datetime.now() - p.created).total_seconds()) < 86400]
+
+	for u in dayposts:
+		if u.author not in dayusers:
+			dayusers.append(u.author)
+
 	dayvotes = []
 
 	for v in votes:
@@ -1597,26 +1610,10 @@ def get_stats():
 				if((datetime.now() - v.created).total_seconds()) < 86400:
 					dayvotes.append(v)
 
-	dayusers = []
-
-	for u in users:
-		for p in db.session.query(Post).filter_by(author=u.username).all():
-			if p.id in daycoms and u not in dayusers:
-				dayusers.append(u)
-			elif u in dayusers:
-				break
-
-		for c in db.session.query(Post).filter_by(author=u.username).all():
-			if c.id in daycoms and u not in dayusers:
-				dayusers.append(u)
-			elif u in dayusers:
-				break
-
-		for v in db.session.query(Vote).filter_by(user_id=u.id).all():
-			if v.id in dayvotes and u not in dayusers:
-				dayusers.append(u)
-			elif u in dayusers:
-				break
+	for v in dayvotes:
+		u = db.session.query(Iuser).filter_by(id=v.user_id)
+		if u.username not in dayusers:
+			dayusers.append(u.username)
 
 	users = len(users)
 	daycoms = len(daycoms)
