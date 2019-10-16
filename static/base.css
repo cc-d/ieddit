@@ -480,7 +480,7 @@ blockquote {
 }
 
 .inline-code {
-	white-space: pre-wrap;
+	white-space: /*pre-wrap*/normal;
 	background-color: #222222;
 	margin-top: 0.5rem;
 	margin-bottom: 0.5rem;
