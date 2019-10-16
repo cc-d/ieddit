@@ -66,12 +66,20 @@
     </div>
     <div class="sub-post-title">
     <div class='expand-post'>
+        {% if pre_expand == True %}
+            {% set ftype = 'collapsePost' %}
+            {% set square = 'minus' %}
+        {% else %}
+            {% set square = 'plus' %}
+            {% set ftype = 'expandPost' %}
+        {% endif %}
+
         {% if post.post_type == 'url' %}
             {% if post.remote_image_url %}
-            <a id="expand-button-{{ post.id }}" href="javascript:expandPost(pid={{ post.id }}, ptype='url');"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+            <a id="expand-button-{{ post.id }}" href="javascript:{{ ftype }}(pid={{ post.id }}, ptype='url');"><i class="fa fa-{{ square }}-square-o" aria-hidden="true"></i></a>
             {% endif %}
         {% else %}
-        <a id="expand-button-{{ post.id }}" href="javascript:expandPost(pid={{ post.id }}, ptype='selftext');"><i class="fa fa-plus-square-o" aria-hidden="true"></i></a>
+        <a id="expand-button-{{ post.id }}" href="javascript:{{ ftype }}(pid={{ post.id }}, ptype='selftext');"><i class="fa fa-{{ square }}-square-o" aria-hidden="true"></i></a>
         {% endif %}
     </div>
     {% if post.post_type == 'url' %}
@@ -83,7 +91,12 @@
     {% endif %}
     </div>
     {% if post.remote_image_url or post.self_text %}
+    {% if pre_expand == True %}
+    <div class='expanded-post' id='post-{{ post.id }}' style='display: inline-block;'>
+    {% else %}
     <div class='expanded-post' id='post-{{ post.id }}' style='display: none;'>
+    {% endif %}
+
     {% if post.remote_image_url %}
        <a href="{{ post.remote_image_url }}"><img class='expanded-post-image' id='expand-src-{{ post.id }}' realsrc="{{ post.remote_image_url }}" ></a>
     {% else %}
