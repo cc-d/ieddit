@@ -1569,7 +1569,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
-@cache.memoize(60)
+@cache.memoize(600)
 def get_stats():
 	posts = db.session.query(Post).all()
 	comments = db.session.query(Comment).all()
