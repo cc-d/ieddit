@@ -579,3 +579,13 @@ ul {
 	margin-left: 1rem;
 	margin-right: 1rem;
 }
+
+
+.decryptedContent {
+	display: none;
+	padding: 10px;
+	border: 1px solid #666;
+	border-radius: 5px;
+	margin: 10px;
+
+}

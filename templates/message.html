@@ -1,6 +1,5 @@
 <div class="media">
 {% if message.encrypted %}
-<textara style='display: none;' class='emessage' id='encrypted-message-{{ message.id }}'>{{ message.text }}</textara>
 <div style='border: 1px solid green;' class="media-body message-body rounded">
 <textarea id='other-pgp-pubkey-{{ message.id }}' style='display: none;'>{{ message.sender_pgp.pubkey }}</textarea>
 {% else %}
@@ -18,8 +17,6 @@
       {% else %}
       <i class="fa fa-user reply-fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}">{{ message.sender }}</a>
       {% endif %}
-  		
-
       {% if message.in_reply_to != None %}
   		<div class="in-reply-to">
   		<small><a class="user-icon-link" href="{{ message.in_reply_to }}">{{ message.ppath }}</a></small>
@@ -28,13 +25,17 @@
   	</div>
   	{% endif %}
     <h5 class="mt-0 message-title">{{ message.title }}</h5>
-
     {% if message.encrypted == False %}
-		  <div class="safe-markup-text" id='message-{{ message.id }}'>{{ message.text|safe }}</div>
+		  <div class="safe-markup-text" id='message-{{ message.id }}'>{{ message.text }}</div>
     {% else %}
-      <div class="safe-markup-text" style='color: green; margin: 1rem;'><i class='fa fa-lock'></i> MESSAGE ENCRYPTED</div>
+      <div class="safe-markup-text" style='color: green; margin: 1rem;'>
+          <i class='fa fa-lock'></i>
+          MESSAGE ENCRYPTED
+          <button class="btn btn-sm btn-primary readEncryptedMessage" id="readEncryptedMessage" aria-msgid="{{ message.id }}">read</button>
+          <textara style='display: none;' class='emessage' id='encrypted-message-{{ message.id }}'>{{ message.text }}</textara>
+      </div>
+        <div class="decryptedContent" id="decryptedContent-{{ message.id }}"></div>
     {% endif %}
-
 	{% if message.in_reply_to != None %}
 	<div class="row message-bottom-row">
 	<small><a class="user-icon-link" href="{{ message.in_reply_to }}">reply</a></small>

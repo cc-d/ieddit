@@ -1250,13 +1250,9 @@ def msg(username=None):
 		text = request.form.get('message_text')
 		title = request.form.get('message_title')
 		sent_to = request.form.get('sent_to')
-		encrypted = request.form.get('encrypted')
+		encrypted = request.form.get('msgencrypted')
 
-		if encrypted != None:
-			encrypted = True
-		else:
-			encrypted = False
-
+		encrypted = True if encrypted else False
 		if sent_to == None:
 			sent_to = username
 
@@ -1354,11 +1350,14 @@ def description(sub=None):
 
 @app.route('/i/<sub>/settings/', methods=['GET'])
 def settings(sub=None):
+	print("----------------------SETTINGS---------------------------------")
 	sub = normalize_sub(sub)
 	subr = db.session.query(Sub).filter_by(name=sub).first()
 	if request.is_mod:
+		print(subr.nsfw)
 		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw, sub_object=subr)
 	return '403'
+
 
 def get_style(sub=None):
 	if sub != None:

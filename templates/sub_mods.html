@@ -28,7 +28,9 @@
 <form action='/mod/settings' method='POST'>
 <input type='hidden' name='sub' value='{{ request.sub }}'>
 <ul class="list-group" style="max-width: 20rem;">
-  <li class="list-group-item rounded" style='border: 1px solid #bbb;'><input type='checkbox' name='marknsfw' value='nsfw' {% if nsfw %}checked{% endif %}> Mark All Posts NSFW?</li>
+  <li class="list-group-item rounded" style='border: 1px solid #bbb;'>
+      <input type='checkbox' id="modMarkSubNSFW" name='marknsfw' value='nsfw' {% if nsfw==True %}checked{% endif %}> Mark All Posts NSFW?
+  </li>
   <br>
 </ul>
 

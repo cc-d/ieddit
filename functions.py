@@ -213,3 +213,9 @@ def hot(ups, downs, date):
 	sign = 1 if s > 0 else -1 if s < 0 else 0
 	seconds = epoch_seconds(date) - 1134028003
 	return round(sign * order + seconds / 45000, 7)
+
+
+def mark_all_posts_nsfw(sub):
+
+	for post in sub:
+		post.nsfw = True

@@ -143,6 +143,12 @@ $(document).ready(function() {
 	setTimeout(function() {
 		autoFadeErrors(); 
 	}, 5000);
+
+	$('#modMarkSubNSFW').click(function(e){
+		console.log(e)
+		$(e.currentTarget).parent().append("<br><input type='checkbox' name='alsoposts' value='alsoposts'>Also update all posts in sub?</input>");
+	})
+
 });
 
 // Suggest Title

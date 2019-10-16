@@ -56,12 +56,12 @@
   <div class="comment-reply-box-wrapper">
     <textarea id='message-textarea' class="comment-reply-box-expand rounded" name="message_text"></textarea>
   </div>
-  <input name='not-encrypted' id='encrypt' value='' type='hidden'>
+  <input name='msgencrypted' id='msgencrypted' value='' type='hidden'>
 {% endif %}
   <input class="btn btn-primary rounded" style='color: white!important;' type='submit' value='send message'>
   {% if self_pgp %}
   {% if other_pgp.username %}
-  <button type="button" onclick='encryptText()' class="btn btn-sm btn-success"><i class='fa fa-lock'></i> encrypt</button>
+  <button type="button" class="btn btn-sm btn-success" id="encryptMessageButton"><i class='fa fa-lock'></i> encrypt</button>
   {% endif %}
   {% endif %}
 </form>
