@@ -105,6 +105,7 @@ textarea {
 	min-width: 300px;
 	max-width: 700px;
     width: -webkit-fill-available;
+    width: -moz-available;
     min-height: 8rem;
 }
 
@@ -524,6 +525,7 @@ blockquote {
 
 .expanded-post {
 	width: -webkit-fill-available;
+	width: -moz-available;
 }
 
 ul {

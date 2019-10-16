@@ -1424,7 +1424,7 @@ def settings(sub=None):
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_style(sub=None):
 	if sub != None:
-		sub = db.session.query(Sub).filter_by(name=sub).first()
+		sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
 		return sub.css
 	return None
 
