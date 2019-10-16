@@ -39,7 +39,7 @@ def user_delete_comment():
 	else:
 		return '403'
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 @ubp.route('/edit/<itype>/<iid>/', methods=['GET'])
 def user_get_edit(itype, iid):
 	if 'username' not in session:
@@ -195,13 +195,13 @@ def user_uanonymous(username=None):
 	return redirect('/u/' + user.username)
 
 @ubp.route('/reset_password/', methods=['GET'])
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def reset_page():
 	return render_template('reset_password.html')
 
 @limiter.limit(['5 per hour'])
 @ubp.route('/password_reset', methods=['POST', 'GET'])
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def password_reset(email=None):
 	if request.method == 'POST':
 		if config.CAPTCHA_ENABLE:
@@ -272,7 +272,7 @@ def new_reset_password():
 	return redirect('/login/')
 
 @ubp.route('/preferences/', methods=['GET'])
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def user_preferences():
 	if 'username' not in session:
 		flash('not logged in', 'danger')
@@ -358,7 +358,7 @@ def user_update_preferences():
 
 
 @ubp.route('/pgp/', methods=['GET'])
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def user_pgp():
 	if 'username' not in session:
 		flash('not logged in', 'danger')
