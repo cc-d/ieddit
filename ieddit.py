@@ -514,7 +514,13 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	if subi != 'all':
 		sticky = db.session.query(Post).filter(func.lower(Post.sub) == subi.lower(), Post.stickied == True).first()
 		if sticky:
-			posts.insert(0, sticky)
+			if 'blocked_subs' in session:
+				if sticky.sub in session['blocked_subs']:
+					pass
+				else:
+					posts.insert(0, sticky)
+			else:
+				posts.insert(0, sticky)
 
 
 	if more and len(posts) > 0:
