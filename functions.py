@@ -136,7 +136,6 @@ def split_link(sst, s):
 
 def pseudo_markup(text):
 	# preserve more than 1 newline
-	print(text)
 	mtext = text.splitlines()
 
 	for i in range(0, len(mtext)):
@@ -158,7 +157,6 @@ def pseudo_markup(text):
 
 		if addbr and addbr2:
 			if len(re.findall('^https?:\/\/.*.*$', mtext[i])) == 0:
-					print('ADDDING BR', mtext[i])
 					mtext[i] = mtext[i] + '<br>'
 
 	# code tags
@@ -265,8 +263,6 @@ def pseudo_markup(text):
 	mtext = mtext.replace('</a></a>', '')
 	mtext = mtext.replace('&lt;/a&gt;">', '">')
 	mtext = mtext.replace('&lt;/a&gt;</a>', '</a>')
-
-	print(mtext)
 
 	return mtext
 
