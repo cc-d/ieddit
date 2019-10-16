@@ -1569,7 +1569,89 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
+@cache.memoize(60)
+def get_stats():
+	posts = db.session.query(Post).all()
+	comments = db.session.query(Comment).all()
+	users = db.session.query(Iuser).all()
+	bans = db.session.query(Ban).count()
+	messages = db.session.query(Message).count()
+	mod_actions = db.session.query(Mod_action).count()
+	subs = db.session.query(Sub).count()
+	votes = db.session.query(Vote).all()
 
+	daycoms = [c for c in comments if ((datetime.now() - c.created).total_seconds()) < 86400]
+	dayposts = [p for p in posts if ((datetime.now() - p.created).total_seconds()) < 86400]
+	dayvotes = []
+
+	for v in votes:
+		if hasattr(v, 'created'):
+				if((datetime.now() - v.created).total_seconds()) < 86400:
+					dayvotes.append(v)
+
+	dayusers = []
+
+	for u in users:
+		for p in db.session.query(Post).filter_by(author=u.username).all():
+			if p.id in daycoms and u not in dayusers:
+				dayusers.append(u)
+			elif u in dayusers:
+				break
+
+		for c in db.session.query(Post).filter_by(author=u.username).all():
+			if c.id in daycoms and u not in dayusers:
+				dayusers.append(u)
+			elif u in dayusers:
+				break
+
+		for v in db.session.query(Vote).filter_by(user_id=u.id).all():
+			if v.id in dayvotes and u not in dayusers:
+				dayusers.append(u)
+			elif u in dayusers:
+				break
+
+	users = len(users)
+	daycoms = len(daycoms)
+	dayposts = len(dayposts)
+	dayvotes = len(dayvotes)
+	dayusers = len(dayusers)
+
+	# requires user be on linux, and have log file in this location, so this is
+	# only set to try to be calculated on the ieddit prod/dev server. it makes
+	# assumptions that cannot be made for any user on a different setup
+	if config.URL == 'https://ieddit.com' or config.URL == 'http://dev.ieddit.com':
+			fline = str(os.popen('head -n 1 /var/log/nginx/access.log').read()).split(' ')[3][1:]
+			lline = str(os.popen('tail -n 1 /var/log/nginx/access.log').read()).split(' ')[3][1:]
+
+			fline = datetime.strptime(fline, '%d/%b/%Y:%H:%M:%S')
+			lline = datetime.strptime(lline, '%d/%b/%Y:%H:%M:%S')
+
+			timediff = lline - fline
+
+			timediff = ' total requests in past %s hours' % str(timediff.total_seconds() / 60 / 24)
+
+			lc = str(os.popen('wc -l /var/log/nginx/access.log').read()).split(' ')[0]
+
+			timediff = lc + timediff
+
+
+			# cache_bust = '?' + str(time.time()).split('.')[0]
+			uptime = (time.time() - int(cache_bust[1:])) / 60 / 60
+
+
+
+	return (len(posts), len(comments), users, bans, messages, mod_actions, subs, len(votes), daycoms, dayposts, dayvotes, dayusers,
+		timediff, uptime)
+
+@app.route('/stats/', methods=['GET'])
+def stats():
+	(posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
+		dayusers, timediff, uptime) = get_stats()
+
+
+	return render_template('stats.html', posts=posts, dayposts=dayposts, comments=comments, daycoms=daycoms,
+		users=users, bans=bans, messages=messages, mod_actions=mod_actions, subs=subs, votes=votes, dayvotes=dayvotes,
+		dayusers=dayusers, timediff=timediff, uptime=uptime)
 
 
 

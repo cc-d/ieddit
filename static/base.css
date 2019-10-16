@@ -579,3 +579,8 @@ ul {
 	margin-left: 1rem;
 	margin-right: 1rem;
 }
+
+.stat {
+	display: inline-block;
+	margin-left: 2rem;
+}
