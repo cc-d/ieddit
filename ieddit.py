@@ -280,6 +280,8 @@ def set_rate_limit():
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def normalize_username(username, dbuser=False):
+	if username == None:
+		return False
 	username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
 	if username != None:
 		if dbuser:
@@ -301,7 +303,13 @@ def get_all_subs():
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_pgp_from_username(username):
-	pgp = db.session.query(Pgp).filter_by(username=normalize_username(username)).first()
+	u = normalize_username(username)
+	if u == False:
+		return False
+
+	else:
+		pgp = db.session.query(Pgp).filter_by(username=normalize_username(username)).first()
+	
 	if pgp != None:
 		return pgp
 	return False
@@ -1340,6 +1348,8 @@ def reply_message(username=None, mid=None):
 		if hasattr(m, 'in_reply_to'):
 			if m.in_reply_to != None:
 				m.ppath = m.in_reply_to.replace(config.URL, '')
+
+
 		return render_template('message_reply.html', message=m, sendto=False, self_pgp=get_pgp_from_username(session['username']),
 			other_pgp=get_pgp_from_username(m.sender), other_user=get_user_from_name(username))
 
