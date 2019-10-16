@@ -109,6 +109,7 @@ class Vote(db.Model):
 	comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
 	vote = db.Column(db.Integer, nullable=False)
 	user_id = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=False)
+	created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 	def __repr__(self):
 		return '<Vote %r>' % self.id
