@@ -255,6 +255,7 @@ def is_admin(username):
 def set_rate_limit():
 	if 'username' in session:
 		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME)
+		cache.clear()
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def normalize_username(username, dbuser=False):
