@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 var maxWidth = 0;
 var widthBreak = 768;
 
@@ -80,14 +72,15 @@ function expandPost(pid, ptype, vid) {
 		v.attr('src', src);
 		v.html(v);
 		v.css('display', '');
-
-		$('#post-thumb-' + pid).css('display', 'none');
-		post.parent().css('margin-left', '0.75rem');
 	}
 
 	post = $('#post-' + pid);
 	post.css('display', 'inline-block');
 
+	$('#media-body-' + pid).css('margin-left', '0.5rem');
+
+	console.log(maxWidth);
+	console.log(widthBreak);
 	if (maxWidth <= widthBreak) {
 		$('#post-thumb-' + pid).css('display', 'none');
 		post.parent().css('margin-left', '0.75rem');

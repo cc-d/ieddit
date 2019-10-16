@@ -672,8 +672,13 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 				post.sub_nsfw = False
 			if hasattr(post, 'text'):
 				post.text = pseudo_markup(post.text)
+			
 			if thumb_exists(post.id):
 				post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
+			elif hasattr(post, 'url'):
+				post.thumbnail = 'globe.png'
+
+
 			if hasattr(post, 'self_text'):
 				if post.self_text != None:
 					post.self_text = pseudo_markup(post.self_text)
@@ -1472,8 +1477,7 @@ def get_blocked_subs(username=None):
 	else:
 		return []
 
-@app.route('/i/<sub>/block', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@app.route('/i/<sub>/block', methods=['POST'])
 def blocksub(sub=None):
 	if 'username' not in session:
 		flash('not logged in', 'error')
@@ -1495,13 +1499,13 @@ def blocksub(sub=None):
 		db.session.add(new_block)
 		db.session.commit()
 		bsubs.append(sub)
-		flash('blocked %s' % sub)
+		flash('unsubscribed from %s' % sub, 'success')
 	else:
 		dblock = db.session.query(Sub_block).filter_by(username=session['username'], sub=sub).first()
 		db.session.delete(dblock)
 		db.session.commit()
 		bsubs = [b for b in bsubs if b != sub]
-		flash('unblocked %s' % sub)
+		flash('subscribed to %s' % sub, 'success')
 
 	session['blocked_subs'] = bsubs
 

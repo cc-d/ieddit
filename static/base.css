@@ -42,6 +42,7 @@ textarea {
 	max-height: 5rem;
 	max-width: 5rem;
 }
+
 .post-image-container {
 	min-height: 6rem;
 	min-width: 6rem;
@@ -56,6 +57,19 @@ textarea {
 	}
 	.sub-post-comment-page {
 		margin-left: 0.5rem;
+	}
+	.post-image {
+		max-height: 4.75rem;
+		max-width: 4.75rem;
+	}
+	.posts-media-body a {
+		font-size: 90%;
+	}
+	.posts-media-body button {
+		font-size: 90%;
+	}
+	.sub-post-title {
+		margin-right: 10px;
 	}
 }
 
@@ -83,13 +97,13 @@ textarea {
 .quoted-text {
 	background-color: lavender;
 	padding-left: 0.25rem;
-
 	margin-bottom: 0;
 }
 
 .generic-alert {
-	padding-left: 1rem;
-	padding-right: 1rem;
+	padding-top: 1rem;
+	padding-left: 4rem;
+	padding-right: 4rem;
 }
 
 .comment-reply {
@@ -393,6 +407,7 @@ blockquote {
 }
 .mod-option-wrapper {
 	float: right;
+	margin-right: 0.5rem;
 }
 
 .mod-option-wrapper-comments {
@@ -450,7 +465,15 @@ blockquote {
 	border-top: 1px solid black;
 }
 
+.alert.success {
+  background-color: green;
+}
+
 .alert.succes {
+  background-color: green;
+}
+
+.alert.sucess {
   background-color: green;
 }
 
@@ -545,7 +568,7 @@ ul {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	width: 265px;
-	margin-top: -0.5rem!important;
+	/*margin-top: -0.5rem!important;*/
 }
 
 .nsfwpost {
@@ -608,6 +631,19 @@ ul {
 	margin-top: -3px!important;
 }
 
+.comment-color-1 {
+	background-color: #303030!important;
+}
+
+@media only screen and (max-width: 992px) {
+	.sub-post.rounded {
+		margin-left: 0rem;
+	}
+}
+
+.post-inner-div {
+	margin-top: -0.5rem!important;
+}
 
 .decryptedContent {
 	display: none;
