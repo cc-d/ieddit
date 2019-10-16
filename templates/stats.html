@@ -9,6 +9,10 @@
 
 	<br><h6 class='stat'>{{ timediff }}</h6><br><br>
 	<h6 class='stat'>time (in hours) since last restart/code update: {{ uptime }}</h6>
+
+	{% if debug %}
+	<br><br><br>{{ debug }}
+	{% endif %}
 </div>
 
 {% endblock %}

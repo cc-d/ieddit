@@ -121,6 +121,11 @@ def apply_headers(response):
 		if hasattr(g, 'start'):
 			load_time = str(time.time() - g.start)
 			print('\n[Load: %s]' % load_time)
+
+	if request.environ['REQUEST_METHOD'] == 'POST':
+		cache.clear()
+
+
 	return response
 
 
@@ -306,7 +311,6 @@ def login():
 			if check_password_hash(hashed_pw, password):
 				logout()
 				[session.pop(key) for key in list(session.keys())]
-				cache.clear()
 
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
@@ -333,7 +337,7 @@ def login():
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
 	[session.pop(key) for key in list(session.keys())]
-	cache.clear()
+
 	return redirect(url_for('index'), 302)
 
 @app.route('/register', methods=['POST'])
@@ -749,8 +753,8 @@ def create_sub():
 			new_mod = Moderator(username=new_sub.created_by, sub=new_sub.name)
 			db.session.add(new_mod)
 			db.session.commit()
-			cache.delete_memoized(get_subi)
-			cache.clear()
+
+
 			set_rate_limit()
 			flash('You have created a new sub! Mod actions are under the "info" tab.', 'success')
 			return redirect(config.URL + '/i/' + subname, 302)
@@ -849,10 +853,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 		if vote == 0 and last_vote == None:
 			return 'never voted'
 
-		cache.delete_memoized(get_subi)
-		cache.delete_memoized(c_get_comments)
-		cache.clear()
-		cache.delete_memoized(list_of_child_comments)
+
 
 		if vote == 0:
 			if last_vote.post_id != None:
@@ -866,14 +867,14 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 					vpost.downs -= 1
 			db.session.delete(last_vote)
 			db.session.commit()
-			cache.clear()
+
 			return str(vpost.ups - vpost.downs)
 
 		if last_vote == None:
 			new_vote = Vote(user_id=user_id, vote=vote, comment_id=comment_id, post_id=post_id)
 			db.session.add(new_vote)
 			db.session.commit()
-			cache.clear()
+
 
 		elif invert_vote:
 			if last_vote.vote == 1:
@@ -881,7 +882,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 			else:
 				last_vote.vote = 1
 		db.session.commit()
-		cache.clear()
+
 
 		if comment_id != None:
 			vcom = db.session.query(Comment).filter_by(id=comment_id).first()
@@ -904,7 +905,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 				vcom.ups -= 1
 
 		db.session.commit()	
-		cache.clear()
+		
 
 		return str(vcom.ups - vcom.downs)
 	elif request.method == 'GET':
@@ -997,7 +998,7 @@ def create_post(postsub=None):
 
 		db.session.add(new_post)
 		db.session.commit()
-		cache.clear()
+		
 
 		if post_type == 'url':
 			#os.system('python3 get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)))
@@ -1011,7 +1012,7 @@ def create_post(postsub=None):
 			new_post.author_type = 'mod'
 
 		db.session.commit()
-		cache.clear()
+		
 
 		url = new_post.permalink
 		set_rate_limit()
@@ -1023,10 +1024,9 @@ def create_post(postsub=None):
 
 		db.session.add(new_post)
 		db.session.commit()
-		cache.clear()
 
 
-		cache.delete_memoized(get_subi)
+
 		if 'previous_post_form' in session:
 			session['previous_post_form'] = None
 		return redirect(url)
@@ -1132,7 +1132,7 @@ def create_comment():
 		anonymous=anonymous, deleted=deleted)
 	db.session.add(new_comment)
 	db.session.commit()
-	cache.clear()
+	
 
 	new_comment.permalink = post.permalink +  str(new_comment.id)
 
@@ -1144,7 +1144,7 @@ def create_comment():
 		new_comment.author_type = 'user'
 
 	db.session.commit()
-	cache.clear()
+	
 
 	new_vote = Vote(comment_id=new_comment.id, vote=1, user_id=session['user_id'], post_id=None)
 	db.session.add(new_vote)
@@ -1153,7 +1153,7 @@ def create_comment():
 	db.session.add(new_comment)
 
 	db.session.commit()
-	cache.clear()
+	
 
 	sender = new_comment.author
 
@@ -1164,7 +1164,6 @@ def create_comment():
 				sent_to=cparent.author, in_reply_to=new_comment.permalink, anonymous=anonymous)
 			db.session.add(new_message)
 			db.session.commit()
-			cache.clear()
 	else:
 		if not deleted:
 			if post.author != session['username']:
@@ -1172,13 +1171,6 @@ def create_comment():
 					sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous)
 				db.session.add(new_message)
 				db.session.commit()
-				cache.clear()
-
-
-	cache.delete_memoized(get_subi)	
-	cache.delete_memoized(c_get_comments) 
-	cache.delete_memoized(list_of_child_comments)
-	cache.clear()
 
 	set_rate_limit()
 
@@ -1278,7 +1270,7 @@ def reply_message(username=None, mid=None):
 			other_pgp=get_pgp_from_username(m.sender), other_user=get_user_from_name(username))
 
 def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False):
-	cache.delete_memoized(has_messages)
+
 	new_message = Message(title=title, text=text, sender=sender, sent_to=sent_to, encrypted=encrypted)
 	db.session.add(new_message)
 	db.session.commit()
@@ -1320,7 +1312,7 @@ def msg(username=None):
 		sender = session['username']
 
 		sendmsg(title=title, text=text, sender=session['username'], sent_to=sent_to, encrypted=encrypted)
-		cache.clear()
+		
 
 		set_rate_limit()
 		flash('sent message', category='success')
@@ -1479,7 +1471,7 @@ def explore():
 @app.route('/clear_cache', methods=['GET'])
 def ccache():
 	if request.remote_addr == '127.0.0.1':	
-		cache.clear()
+		
 		return 'cleared'
 
 @app.route('/about/', methods=['GET'])
@@ -1690,10 +1682,14 @@ def stats():
 	(posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
 		dayusers, timediff, uptime) = get_stats()
 
+	if 'admin' in session:
+		debug = str(vars(request))
+	else:
+		debug = False
 
 	return render_template('stats.html', posts=posts, dayposts=dayposts, comments=comments, daycoms=daycoms,
 		users=users, bans=bans, messages=messages, mod_actions=mod_actions, subs=subs, votes=votes, dayvotes=dayvotes,
-		dayusers=dayusers, timediff=timediff, uptime=uptime)
+		dayusers=dayusers, timediff=timediff, uptime=uptime, debug=debug)
 
 
 

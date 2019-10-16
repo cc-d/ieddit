@@ -31,8 +31,7 @@ def mod_delete_post():
 			post.deleted = True
 		mod_action(session['username'], msg, post.permalink, post.sub)
 		db.session.commit()
-		cache.delete_memoized(get_subi)
-		cache.clear()
+
 		flash('post %s' % msg, category='success')
 		return redirect(sub_url)
 	else:
@@ -56,8 +55,7 @@ def mod_delete_comment():
 		comment.deleted = True
 		mod_action(session['username'], 'delete', comment.permalink, comment.sub_name)
 		db.session.commit()
-		cache.delete_memoized(c_get_comments)
-		cache.clear()
+
 		flash('comment deleted', category='success')
 		return redirect(post.permalink)		
 	else:
@@ -86,8 +84,7 @@ def mod_sticky_post():
 
 		post.stickied = True
 		db.session.commit()
-		cache.delete_memoized(get_subi)
-		cache.clear()
+
 		mod_action(session['username'], 'stickied', post.permalink, post.sub)
 		flash('stickied post', category='success')
 		return redirect(config.URL + '/i/' + post.sub)
@@ -113,8 +110,8 @@ def mod_unsticky_post():
 		mod_action(session['username'], 'unstickied', post.permalink, post.sub)
 		post.stickied = False
 		db.session.commit()
-		cache.delete_memoized(get_subi)
-		cache.clear()
+
+		
 		flash('unstickied post', category='success')
 		return redirect(config.URL + '/i/' + post.sub)
 	else:
@@ -150,8 +147,7 @@ def mod_lock_post():
 			flash('unlocked post', category='success')
 
 		db.session.commit()
-		cache.delete_memoized(get_subi)
-		cache.clear()
+
 		return redirect(post.permalink)
 	else:
 		return '403'
@@ -205,8 +201,7 @@ def mod_ban_user():
 		mod_action(session['username'], 'ban', obj.permalink, sub)
 
 		db.session.commit()
-		cache.delete_memoized(get_subi)
-		cache.clear()
+
 		flash('banned ' + obj.author + ' from ' + sub, category='success')
 		return redirect(config.URL + '/i/' + sub)
 	else:
@@ -232,7 +227,7 @@ def mod_unban_user():
 		uban = db.session.query(Ban).filter_by(id=ban_id, sub=sub)
 		uban.delete()
 		db.session.commit()
-		cache.clear()
+		
 		mod_action(session['username'], 'unban', username, sub)
 		flash('unbanned ' + username, 'success')
 		return redirect('/i/' + sub + '/mods/banned/')
@@ -268,8 +263,7 @@ def mod_addmod():
 		new_mod = Moderator(sub=sub, username=username, rank=rank)
 		db.session.add(new_mod)
 		db.session.commit()
-		cache.delete_memoized(get_sub_mods)
-		cache.clear()
+
 		flash('new moderator ' + username, 'succes')
 		return redirect('/i/' + sub + '/mods/')
 	else:
@@ -303,8 +297,7 @@ def mod_removemod():
 
 		db.session.query(Moderator).filter_by(username=delmod.username, sub=sub).delete()
 		db.	session.commit()
-		cache.delete_memoized(get_sub_mods)
-		cache.clear()
+		
 		flash('deleted mod')
 		return redirect('/i/' + sub + '/mods/')
 
@@ -329,7 +322,7 @@ def mod_editrules():
 		desc.rules = rtext
 		db.session.add(desc)
 		db.session.commit()
-		cache.clear()
+		
 		flash('successfully updated description')
 		return(redirect('/i/' + sub + '/info/'))
 	else:
@@ -354,7 +347,7 @@ def mod_marknsfw():
 		post.nsfw = True
 		flash('marked as nsfw')
 		db.session.commit()
-		cache.clear()
+		
 		return redirect(post.permalink)
 
 @bp.route('/title', methods=['POST'])
@@ -381,7 +374,7 @@ def mod_title():
 		db.session.add(desc)
 		db.session.commit()
 		flash('successfully updated title')
-		cache.clear()
+		
 		return(redirect('/i/' + sub + '/info/'))
 	else:
 		return '403'
@@ -417,7 +410,7 @@ def mod_settings():
 		db.session.add(sub)
 		db.session.commit()
 		flash('successfully updated settings', 'success')
-		cache.clear()
+		
 		return(redirect('/i/' + sub.name + '/info/'))
 	else:
 		return '403'
