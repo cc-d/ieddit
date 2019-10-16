@@ -545,11 +545,11 @@ ul {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	width: 265px;
-	margin-top: 0!important;
+	margin-top: -0.5rem!important;
 }
 
 .nsfwpost {
-	border: 1px solid #400000!important;
+	border: 1px solid #660000!important;
 }
 
 .recent {
@@ -600,8 +600,8 @@ ul {
     font-family: auto;
 }
 
-.comment-inner-div {
-
+.col.inner-div.comment-inner-div {
+	margin-top: -0rem!important;
 }
 
 .inner-combase {
