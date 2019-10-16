@@ -949,11 +949,12 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 				if last_vote.post_id != None:
 					vpost = db.session.query(Post).filter_by(id=last_vote.post_id).first()
 				elif last_vote.comment_id != None:
-					vpost = db.session.query(Comment).filter_by(id=last_vote.post_id).first()
+					vpost = db.session.query(Comment).filter_by(id=last_vote.comment_id).first()
 				if last_vote.vote == 1:
 					vpost.ups -= 1
 				elif last_vote.vote == -1:
 					vpost.downs -= 1
+
 			db.session.delete(last_vote)
 			db.session.commit()
 
@@ -1370,9 +1371,13 @@ def msg(username=None):
 		text = request.form.get('message_text')
 		title = request.form.get('message_title')
 		sent_to = request.form.get('sent_to')
-		encrypted = request.form.get('msgencrypted')
+		encrypted = request.form.get('encrypted')
 
-		encrypted = True if encrypted else False
+		if encrypted != None:
+			encrypted = True
+		else:
+			encrypted = False
+
 		if sent_to == None:
 			sent_to = username
 

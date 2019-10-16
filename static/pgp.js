@@ -99,14 +99,25 @@ const decryptMessage = async(msgid) => {
 };
 
 function makeKeysMothaFucka(){
-	passphrase = prompt("some words plox")
+	if ($('#passphrase').css('display') == 'none') {
+		passphrase = generatePassphrase();
+	} else if ($('#secret').text() != '') {
+		passphrase = $('#secret').text();
+	} else {
+		passphrase = generatePassphrase();
+	}
+	
+	$('#secret').val(passphrase);
+
 	useremail = $('#useremail').val();
 	username = $('#username').val();
+
 	var options = {
 		userIds: [{ name:username, email:useremail }],
 		curve: "ed25519",
 		passphrase: passphrase
 	};
+
 	openpgp.generateKey(options).then(function(key) {
 		var privkey = key.privateKeyArmored; // '-----BEGIN PGP PRIVATE KEY BLOCK ... '
 		var pubkey = key.publicKeyArmored;   // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
@@ -115,5 +126,9 @@ function makeKeysMothaFucka(){
 		$('#pubkey').text(pubkey);
 		$('#passphrase').css('display', 'block');
 		$('#gen-key-btn').css('display', 'none');
+
+		$('#replacePrivateKey').text('use custom passphrase');
+		$('#replacePrivateKey').attr('class', 'rounded btn btn-danger');
+
 	});
 }
