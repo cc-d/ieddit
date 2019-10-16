@@ -103,7 +103,7 @@
 	{% include 'collapsed.html' %}
 
 
-	<li class="media sub-comment media-body rounded" level="{{ loop.depth - 1 }}" style="margin-left:{{ loop.depth - 1 }}rem" loop='{{ loop.index0 }} {{ loop.depth0 }}' id="comment-{{ comment.id }}">
+	<li class="media sub-comment media-body rounded comment-color-{{ loop.depth0 % 2 }}" level="{{ loop.depth - 1 }}" style="margin-left:{{ loop.depth - 1 }}rem" loop='{{ loop.index0 }} {{ loop.depth0 }}' id="comment-{{ comment.id }}">
 		<div class='media-body comment-media-body'>
 		<div class="row post-row">
 			<div class="col inner-div comment-inner-div">

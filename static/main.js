@@ -373,6 +373,7 @@ $(document).ready(function() {
 function minHide(cid) {
 	comment = $('#comment-' + cid);
 	hcomment = $('#hide-comment-' + cid);
+
 	comment.css('display', 'none');
 	hcomment.css('display', 'block');
 

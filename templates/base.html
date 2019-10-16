@@ -50,10 +50,7 @@
 					<a class="nav-link" href="/i/{{ request.sub }}">/i/{{ request.sub }}</a>
 				</li>
 				<li class="nav-item active">
-					<a class="nav-link" href="/i/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary">information</button></a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success">Create Post +</button></a>
+					<a class="nav-link" href="/i/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary"><i class='fa fa-gears'></i> information</button></a>
 				</li>
 				{% else %}
 				<li class="nav-item active" style="margin-top: 0.25rem;">
@@ -66,15 +63,19 @@
 
 				{% if request.sub and request.sub != 'all' %}
 				{% if session['username'] %}
+				<form action='/i/{{ request.sub }}/block' method='POST'>
+				<li class='nav-item nav-link'>
+				<input type='hidden' name='lol' value='1'>
 				{% if request.sub in session['blocked_subs'] %}
-				<li class="nav-item">
-					<a class="nav-link" href="/i/{{ request.sub }}/block"><button type="button" class="btn btn-sm btn-danger">unblock</button></a>
-				</li>
+					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger	'>unsubscribe <i class='fa fa-ban'></i></button>
 				{% else %}
-				<li class="nav-item">
-					<a class="nav-link" href="/i/{{ request.sub }}/block"><button type="button" class="btn btn-sm btn-danger">block</button></a>
-				</li>
+					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'>subscribe <i class='fa fa-star'></i></button>
 				{% endif %}
+			</li>
+				</form>
+				<li class="nav-item">
+					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success">Create Post +</button></a>
+				</li>
 				{% endif %}
 
 				{% else %}
@@ -129,7 +130,8 @@
 </div>
 	{% with messages = get_flashed_messages(with_categories=true) %}
 		{% if messages %}
-			<ul class='flashes generic-alert' onload="autoFadeAlert()">
+		<div id='alert-container' class='bg-light'>
+			<ul class='flashes generic-alert bg-light' onload="autoFadeAlert()">
 			{% for category, message in messages %}
 			<div class="alert alert-dismissible alert-{{ category }} fade show" role="alert">
 				{{ message }}
@@ -139,6 +141,7 @@
 			</div>
 			{% endfor %}
 			</ul>
+		</div>
 		{% endif %}
 	{% endwith %}
 </div>
