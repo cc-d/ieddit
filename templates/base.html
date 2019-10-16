@@ -67,9 +67,9 @@
 				<li class='nav-item nav-link'>
 				<input type='hidden' name='lol' value='1'>
 				{% if request.sub in session['blocked_subs'] %}
-					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger	'>unsubscribe <i class='fa fa-ban'></i></button>
+					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger	'>subscribe <i class='fa fa-ban'></i></button>
 				{% else %}
-					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'>subscribe <i class='fa fa-star'></i></button>
+					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'>unsubscribe <i class='fa fa-star'></i></button>
 				{% endif %}
 			</li>
 				</form>
