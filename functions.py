@@ -144,6 +144,7 @@ def pseudo_markup(text):
 
 		reg2 = ['<li>.*<\/li>', '<ul>.*<\/ul>', '<code>.*<\/code>', '<blockquote>.*<\/blockquote>']
 
+		addbr = True
 		addbr2 = True
 
 		for reg in regstrs:
