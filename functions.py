@@ -282,3 +282,19 @@ def hot(ups, downs, date):
 	sign = 1 if s > 0 else -1 if s < 0 else 0
 	seconds = epoch_seconds(date) - 1134028003
 	return round(sign * order + seconds / 45000, 7)
+
+def get_youtube_vid_id(url):
+	if url == None:
+		return False
+	if url.find('youtube.com/watch?v=') != -1:
+		return url.split('=')[1]
+	if url.find('youtube.com/v/') != -1:
+			url = url.split('/v/')[1]
+			if url.find('?') == -1:
+					return url.split('?')[0]
+			else:
+				return url
+	if url.find('youtu.be/') != -1:
+		return url.split('.be/')[1]
+
+	return False

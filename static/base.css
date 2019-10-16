@@ -152,6 +152,7 @@ textarea {
 }
 
 .sub-post-title {
+	margin-top: -0.75rem;
 	min-height: 2rem;
 }
 
@@ -467,7 +468,8 @@ blockquote {
 }
 
 .expand-post {
-	display: inline;
+	font-size: 105%;
+	display: inline-block;
     margin-left: 0;
     margin-right: 0.25rem;
     font-size: larger;
@@ -541,6 +543,7 @@ ul {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	width: 265px;
+	margin-top: -0.5rem;
 }
 
 .nsfwpost {
@@ -583,4 +586,14 @@ ul {
 .stat {
 	display: inline-block;
 	margin-left: 2rem;
+}
+
+.video-play-btn {
+    font-size: 60%;
+    border: 1px solid #bbb;
+    padding-left: 4px;
+    padding-right: 3px;
+    padding-top: 2px;
+    padding-bottom: 1px;
+    font-family: auto;
 }

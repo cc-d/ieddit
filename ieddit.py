@@ -480,6 +480,10 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		if thumb_exists(post.id):
 			post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
 
+
+		if get_youtube_vid_id(post.url):
+			post.video = 'https://www.youtube.com/embed/%s?version=3&enablejsapi=1' % get_youtube_vid_id(post.url)
+
 		post.mods = get_sub_mods(post.sub)
 		post.created_ago = time_ago(post.created)
 		if subi != 'all':
@@ -578,6 +582,10 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 			if hasattr(post, 'self_text'):
 				if post.self_text != None:
 					post.self_text = pseudo_markup(post.self_text)
+
+			if get_youtube_vid_id(post.url):
+				post.video = 'https://www.youtube.com/embed/%s?version=3&enablejsapi=1' % get_youtube_vid_id(post.url)
+
 		else:
 			post = None
 		if 'user_id' in session:
@@ -1569,7 +1577,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
-@cache.memoize(600)
+@cache.memoize(60)
 def get_stats():
 	posts = db.session.query(Post).all()
 	comments = db.session.query(Comment).all()
