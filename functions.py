@@ -14,7 +14,7 @@ from bleach import clean
 
 from datetime import datetime, timedelta
 from math import log
-import time 
+import time
 
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
 
@@ -265,6 +265,9 @@ def pseudo_markup(text):
 	mtext = mtext.replace('&lt;/a&gt;">', '">')
 	mtext = mtext.replace('&lt;/a&gt;</a>', '</a>')
 
+	if mtext == '':
+		return '<br>'
+
 	return mtext
 
 epoch = datetime(1970, 1, 1)
@@ -298,3 +301,4 @@ def get_youtube_vid_id(url):
 		return url.split('.be/')[1]
 
 	return False
+

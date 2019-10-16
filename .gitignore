@@ -10,3 +10,4 @@ sitemap.xml
 static/sitemap.xml
 .idea
 config.py
+test.db-journal

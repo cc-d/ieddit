@@ -135,7 +135,7 @@ db.session.commit()
 
 comments = list(Comment.query.all())
 
-for i in range(50):
+for i in range(200):
 	if choice([x for x in range(3)]) == 0:
 		pid = None
 		level = None
