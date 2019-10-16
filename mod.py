@@ -32,6 +32,7 @@ def mod_delete_post():
 		mod_action(session['username'], msg, post.permalink, post.sub)
 		db.session.commit()
 		cache.delete_memoized(get_subi)
+		cache.clear()
 		flash('post %s' % msg, category='success')
 		return redirect(sub_url)
 	else:
@@ -231,6 +232,7 @@ def mod_unban_user():
 		uban = db.session.query(Ban).filter_by(id=ban_id, sub=sub)
 		uban.delete()
 		db.session.commit()
+		cache.clear()
 		mod_action(session['username'], 'unban', username, sub)
 		flash('unbanned ' + username, 'success')
 		return redirect('/i/' + sub + '/mods/banned/')

@@ -192,7 +192,7 @@ def sitemap():
 def robotstxt():
 	return app.send_static_file('robots.txt')
 
-#@cache.memoize(600)
+@cache.memoize(600)
 def get_subtitle(sub):
 	try:
 		title = db.session.query(Sub).filter_by(name=sub).first()
@@ -201,7 +201,7 @@ def get_subtitle(sub):
 		title = None
 	return title
 
-#@cache.memoize(600)
+@cache.memoize(600)
 def get_sub_mods(sub, admin=True):
 	mod_subs = db.session.query(Moderator).filter_by(sub=sub).all()
 	if admin == False:
@@ -211,6 +211,7 @@ def get_sub_mods(sub, admin=True):
 		mod_subs.append(a)
 	return [m.username for m in mod_subs]
 
+@cache.memoize(600)
 def get_banned_subs(username):
 	subs = db.session.query(Ban).filter_by(username=username).all()
 	b = []
@@ -218,6 +219,7 @@ def get_banned_subs(username):
 		b.append(s.sub)
 	return b
 
+@cache.memoize(600)
 def is_mod(obj, username):
 	if hasattr(obj, 'inurl_title'):
 		post = obj
@@ -230,6 +232,7 @@ def is_mod(obj, username):
 			return True
 	return False
 
+@cache.memoize(600)
 def is_admin(username):
 	if db.session.query(db.session.query(Iuser).filter_by(admin=True, username=username).exists()).scalar():
 	#if 'admin' in session:
@@ -240,6 +243,7 @@ def set_rate_limit():
 	if 'username' in session:
 		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME)
 
+@cache.memoize(6000)
 def normalize_username(username, dbuser=False):
 	username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
 	if username != None:
@@ -248,22 +252,26 @@ def normalize_username(username, dbuser=False):
 		return username.username
 	return False
 
+@cache.memoize(6000)
 def normalize_sub(sub):
 	subl = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
 	if subl != None:
 		return subl.name
 	return sub
 
+@cache.memoize(600)
 def get_all_subs():
 	return db.session.query(Sub).all()
 
 
+@cache.memoize(6000)
 def get_pgp_from_username(username):
 	pgp = db.session.query(Pgp).filter_by(username=normalize_username(username)).first()
 	if pgp != None:
 		return pgp
 	return False
 
+@cache.memoize(6000)
 def get_user_from_name(username):
 	if username == '' or username == False or username == None:
 		return False
@@ -298,6 +306,8 @@ def login():
 			if check_password_hash(hashed_pw, password):
 				logout()
 				[session.pop(key) for key in list(session.keys())]
+				cache.clear()
+
 				session['username'] = login_user.username
 				session['user_id'] = login_user.id
 				if login_user.admin:
@@ -313,6 +323,7 @@ def login():
 				if login_user.pgp:
 					session['pgp_enabled'] = True
 
+
 				return redirect(url_for('index'), 302)
 
 		flash('Username or Password incorrect.', 'danger')
@@ -322,6 +333,7 @@ def login():
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
 	[session.pop(key) for key in list(session.keys())]
+	cache.clear()
 	return redirect(url_for('index'), 302)
 
 @app.route('/register', methods=['POST'])
@@ -372,20 +384,24 @@ def register():
 		session['username'] = new_user.username
 		session['user_id'] = new_user.id
 		set_rate_limit()
+
+		cache.clear()
+
 		return redirect(config.URL, 302)
 
+@cache.memoize(600)
 @app.route('/')
 def index():
 	return subi(subi='all', nsfw=False)
 
-#@cache.memoize(600)
+@cache.memoize(600)
 def is_sub_nsfw(sub):
 	s = db.session.query(Sub).filter_by(name=sub).first()
 	if s.nsfw:
 		return True
 	return False
 
-#@cache.memoize(600)
+@cache.memoize(600)
 def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=True, d=None, s=None):
 	if offset != None:
 		offset = int(offset)
@@ -559,7 +575,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 
 	#return str(hasattr(request.environ, 'QUERY_STRING'))#str(vars(request))
 
-#@cache.memoize(600)
+@cache.memoize(600)
 def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
 	post = None
 	parent_comment = None
@@ -668,6 +684,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 # this sort of recursion KILLS performance, especially when combined with the already
 # terrible comment_structure function.
 #@cache.memoize(600)
+@cache.memoize(600)
 def list_of_child_comments(comment_id, sort_by=None):
 	comments = {}
 	current_comments = []
@@ -693,7 +710,7 @@ def list_of_child_comments(comment_id, sort_by=None):
 				current_comments.append(c.id)
 				comments[c.id] = c
 			current_comments.remove(current_c)
-	return [comments[c] for c in comments]
+	return comments
 
 @app.route('/create', methods=['POST', 'GET'])
 @notbanned
@@ -733,6 +750,7 @@ def create_sub():
 			db.session.add(new_mod)
 			db.session.commit()
 			cache.delete_memoized(get_subi)
+			cache.clear()
 			set_rate_limit()
 			flash('You have created a new sub! Mod actions are under the "info" tab.', 'success')
 			return redirect(config.URL + '/i/' + subname, 302)
@@ -747,6 +765,7 @@ def create_sub():
 			return redirect(url_for('login'))
 		return render_template('create.html')
 
+@cache.memoize(600)
 @app.route('/u/<username>/', methods=['GET'])
 def view_user(username):
 	vuser = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
@@ -832,6 +851,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 
 		cache.delete_memoized(get_subi)
 		cache.delete_memoized(c_get_comments)
+		cache.clear()
 		cache.delete_memoized(list_of_child_comments)
 
 		if vote == 0:
@@ -846,12 +866,14 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 					vpost.downs -= 1
 			db.session.delete(last_vote)
 			db.session.commit()
+			cache.clear()
 			return str(vpost.ups - vpost.downs)
 
 		if last_vote == None:
 			new_vote = Vote(user_id=user_id, vote=vote, comment_id=comment_id, post_id=post_id)
 			db.session.add(new_vote)
 			db.session.commit()
+			cache.clear()
 
 		elif invert_vote:
 			if last_vote.vote == 1:
@@ -859,6 +881,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 			else:
 				last_vote.vote = 1
 		db.session.commit()
+		cache.clear()
 
 		if comment_id != None:
 			vcom = db.session.query(Comment).filter_by(id=comment_id).first()
@@ -881,8 +904,8 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 				vcom.ups -= 1
 
 		db.session.commit()	
+		cache.clear()
 
-	
 		return str(vcom.ups - vcom.downs)
 	elif request.method == 'GET':
 		return 'get'
@@ -974,6 +997,7 @@ def create_post(postsub=None):
 
 		db.session.add(new_post)
 		db.session.commit()
+		cache.clear()
 
 		if post_type == 'url':
 			#os.system('python3 get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)))
@@ -985,7 +1009,10 @@ def create_post(postsub=None):
 			new_post.author_type = 'admin'
 		elif is_mod(new_post, session['username']) and anonymous == False:
 			new_post.author_type = 'mod'
+
 		db.session.commit()
+		cache.clear()
+
 		url = new_post.permalink
 		set_rate_limit()
 
@@ -993,9 +1020,12 @@ def create_post(postsub=None):
 		db.session.add(new_vote)
 
 		new_post.ups += 1
+
 		db.session.add(new_post)
 		db.session.commit()
-		
+		cache.clear()
+
+
 		cache.delete_memoized(get_subi)
 		if 'previous_post_form' in session:
 			session['previous_post_form'] = None
@@ -1102,6 +1132,7 @@ def create_comment():
 		anonymous=anonymous, deleted=deleted)
 	db.session.add(new_comment)
 	db.session.commit()
+	cache.clear()
 
 	new_comment.permalink = post.permalink +  str(new_comment.id)
 
@@ -1113,6 +1144,7 @@ def create_comment():
 		new_comment.author_type = 'user'
 
 	db.session.commit()
+	cache.clear()
 
 	new_vote = Vote(comment_id=new_comment.id, vote=1, user_id=session['user_id'], post_id=None)
 	db.session.add(new_vote)
@@ -1121,6 +1153,7 @@ def create_comment():
 	db.session.add(new_comment)
 
 	db.session.commit()
+	cache.clear()
 
 	sender = new_comment.author
 
@@ -1131,6 +1164,7 @@ def create_comment():
 				sent_to=cparent.author, in_reply_to=new_comment.permalink, anonymous=anonymous)
 			db.session.add(new_message)
 			db.session.commit()
+			cache.clear()
 	else:
 		if not deleted:
 			if post.author != session['username']:
@@ -1138,6 +1172,7 @@ def create_comment():
 					sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous)
 				db.session.add(new_message)
 				db.session.commit()
+				cache.clear()
 
 
 	cache.delete_memoized(get_subi)	
@@ -1154,7 +1189,7 @@ def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=N
 	db.session.add(new_message)
 	db.session.commit()
 
-#@cache.memoize(600)
+@cache.memoize(600)
 def has_messages(username):
 	if 'username' in session:
 		messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
@@ -1285,6 +1320,8 @@ def msg(username=None):
 		sender = session['username']
 
 		sendmsg(title=title, text=text, sender=session['username'], sent_to=sent_to, encrypted=encrypted)
+		cache.clear()
+
 		set_rate_limit()
 		flash('sent message', category='success')
 		return redirect(url_for('msg'))
@@ -1376,7 +1413,7 @@ def get_style(sub=None):
 
 app.jinja_env.globals.update(get_style=get_style)
 
-
+@cache.memoize(600)
 def get_blocked_subs(username=None):
 	subs = db.session.query(Sub_block).filter_by(username=session['username']).all()
 	if subs != None:
@@ -1577,7 +1614,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
-@cache.memoize(60)
+@cache.memoize(6000)
 def get_stats():
 	posts = db.session.query(Post).all()
 	comments = db.session.query(Comment).all()

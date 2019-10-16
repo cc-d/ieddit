@@ -16,6 +16,7 @@ def user_delete_post():
 		post.deleted = True
 		db.session.commit()
 		cache.delete_memoized(get_subi)
+		cache.clear()
 		flash('post deleted', category='success')
 		return redirect(sub_url)
 	else:
@@ -34,6 +35,7 @@ def user_delete_comment():
 		comment.deleted = True
 		db.session.commit()
 		cache.delete_memoized(get_subi)
+		cache.clear()
 		flash('post deleted', category='success')
 		return redirect(post.permalink)
 	else:
@@ -115,6 +117,7 @@ def user_edit_post():
 		obj.text = etext
 		db.session.commit()
 		cache.delete_memoized(c_get_comments)
+		cache.clear()
 		flash('comment edited', category='succes')
 		session['last_edit'] = None
 		return redirect(obj.permalink)
@@ -230,6 +233,7 @@ def password_reset(email=None):
 		if e == True:
 			db.session.add(new_reset)
 			db.session.commit()
+			cache.clear()
 			flash('password recovery email sent', 'success')
 			return redirect('/user/reset_password/')
 
@@ -261,6 +265,9 @@ def new_reset_password():
 	db.session.add(user)
 	db.session.add(r)
 	db.session.commit()
+
+
+	cache.clear()
 
 	flash('successfully reset password for %s' % username, 'success')
 	return redirect('/login/')
@@ -340,6 +347,9 @@ def user_update_preferences():
 
 		db.session.add(user)
 		db.session.commit()
+
+		cache.clear()
+
 		flash('successfully updated settings', 'success')
 		return redirect('/user/preferences/')
 	else:
@@ -385,6 +395,8 @@ def user_add_pgp():
 	db.session.commit()
 
 	session['pgp_enabled'] = True
+
+	cache.clear()
 
 	flash('updated pgp key', 'success')
 	return redirect('/u/' + user.username)
