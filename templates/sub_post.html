@@ -132,13 +132,13 @@ var preExpandVideo = false;
     {% endif %}
     <div class="row post-row">
         <div class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
-            {% if post.has_voted == '1' %}
+            {% if post.has_voted|string == '1' %}
             <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
             {% else %}
             <a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
             {% endif %}
-            <vote class="score">{{ post.ups - post.downs }}</vote>
-            {% if post.has_voted == '-1' %}
+            <vote class="score">{{ post.get_score() }}</vote>
+            {% if post.has_voted|string == '-1' %}
             <a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
             {% else %}
             <a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>

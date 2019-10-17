@@ -21,6 +21,14 @@ class Iuser(db.Model):
 	hide_sub_style = db.Column(db.Boolean, default=False, nullable=False)
 	pgp = db.Column(db.Boolean, default=False, nullable=False)
 
+	def get_recent_comments(self, limit=15):
+		coms = db.session.query(Comment).filter_by(author_id=self.id).order_by(Comment.created.desc()).limit(limit).all()
+		return coms
+
+	def get_recent_posts(self, limit=15):
+		posts = db.session.query(Post).filter_by(author_id=self.id).order_by(Post.created.desc()).limit(limit).all()
+		return posts
+
 	def __repr__(self):
 		return '<Iuser %r>' % self.username
 
@@ -68,6 +76,12 @@ class Post(db.Model):
 	nsfw = db.Column(db.Boolean, default=False, nullable=False)
 	remote_image_url = db.Column(db.String(2000), default=None, nullable=True)
 
+	def has_voted(self, user_id):
+		return db.session.query(Vote).filter_by(post_id=self.id, user_id=user_id).first()
+
+	def get_score(self):
+		return (self.ups - self.downs)
+
 	def __repr__(self):
 		return '<Post %r>' % self.id
 
@@ -91,13 +105,20 @@ class Comment(db.Model):
 
 	def get_children(self, deleted=False):
 		if deleted == None:
-			return db.session.query(Comment).filter_by(parent_id=self.id).all()
-		return db.session.query(Comment).filter_by(parent_id=self.id, deleted=deleted).all()
+			return db.session.query(Comment).filter_by(parent_id=self.id)
+		return db.session.query(Comment).filter_by(parent_id=self.id, deleted=deleted)
 
 	def child_count(self, deleted=False):
 		if deleted == None:
 			return db.session.query(Comment).filter_by(parent_id=self.id).count()
 		return db.session.query(Comment).filter_by(parent_id=self.id, deleted=deleted).count()
+
+	def users_voted(self):
+		users = db.session.query(Vote).filter_by(comment_id=self.id)
+		return users
+
+	def get_score(self):
+		return (self.ups - self.downs)
 
 	def __repr__(self):
 		return '<Comment %r>' % self.id

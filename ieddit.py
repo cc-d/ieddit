@@ -584,9 +584,11 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		post.remote_url_parsed = post_url_parse(post.url)
 		post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
 		if 'user_id' in session and 'username' in session:
-			post.has_voted = db.session.query(Vote).filter_by(post_id=post.id, user_id=session['user_id']).first()
-			if post.has_voted != None:
-				post.has_voted = post.has_voted.vote
+
+			v = post.has_voted(session['user_id'])
+			if v != None:
+				post.has_voted = v.vote
+
 			if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
 				post.is_mod = True
 		p.append(post)
@@ -903,18 +905,25 @@ def view_user(username):
 	for s in mod_of:
 		mods[s.sub] = s.rank
 	vuser.mods = mods
-	posts = subi('all', user_id=vuser.id, posts_only=True)
-	posts = posts[:10]
+
+	print('cur user', str(vars(vuser)))
+	posts = vuser.get_recent_posts()#.all()
+	comments = vuser.get_recent_comments()#.all()
+
 	for p in posts:
 		p.mods = get_sub_mods(p.sub)
-	#sub, post_id, inurl_title, comment_id=False, sort_by=None, comments_only=False, user_id=None):
+		if 'user_id' in session:
+			v = p.has_voted(session['user_id'])
+			if v != None:
+				p.has_voted = str(v.vote)
+
+
 	comments_with_posts = []
-	comments = get_comments(comments_only=True, user_id=vuser.id)[:10]
+
 	for c in comments:
 		c.mods = get_sub_mods(c.sub_name)
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
 		comments_with_posts.append((c, cpost))
-
 
 		if 'user_id' in session:
 			c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
