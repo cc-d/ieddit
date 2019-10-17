@@ -1737,8 +1737,9 @@ def get_stats():
 
 	for v in dayvotes:
 		new_user = db.session.query(Iuser).filter_by(id=v.user_id).first()
-		if new_user.username not in dayusers:
-			dayusers.append(new_user.username)
+		if hasattr(new_user, 'username'):
+			if new_user.username not in dayusers:
+				dayusers.append(new_user.username)
 
 	users = len(users)
 	daycoms = len(daycoms)
