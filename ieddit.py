@@ -40,7 +40,7 @@ if (config.SENTRY_ENABLED):
 	)
 
 db = SQLAlchemy(app)
-db.init_app(app)
+db.session.rollback()
 
 Session(app)
 captcha = FlaskSessionCaptcha(app)
@@ -129,6 +129,14 @@ def apply_headers(response):
 
 
 	return response
+
+
+@app.teardown_request
+def teardown_request(exception):
+	if exception:
+		db.session.rollback()
+	db.session.remove()
+
 
 #def only_cache_get(*args, **kwargs):
 #	if request.method == 'GET':
