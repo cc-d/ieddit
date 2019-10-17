@@ -40,6 +40,7 @@ if (config.SENTRY_ENABLED):
 	)
 
 db = SQLAlchemy(app)
+db.init_app(app)
 
 Session(app)
 captcha = FlaskSessionCaptcha(app)
