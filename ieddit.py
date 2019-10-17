@@ -127,12 +127,26 @@ def apply_headers(response):
 			print('\n[Load: %s]' % load_time)
 
 
+	if response.status_code in [500, 502]:
+		db.session.rollback()
+		db.session.remove()
+
+	if response.status_code == 500:
+		with open('500urls.txt', 'a+') as f:
+			f.write(str(datetime.utcnow()) + ' ' + str(request.url) + '\n')
+
 	if request.environ['REQUEST_METHOD'] == 'POST':
 		cache.clear()
 
 
 	return response
 
+
+@app.teardown_request
+def teardown_request(exception):
+	if exception:
+		db.session.rollback()
+	db.session.remove()
 
 
 def only_cache_get(*args, **kwargs):
@@ -772,12 +786,13 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 			comments = recursive_children(comment=db.session.query(Comment).filter_by(post_id=post.id).all())
 			parent_comment = None
 
-		#comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
+		comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
+		
 		
 		if post != None and 'username' in session:
 			if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
 				post.is_mod = True
-	
+	'''
 		if 'blocked_subs' in session and 'username' in session:
 			comments = [c for c in comments if c.sub_name not in session['blocked_subs']]
 	
@@ -795,7 +810,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 							Comment.is_mod = True
 						else:
 							Comment.is_mod = False
-	
+'''
 		if comments_only:
 			return comments
 	
