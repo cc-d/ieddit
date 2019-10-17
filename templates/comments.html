@@ -10,7 +10,7 @@
 <div id="comment-page-wrapper">
 	{% set pre_expand = True %}
 	{% include 'sub_post.html' %}
-
+<!--
 <div id="row">
 	<unstyled> sort by: </unstyled>
 	{% if not parent_comment.id %}
@@ -22,21 +22,21 @@
 	<unstyled><small>|</small></unstyled>
 	<a class="comment-link" href="{{ post_url }}{{ parent_comment.id }}/sort-new"><small>new</small></a>
 	{% endif %}
-</div>
+</div>-->
 {% if not parent_comment.id %}
 {% if post.locked %}
 <h2>post is locked</h2>
 {% endif %}
 {% if post.locked == False %}
 {% if session['username'] and session['user_id'] %}
-<form id='post-reply-box' action='/create_comment' method='POST'>
+<form id='post-reply-box' class='rounded' style='margin-left: 0.25rem; margin-top: 0.25rem;' action='/create_comment' method='POST'>
 	<div class="comment-reply-box-wrapper">
-		<textarea class="comment-reply-box-expand" name="comment_text"></textarea>
+		<textarea class="comment-reply-box-expand rounded" name="comment_text"></textarea>
 	</div>
 	<input type='hidden' name='post_id' value='{{ post_id }}'>
 	<input type='hidden' name='post_url' value='{{ post_url }}'>
 	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
-	<input class="post-text-area-button" type='submit' value='new comment'>
+	<input class="post-text-area-button btn btn-secondary btn-sm" style='background-color: whitesmoke; margin-left: 0.25rem; ' type='submit' value='new comment'>
 	<small> anonymous? </small>
 	{% if session['anonymous'] %}
 	<input type='checkbox' name='anonymous' value='1' checked>
