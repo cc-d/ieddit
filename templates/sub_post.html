@@ -68,7 +68,7 @@
     	</div>
     </div>
     <div class="sub-post-title">
-    {% if post.thumbnail == True or post.self_text or post.video %}
+    {% if post.thumbnail or post.self_text or post.video %}
     <div class='expand-post'>
         {% set fclass = '' %}
         {% set vid = 'false' %}
