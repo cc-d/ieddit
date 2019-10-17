@@ -207,7 +207,7 @@ def suggest_title(url=None):
 	return ''
 
 @app.route('/fonts/<file>')
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def send_font(file=None, methods=['GET']):
 	if file != None:
 		if len(re.findall('^.*.*$', file)) != 1:
@@ -218,12 +218,12 @@ def send_font(file=None, methods=['GET']):
 		return '403'
 
 @app.route('/sitemap.xml')
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def sitemap():
 	return app.send_static_file('sitemap.xml')
 
 @app.route('/robots.txt')
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def robotstxt():
 	return app.send_static_file('robots.txt')
 
@@ -452,7 +452,7 @@ def register():
 		return redirect(config.URL, 302)
 
 @app.route('/')
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def index():
 	return subi(subi='all', nsfw=False)
 
