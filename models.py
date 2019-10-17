@@ -21,12 +21,12 @@ class Iuser(db.Model):
 	hide_sub_style = db.Column(db.Boolean, default=False, nullable=False)
 	pgp = db.Column(db.Boolean, default=False, nullable=False)
 
-	def get_recent_comments(self, limit=15):
-		coms = db.session.query(Comment).filter_by(author_id=self.id).order_by(Comment.created.desc()).limit(limit).all()
+	def get_recent_comments(self, limit=15, deleted=False):
+		coms = db.session.query(Comment).filter_by(author_id=self.id, deleted=deleted).order_by(Comment.created.desc()).limit(limit).all()
 		return coms
 
-	def get_recent_posts(self, limit=15):
-		posts = db.session.query(Post).filter_by(author_id=self.id).order_by(Post.created.desc()).limit(limit).all()
+	def get_recent_posts(self, limit=15, deleted=False):
+		posts = db.session.query(Post).filter_by(author_id=self.id, deleted=deleted).order_by(Post.created.desc()).limit(limit).all()
 		return posts
 
 	def __repr__(self):
@@ -43,11 +43,11 @@ class Sub(db.Model):
 	nsfw = db.Column(db.Boolean, default=False, nullable=False)
 	css = db.Column(db.String(20000), default=None)
 
-	def get_comments(self):
-		self.comments = db.session.query(Comment).filter_by(sub_name=self.name)
+	def get_comments(self, deleted=False):
+		self.comments = db.session.query(Comment).filter_by(sub_name=self.name, deleted=deleted)
 
-	def get_posts(self):
-		self.posts = db.session.query(Post).filter_by(sub=self.name)
+	def get_posts(self, deleted=False):
+		self.posts = db.session.query(Post).filter_by(sub=self.name, deleted=deleted)
 
 	def __repr__(self):
 		return '<Sub %r>' % self.name
