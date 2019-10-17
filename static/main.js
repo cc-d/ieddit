@@ -33,7 +33,7 @@ $(document).on('click', '.fa-arrow-up', function() {
 			$.post('/vote', {'vote':'1', 'post_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
 					alert('please login to vote');
-				} else if (isNaN(data) == false) {
+				} else if (isNaN(data) == false || data == 'already voted') {
 					$(voteDiv).html(data);
 					$(self).css('color', 'orange');
 					$(self).parent().parent().children('a').children('.fa-arrow-down').css('color', fontColor);
@@ -45,7 +45,7 @@ $(document).on('click', '.fa-arrow-up', function() {
 			$.post('/vote', {'vote':'1', 'comment_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
 					alert('please login to vote');
-				} else if (isNaN(data) == false) {
+				} else if (isNaN(data) == false || data == 'already voted') {
 					$(voteDiv).html(data);
 					$(self).css('color', 'orange');
 					$(self).parent().parent().children('a').children('.fa-arrow-down').css('color', fontColor);
@@ -58,7 +58,7 @@ $(document).on('click', '.fa-arrow-up', function() {
 			$.post('/vote', {'vote':'0', 'post_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
 					alert('please login to vote');
-				} else if (isNaN(data) == false) {
+				} else if (isNaN(data) == false || data == 'already voted') {
 					$(voteDiv).html(data);
 					$(self).css('color', fontColor);
 				}
@@ -69,7 +69,7 @@ $(document).on('click', '.fa-arrow-up', function() {
 			$.post('/vote', {'vote':'0', 'comment_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
 					alert('please login to vote');
-				} else if (isNaN(data) == false) {
+				} else if (isNaN(data) == false || data == 'already voted') {
 					$(voteDiv).html(data);
 					$(self).css('color', fontColor);
 				}
@@ -89,7 +89,7 @@ $(document).on('click', '.fa-arrow-down', function() {
 			$.post('/vote', {'vote':'-1', 'post_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
 					alert('please login to vote');
-				} else if (isNaN(data) == false) {
+				} else if (isNaN(data) == false || data == 'already voted') {
 					$(voteDiv).html(data);
 					$(self).css('color', 'rgb(173, 216, 230)');
 					$(self).parent().parent().children('a').children('.fa-arrow-up').css('color', fontColor);
@@ -101,7 +101,7 @@ $(document).on('click', '.fa-arrow-down', function() {
 			$.post('/vote', {'vote':'-1', 'comment_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
 					alert('please login to vote');
-				} else if (isNaN(data) == false) {
+				} else if (isNaN(data) == false || data == 'already voted') {
 					$(voteDiv).html(data);
 					$(self).css('color', 'rgb(173, 216, 230)');
 					$(self).parent().parent().children('a').children('.fa-arrow-up').css('color', fontColor);
@@ -114,7 +114,7 @@ $(document).on('click', '.fa-arrow-down', function() {
 			$.post('/vote', {'vote':'0', 'post_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
 					alert('please login to vote');
-				} else if (isNaN(data) == false) {
+				} else if (isNaN(data) == false || data == 'already voted') {
 					$(voteDiv).html(data);
 					$(self).css('color', fontColor);
 				}
@@ -125,7 +125,7 @@ $(document).on('click', '.fa-arrow-down', function() {
 			$.post('/vote', {'vote':'0', 'comment_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
 					alert('please login to vote');
-				} else if (isNaN(data) == false) {
+				} else if (isNaN(data) == false || data == 'already voted') {
 					$(voteDiv).html(data);
 					$(self).css('color', fontColor);
 				}

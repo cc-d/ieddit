@@ -644,6 +644,10 @@ ul {
 	}
 }
 
+.row.post-row {
+	margin-bottom: 1rem;
+}
+
 .post-inner-div {
 	margin-top: -0.5rem!important;
 }
