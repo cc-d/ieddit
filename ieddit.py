@@ -27,7 +27,7 @@ from functions import *
 
 app = Flask(__name__)
 app.config.from_object('config')
-cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
+#cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
 
 if (config.SENTRY_ENABLED):
 	import sentry_sdk
@@ -56,8 +56,8 @@ cache_bust = '?' + str(time.time()).split('.')[0]
 @app.before_request
 def before_request():
 
-	if request.environ['REQUEST_METHOD'] == 'POST':
-		cache.clear()
+#	if request.environ['REQUEST_METHOD'] == 'POST':
+#		#cache.clear()
 
 	g.cache_bust = cache_bust
 
@@ -130,12 +130,12 @@ def apply_headers(response):
 
 	return response
 
-def only_cache_get(*args, **kwargs):
-	if request.method == 'GET':
-		return False
-	return True
+#def only_cache_get(*args, **kwargs):
+#	if request.method == 'GET':
+#		return False
+#	return True
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_style(sub=None):
 	if sub != None:
 		sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
@@ -217,7 +217,7 @@ def sitemap():
 def robotstxt():
 	return app.send_static_file('robots.txt')
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_subtitle(sub):
 	try:
 		title = db.session.query(Sub).filter_by(name=sub).first()
@@ -226,7 +226,7 @@ def get_subtitle(sub):
 		title = None
 	return title
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def has_messages(username):
 	if 'username' in session:
 		messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
@@ -237,7 +237,7 @@ def has_messages(username):
 				return True
 	return False
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_sub_mods(sub, admin=True):
 	mod_subs = db.session.query(Moderator).filter_by(sub=sub).all()
 	if admin == False:
@@ -247,7 +247,7 @@ def get_sub_mods(sub, admin=True):
 		mod_subs.append(a)
 	return [m.username for m in mod_subs]
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_banned_subs(username):
 	subs = db.session.query(Ban).filter_by(username=username).all()
 	b = []
@@ -255,7 +255,7 @@ def get_banned_subs(username):
 		b.append(s.sub)
 	return b
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def is_mod(obj, username):
 	if hasattr(obj, 'inurl_title'):
 		post = obj
@@ -268,7 +268,7 @@ def is_mod(obj, username):
 			return True
 	return False
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def is_admin(username):
 	if db.session.query(db.session.query(Iuser).filter_by(admin=True, username=username).exists()).scalar():
 	#if 'admin' in session:
@@ -278,9 +278,9 @@ def is_admin(username):
 def set_rate_limit():
 	if 'username' in session:
 		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME)
-		cache.clear()
+		#cache.clear()
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def normalize_username(username, dbuser=False):
 	if username == None:
 		return False
@@ -291,19 +291,19 @@ def normalize_username(username, dbuser=False):
 		return username.username
 	return False
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def normalize_sub(sub):
 	subl = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
 	if subl != None:
 		return subl.name
 	return sub
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_all_subs():
 	return db.session.query(Sub).all()
 
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_pgp_from_username(username):
 	u = normalize_username(username)
 	if u == False:
@@ -316,13 +316,13 @@ def get_pgp_from_username(username):
 		return pgp
 	return False
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_user_from_name(username):
 	if username == '' or username == False or username == None:
 		return False
 	return normalize_username(username, dbuser=True)
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_user_from_id(uid):
 	if uid == None or uid == False:
 		return False
@@ -437,7 +437,7 @@ def register():
 		session['user_id'] = new_user.id
 		set_rate_limit()
 
-		cache.clear()
+		#cache.clear()
 
 		return redirect(config.URL, 302)
 
@@ -446,14 +446,14 @@ def register():
 def index():
 	return subi(subi='all', nsfw=False)
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def is_sub_nsfw(sub):
 	s = db.session.query(Sub).filter_by(name=sub).first()
 	if s.nsfw:
 		return True
 	return False
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=True, d=None, s=None):
 	if offset != None:
 		offset = int(offset)
@@ -634,7 +634,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 
 	#return str(hasattr(request.environ, 'QUERY_STRING'))#str(vars(request))
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def recursive_children(r=[], comment=None, sort='hot', current_depth=0, max_depth=5, deleted=False):
 	if str(type(comment)) == 'list':
 		for c in comments:
@@ -676,7 +676,7 @@ def recursive_children(r=[], comment=None, sort='hot', current_depth=0, max_dept
 			recursive_children(r=r, comment=c, current_depth=current_depth, max_depth=max_depth, sort=sort)
 	return r
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
 	post = None
 	parent_comment = None
@@ -784,7 +784,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 # need to entirely rewrite how comments are handled once everything else is complete
 # this sort of recursion KILLS performance, especially when combined with the already
 # terrible comment_structure function.
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def list_of_child_comments(comment_id, sort_by=None):
 	comments = {}
 	current_comments = []
@@ -866,7 +866,7 @@ def create_sub():
 			return redirect(url_for('login'))
 		return render_template('create.html')
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 @app.route('/u/<username>/', methods=['GET'])
 def view_user(username):
 	vuser = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
@@ -1146,7 +1146,7 @@ def create_post(postsub=None):
 		return render_template('create_post.html', postsub=postsub, sppf=sppf)
 
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 @app.route('/get_sub_list', methods=['GET'])
 def get_sub_list():
 	subs = get_all_subs()
@@ -1520,7 +1520,7 @@ def blocksub(sub=None):
 	else:
 		bsubs = []
 
-	cache.clear()
+	#cache.clear()
 
 	if blocks == None or sub not in bsubs:
 		session['blocked_subs'].append(sub)
@@ -1566,7 +1566,7 @@ def explore():
 @app.route('/clear_cache', methods=['GET'])
 def ccache():
 	if request.remote_addr == '127.0.0.1':
-		cache.clear()
+		#cache.clear()
 		return 'cleared'
 
 @app.route('/about/', methods=['GET'])
@@ -1703,7 +1703,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_stats():
 	posts = db.session.query(Post).all()
 	comments = db.session.query(Comment).all()
@@ -1719,25 +1719,25 @@ def get_stats():
 
 	dayusers = []
 
-	for u in daycoms:
-		if u.author not in dayusers:
-			dayusers.append(u.author)
+	for uu in daycoms:
+		if uu.author not in dayusers:
+			dayusers.append(uu.author)
 
 	dayposts = [p for p in posts if ((datetime.now() - p.created).total_seconds()) < 86400]
 
-	for u in dayposts:
-		if u.author not in dayusers:
-			dayusers.append(u.author)
+	for uuu in dayposts:
+		if uuu.author not in dayusers:
+			dayusers.append(uuu.author)
 
 	dayvotes = []
 
-	for v in votes:
-		if hasattr(v, 'created'):
-			if((datetime.utcnow() - v.created).total_seconds()) < 86400:
-				dayvotes.append(v)
+	for vvv in votes:
+		if hasattr(vvv, 'created'):
+			if((datetime.utcnow() - vvv.created).total_seconds()) < 86400:
+				dayvotes.append(vvv)
 
-	for v in dayvotes:
-		new_user = db.session.query(Iuser).filter_by(id=v.user_id).first()
+	for vz in dayvotes:
+		new_user = db.session.query(Iuser).filter(Iuser.id == vz.user_id).first()
 		if hasattr(new_user, 'username'):
 			if new_user.username not in dayusers:
 				dayusers.append(new_user.username)
@@ -1781,7 +1781,7 @@ def get_stats():
 		timediff, uptime)
 
 @app.route('/stats/', methods=['GET'])
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def stats():
 	(posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
 		dayusers, timediff, uptime) = get_stats()

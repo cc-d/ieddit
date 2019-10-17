@@ -15,7 +15,7 @@ def add_remote_image(url, tid):
 	p.remote_image_url = url
 	db.session.add(p)
 	db.session.commit()
-	print('post has remote image %s %s', url, tid)
+	#print('post has remote image %s %s', url, tid)
 
 def create_thumbnail(r, tid):
 	#r.raw.decode_content = rue
@@ -27,7 +27,7 @@ def create_thumbnail(r, tid):
 	#im.save('thumbnails/' + str(tid) + '.JPEG', 'JPEG')
 	im.save('static/thumbnails/thumb-' + str(tid) + '.PNG', 'PNG')
 	#r = requests.get('http://127.0.0.1/clear_cache')
-	print(r.text)
+	#print(r.text)
 
 def main():
 	c = False

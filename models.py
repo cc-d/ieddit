@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, session, request
 from datetime import datetime, timedelta
-from flask_caching import Cache
 from functions import *
 
 app = Flask(__name__)
