@@ -118,7 +118,7 @@ class Comment(db.Model):
 		return users
 
 	def get_score(self):
-		return (self.ups - self.downs)
+		return int(self.ups) - int(self.downs)
 
 	def __repr__(self):
 		return '<Comment %r>' % self.id

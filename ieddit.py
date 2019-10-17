@@ -642,11 +642,13 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 	#return str(hasattr(request.environ, 'QUERY_STRING'))#str(vars(request))
 
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def recursive_children(r=[], comment=None, sort='hot', current_depth=0, max_depth=5, deleted=False):
-	if str(type(comment)) == 'list':
-		for c in comments:
-			if c not in r:
-				recursive_children(comment=c, sort=sort, deleted=deleted)
+def recursive_children(r=[], comment=None, sort='hot', current_depth=0, max_depth=8, deleted=False):
+	if type(comment) == type([]):
+		r = comment
+		return [recursive_children(r=r, comment=z) for z in comment]
+	else:
+		if comment in r:
+			return comment
 
 	if comment != None:
 		if deleted == False:
@@ -666,7 +668,7 @@ def recursive_children(r=[], comment=None, sort='hot', current_depth=0, max_dept
 		return r
 
 	else:
-		children = comment.get_children(deleted=deleted)
+		children = comment.get_children(deleted=deleted).all()
 		if sort == 'hot':
 			for c in children:
 				c.score = hot(c.ups, c.downs, c.created)
@@ -726,16 +728,13 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 			comments = recursive_children(db.session.query(Comment).filter_by(post_id=post.id).all())
 			parent_comment = None
 			parent_posturl = None
-			print('noid first', comments)
 		else:
 			parent_comment = db.session.query(Comment).filter_by(id=comment_id).first()
 			comments = recursive_children(comment=parent_comment)
-			print('noid else', comments)
 			
 	else:
 		comments = db.session.query(Comment).filter(Comment.author_id == user_id,
 			Comment.deleted == False).order_by(Comment.created.desc()).all()
-		print('noid last', comments)
 
 
 	if 'blocked_subs' in session and 'username' in session:
@@ -763,18 +762,17 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 @app.route('/i/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
 @app.route('/i/<sub>/<post_id>/<inurl_title>/')
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
-	try:
-		if sub == None or post_id == None or inurl_title == None:
-			if not comments_only:
-				return 'badlink'
-		try:
-			int(comment_id)
-		except:
-			comment_id = False
-		sub = normalize_sub(sub)
-	
-		comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
+def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort_by=None, comments_only=False, user_id=None):
+	#try:		
+		post = db.session.query(Post).filter_by(id=post_id).first()
+		if comment_id != None:
+			parent_comment = db.session.query(Comment).filter_by(id=comment_id).first()
+			comments = recursive_children(comment=parent_comment)
+		else:
+			comments = recursive_children(comment=db.session.query(Comment).filter_by(post_id=post.id).all())
+			parent_comment = None
+
+		#comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
 		
 		if post != None and 'username' in session:
 			if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
@@ -792,10 +790,8 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 		return render_template('comments.html', comments=comments, post_id=post_id, 
 			post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), 
 			post=post, tree=tree, parent_comment=parent_comment)
-	except Exception as e:
-		print(e)
-		db.session.rollback()
-
+	#except Exception as e:
+	#	return(str(e))
 # need to entirely rewrite how comments are handled once everything else is complete
 # this sort of recursion KILLS performance, especially when combined with the already
 # terrible comment_structure function.
@@ -892,7 +888,6 @@ def view_user(username):
 		mods[s.sub] = s.rank
 	vuser.mods = mods
 
-	print('cur user', str(vars(vuser)))
 	posts = vuser.get_recent_posts()#.all()
 	comments = vuser.get_recent_comments()#.all()
 
