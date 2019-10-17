@@ -727,19 +727,23 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 			comments = recursive_children(db.session.query(Comment).filter_by(post_id=post.id).all())
 			parent_comment = None
 			parent_posturl = None
+			print('noid first', comments)
 		else:
 			parent_comment = db.session.query(Comment).filter_by(id=comment_id).first()
 			comments = recursive_children(comment=parent_comment)
+			print('noid else', comments)
 			
 	else:
 		comments = db.session.query(Comment).filter(Comment.author_id == user_id,
 			Comment.deleted == False).order_by(Comment.created.desc()).all()
+		print('noid last', comments)
 
 
 	if 'blocked_subs' in session and 'username' in session:
 		comments = [c for c in comments if c.sub_name not in session['blocked_subs']]
 
 	for c in comments:
+		c.score = (c.ups - c.downs)
 		c.text = pseudo_markup(c.text)
 		c.mods = get_sub_mods(c.sub_name)
 		c.created_ago = time_ago(c.created)
