@@ -55,6 +55,10 @@ cache_bust = '?' + str(time.time()).split('.')[0]
 
 @app.before_request
 def before_request():
+
+	if request.environ['REQUEST_METHOD'] == 'POST':
+		cache.clear()
+
 	g.cache_bust = cache_bust
 
 	if app.debug:
@@ -122,9 +126,6 @@ def apply_headers(response):
 		if hasattr(g, 'start'):
 			load_time = str(time.time() - g.start)
 			print('\n[Load: %s]' % load_time)
-
-	if request.environ['REQUEST_METHOD'] == 'POST':
-		cache.clear()
 
 
 	return response
@@ -320,6 +321,12 @@ def get_user_from_name(username):
 	if username == '' or username == False or username == None:
 		return False
 	return normalize_username(username, dbuser=True)
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_user_from_id(uid):
+	if uid == None or uid == False:
+		return False
+	return db.session.query(Iuser).filter_by(id=uid).first()
 
 @app.route('/login/',  methods=['GET', 'POST'])
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -1726,13 +1733,13 @@ def get_stats():
 
 	for v in votes:
 		if hasattr(v, 'created'):
-				if((datetime.now() - v.created).total_seconds()) < 86400:
-					dayvotes.append(v)
+			if((datetime.utcnow() - v.created).total_seconds()) < 86400:
+				dayvotes.append(v)
 
 	for v in dayvotes:
-		u = db.session.query(Iuser).filter_by(id=v.user_id)
-		if u.username not in dayusers:
-			dayusers.append(u.username)
+		new_user = db.session.query(Iuser).filter_by(id=v.user_id).first()
+		if new_user.username not in dayusers:
+			dayusers.append(new_user.username)
 
 	users = len(users)
 	daycoms = len(daycoms)
@@ -1744,6 +1751,7 @@ def get_stats():
 	# only set to try to be calculated on the ieddit prod/dev server. it makes
 	# assumptions that cannot be made for any user on a different setup
 	if config.URL == 'https://ieddit.com' or config.URL == 'http://dev.ieddit.com':
+		try:
 			fline = str(os.popen('head -n 1 /var/log/nginx/access.log').read()).split(' ')[3][1:]
 			lline = str(os.popen('tail -n 1 /var/log/nginx/access.log').read()).split(' ')[3][1:]
 
@@ -1761,14 +1769,18 @@ def get_stats():
 
 			# cache_bust = '?' + str(time.time()).split('.')[0]
 			uptime = (time.time() - int(cache_bust[1:])) / 60 / 60
-
+		except Exception as e:
+			print(e)
+			timediff, uptime = False, False
+	else:
+		timediff, uptime = False, False
 
 
 	return (len(posts), len(comments), users, bans, messages, mod_actions, subs, len(votes), daycoms, dayposts, dayvotes, dayusers,
 		timediff, uptime)
 
 @app.route('/stats/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def stats():
 	(posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
 		dayusers, timediff, uptime) = get_stats()
