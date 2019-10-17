@@ -19,9 +19,10 @@ $(document).ready(function() {
 
 	maxVidSize();
 
-	if (preExpand !== undefined) {
+	if (typeof preExpand !== 'undefined') {
 		expandPost(pid=preExpandId, ptype=preExpandType, vid=preExpandVideo);
 	}
+	
 });
 
 width = 0;
