@@ -113,6 +113,7 @@ textarea {
 .comment-reply-box-wrapper {
 	min-width: 16rem;
 	min-height: 3rem;
+	margin-top: 1.25rem;
 }
 
 .comment-reply-box-expand {
@@ -521,7 +522,7 @@ blockquote {
 }
 
 .inner-selftext-wrapper {
-	margin: 0.25rem;
+	margin: 0.5rem;
 }
 
 .edit-input {
