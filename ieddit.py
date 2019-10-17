@@ -792,25 +792,8 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 		if post != None and 'username' in session:
 			if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
 				post.is_mod = True
-	'''
-		if 'blocked_subs' in session and 'username' in session:
-			comments = [c for c in comments if c.sub_name not in session['blocked_subs']]
-	
-		for c in comments:
-			c.score = (c.ups - c.downs)
-			c.text = pseudo_markup(c.text)
-			c.mods = get_sub_mods(c.sub_name)
-			c.created_ago = time_ago(c.created)
-			if 'user_id' in session:
-				c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
-				if c.has_voted != None:
-					c.has_voted = c.has_voted.vote
-					if Comment.sub_name:
-						if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(Comment.sub_name)).exists()).scalar():
-							Comment.is_mod = True
-						else:
-							Comment.is_mod = False
-'''
+
+
 		if comments_only:
 			return comments
 	
