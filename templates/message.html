@@ -26,15 +26,14 @@
   	{% endif %}
     <h5 class="mt-0 message-title">{{ message.title }}</h5>
     {% if message.encrypted == False %}
-		  <div class="safe-markup-text" id='message-{{ message.id }}'>{{ message.text|safe }}</div>
+		  <div class="safe-markup-text comment-markup-text" id='message-{{ message.id }}'>{{ message.text|safe }}</div>
     {% else %}
       <div class="safe-markup-text" style='color: green; margin: 1rem;'>
           <i class='fa fa-lock'></i>
           MESSAGE ENCRYPTED
-          <button class="btn btn-sm btn-primary readEncryptedMessage" id="readEncryptedMessage" aria-msgid="{{ message.id }}">read</button>
           <textara style='display: none;' class='emessage' id='encrypted-message-{{ message.id }}'>{{ message.text }}</textara>
       </div>
-        <div class="decryptedContent" id="decryptedContent-{{ message.id }}"></div>
+        <div class="decryptedContent safe-markup-text comment-markup-text" id="decryptedContent-{{ message.id }}"></div>
     {% endif %}
 	{% if message.in_reply_to != None %}
 	<div class="row message-bottom-row">

@@ -136,10 +136,15 @@ def split_link(sst, s):
 
 def pseudo_markup(text):
 	# preserve more than 1 newline
+	text_len = len(text)
 	mtext = text.splitlines()
 
 	for i in range(0, len(mtext)):
 		mtext[i] = clean(markdown(mtext[i]), strip=True) 
+
+		if text_len > 15000:
+			continue
+
 		regstrs = ['<[^liu].*>.*<\/[^liu]>', '^<[^liu].*>', '<\/[^liu].*>$']
 
 		reg2 = ['<li>.*<\/li>', '<ul>.*<\/ul>', '<code>.*<\/code>', '<blockquote>.*<\/blockquote>']
@@ -159,6 +164,9 @@ def pseudo_markup(text):
 		if addbr and addbr2:
 			if len(re.findall('^https?:\/\/.*.*$', mtext[i])) == 0:
 					mtext[i] = mtext[i] + '<br>'
+
+	if text_len > 15000:
+		return '\n'.join([x for x in mtext])
 
 	# code tags
 	start, end = 0, 0

@@ -136,7 +136,7 @@ class Mod_action(db.Model):
 class Message(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	title = db.Column(db.String(400), unique=False, nullable=False)
-	text = db.Column(db.String(20000), unique=False, nullable=False)
+	text = db.Column(db.String(40000), unique=False, nullable=False)
 	read = db.Column(db.Boolean, default=False, nullable=False)
 	sent_to = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
 	sender = db.Column(db.String(20), db.ForeignKey('iuser.username'), default=None, nullable=True)

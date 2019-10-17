@@ -10,9 +10,12 @@
 <textarea id='self-pgp-privkey' style='display: none;'>{% if self_pgp.privkey %}{{ self_pgp.privkey }}{% else %}{% endif %}</textarea>
 <textarea id='self-pgp-pubkey' style='display: none;'>{% if self_pgp.pubkey %}{{ self_pgp.pubkey }}{% else %}{% endif %}</textarea>
 
-
 {% include 'crypto.html' %}
-<script src="{{ url_for('static', filename='decrypt-message-button.js') }}{{ g.cache_bust }}"></script>
+
+<div class='margin-lr'>
+	<button class='btn btn-success' id='decrypt-button'><i class='fa fa-lock'></i> Decrypt Messages </button>
+</div>
+
 {% endif %}
 {% endif %}
 {% endif %}

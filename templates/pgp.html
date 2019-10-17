@@ -11,25 +11,35 @@
 <h6 style='color:yellow;'>Press 'UPDATE KEY' at the bottom of page to save a new key.</h6>
 <h6> Passphrase </h6>
 <small><p> This is how you will decrypt messages. <br> Write it down somewhere safe or (preferably) memorize it.</p></small>
+<div id='secret-container'>
 <textarea style='width: 300px;' class='rounded' id='secret' readonly></textarea><br>
+</div>
 </div>
 {% if pgp.privkey %}
 <button style='margin-top: 0.25rem;' class='rounded btn btn-danger' id="generateNewPublicKey" aria-label="{{ session["username"] }}">generate NEW keypair</button>
 {% else %}
+<h6 id='hideThisText' style='color: lightgreen;'> click to begin using pgp </h6>
 <button style='margin-top: 0.25rem;' class='rounded btn btn-success' id="replacePrivateKey" aria-label="{{ session["username"] }}">generate keypair</button>
 {% endif %}
+<div id='copyContainer' style='height: 5rem; display: none;'><h1 id='copyText' style='display: none; font-size: 85%; position: absolute; margin-top:3rem; color:lightblue;'>copied to clipboard...</h1>
+<button style='margin-top: 0.25rem; margin-left: 0.75rem;' class='rounded btn btn-primary' id='copyToClipboard'><i class='fa fa-clipboard'></i> copy</button>
+</div>
 <br><br>
+<div id='scrollDownText' style='display: none;'>
+<h3 style='color: greenyellow;'> scroll down to confirm update key </h3>
+<small style='color: red;'> If you already have pgp keys, you will NOT be able to sent any messages sent to you in the past with this new pair</small>
+</div><br>
 </div>
 
 
-<form class='margin-lr' action='/user/addpgp' method='POST'>
+<form class='margin-lr' action='/user/addpgp' method='POST' id='saveForm'>
     <input type="hidden" id="useremail" name="useremail" value="{{ user.username }}@ieddit.com" />
     <input type="hidden" id="username" name="username" value="{{ user.username }}" />
 	<h6> Private Key </h6>
 	<textarea class='rounded' id='privkey' name='privkey' readonly style='height: 200px; min-width: 300px; width: -webkit-fill-available;'>{% if pgp.privkey %}{{ pgp.privkey }}{% else %}{% endif %}</textarea><br>
 	<h6> Public Key </h6>
 	<textarea class='rounded' id='pubkey' name='pubkey' readonly style='height: 200px; min-width: 300px; width: -webkit-fill-available;'>{% if pgp.privkey %}{{ pgp.pubkey }}{% else %}{% endif %}</textarea><br>
-	<button type='submit' class='btn btn-primary rounded'>update pgp key</button>
+	<button type='submit' class='btn btn-primary rounded' onclick='savePhrase();'>update pgp key</button>
 </form>
 
 {% endblock %}

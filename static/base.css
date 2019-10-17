@@ -268,10 +268,12 @@ textarea {
 .message-body {
 	border: 1px black solid;
 	margin: 0.5rem;
+	overflow-x: hidden;
 }
 
 .message-text-body {
-	margin: 5px;
+	min-height: 7rem;
+	margin: 0.5rem;
 }
 
 .message-top-row {
@@ -648,10 +650,8 @@ ul {
 
 .decryptedContent {
 	display: none;
-	padding: 10px;
-	border: 1px solid #666;
-	border-radius: 5px;
-	margin: 10px;
-
 }
 
+.comment-markup-text {
+	min-height: 3rem;
+}
