@@ -19,7 +19,6 @@ $(document).ready(function() {
 
 	maxVidSize();
 
-	console.log(preExpand, preExpandId);
 	if (preExpand !== undefined) {
 		expandPost(pid=preExpandId, ptype=preExpandType, vid=preExpandVideo);
 	}
