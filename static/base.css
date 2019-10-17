@@ -48,6 +48,11 @@ textarea {
 	min-width: 6rem;
 }
 
+.posts-media-body {
+	max-width: -webkit-fill-available;
+	max-width: -moz-available;
+}
+
 @media only screen and (max-width: 768px) {
 	.self-post-image {
 		display: none;
@@ -645,7 +650,7 @@ ul {
 }
 
 .row.post-row {
-	margin-bottom: 1rem;
+	margin-bottom: 14px;
 }
 
 .post-inner-div {

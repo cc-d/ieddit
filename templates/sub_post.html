@@ -6,6 +6,19 @@
 {% set pauther_type = post.author_type %}
 {% endif %}
 
+{% if pre_expand == True %}
+<script> var preExpand = true; </script>
+<script> var preExpandId = {{ post.id }}; </script>
+<script> var preExpandType = "{{ post.post_type }}"; </script>
+<script>
+{% if post.video %}
+var preExpandVideo = true;
+{% else %}
+var preExpandVideo = false;
+{% endif %}
+</script>
+{% endif %}
+
 {% if loop is defined %}
 {% if loop.last and not loop.first %}
 <ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-bottom: 5px;">
@@ -68,14 +81,12 @@
     	</div>
     </div>
     <div class="sub-post-title">
-    {% if post.thumbnail or post.self_text or post.video %}
+    {% if post.post_type == 'url' and post.remote_image_url == None %}
+    
+    {% else %}
     <div class='expand-post'>
         {% set fclass = '' %}
         {% set vid = 'false' %}
-        {% if pre_expand == True %}
-            {% set ftype = 'collapsePost' %}
-            {% set square = 'minus-square-o' %}
-        {% else %}
             {% set square = 'plus-square-o' %}
             {% set ftype = 'expandPost' %}
             {% if post.video %}
@@ -83,7 +94,6 @@
                 {% set fclass = 'class="video-play-btn rounded"' %}
                 {% set vid = 'true' %}
             {% endif %}
-        {% endif %}
 
         {% if post.post_type == 'url' %}
             {% if post.remote_image_url %}
@@ -105,19 +115,10 @@
 
 
     {% if post.remote_image_url or post.self_text %}
-    {% if pre_expand == True %}
-    <div class='expanded-post' id='post-{{ post.id }}' style='display: inline-block;'>
-    {% else %}
     <div class='expanded-post' id='post-{{ post.id }}' style='display: none;'>
-    {% endif %}
 
     {% if post.video %}
-        {% if pre_expand == True %}
-        <iframe id='vid-{{ post.id }}' class='vidembed' width="420" height="315" realsrc="{{ post.video }}" src='{{ post.video }}'></iframe>
-        <div style='display: none;' vidid='{{ post.id }}' id='is-pre-expanded'></div>
-        {% else %}
         <iframe id='vid-{{ post.id }}' style='display: none;' class='vidembed' width="420" height="315" realsrc="{{ post.video }}"></iframe>
-        {% endif %}
     {% elif post.remote_image_url %}
        <a href="{{ post.remote_image_url }}"><img class='expanded-post-image' id='expand-src-{{ post.id }}' realsrc="{{ post.remote_image_url }}" ></a>
     {% else %}
