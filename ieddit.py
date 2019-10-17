@@ -776,24 +776,23 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 @app.route('/i/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
 @app.route('/i/<sub>/<post_id>/<inurl_title>/')
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort_by=None, comments_only=False, user_id=None):
-	#try:		
-		post = db.session.query(Post).filter_by(id=post_id).first()
-		if comment_id != None:
-			parent_comment = db.session.query(Comment).filter_by(id=comment_id).first()
-			comments = recursive_children(comment=parent_comment)
-		else:
-			comments = recursive_children(comment=db.session.query(Comment).filter_by(post_id=post.id).all())
-			parent_comment = None
-
+def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
+	try:
+		if sub == None or post_id == None or inurl_title == None:
+			if not comments_only:
+				return 'badlink'
+		try:
+			int(comment_id)
+		except:
+			comment_id = False
+		sub = normalize_sub(sub)
+	
 		comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
-		
 		
 		if post != None and 'username' in session:
 			if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
 				post.is_mod = True
-
-
+	
 		if comments_only:
 			return comments
 	
@@ -806,8 +805,13 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 		return render_template('comments.html', comments=comments, post_id=post_id, 
 			post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), 
 			post=post, tree=tree, parent_comment=parent_comment)
-	#except Exception as e:
-	#	return(str(e))
+	except Exception as e:
+		print(e)
+		db.session.rollback()
+
+
+
+
 # need to entirely rewrite how comments are handled once everything else is complete
 # this sort of recursion KILLS performance, especially when combined with the already
 # terrible comment_structure function.
