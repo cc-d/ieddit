@@ -320,9 +320,34 @@ def normalize_sub(sub):
 		return subl.name
 	return sub
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def get_all_subs():
-	return db.session.query(Sub).all()
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_all_subs(explore=False):
+	subs = db.session.query(Sub).all()
+	if explore == False:
+		return subs
+	else:
+		esubs = []
+		for sub in subs:
+			if hasattr(sub, 'rules'):
+				if sub.rules != None:
+					sub.new_rules = pseudo_markup(sub.rules)
+
+			if hasattr(sub, 'rules'):
+				if sub.rules != None:
+					sub.new_rules = pseudo_markup(sub.rules)
+
+			sub.posts = sub.get_posts(count=True)
+
+			if sub.posts == 0:
+				continue
+
+			sub.comments = sub.get_comments(count=True)
+			sub.score = sub.comments + sub.posts
+
+			esubs.append(sub)
+
+		esubs.sort(key=lambda x: x.score, reverse=True)
+		return esubs
 
 
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -1192,13 +1217,12 @@ def create_post(postsub=None):
 		return render_template('create_post.html', postsub=postsub, sppf=sppf)
 
 @app.route('/get_sub_list', methods=['GET'])
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_sub_list():
 	subs = get_all_subs()
 	if subs != None:
 		for s in subs:
-			s.get_comments()
-			s.get_posts()
+			s.comments = s.get_comments()
+			s.posts = s.get_posts()
 			if s.comments != None and s.posts != None:
 				s.rank = s.comments.count() + s.posts.count()
 			else:
@@ -1587,19 +1611,17 @@ def blocksub(sub=None):
 
 
 @app.route('/explore/', methods=['GET'])
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def explore():
-	#sub = normalize_sub(sub)
 	esubs = []
-	subs = db.session.query(Sub).all()
+	subs = get_all_subs(explore=True)
 	for sub in subs:
 		if hasattr(sub, 'rules'):
 			if sub.rules != None:
 				sub.new_rules = pseudo_markup(sub.rules)
-		sub.posts = db.session.query(Post).filter_by(sub=sub.name).count()
+		sub.posts = sub.get_posts(count=True)
 		if sub.posts == 0:
 			continue
-		sub.comments = db.session.query(Comment).filter_by(sub_name=sub.name).count()
+		sub.comments = sub.get_comments(count=True)
 		sub.score = sub.comments + sub.posts
 
 		esubs.append(sub)

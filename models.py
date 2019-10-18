@@ -43,11 +43,15 @@ class Sub(db.Model):
 	nsfw = db.Column(db.Boolean, default=False, nullable=False)
 	css = db.Column(db.String(20000), default=None)
 
-	def get_comments(self, deleted=False):
-		self.comments = db.session.query(Comment).filter_by(sub_name=self.name, deleted=deleted)
+	def get_comments(self, deleted=False, count=False):
+		if count == True:
+			return db.session.query(Comment).filter_by(sub_name=self.name, deleted=deleted).count()
+		return db.session.query(Comment).filter_by(sub_name=self.name, deleted=deleted)
 
-	def get_posts(self, deleted=False):
-		self.posts = db.session.query(Post).filter_by(sub=self.name, deleted=deleted)
+	def get_posts(self, deleted=False, count=False):
+		if count == True:
+			return db.session.query(Post).filter_by(sub=self.name, deleted=deleted).count()
+		return db.session.query(Post).filter_by(sub=self.name, deleted=deleted)
 
 	def __repr__(self):
 		return '<Sub %r>' % self.name
