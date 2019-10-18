@@ -276,8 +276,6 @@ def pseudo_markup(text):
 	if mtext == '':
 		return '<br>'
 
-	mtext = mtext.replace('<br>\n<br>', '')	
-
 	return mtext
 
 epoch = datetime(1970, 1, 1)
