@@ -127,14 +127,6 @@ def apply_headers(response):
 			print('\n[Load: %s]' % load_time)
 
 
-	if response.status_code in [500, 502]:
-		db.session.rollback()
-		db.session.remove()
-
-	if response.status_code == 500:
-		with open('500urls.txt', 'a+') as f:
-			f.write(str(datetime.utcnow()) + ' ' + str(request.url) + '\n')
-
 	if request.environ['REQUEST_METHOD'] == 'POST':
 		cache.clear()
 
