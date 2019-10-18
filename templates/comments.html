@@ -141,7 +141,7 @@
 			</div>
 		</div>
 		<div class='comment-selftext-wrapper'>
-		<selftext class="comment-text comment-text-text safe-markup-text">{{ comment.text|safe }}</selftext>
+		<selftext class="comment-text comment-text-text safe-markup-text">{{ comment.new_text|safe }}</selftext>
 		</div>	
 		{% if session['user'] not in post.mods %}
 		<div class="row post-row comment-bottom" style='margin-bottom: 1rem!important;'>
