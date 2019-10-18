@@ -264,7 +264,7 @@ def mod_addmod():
 		db.session.add(new_mod)
 		db.session.commit()
 
-		flash('new moderator ' + username, 'succes')
+		flash('new moderator ' + username, 'success')
 		return redirect('/i/' + sub + '/mods/')
 	else:
 		return '403'

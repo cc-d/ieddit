@@ -482,14 +482,6 @@ blockquote {
   background-color: green;
 }
 
-.alert.succes {
-  background-color: green;
-}
-
-.alert.sucess {
-  background-color: green;
-}
-
 .alert.error {
   background-color: red;
 }
