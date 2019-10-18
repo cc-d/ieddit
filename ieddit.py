@@ -109,6 +109,9 @@ def before_request():
 
 @app.after_request
 def apply_headers(response):
+	if response.status_code == 500:
+		db.session.rollback()
+
 	response.headers["X-Frame-Options"] = "SAMEORIGIN"
 	response.headers["X-XSS-Protection"] = "1; mode=block"
 	response.headers['X-Content-Type-Options'] = 'nosniff'
