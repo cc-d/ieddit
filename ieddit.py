@@ -569,7 +569,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 			post.sub_nsfw = False
 
 		if hasattr(post, 'text'):
-			post.text = pseudo_markup(post.text)
+			post.new_text = pseudo_markup(post.text)
 		if thumb_exists(post.id):
 			post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
 
@@ -646,7 +646,8 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 	for p in sub_posts:
 		if hasattr(p, 'self_text'):
 			if p.self_text != None:
-				p.self_text = pseudo_markup(p.self_text)
+				p.new_self_text = pseudo_markup(p.self_text)
+
 
 	if posts_only:
 		return sub_posts
@@ -716,7 +717,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 			else:
 				post.sub_nsfw = False
 			if hasattr(post, 'text'):
-				post.text = pseudo_markup(post.text)
+				post.new_text = pseudo_markup(post.text)
 			
 			if thumb_exists(post.id):
 				post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
@@ -726,7 +727,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
 			if hasattr(post, 'self_text'):
 				if post.self_text != None:
-					post.self_text = pseudo_markup(post.self_text)
+					post.new_self_text = pseudo_markup(post.self_text)
 
 			if get_youtube_vid_id(post.url):
 				post.video = 'https://www.youtube.com/embed/%s?version=3&enablejsapi=1' % get_youtube_vid_id(post.url)
@@ -756,7 +757,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
 	for c in comments:
 		c.score = (c.ups - c.downs)
-		c.text = pseudo_markup(c.text)
+		c.new_text = pseudo_markup(c.text)
 		c.mods = get_sub_mods(c.sub_name)
 		c.created_ago = time_ago(c.created)
 		if 'user_id' in session:
@@ -917,7 +918,10 @@ def view_user(username):
 			v = p.has_voted(session['user_id'])
 			if v != None:
 				p.has_voted = str(v.vote)
+		if p.self_text != None:
+			p.new_text = pseudo_markup(p.self_text)
 
+		p.remote_url_parsed = post_url_parse(p.url)
 
 	comments_with_posts = []
 
@@ -926,6 +930,7 @@ def view_user(username):
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
 		comments_with_posts.append((c, cpost))
 
+		c.new_text = pseudo_markup(c.text)
 		if 'user_id' in session:
 			c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
 			if c.has_voted != None:
@@ -1339,7 +1344,7 @@ def user_messages(username=None):
 
 			for r in read:
 				if r.encrypted == False:
-					r.text = pseudo_markup(r.text)
+					r.new_text = pseudo_markup(r.text)
 				else:
 					#r.text = r.text.replace('<br>', '')
 					r.sender_pgp = get_pgp_from_username(r.sender)
@@ -1358,7 +1363,7 @@ def user_messages(username=None):
 
 			for r in unread:
 				if r.encrypted == False:
-					r.text = pseudo_markup(r.text)
+					r.new_text = pseudo_markup(r.text)
 				else:
 					#r.text = r.text.replace('<br>');
 					r.sender_pgp = get_pgp_from_username(r.sender)
@@ -1390,7 +1395,7 @@ def reply_message(username=None, mid=None):
 		flash('invalid message id', 'danger')
 		return redirect('/')
 	else:
-		m.text = pseudo_markup(m.text)
+		m.new_text = pseudo_markup(m.text)
 		if hasattr(m, 'in_reply_to'):
 			if m.in_reply_to != None:
 				m.ppath = m.in_reply_to.replace(config.URL, '')
@@ -1587,7 +1592,7 @@ def explore():
 	for sub in subs:
 		if hasattr(sub, 'rules'):
 			if sub.rules != None:
-				sub.rules = pseudo_markup(sub.rules)
+				sub.new_rules = pseudo_markup(sub.rules)
 		sub.posts = db.session.query(Post).filter_by(sub=sub.name).count()
 		if sub.posts == 0:
 			continue
@@ -1675,7 +1680,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 		comments = comments.offset(offset).limit(limit).all()
 
 	for c in comments:
-		c.text = pseudo_markup(c.text)
+		c.new_text = pseudo_markup(c.text)
 		c.mods = get_sub_mods(c.sub_name)
 		cpost = db.session.query(Post).filter_by(id=c.post_id).first()
 		comments_with_posts.append((c, cpost))
