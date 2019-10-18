@@ -922,7 +922,7 @@ def view_user(username):
 			if v != None:
 				p.has_voted = str(v.vote)
 		if p.self_text != None:
-			p.new_text = pseudo_markup(p.self_text)
+			p.new_self_text = pseudo_markup(p.self_text)
 
 		p.remote_url_parsed = post_url_parse(p.url)
 
