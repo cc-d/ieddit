@@ -75,6 +75,8 @@ class Post(db.Model):
 	locked = db.Column(db.Boolean, default=False, nullable=False)
 	nsfw = db.Column(db.Boolean, default=False, nullable=False)
 	remote_image_url = db.Column(db.String(2000), default=None, nullable=True)
+	ack_admin = db.Column(db.Boolean, default=False, nullable=False)
+
 
 	def has_voted(self, user_id):
 		return db.session.query(Vote).filter_by(post_id=self.id, user_id=user_id).first()
@@ -102,6 +104,7 @@ class Comment(db.Model):
 	permalink = db.Column(db.String(2000), nullable=True)
 	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 	edited = db.Column(db.Boolean, default=False, nullable=False)
+	ack_admin = db.Column(db.Boolean, default=False, nullable=False)
 
 	def get_children(self, deleted=False):
 		if deleted == None:
@@ -166,6 +169,7 @@ class Message(db.Model):
 	anonymous = db.Column(db.Boolean, default=False, nullable=False)
 	sender_type = db.Column(db.String(20), default='user', nullable=False)
 	encrypted = db.Column(db.Boolean, default=False, nullable=False)
+	ack_admin = db.Column(db.Boolean, default=False, nullable=False)
 
 	def __repr__(self):
 		return '<Message %r>' % self.id

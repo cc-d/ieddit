@@ -43,6 +43,10 @@
 	{% else %}
 	<input type='checkbox' name='anonymous' value='1'>
 	{% endif %}
+    {% if session['admin'] == True %}
+        <small> post as admin? </small>
+        <input type='checkbox' name='ack_admin' value='0'>
+    {% endif %}
 </form>
 
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
@@ -61,6 +65,10 @@
 	{% else %}
 	<input type='checkbox' name='anonymous' value='1'>
 	{% endif %}
+    {% if session['admin'] == True %}
+        <small> post as admin? </small>
+        <input type='checkbox' name='ack_admin' value='0'>
+    {% endif %}
 </form>
 {% else %}
 <form id='post-reply-box' action='/create_comment' method='POST'>
@@ -109,7 +117,7 @@
 			<div class="col inner-div comment-inner-div">
 			<small>
 			{% if comment.edited %}* {% endif %}
-			{% if cauthor_type == 'admin' %}
+			{% if cauthor_type == 'admin' and comment.ack_admin == True %}
 			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
 			{% elif cauthor_type == 'mod' %}
 			<i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ pauthor }}</a>
@@ -207,6 +215,10 @@
 	{% else %}
 	<input type='checkbox' name='anonymous' value='1'>
 	{% endif %}
+    {% if cauthor_type == 'admin' %}
+    <small> post as admin? </small>
+        <input type='checkbox' name='ack_admin' value='0'>
+    {% endif %}
 </form>
 <script> $('#comment-reply-box').css('display', 'none'); </script>
 	{% endif %}

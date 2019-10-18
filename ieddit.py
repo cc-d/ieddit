@@ -1,20 +1,12 @@
-from flask import Flask, render_template, request, redirect, flash, url_for, Blueprint, g
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func, exists
+from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_caching import Cache
 from flask_session import Session
 from flask_session_captcha import FlaskSessionCaptcha
-from datetime import timedelta, datetime
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address, get_ipaddr
+from flask_limiter.util import get_ipaddr
 
-import time
-import re
-import config
-import base64
 #from subprocess import call
-import os
 import _thread
 import urllib.parse
 from functools import wraps
@@ -717,7 +709,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 				post.sub_nsfw = False
 			if hasattr(post, 'text'):
 				post.text = pseudo_markup(post.text)
-			
+
 			if thumb_exists(post.id):
 				post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
 			elif hasattr(post, 'url'):
@@ -736,7 +728,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 		if 'user_id' in session:
 			post.has_voted = db.session.query(Vote).filter_by(post_id=post.id, user_id=session['user_id']).first()
 			if post.has_voted != None:
-				post.has_voted = post.has_voted.vote	
+				post.has_voted = post.has_voted.vote
 
 		if not comment_id:
 			comments = recursive_children(db.session.query(Comment).filter_by(post_id=post.id).all())
@@ -745,7 +737,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 		else:
 			parent_comment = db.session.query(Comment).filter_by(id=comment_id).first()
 			comments = recursive_children(comment=parent_comment)
-			
+
 	else:
 		comments = db.session.query(Comment).filter(Comment.author_id == user_id,
 			Comment.deleted == False).order_by(Comment.created.desc()).all()
@@ -777,6 +769,8 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 @app.route('/i/<sub>/<post_id>/<inurl_title>/')
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
+	print('-----------------get comment --------------------------------')
+	print(session['admin'] == True)
 	try:
 		if sub == None or post_id == None or inurl_title == None:
 			if not comments_only:
@@ -786,24 +780,24 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sor
 		except:
 			comment_id = False
 		sub = normalize_sub(sub)
-	
+
 		comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
-		
+
 		if post != None and 'username' in session:
 			if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
 				post.is_mod = True
-	
+
 		if comments_only:
 			return comments
-	
+
 		if not comment_id:
 			tree = create_id_tree(comments)
 		else:
 			tree = create_id_tree(comments, parent_id=comment_id)
-	
+
 		tree = comment_structure(comments, tree)
-		return render_template('comments.html', comments=comments, post_id=post_id, 
-			post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), 
+		return render_template('comments.html', comments=comments, post_id=post_id,
+			post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title),
 			post=post, tree=tree, parent_comment=parent_comment)
 	except Exception as e:
 		print(e)
@@ -1217,7 +1211,7 @@ def create_comment():
 	parent_id = request.form.get('parent_id')
 	sub_name = request.form.get('sub_name')
 	anonymous = request.form.get('anonymous')
-
+	ack_admin = True if request.form.get('ack_admin') else False
 	if 'rate_limit' in session and config.RATE_LIMIT == True:
 		rl = session['rate_limit'] - time.time()
 		if rl > 0:
@@ -1265,7 +1259,7 @@ def create_comment():
 
 	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=text,
 		author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level,
-		anonymous=anonymous, deleted=deleted)
+		anonymous=anonymous, deleted=deleted, ack_admin=ack_admin)
 	db.session.add(new_comment)
 	db.session.commit()
 	
@@ -1297,14 +1291,14 @@ def create_comment():
 		cparent = db.session.query(Comment).filter_by(id=new_comment.parent_id).first()
 		if cparent.author != session['username']:
 			new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
-				sent_to=cparent.author, in_reply_to=new_comment.permalink, anonymous=anonymous)
+				sent_to=cparent.author, in_reply_to=new_comment.permalink, anonymous=anonymous, ack_admin=ack_admin)
 			db.session.add(new_message)
 			db.session.commit()
 	else:
 		if not deleted:
 			if post.author != session['username']:
 				new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
-					sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous)
+					sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous, ack_admin=ack_admin)
 				db.session.add(new_message)
 				db.session.commit()
 
