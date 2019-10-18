@@ -1584,7 +1584,6 @@ def blocksub(sub=None):
 
 
 @app.route('/explore/', methods=['GET'])
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def explore():
 	#sub = normalize_sub(sub)
 	esubs = []
