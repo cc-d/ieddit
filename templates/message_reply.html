@@ -4,7 +4,7 @@
 {% if self_pgp %}
 {% include 'keys.html' %}
 {% include 'crypto.html' %}
-<script src="{{ url_for('static', filename='encrypt-message-button.js') }}{{ g.cache_bust }}"></script>
+
 {% endif %}
 
 {% if message %}

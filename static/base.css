@@ -67,9 +67,14 @@ textarea {
 		max-height: 4.75rem;
 		max-width: 4.75rem;
 	}
+
 	.posts-media-body a {
 		font-size: 90%;
 	}
+	.sub-post-title-link {
+		font-size: 100%!important;
+	}
+
 	.posts-media-body button {
 		font-size: 90%;
 	}

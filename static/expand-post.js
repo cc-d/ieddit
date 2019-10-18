@@ -44,16 +44,18 @@ function maxVidSize() {
 	}
 
 
-	if (true) {
+	var vids = $('.vidembed');
+
+	if (vids.length > 0) {
 		// 4:3 ratio
 		height = (width * (0.75));
-		vids = $('.vidembed');
 		if (vids.length == 1) {
 			vids = [vids]
 		}
+
 		for (i=0; i<vids.length; i++) {
-			vids[i].attr('height', parseInt(height));
-			vids[i].attr('width', parseInt(width));
+			$(vids[i]).attr('height', parseInt(height));
+			$(vids[i]).attr('width', parseInt(width));
 		}
 	}
 }
