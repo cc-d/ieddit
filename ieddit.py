@@ -159,6 +159,14 @@ def get_style(sub=None):
 app.jinja_env.globals.update(get_style=get_style)
 
 
+def catch_all_exceptions(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		try:
+			return f(*args, **kwargs)
+		except Exception as e:
+			print('\n\nCaught unkown error in catch_all_exceptions wrapped function %s .\n\n' % f, e)
+	return decorated_function
 
 def notbanned(f):
 	@wraps(f)
@@ -385,7 +393,7 @@ def login():
 						session['anonymous'] = True
 				session['darkmode'] = login_user.darkmode
 
-				if login_user.pgp:
+				if get_pgp_from_username(login_user.username):
 					session['pgp_enabled'] = True
 
 
@@ -1579,6 +1587,7 @@ def blocksub(sub=None):
 
 
 @app.route('/explore/', methods=['GET'])
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def explore():
 	#sub = normalize_sub(sub)
 	esubs = []

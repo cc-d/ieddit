@@ -12,7 +12,9 @@
 <h6> Passphrase </h6>
 <small><p> This is how you will decrypt messages. <br> Write it down somewhere safe or (preferably) memorize it.</p></small>
 <div id='secret-container'>
-<textarea style='width: 300px;' class='rounded' id='secret' readonly></textarea><br>
+<textarea style='width: 300px; resize: none;' class='rounded' id='secret' readonly></textarea>
+<i class='fa fa-lock' id='secret-lock' style='margin-left: -1rem; margin-top: 2rem; position: absolute; color: green; opacity: 0.5;'></i>
+<br>
 </div>
 </div>
 {% if pgp.privkey %}
