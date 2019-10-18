@@ -107,7 +107,7 @@ def user_edit_post():
 		obj.edited = True
 		db.session.commit()
 		
-		flash('post edited', category='succes')
+		flash('post edited', category='success')
 		session['last_edit'] = None
 		return redirect(obj.permalink)
 	elif hasattr(obj, 'text'):
@@ -115,7 +115,7 @@ def user_edit_post():
 		obj.text = etext
 		db.session.commit()
 
-		flash('comment edited', category='succes')
+		flash('comment edited', category='success')
 		session['last_edit'] = None
 		return redirect(obj.permalink)
 	else:
