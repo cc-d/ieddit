@@ -714,7 +714,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 	parent_comment = None
 	if not comments_only:
 		if post_id != None:
-			post = db.session.query(Post).filter_by(id=post_id, sub=sub).first()
+			post = db.session.query(Post).filter_by(id=post_id).first()
 			post.mods = get_sub_mods(post.sub)
 			post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
 			post.created_ago = time_ago(post.created)
