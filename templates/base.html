@@ -19,6 +19,8 @@
 
 	<link rel="stylesheet" href="{{ url_for('static', filename='darkmode.css') }}{{ g.cache_bust }}">
 
+	<script src="{{ url_for('static', filename='actions.js') }}{{ g.cache_bust }}"></script>
+
 	<script src="{{ url_for('static', filename='expand-post.js') }}{{ g.cache_bust }}"></script>
 
 	{% if request.sub and request.sub != 'all' %}

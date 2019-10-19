@@ -53,8 +53,24 @@ textarea {
 	max-width: -moz-available;
 }
 
+.num-and-com {
+	min-width: 3rem;
+}
+
+.comment-fontawesome {
+	display: none;
+}
+
+
 @media only screen and (max-width: 768px) {
 	.self-post-image {
+		display: none;
+	}
+
+	.comment-fontawesome {
+		display: inline;
+	}
+	.comment-span {
 		display: none;
 	}
 	.comment-page-image {
@@ -74,7 +90,9 @@ textarea {
 	.sub-post-title-link {
 		font-size: 100%!important;
 	}
-
+	.comment-link {
+		font-size: 100%!important;
+	}
 	.posts-media-body button {
 		font-size: 90%;
 	}
@@ -408,6 +426,29 @@ blockquote {
 	color: #212529;
 }
 
+
+.user-dropdown {
+	background-color: #262626!important;
+	outline: none!important;
+	box-shadow: none!important;
+}
+.user-dropdown:focus {
+	background-color: #262626!important;
+	outline: none!important;
+	box-shadow: none!important;
+}
+.mod-dropdown {
+	background-color: #262626!important;
+	outline: none!important;
+	box-shadow: none!important;
+}
+.mod-dropdown:focus {
+	background-color: #262626!important;
+	outline: none!important;
+	box-shadow: none!important;
+}
+
+
 .fa-arrow-down a:hover {
 	pointer-events: none;
 }
@@ -421,6 +462,8 @@ blockquote {
 .mod-option-wrapper {
 	float: right;
 	margin-right: 0.5rem;
+	font-size: 90%;
+	margin-top: 2px;
 }
 
 .mod-option-wrapper-comments {

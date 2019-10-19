@@ -90,6 +90,10 @@
 {% endif %}
 {% endif %}
 
+{% if parent_comment %}
+<h5 id='single-comment'> you are viewing a single comment - <a style='text-decoration: underline;' href="{{ post.permalink }}">view all comments</a></h5>
+{% endif %}
+
 <ul class="list-unstyled comment-reply-list">
 	{%- for comment, value in tree.items() recursive %}  
 {% if comment.anonymous %}
@@ -208,6 +212,7 @@
 	<input type='checkbox' name='anonymous' value='1'>
 	{% endif %}
 </form>
+
 <script> $('#comment-reply-box').css('display', 'none'); </script>
 	{% endif %}
 	{% endif %}
@@ -216,6 +221,7 @@
 	{%- if value %}
 	{{ loop(value.items()) }}
 	{% endif %}
+
 	{% endif %}
 	{% else %}
 	<p>no comments</p>

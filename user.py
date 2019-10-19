@@ -35,7 +35,7 @@ def user_delete_comment():
 		db.session.commit()
 
 		flash('post deleted', category='success')
-		return redirect(post.permalink)
+		return redirect(post.get_permalink())
 	else:
 		return '403'
 
@@ -109,7 +109,7 @@ def user_edit_post():
 		
 		flash('post edited', category='success')
 		session['last_edit'] = None
-		return redirect(obj.permalink)
+		return redirect(obj.get_permalink())
 	elif hasattr(obj, 'text'):
 		obj.edited = True
 		obj.text = etext
@@ -117,7 +117,7 @@ def user_edit_post():
 
 		flash('comment edited', category='success')
 		session['last_edit'] = None
-		return redirect(obj.permalink)
+		return redirect(obj.get_permalink())
 	else:
 		return '403'
 
@@ -137,7 +137,7 @@ def user_marknsfw(pid=None):
 	flash('marked as nsfw')
 	db.session.commit()
 	
-	return redirect(post.permalink)
+	return redirect(post.get_permalink())
 
 
 @ubp.route('/darkmode', methods=['POST'])
