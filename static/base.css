@@ -730,7 +730,7 @@ ul {
 }
 
 .three-dots {
-	background-color: #262626;
+
 }
 
 .comment-button-dropdown {
@@ -739,4 +739,8 @@ ul {
 
 .comment-more {
 	font-size: 0.75rem;
+}
+
+.v-button {
+
 }

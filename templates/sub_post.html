@@ -39,7 +39,7 @@ var preExpandVideo = false;
 {% if session['username'] in post.mods %}
   <li class="media sub-post rounded">
 {% else %}
-  <li class="media sub-post rounded">
+  <li class="media sub-post rounded" style='margin-bottom: -0.25rem;'>
     {% endif %}
     <div class="post-image-container" id="post-thumb-{{ post.id }}">
         {% if post.post_type == 'url' %}
@@ -82,10 +82,13 @@ var preExpandVideo = false;
     		<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">{{ pauther }}</a>
             {% endif %}
             </small>
+
             <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/i/{{ post.sub }}">/i/{{ post.sub }}</a></small>
             <small class="created-ago"><a class="comment-link" href="{{ post.permalink }}">{{ post.created_ago }}</a></small>
+
     	</div>
     </div>
+
     <div class="sub-post-title">
     {% if post.post_type == 'url' and post.remote_image_url == None %}
     
@@ -137,6 +140,7 @@ var preExpandVideo = false;
     </div>
     {% endif %}
     <div class="row post-row">
+
         <div class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
             {% if post.has_voted|string == '1' %}
             <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
@@ -156,21 +160,16 @@ var preExpandVideo = false;
 <script>document.write('<style> .hidden-buttons {opacity: 0; position: absolute; font-size:0px; pointer-events: none; };</style>');</script>
         <div class='mod-option-wrapper user-options next-to-comments'><small>
 
-
-
-<!-- DOT DOT DOT --><!--
-<div class="dropdown bottom-post-dropdown" id='dot-button-{{ post.id }}'>
-  <button class="btn btn-secondary btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class='fa fa-ellipsis-v'></i>  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+<!--
+<div class="dropdown bottom-post-dropdown v-button" id='dot-button-{{ post.id }}'>
+    <button class="btn btn-secondary btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-ellipsis-v '></i>  </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>
         <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("post_id", "{{ post.id }}")'>hide post</a>
-  </div>
+    </div>
 </div>-->
 
-
-
-        {% if session['username'] == post.author %}
+{% if session['username'] == post.author %}
 <!-- USER MENU -->
 <div class="dropdown bottom-post-dropdown">
   <button class="btn btn-secondary btn-sm bottom-dropdown dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -198,7 +197,7 @@ var preExpandVideo = false;
 <!-- mod menu -->
 {% if session['username'] in post.mods or session['admin'] == True %}
 <div class="dropdown bottom-post-dropdown">
-  <button class="btn btn-primary btn-sm bottom-dropdown dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <button class="btn btn-info btn-sm bottom-dropdown dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class='fa fa-gavel'></i>  </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
             {% if session['username'] != post.author %}
@@ -229,9 +228,9 @@ var preExpandVideo = false;
             <a class="dropdown-item" href="javascript:formSubmit('post-ban-{{ post.id }}')">ban</a>
 
 </div>
+
 </div>
 {% endif %}
-
         </small><small>
 
 
@@ -245,6 +244,8 @@ var preExpandVideo = false;
          <!-- END MOD STYLE -->
 
         </small></div>
+
+
     </div>
         {% if session['username'] in post.mods %}
 
@@ -320,6 +321,7 @@ var preExpandVideo = false;
         </div>
 
         {% endif %}
+
   </li>
 </ul>
 {% if comment_thread == True %}

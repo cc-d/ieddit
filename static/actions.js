@@ -1,5 +1,10 @@
-$(document).ready(function() {
-
+$(document).ready(function() {/*
+	$('.tl-dropdown').on('hide.bs.dropdown', function () {
+		$(this).css('height', '0.5rem');
+	})
+	$('.tl-dropdown').on('show.bs.dropdown', function () {
+		$(this).css('height', '30rem');
+	});*/
 });
 
 function goToLink(val) {
