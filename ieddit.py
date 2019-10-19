@@ -687,51 +687,29 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 	#return str(hasattr(request.environ, 'QUERY_STRING'))#str(vars(request))
 
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def recursive_children(r=[], comment=None, sort='hot', current_depth=0, max_depth=8, deleted=False):
-	if type(comment) == type([]):
-		r = comment
-		return [recursive_children(r=r, comment=z) for z in comment]
-	else:
-		if comment in r:
-			return comment
+def recursive_children(comment=None, current_depth=0, max_depth=8, deleted=False):
+	found_children = []
+	found_children.append(comment)
+	children = comment.get_children(deleted=deleted).all()
 
-	if comment != None:
-		if deleted == False:
-			if comment.deleted == False:
-				r.append(comment)
-
-		elif deleted == True:
-			if comment.deleted == True:
-				r.append(comment)
-
-		else:
-			r.append(comment)
-	else:
-		return r
-
-	if comment.child_count() == 0:
-		return r
-
-	else:
-		children = comment.get_children(deleted=deleted).all()
-		if sort == 'hot':
-			for c in children:
-				c.score = hot(c.ups, c.downs, c.created)
-			children.sort(key=lambda x: x.score, reverse=True)
-		elif sort == 'new':
-			children.sort(key=lambda x: x.created, reverse=True)
-		elif sort == 'top':
-			children.sort(key=lambda x: (x.ups - x.downs), reverse=True)
-
+	while len(children) > 0 and current_depth < max_depth :
+		print(children)
 		for c in children:
-			current_depth += 1
-			if current_depth == max_depth:
-				return r
-			recursive_children(r=r, comment=c, current_depth=current_depth, max_depth=max_depth, sort=sort)
-	return r
+			print(c)
+			if c not in found_children:
+				found_children.append(c)
+				c2 = c.get_children(deleted=deleted).all()
+				if c2 != None:
+					[children.append(c3) for c3 in c2]
+			ex = [x for x in children if x != c]
+		children = ex
+		current_depth += 1
+
+	return found_children
+
 
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
+def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None, deleted=False):
 	post = None
 	parent_comment = None
 	if not comments_only:
@@ -764,27 +742,32 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
 		else:
 			post = None
+
 		if 'user_id' in session:
 			post.has_voted = db.session.query(Vote).filter_by(post_id=post.id, user_id=session['user_id']).first()
 			if post.has_voted != None:
 				post.has_voted = post.has_voted.vote	
 
-		if not comment_id:
-			comments = recursive_children(db.session.query(Comment).filter_by(post_id=post.id).all())
-			parent_comment = None
-			parent_posturl = None
+		if comment_id == None:
+			print(1)
+			comments = db.session.query(Comment).filter_by(post_id=post_id, deleted=deleted).all()
+		
 		else:
+			print(2)
+			comments = []
 			parent_comment = db.session.query(Comment).filter_by(id=comment_id).first()
-			comments = recursive_children(comment=parent_comment)
+			comments = recursive_children(comment=parent_comment, deleted=True)
 			
 	else:
+		print(3)
 		comments = db.session.query(Comment).filter(Comment.author_id == user_id,
-			Comment.deleted == False).order_by(Comment.created.desc()).all()
+			Comment.deleted == deleted).order_by(Comment.created.desc()).all()
 
 
 	if 'blocked_subs' in session and 'username' in session:
 		comments = [c for c in comments if c.sub_name not in session['blocked_subs']]
 
+	#print(comments)
 	for c in comments:
 		c.score = (c.ups - c.downs)
 		c.new_text = pseudo_markup(c.text)
@@ -807,15 +790,12 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 @app.route('/i/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
 @app.route('/i/<sub>/<post_id>/<inurl_title>/')
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
+def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort_by=None, comments_only=False, user_id=None):
 	try:
 		if sub == None or post_id == None or inurl_title == None:
 			if not comments_only:
 				return 'badlink'
-		try:
-			int(comment_id)
-		except:
-			comment_id = False
+
 		sub = normalize_sub(sub)
 	
 		comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
@@ -873,6 +853,7 @@ def list_of_child_comments(comment_id, sort_by=None):
 				current_comments.append(c.id)
 				comments[c.id] = c
 			current_comments.remove(current_c)
+	print(comments)
 	return comments
 
 @app.route('/create', methods=['POST', 'GET'])

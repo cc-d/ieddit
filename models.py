@@ -115,14 +115,14 @@ class Comment(db.Model):
 		return config.URL + urllib.parse.urlparse(self.permalink).path
 
 	def get_children(self, deleted=False):
-		if deleted == None:
-			return db.session.query(Comment).filter_by(parent_id=self.id)
-		return db.session.query(Comment).filter_by(parent_id=self.id, deleted=deleted)
+		if deleted == False:
+			return db.session.query(Comment).filter_by(parent_id=self.id, deleted=deleted)
+		return db.session.query(Comment).filter_by(parent_id=self.id)
 
 	def child_count(self, deleted=False):
-		if deleted == None:
-			return db.session.query(Comment).filter_by(parent_id=self.id).count()
-		return db.session.query(Comment).filter_by(parent_id=self.id, deleted=deleted).count()
+		if deleted == False:
+			return db.session.query(Comment).filter_by(parent_id=self.id, deleted=False).count()
+		return db.session.query(Comment).filter_by(parent_id=self.id).count()
 
 	def users_voted(self):
 		users = db.session.query(Vote).filter_by(comment_id=self.id)
