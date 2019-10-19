@@ -113,7 +113,6 @@ def apply_headers(response):
 		db.session.rollback()
 		print(str(vars(response)))
 
-
 	response.headers["X-Frame-Options"] = "SAMEORIGIN"
 	response.headers["X-XSS-Protection"] = "1; mode=block"
 	response.headers['X-Content-Type-Options'] = 'nosniff'
