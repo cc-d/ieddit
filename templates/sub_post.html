@@ -143,7 +143,11 @@ var preExpandVideo = false;
             {% else %}
             <a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
             {% endif %}
+	    {% if post != None %}
             <vote class="score">{{ post.get_score() }}</vote>
+	    {% else %}
+	    <vote class='score'>?</vote>
+	    {% endif %}
             {% if post.has_voted|string == '-1' %}
             <a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
             {% else %}

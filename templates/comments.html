@@ -151,7 +151,11 @@
 	{% else %}
 	<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
 	{% endif %}
+	{% if comment != None %}
 	<vote class="score">{{ comment.get_score() }}</vote>
+	{% else %}
+	<vote class='score'>?</vote>
+	{% endif %}
 	{% if comment.has_voted == -1 %}
 	<a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
 	{% else %}
