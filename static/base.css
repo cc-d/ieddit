@@ -197,7 +197,7 @@ textarea {
 
 .sub-post-title {
 	margin-top: -0.75rem;
-	min-height: 2rem;
+	min-height: 46px;
 }
 
 .top-of-post {
@@ -327,6 +327,7 @@ textarea {
 	border: 0px solid red;
 	min-height: 92px;
 	word-break: break-word;
+	margin-bottom: 0.25rem;
 }
 
 .comment-post-title {
@@ -603,6 +604,10 @@ blockquote {
 	width: -moz-available;
 }
 
+.expanded-post-image {
+	margin-bottom: 0.5rem;
+}
+
 ul {
 	list-style-type: disc;
 }
@@ -694,7 +699,7 @@ ul {
 }
 
 .row.post-row {
-	margin-bottom: 14px;
+	margin-bottom: 16px;
 }
 
 .post-inner-div {
