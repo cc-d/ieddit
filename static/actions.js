@@ -3,12 +3,19 @@ $(document).ready(function() {
 });
 
 function goToLink(val) {
+	var r = confirm(val);
+	if (r === false) {
+		return;
+	}
 	elem = $('#' + val);
 	window.location($(elem).attr('href'));
 }
 
 function formSubmit(val) {
-	console.log(val);
+	var r = confirm(val);
+	if (r === false) {
+		return;
+	}
 	elem = $('#' + val);
 
 	if ($(elem).attr('href') !== 'undefined' ) {
