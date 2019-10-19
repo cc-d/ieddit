@@ -113,6 +113,7 @@ def apply_headers(response):
 		db.session.rollback()
 		print(str(vars(response)))
 
+
 	response.headers["X-Frame-Options"] = "SAMEORIGIN"
 	response.headers["X-XSS-Protection"] = "1; mode=block"
 	response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -1771,15 +1772,32 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def get_stats():
-	posts = db.session.query(Post).all()
-	comments = db.session.query(Comment).all()
-	users = db.session.query(Iuser).all()
-	bans = db.session.query(Ban).count()
-	messages = db.session.query(Message).count()
-	mod_actions = db.session.query(Mod_action).count()
-	subs = db.session.query(Sub).count()
-	votes = db.session.query(Vote).all()
+def get_stats(subi=None):
+	if subi == None:
+		posts = db.session.query(Post).all()
+		comments = db.session.query(Comment).all()
+		users = db.session.query(Iuser).all()
+		bans = db.session.query(Ban).count()
+		messages = db.session.query(Message).count()
+		mod_actions = db.session.query(Mod_action).count()
+		subs = db.session.query(Sub).count()
+		votes = db.session.query(Vote).all()
+	else:
+		posts = db.session.query(Post).filter_by(sub=subi).all()
+		comments = db.session.query(Comment).filter_by(sub_name=subi).all()
+		bans = db.session.query(Ban).filter_by(sub=subi).count()
+		mod_actions = db.session.query(Mod_action).filter_by(sub=subi).count()
+		users = []
+		votes = []
+		for v in posts:
+			[votes.append(vv) for vv in db.session.query(Vote).filter_by(post_id=v.id).all()]
+			[users.append(vv) for vv in db.session.query(Iuser).filter_by(username=v.author).all()]
+		for v in comments:
+			[votes.append(vv) for vv in db.session.query(Vote).filter_by(comment_id=v.id).all()]
+			[users.append(vv) for vv in db.session.query(Iuser).filter_by(username=v.author).all()]
+
+		messages = 0
+		subs = 0
 
 	daycoms = [c for c in comments if ((datetime.now() - c.created).total_seconds()) < 86400]
 
@@ -1818,7 +1836,7 @@ def get_stats():
 	# requires user be on linux, and have log file in this location, so this is
 	# only set to try to be calculated on the ieddit prod/dev server. it makes
 	# assumptions that cannot be made for any user on a different setup
-	if config.URL == 'https://ieddit.com' or config.URL == 'http://dev.ieddit.com':
+	if config.URL == 'https://ieddit.com' or config.URL == 'http://dev.ieddit.com' and subi == None:
 		try:
 			fline = str(os.popen('head -n 1 /var/log/nginx/access.log').read()).split(' ')[3][1:]
 			lline = str(os.popen('tail -n 1 /var/log/nginx/access.log').read()).split(' ')[3][1:]
@@ -1847,11 +1865,12 @@ def get_stats():
 	return (len(posts), len(comments), users, bans, messages, mod_actions, subs, len(votes), daycoms, dayposts, dayvotes, dayusers,
 		timediff, uptime)
 
+@app.route('/i/<subi>/stats/', methods=['GET'])
 @app.route('/stats/', methods=['GET'])
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def stats():
+def stats(subi=None):
 	(posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
-		dayusers, timediff, uptime) = get_stats()
+		dayusers, timediff, uptime) = get_stats(subi=subi)
 
 	if 'admin' in session:
 		debug = str(vars(request))
@@ -1860,7 +1879,7 @@ def stats():
 
 	return render_template('stats.html', posts=posts, dayposts=dayposts, comments=comments, daycoms=daycoms,
 		users=users, bans=bans, messages=messages, mod_actions=mod_actions, subs=subs, votes=votes, dayvotes=dayvotes,
-		dayusers=dayusers, timediff=timediff, uptime=uptime, debug=debug)
+		dayusers=dayusers, timediff=timediff, uptime=uptime, debug=debug, subi=subi)
 
 
 

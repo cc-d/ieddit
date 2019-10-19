@@ -44,7 +44,7 @@ textarea {
 }
 
 .post-image-container {
-	min-height: 6rem;
+	min-height: 5rem;
 	min-width: 6rem;
 }
 
@@ -197,7 +197,7 @@ textarea {
 
 .sub-post-title {
 	margin-top: -0.75rem;
-	min-height: 46px;
+	min-height: 40px;
 }
 
 .top-of-post {
@@ -435,6 +435,7 @@ blockquote {
     text-align-last: center;
     padding-bottom: 3px;
 }
+
 .user-dropdown:focus {
 	background-color: #262626!important;
 	outline: none!important;
@@ -472,6 +473,7 @@ blockquote {
 }
 
 .mod-option-wrapper-comments {
+
 	float: right;
 	margin-right: 2px;
 }
