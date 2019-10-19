@@ -22,17 +22,17 @@ var preExpandVideo = false;
 {% set comment_thread = False %}
 {% if loop is defined %}
 {% if loop.last and not loop.first %}
-<ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-bottom: 5px;">
+<ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-bottom: 5px;">
 {% elif loop.first %}
-<ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 5px;">
+<ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 5px;">
 {% else %}
-<ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
+<ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
 {% endif %}
 {% else %}
 {% if userpage %}
-<ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
+<ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
 {% else %}
-<ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;  margin-bottom: 2rem;">
+<ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;  margin-bottom: 2rem;">
 {% endif %}
 {% set comment_thread = True %}
 {% endif %}
@@ -143,11 +143,7 @@ var preExpandVideo = false;
             {% else %}
             <a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
             {% endif %}
-	    {% if post != None %}
             <vote class="score">{{ post.get_score() }}</vote>
-	    {% else %}
-	    <vote class='score'>?</vote>
-	    {% endif %}
             {% if post.has_voted|string == '-1' %}
             <a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
             {% else %}
@@ -159,11 +155,105 @@ var preExpandVideo = false;
 
 <script>document.write('<style> .hidden-buttons {opacity: 0; position: absolute; font-size:0px; pointer-events: none; };</style>');</script>
         <div class='mod-option-wrapper user-options next-to-comments'><small>
-        {% if session['username'] == post.author %}
 
+
+
+<!-- DOT DOT DOT --><!--
+<div class="dropdown bottom-post-dropdown" id='dot-button-{{ post.id }}'>
+  <button class="btn btn-secondary btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class='fa fa-ellipsis-v'></i>  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>
+        <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("post_id", "{{ post.id }}")'>hide post</a>
+  </div>
+</div>-->
+
+
+
+        {% if session['username'] == post.author %}
+<!-- USER MENU -->
+<div class="dropdown bottom-post-dropdown">
+  <button class="btn btn-secondary btn-sm bottom-dropdown dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class='fa fa-user'></i>
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% if session['username'] == post.author %}
+    <a class="dropdown-item" href="/user/edit/post/{{ post.id }}/">edit</a>
+            {% endif %}
+
+            {% if session['username'] == post.author %}
+    <a class="dropdown-item" href="javascript:formSubmit('user-delete-post-{{ post.id }}')">delete</a>
+    {% endif %}
+
+    {% if post.nsfw == False %}
+    <a class="dropdown-item" href="javascript:formSubmit('user-nsfw-post-{{ post.id }}')">nsfw</a>
+    {% endif %}
+  </div>
+</div>
+
+
+
+
+
+<!-- mod menu -->
+{% if session['username'] in post.mods %}
+<div class="dropdown bottom-post-dropdown">
+  <button class="btn btn-primary btn-sm bottom-dropdown dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class='fa fa-gavel'></i>  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+            {% if session['username'] != post.author %}
+            {% if post.nsfw == False  and post.author %}
+            <a class="dropdown-item" href="javascript:formSubmit('post-nsfw-{{ post.id }}')">nsfw</a>
+            {% endif %}
+            {% endif %}
+
+
+            {% if post.stickied == False %}
+            <a class="dropdown-item" href="javascript:formSubmit('post-sticky-{{ post.id }}')">sticky</a>
+            {% else %}
+            <a class="dropdown-item" href="javascript:formSubmit('post-unsticky-{{ post.id }}')">unsticky</a>
+            {% endif %}
+
+
+            {% if post.deleted == False %}
+            {% if session['username'] != post.author %}
+            <a class="dropdown-item" href="javascript:formSubmit('post-delete-{{ post.id }}')">delete</a>
+            {% endif %}
+            {% else %}
+            <a class="dropdown-item" href="javascript:formSubmit('post-undelete-{{ post.id }}')">undelete</a>
+            {% endif %}
+
+        <a class="dropdown-item" href="javascript:formSubmit('post-{% if post.locked == True %}unlock{% else %}lock{% endif %}-{{ post.id }}')">{% if post.locked == True %}unlock{% else %}lock{% endif %}</a>
+
+
+            <a class="dropdown-item" href="javascript:formSubmit('post-ban-{{ post.id }}')">ban</a>
+
+</div>
+</div>
+{% endif %}
+
+        </small><small>
+        {% endif %}
+
+
+        <!-- BEGIN MOD STYLE -->
+{% if session['username'] in post.mods %}
+            <style>.mod-dropdown{opacity:0}</style>
+            <script>document.write("<style>#mod-dropdown-{{  post.id }}{opacity:1}</style>");</script>
+    
+{% endif %}
+         <!-- END MOD STYLE -->
+
+        </small></div>
+    </div>
+        {% if session['username'] in post.mods %}
+
+<script>document.write("<style>.user-options-mod-post{ float: left; }</style>")</script>
+        <div class='mod-option-wrapper user-options user-options-mod-post'><small>
 <!-- BEGIN HIDDEN USER BOTTONS -->
+<div class='hidden-buttons'>
             {% if post.new_self_text %}
-            <a id='user-edit-{{ post.id }}' href='{{ config.URL }}/user/edit/post/{{ post.id }}/'></a>
+            <a id='user-edit-{{ post.id }}' href='{{ config.URL }}/user/edit/post/{{ post.id }}/'>edit</a>
             {% endif %}
 
             {% if session['username'] == post.author %}
@@ -179,71 +269,7 @@ var preExpandVideo = false;
             {% endif %}
 
 <!-- END HIDDER USER BUTTONS -->
-
-
-        <script>document.write("<style>#user-dropdown-{{ post.id }}{opacity:1}</style>");</script>
-        <select id='user-dropdown-{{ post.id }}' class='btn-secondary user-dropdown rounded' onchange='formSubmit(value)' value='hi'>
-            <option value="" selected disabled hidden placeholder='user'>user</option>
-            {% if post.self_text %}
-            <option value='user-edit-{{ post.id }}'>edit</option>
-            {% endif %}
-
-            {% if session['username'] == post.author %}
-            <option value='user-delete-post-{{ post.id }}'>delete</option>
-            {% endif %}
-
-            {% if post.nsfw == False %}
-            <option value='user-nsfw-post-{{ post.id }}'>nsfw</option>
-            {% endif %}
-
-            </select>
-        </small><small>
-        {% endif %}
-
-
-        <!-- BEGIN MOD STYLE -->
-{% if session['username'] in post.mods %}
-                    <style>.mod-dropdown{opacity:0}</style>
-            <script>document.write("<style>#mod-dropdown-{{  post.id }}{opacity:1}</style>");</script>
-            <select id='mod-dropdown-{{ post.id }}' class='btn-secondary mod-dropdown rounded' onchange='formSubmit(value)' value='hi'>
-                <option value="" selected disabled hidden placeholder='mod'>mod</option>
-            {% if session['username'] != post.author %}
-            {% if post.nsfw == False  and post.author %}
-            <option class='mod-action-select' value='post-nsfw-{{ post.id }}'>nsfw</option>
-            {% endif %}
-            {% endif %}
-
-            {% if post.stickied == False %}
-            <option class='mod-action-select' value='post-sticky-{{ post.id }}'>sticky</option>
-            {% else %}
-            <option class='mod-action-select' value='post-unsticky-{{ post.id }}'>unsticky</option>
-            {% endif %}
-            
-        <option class='mod-action-select' value='post-{% if post.locked == True %}unlock{% else %}lock{% endif %}-{{ post.id }}'>{% if post.locked == True %}unlock{% else %}lock{% endif %}</option>
-
-            {% if post.deleted == False %}
-            {% if session['username'] != post.author %}
-            <option class='mod-action-select' value='post-delete-{{ post.id }}'>delete</option>
-            {% endif %}
-            {% else %}
-            <option class='mod-action-select' value='post-undelete-{{ post.id }}'>undelete</option>
-            {% endif %}
-
-            <option class='mod-action-select' value='post-ban-{{ post.id }}'>ban</option>
-
-            </select>
-
-{% endif %}
-         <!-- END MOD STYLE -->
-
-        </small></div>
-    </div>
-        {% if session['username'] in post.mods %}
-
-<script>document.write("<style>.user-options-mod-post{ float: left; }</style>")</script>
-        <div class='mod-option-wrapper user-options user-options-mod-post'><small>
             <!-- ONLY SHOW THESE OPTIONS VISISBLY IF JS IS DISABLED -->
-            <div class='hidden-buttons'>
             {% if session['username'] != post.author %}
             {% if post.nsfw == False  and post.author %}
             <form id='post-nsfw-{{ post.id }}' action='{{ config.URL }}/mod/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>

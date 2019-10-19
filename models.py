@@ -219,7 +219,17 @@ class Pgp(db.Model):
 		return '<Pgp %r>' % self.id
 
 
+class Hidden(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
+	comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
+	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)	
+	other_user = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=True)
+
+	def __repr__(self):
+		return '<Hidden %r>' % self.id
 
 
-
-
+if __name__ == '__main__':
+	db.create_all()
+	db.session.commit()

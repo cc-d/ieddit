@@ -241,7 +241,7 @@ def sitemap():
 def robotstxt():
 	return app.send_static_file('robots.txt')
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_subtitle(sub):
 	try:
 		title = db.session.query(Sub).filter_by(name=sub).first()
@@ -250,7 +250,7 @@ def get_subtitle(sub):
 		title = None
 	return title
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def has_messages(username):
 	if 'username' in session:
 		messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
@@ -261,7 +261,7 @@ def has_messages(username):
 				return True
 	return False
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_sub_mods(sub, admin=True):
 	mod_subs = db.session.query(Moderator).filter_by(sub=sub).all()
 	if admin == False:
@@ -271,7 +271,7 @@ def get_sub_mods(sub, admin=True):
 		mod_subs.append(a)
 	return [m.username for m in mod_subs]
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_banned_subs(username):
 	subs = db.session.query(Ban).filter_by(username=username).all()
 	b = []
@@ -279,7 +279,7 @@ def get_banned_subs(username):
 		b.append(s.sub)
 	return b
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def is_mod(obj, username):
 	if hasattr(obj, 'inurl_title'):
 		post = obj
@@ -292,7 +292,7 @@ def is_mod(obj, username):
 			return True
 	return False
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def is_admin(username):
 	if db.session.query(db.session.query(Iuser).filter_by(admin=True, username=username).exists()).scalar():
 	#if 'admin' in session:
@@ -304,7 +304,7 @@ def set_rate_limit():
 		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME)
 		#cache.clear()
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def normalize_username(username, dbuser=False):
 	if username == None:
 		return False
@@ -315,7 +315,7 @@ def normalize_username(username, dbuser=False):
 		return username.username
 	return False
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def normalize_sub(sub):
 	subl = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
 	if subl != None:
@@ -352,7 +352,7 @@ def get_all_subs(explore=False):
 		return esubs
 
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_pgp_from_username(username):
 	u = normalize_username(username)
 	if u == False:
@@ -365,13 +365,13 @@ def get_pgp_from_username(username):
 		return pgp
 	return False
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_user_from_name(username):
 	if username == '' or username == False or username == None:
 		return False
 	return normalize_username(username, dbuser=True)
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_user_from_id(uid):
 	if uid == None or uid == False:
 		return False
@@ -1549,7 +1549,7 @@ def settings(sub=None):
 		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw, sub_object=subr)
 	return '403'
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_blocked_subs(username=None):
 	subs = db.session.query(Sub_block).filter_by(username=session['username']).all()
 	if subs != None:
@@ -1632,8 +1632,6 @@ def about():
 def subcomments(sub=None, offset=0, limit=15, s=None):
 	# code is copy pasted from user page... the post stuff can probably be gotten rid of.
 	# the username stuff can be gotten rid of too
-
-
 	mods = {}
 
 	offset = request.args.get('offset')
@@ -1706,6 +1704,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 
 
 
+
 	if request.environ['QUERY_STRING'] == '':
 		session['off_url'] = request.url + '?offset=15'
 		session['prev_off_url'] = request.url
@@ -1748,6 +1747,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 			session['off_url'] = session['off_url'].replace('/&', '/?')
 
 	if s == 'hot':
+			print(comments)
 			comments.sort(key=lambda x: x.hot, reverse=True)
 
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
@@ -1763,6 +1763,7 @@ def get_stats(subi=None):
 		mod_actions = db.session.query(Mod_action).count()
 		subs = db.session.query(Sub).count()
 		votes = db.session.query(Vote).all()
+		subscripts = 0
 	else:
 		posts = db.session.query(Post).filter_by(sub=subi).all()
 		comments = db.session.query(Comment).filter_by(sub_name=subi).all()
@@ -1776,7 +1777,8 @@ def get_stats(subi=None):
 		for v in comments:
 			[votes.append(vv) for vv in db.session.query(Vote).filter_by(comment_id=v.id).all()]
 			[users.append(vv) for vv in db.session.query(Iuser).filter_by(username=v.author).all()]
-
+		users_blocked = [n.username for n in db.session.query(Sub_block).filter_by(sub=subi).all()]
+		subscripts = len([u for u in db.session.query(Iuser) if u.username not in users_blocked])
 		messages = 0
 		subs = 0
 
@@ -1844,14 +1846,14 @@ def get_stats(subi=None):
 
 
 	return (len(posts), len(comments), users, bans, messages, mod_actions, subs, len(votes), daycoms, dayposts, dayvotes, dayusers,
-		timediff, uptime)
+		timediff, uptime, subscripts)
 
 @app.route('/i/<subi>/stats/', methods=['GET'])
 @app.route('/stats/', methods=['GET'])
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def stats(subi=None):
 	(posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
-		dayusers, timediff, uptime) = get_stats(subi=subi)
+		dayusers, timediff, uptime, subscripts) = get_stats(subi=subi)
 
 	if 'admin' in session:
 		debug = str(vars(request))
@@ -1860,9 +1862,7 @@ def stats(subi=None):
 
 	return render_template('stats.html', posts=posts, dayposts=dayposts, comments=comments, daycoms=daycoms,
 		users=users, bans=bans, messages=messages, mod_actions=mod_actions, subs=subs, votes=votes, dayvotes=dayvotes,
-		dayusers=dayusers, timediff=timediff, uptime=uptime, debug=debug, subi=subi)
-
-
+		dayusers=dayusers, timediff=timediff, uptime=uptime, debug=debug, subi=subi, subscripts=subscripts)
 
 
 from mod import bp

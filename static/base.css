@@ -720,3 +720,15 @@ ul {
 .comment-markup-text {
 	min-height: 3rem;
 }
+
+.bottom-dropdown {
+	font-size: 80%;
+}
+
+.bottom-post-dropdown {
+	display: inline;
+}
+
+.three-dots {
+	background-color: #262626;
+}

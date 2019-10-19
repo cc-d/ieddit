@@ -403,6 +403,34 @@ def user_add_pgp():
 	return redirect('/u/' + user.username)
 
 
+@ubp.route('/hide', methods=['POST'])
+def hide_obj():
+	print(request.form.get('jdata'))
+
+	if 'username' in session:
+		new_hidden = Hidden(post_id=j['post_id'], comment_id=j['comment_id'], username=session['username'],
+							other_user=j['other_user'])
+		db.session.add(new_hidden)
+		db.session.commit()
+
+	if 'blocked' not in session:
+		session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[]}
+
+	for i in j.keys():
+		if j[i] != None:
+			if j[i] not in session['blocked'][i]:
+				session['blocked'][i].append(j[i])
+
+	print(session['blocked'])
+
+	return '200'
+
+
+
+
+
+
+
 
 
 

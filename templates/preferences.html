@@ -18,9 +18,15 @@
   </div>
   <div class="form-group preference-option">
     {% if user.hide_sub_style == True %}
-    <input type="checkbox" class="form-check-input" id="exampleInputCheckbox1" placeholder="confirm password" name='hide_sub_style' checked><label for="exampleInputCheckbox1">Hide Custom Sub Styles</label>
+    <input type="checkbox" class="form-check-input" id="exampleInputCheckbox1" name='hide_sub_style' checked><label for="exampleInputCheckbox1">Hide Custom Sub Styles</label>
     {% else %}
-    <input type="checkbox" class="form-check-input" id="exampleInputCheckbox1" placeholder="confirm password" name='hide_sub_style'><label for="exampleInputCheckbox1">Hide Custom Sub Styles</label>
+    <input type="checkbox" class="form-check-input" id="exampleInputCheckbox1" name='hide_sub_style'><label for="exampleInputCheckbox1">Hide Custom Sub Styles</label>
+    {% endif %}
+
+    {% if user.hide_sub_style == True %}
+    <input type="checkbox" class="form-check-input" id="exampleInputCheckbox2" name='hide_sub_style' checked><label for="exampleInputCheckbox2">Hide Custom Sub Styles</label>
+    {% else %}
+    <input type="checkbox" class="form-check-input" id="exampleInputCheckbox2" name='hide_sub_style'><label for="exampleInputCheckbox2">Hide Custom Sub Styles</label>
     {% endif %}
   </div>  
   <div class="form-group border-top">
