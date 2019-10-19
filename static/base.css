@@ -434,14 +434,14 @@ blockquote {
 	box-shadow: none!important;
     text-align-last: center;
     padding-bottom: 3px;
-    font-size: 100%;
+    font-size: 80%;
 }
 
 .user-dropdown:focus {
 	background-color: #262626!important;
 	outline: none!important;
 	box-shadow: none!important;
-	font-size: 150%;
+	font-size: 125%;
 }
 .mod-dropdown {
 	background-color: #262626!important;
@@ -449,13 +449,13 @@ blockquote {
 	box-shadow: none!important;
     text-align-last: center;
     padding-bottom: 3px;
-    font-size: 100%;
+    font-size: 80%;
 }
 .mod-dropdown:focus {
 	background-color: #262626!important;
 	outline: none!important;
 	box-shadow: none!important;
-	font-size: 150%;
+	font-size: 125%;
 }
 
 
