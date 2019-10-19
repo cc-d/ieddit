@@ -29,7 +29,11 @@ var preExpandVideo = false;
 <ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
 {% endif %}
 {% else %}
+{% if userpage %}
+<ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
+{% else %}
 <ul class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;  margin-bottom: 2rem;">
+{% endif %}
 {% set comment_thread = True %}
 {% endif %}
 {% if session['username'] in post.mods %}
