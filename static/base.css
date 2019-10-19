@@ -431,6 +431,8 @@ blockquote {
 	background-color: #262626!important;
 	outline: none!important;
 	box-shadow: none!important;
+    text-align-last: center;
+    padding-bottom: 3px;
 }
 .user-dropdown:focus {
 	background-color: #262626!important;
@@ -441,6 +443,8 @@ blockquote {
 	background-color: #262626!important;
 	outline: none!important;
 	box-shadow: none!important;
+    text-align-last: center;
+    padding-bottom: 3px;
 }
 .mod-dropdown:focus {
 	background-color: #262626!important;
