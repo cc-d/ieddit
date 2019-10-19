@@ -151,11 +151,7 @@
 	{% else %}
 	<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
 	{% endif %}
-	{% if comment != None %}
 	<vote class="score">{{ comment.get_score() }}</vote>
-	{% else %}
-	<vote class='score'>?</vote>
-	{% endif %}
 	{% if comment.has_voted == -1 %}
 	<a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
 	{% else %}
@@ -166,37 +162,83 @@
 				{% if post.locked == False %}
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>
 				{% endif %}
+
+
+
+
+
+        {% if session['username'] == comment.author %}
+<!-- USER MENU -->
+<div class="dropdown bottom-post-dropdown">
+  <button class="btn btn-secondary btn-sm bottom-dropdown dropdown-toggle comment-button-dropdown" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class='fa fa-user'></i>
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% if session['username'] == post.author %}
+			<a class="dropdown-item" href="/user/edit/comment/{{ comment.id }}/">edit</a>
+            {% endif %}
+
+            {% if session['username'] == post.author %}
+    		<a class="dropdown-item" href="javascript:formSubmit('user-delete-comment-{{ comment.id }}')">delete</a>
+    		{% endif %}
+  </div>
+</div>
+<!-- END USER -->
+{% endif %}
+
+
+
+{% if session['username'] in post.mods or session['admin'] == True %}
+<div class="dropdown bottom-post-dropdown">
+  <button class="btn btn-primary btn-sm bottom-dropdown dropdown-toggle comment-button-dropdown" type="button" id="dropdownMenuButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class='fa fa-gavel'></i>
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% if session['username'] != comment.author %}
+			<a class="dropdown-item" href="javascript:formSubmit('mod-delete-comment-{{ comment.id }}')">delete</a>
+            {% endif %}
+    		<a class="dropdown-item" href="javascript:formSubmit('btn-mod-ban-comment-{{ comment.id }}')">ban</a>
+  </div>
+</div>
+{% endif %}
+				{% if loop.depth0 == 4 and value|length > 0 %}
+					<a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
+						more comments <i class='fa fa-arrow-circle-right '></i>
+					</button></a>
+				{% endif %}
+
+
+
+
+			<script>document.write('<style>.hide-div{display: none;}</style>')</script>
 			{% if session['username'] == comment.author %}
-			<div class='mod-option-wrapper user-options user-options-comments'>
+			<div class='mod-option-wrapper user-options user-options-comments hide-div'>
 				<small>
 					<a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
 						<button type='submit' class='mod-option-button'>edit</button>
 					</a>
 					<form action='{{ config.URL }}/user/delete/comment' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-						<button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button'>delete</button>
+						<button id='btn-user-delete-comment-{{ comment.id }}' type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button'>delete</button>
 					</form>
 				</small>
 			</div>
 			{% endif %}
-				{% if loop.depth0 == 4 and value|length > 0 %}
-					<a class="comment-link  comment-more" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
-						more>>
-					</a>
-				{% endif %}
-			</div>
 			</div>
 			{% if session['username'] in post.mods %}
-			<div class='mod-option-wrapper-comments'><small>
+			<div class='mod-option-wrapper-comments hide-div'><small>
 					<form action='{{ config.URL }}/mod/delete/comment' method='POST' class='post-mod-option-form post-mod-delete-form'>
-						<button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button post-delete-button'>delete</button>
+						<button id='btn-mod-delete-comment-{{ comment.id }}' type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button post-delete-button'>delete</button>
 					</form>|
 					<form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
 						<input name='iid' type='hidden' value='{{ comment.id }}'>
 						<input name='itype' type='hidden' value='comment'>
-						<button type='submit' name='post_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>ban</button>
+						<button type='submit' id='btn-mod-ban-comment-{{ comment.id }}' name='post_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>ban</button>
 					</form>
 			</small></div>
+			</div>
 			{% endif %}
+
+
 	{% if parent_comment.id and loop.index0 == 0 and loop.depth0 == 0 %}
 	{% if post.locked == False %}
 <form id='comment-reply-box' action='/create_comment' method='POST' style="display: block;">

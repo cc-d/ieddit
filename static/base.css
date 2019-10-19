@@ -732,3 +732,11 @@ ul {
 .three-dots {
 	background-color: #262626;
 }
+
+.comment-button-dropdown {
+	font-size: 65%;
+}
+
+.comment-more {
+	font-size: 0.75rem;
+}
