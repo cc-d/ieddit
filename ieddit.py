@@ -686,7 +686,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 
 	#return str(hasattr(request.environ, 'QUERY_STRING'))#str(vars(request))
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def recursive_children(comment=None, current_depth=0, max_depth=8, deleted=False):
 	found_children = []
 	found_children.append(comment)
