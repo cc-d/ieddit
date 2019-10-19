@@ -39,7 +39,7 @@ var preExpandVideo = false;
 {% if session['username'] in post.mods %}
   <li class="media sub-post rounded">
 {% else %}
-  <li class="media sub-post rounded" style='margin-bottom: -0.25rem;'>
+  <li class="media sub-post rounded">
     {% endif %}
     <div class="post-image-container" id="post-thumb-{{ post.id }}">
         {% if post.post_type == 'url' %}
