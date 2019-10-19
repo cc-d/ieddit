@@ -135,8 +135,8 @@ def split_link(sst, s):
 	return new_s
 
 def get_tag_count(text):
-	print(text)
-	print(re.findall('<[a-zA-Z0-9]*>[^<>"\']*<\/[a-zA-Z0-9]*>', text))
+	
+	
 	tag_count = len(re.findall('<[a-zA-Z0-9]*>[^<>"\']*<\/[a-zA-Z0-9]*>', text))
 	tag_count += text.count('<br>')
 	if text.find('\n') != -1:
@@ -144,11 +144,11 @@ def get_tag_count(text):
 	elif text.find('\r\n') != -1:
 		tag_count += text.count('\r\n')
 
-	print(tag_count)
+	
 	return tag_count
 
 def pseudo_markup(text):
-	print(text)
+	
 	# preserve more than 1 newline
 	text_len = len(text)
 	mtext = text.splitlines()
@@ -187,7 +187,7 @@ def pseudo_markup(text):
 		current_len += len(mtext[i])
 		current_tag_count += get_tag_count(mtext[i])
 
-		print(current_tag_count, current_len)
+		
 		if current_len >= max_escaped_len or current_tag_count >= max_tag_count:
 			return text
 
@@ -197,7 +197,7 @@ def pseudo_markup(text):
 
 	for i in range(len(mtext)):
 		if mtext[i].find('```') != -1:
-			#print(mtext[i])
+			#
 			if not found:
 				startindex = i
 				start = mtext[i].find('```')
@@ -218,7 +218,7 @@ def pseudo_markup(text):
 		current_len += len(mtext[i])
 		current_tag_count += get_tag_count(mtext[i])
 		
-		print(current_tag_count, current_len)
+		
 		if current_len >= max_escaped_len or current_tag_count >= max_tag_count:
 			return text
 
@@ -262,7 +262,7 @@ def pseudo_markup(text):
 
 		current_len += len(mtext[i])
 		current_tag_count += get_tag_count(mtext[i])
-		print(current_tag_count, current_len)
+		
 		if current_len >= max_escaped_len or current_tag_count >= max_tag_count:
 			return text
 
@@ -307,7 +307,7 @@ def pseudo_markup(text):
 
 	if mtext == '':
 		return '<br>'
-	print(current_tag_count, current_len)
+	
 	return mtext
 
 epoch = datetime(1970, 1, 1)

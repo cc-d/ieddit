@@ -111,6 +111,7 @@ def before_request():
 def apply_headers(response):
 	if response.status_code == 500:
 		db.session.rollback()
+		print(str(vars(response)))
 
 	response.headers["X-Frame-Options"] = "SAMEORIGIN"
 	response.headers["X-XSS-Protection"] = "1; mode=block"
@@ -1285,14 +1286,14 @@ def create_comment():
 	post = db.session.query(Post).filter_by(id=post_id).first()
 	if post.locked == True:
 		flash('post is locked', 'danger')
-		return redirect(post.permalink)
+		return redirect(post.get_permalink())
 
 	deleted = False
 	sub = normalize_sub(sub_name)
 	if sub in get_banned_subs(session['username']):
 		deleted = True
 		#flash('you are banned from commenting', 'danger')
-		#return redirect(post.permalink)
+		#return redirect(post.get_permalink())
 	sub_name = sub
 
 	new_comment = Comment(post_id=post_id, sub_name = sub_name, text=text,
@@ -1301,8 +1302,7 @@ def create_comment():
 	db.session.add(new_comment)
 	db.session.commit()
 	
-
-	new_comment.permalink = post.permalink +  str(new_comment.id)
+	new_comment.permalink = post.get_permalink() +  str(new_comment.id)
 
 	if is_admin(session['username']) and anonymous == False:
 		new_comment.author_type = 'admin'
@@ -1336,7 +1336,7 @@ def create_comment():
 		if not deleted:
 			if post.author != session['username']:
 				new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
-					sent_to=post.author, in_reply_to=post.permalink, anonymous=anonymous)
+					sent_to=post.author, in_reply_to=post.get_permalink(), anonymous=anonymous)
 				db.session.add(new_message)
 				db.session.commit()
 
@@ -1553,7 +1553,7 @@ def description(sub=None):
 		rtext = False
 	else:
 		if subr.rules != None:
-			rtext = pseudo_markup(subr.rules)
+			rtext = subr.rules
 		else:
 			rtext = False
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
