@@ -43,7 +43,7 @@
 <div class='page-continer'>
 <div class="page mx-auto">
 	<nav class="navbar navbar-expand-lg navbar-light rounded">
-		<a class="navbar-brand" href="/">ieddit<small style="font-size:50%;"> alpha</small></a>
+		<a class="navbar-brand" href="/">ieddit</a>
 
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto navbar-right">
@@ -96,12 +96,14 @@
 				{% endif %}
 			</ul>
 		</div>
-		<div class="navbar">
+		<div class="navbar" id='user-nav' style='max-height: 56px; height: 56px; overflow: hidden;'>
 			<ul class="navbar-nav mr-auto navbar-right">
 				{% if session['username'] %}
+				<div id='top-username' stlye='height: 24px; max-height: 24px; overflow: hidden;'>
 				<li class="nav-item active">
-					<a class="nav-link" href="/u/{{ session['username'] }}"><i class="fa fa-user user-icon-link"></i> {{ session['username'] }}</a>
+					<a style='display: inline; max-width: 150px; overflow: hidden;' class="nav-link" href="/u/{{ session['username'] }}"><div style='display: inline-block;'><i style='display: inline-block; width: 1rem; height: 1rem;' class="fa fa-user user-icon-link"></i> <div id='inner-user-text' style='display: inline; overflow: hidden;'><div id='textcap' style=' display:inline-block; max-width: 126px;'>{{ session['username'] }}</div></div></div></a>
 				</li>
+			</div>
 				{% else %}
 				<li class="nav-item">
 					<a class="nav-link" href="/login/"><button type="button" class="btn btn-sm btn-secondary">Login</button></a>
@@ -122,7 +124,7 @@
 			</ul>
 			{% endif %}
 		</div>
-		<div class="navbar">
+		<div class="navbar" style='padding-left: 0px; padding-right: 0px;'>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 
 			<span class="navbar-toggler-icon"></span>

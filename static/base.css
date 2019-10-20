@@ -105,8 +105,28 @@ textarea {
 		font-size: 90%;
 	}
 	.sub-post-title {
-		margin-right: 10px;;
+		margin-right: 10px;
 	}
+	.navbar-brand {
+		margin-right: 0.25rem;;
+	}
+	#top-username {
+		max-width: 136px;
+		overflow: hidden;
+	}
+	#textcap {
+		margin-left: -0.25rem;
+	}
+
+}
+
+	#top-username {
+		max-width: 180px;
+		overflow: hidden;
+	}
+
+#user-nav {
+	padding-left: 0px;
 }
 
 #logout-right {
@@ -289,6 +309,7 @@ textarea {
 	word-break: break-word;
 }
 .comment-media-body {
+	padding-bottom: 0.25rem;
 	min-height: 75px !important;
 	margin-left: 0.5em;
 }
