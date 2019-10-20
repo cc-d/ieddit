@@ -80,8 +80,14 @@ textarea {
 		margin-left: 0.5rem;
 	}
 	.post-image {
-		max-height: 4.75rem;
-		max-width: 4.75rem;
+		max-height: 3rem;
+		max-width: 3rem;
+	}
+	.post-image-container {
+		height: 3.75rem;
+		width: 3.75rem;
+		min-height: 1rem;
+		min-width: 1rem;
 	}
 
 	.posts-media-body a {
@@ -97,7 +103,7 @@ textarea {
 		font-size: 90%;
 	}
 	.sub-post-title {
-		margin-right: 10px;
+		margin-right: 10px;;
 	}
 }
 
@@ -198,6 +204,7 @@ textarea {
 .sub-post-title {
 	margin-top: -0.75rem;
 	min-height: 40px;
+	margin-bottom: 0.25rem
 }
 
 .top-of-post {
@@ -253,11 +260,13 @@ textarea {
 .comment-voting {
 	margin-left: 1em;
 	margin-right: 1em;
+	display: inline-block;
 }
 
 .comment-post-voting{
-	margin-left: 1em;
+	margin-left: 15px;
 	margin-right: 1em;
+	font-size:16px;
 }
 .top-sort {
 	margin-right: 0.25rem;
@@ -705,7 +714,8 @@ ul {
 }
 
 .row.post-row {
-	margin-bottom: 16px;
+	margin-top: 0.5rem;
+	margin-bottom: 1rem;
 }
 
 .post-inner-div {
@@ -730,7 +740,23 @@ ul {
 }
 
 .three-dots {
+    margin-top: -1px;
+	margin-left: 4px;
+    width: 14px;
+    height: 1.5rem;
+    padding: 0px;
+    font-size: 127%;
+        margin-top: 4px;
+    width: 23px;
+}
 
+.v-button {
+margin-top: 0px;
+    margin-top: -10px;
+    margin-left: 3px;
+    margin-bottom: 0px;
+    padding: -5px;
+    font-size: 11px;
 }
 
 .comment-button-dropdown {
@@ -741,6 +767,35 @@ ul {
 	font-size: 0.75rem;
 }
 
-.v-button {
-
+.fa.fa-ellipsis-v {
+    font-size: 90%;
+    margin-bottom: 7px;
 }
+
+.fa.fa-cog {
+	border: 0px solid white;
+	/*color: #ff6666;*/
+    font-size: 90%;
+    margin-bottom: 7px;
+}
+
+.commoptions {
+	display: inline-block;
+}
+
+
+.comment-bottom {
+	display: inline-block;
+}
+
+.col.inner-div.comment-inner-div {
+	display: inline-block;
+}
+
+.inner-div.applyinline {
+	display: inline-block;
+}
+
+
+
+

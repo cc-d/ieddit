@@ -120,6 +120,9 @@ var preExpandVideo = false;
     <a class="sub-post-title-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">{{ post.title }}</a>
         <small><a href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">(self.text)</a></small>
     {% endif %}
+
+
+
     </div>
 
 
@@ -139,9 +142,9 @@ var preExpandVideo = false;
     {% endif %}
     </div>
     {% endif %}
-    <div class="row post-row">
+    <div class="row post-row" style='display: inline-block; width: 100%;'>
 
-        <div class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
+        <div style='display: inline-block;' class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
             {% if post.has_voted|string == '1' %}
             <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
             {% else %}
@@ -154,26 +157,29 @@ var preExpandVideo = false;
             <a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
             {% endif %}
         </div>
-        <a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/"><span class='num-and-com'>{{ post.comment_count }}</span> <span class='comment-span'>comments</span> <i class='comment-fontawesome fa fa-comment'></i></a>
+        <a style='display: inline-block;' class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/"><span class='num-and-com'>{{ post.comment_count }}</span> <span class='comment-span'>comments</span> <i class='comment-fontawesome fa fa-comment'></i></a>
 
 
 <script>document.write('<style> .hidden-buttons {opacity: 0; position: absolute; font-size:0px; pointer-events: none; };</style>');</script>
-        <div class='mod-option-wrapper user-options next-to-comments'><small>
+
 
 <!--
-<div class="dropdown bottom-post-dropdown v-button" id='dot-button-{{ post.id }}'>
-    <button class="btn btn-secondary btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-ellipsis-v '></i>  </button>
+<div style='display:inline-block;' class="dropup btn-group rounded v-button" id='dot-button-{{ post.id }}'>
+    <button class="btn btn-secondary rounded btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-cog'></i>  </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>
         <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("post_id", "{{ post.id }}")'>hide post</a>
     </div>
-</div>-->
+</div>
+-->
 
+
+ <div style='margin-top: -3px;' class='mod-option-wrapper user-options next-to-comments'><small>
 {% if session['username'] == post.author %}
 <!-- USER MENU -->
 <div class="dropdown bottom-post-dropdown">
-  <button class="btn btn-secondary btn-sm bottom-dropdown dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class='fa fa-user'></i>
+  <button class="btn btn-secondary btn-sm bottom-dropdown" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class='fa fa-pencil'></i>
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             {% if session['username'] == post.author %}
@@ -197,7 +203,7 @@ var preExpandVideo = false;
 <!-- mod menu -->
 {% if session['username'] in post.mods or session['admin'] == True %}
 <div class="dropdown bottom-post-dropdown">
-  <button class="btn btn-info btn-sm bottom-dropdown dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <button class="btn btn-info btn-sm bottom-dropdown" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class='fa fa-gavel'></i>  </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
             {% if session['username'] != post.author %}

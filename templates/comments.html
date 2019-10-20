@@ -145,7 +145,7 @@
 		<div class="row post-row comment-bottom">
 		{% endif %}
 
-<div class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="session['user_id']" has_voted="{{ comment.has_voted }}">
+<div style='display: inline-block;' class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="session['user_id']" has_voted="{{ comment.has_voted }}">
 	{% if comment.has_voted == 1 %}
 	<a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
 	{% else %}
@@ -158,7 +158,7 @@
 	<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
 	{% endif %}
 </div>
-			<div class="inner-div">
+			<div class="inner-div applyinline" stlye='display: inline-block;'>
 				{% if post.locked == False %}
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>
 				{% endif %}
@@ -166,11 +166,11 @@
 
 
 
-
+<div class='commoptions'>
         {% if session['username'] == comment.author %}
 <!-- USER MENU -->
 <div class="dropdown bottom-post-dropdown">
-  <button class="btn btn-secondary btn-sm bottom-dropdown dropdown-toggle comment-button-dropdown" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <button class="btn btn-secondary btn-sm bottom-dropdown comment-button-dropdown" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class='fa fa-user'></i>
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -190,7 +190,7 @@
 
 {% if session['username'] in post.mods or session['admin'] == True %}
 <div class="dropdown bottom-post-dropdown">
-  <button class="btn btn-info btn-sm bottom-dropdown dropdown-toggle comment-button-dropdown" type="button" id="dropdownMenuButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <button class="btn btn-info btn-sm bottom-dropdown comment-button-dropdown" type="button" id="dropdownMenuButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class='fa fa-gavel'></i>
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -237,7 +237,7 @@
 			</small></div>
 			</div>
 			{% endif %}
-
+</div>
 
 	{% if parent_comment.id and loop.index0 == 0 and loop.depth0 == 0 %}
 	{% if post.locked == False %}

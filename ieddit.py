@@ -924,6 +924,8 @@ def view_user(username):
 	comments = vuser.get_recent_comments()#.all()
 
 	for p in posts:
+		p.created_ago = time_ago(p.created)
+		p.comment_count = db.session.query(Comment).filter_by(post_id=p.id).count()
 		p.mods = get_sub_mods(p.sub)
 		if 'user_id' in session:
 			v = p.has_voted(session['user_id'])
@@ -942,6 +944,7 @@ def view_user(username):
 		comments_with_posts.append((c, cpost))
 
 		c.new_text = pseudo_markup(c.text)
+		c.created_ago = time_ago(c.created)
 		if 'user_id' in session:
 			c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
 			if c.has_voted != None:
