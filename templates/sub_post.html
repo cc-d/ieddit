@@ -138,7 +138,7 @@ var preExpandVideo = false;
     {% if post.video %}
         <iframe id='vid-{{ post.id }}' style='display: none;' class='vidembed' width="420" height="315" realsrc="{{ post.video }}"></iframe>
     {% elif post.remote_image_url %}
-       <a href="{{ post.remote_image_url }}"><img class='expanded-post-image rounded' id='expand-src-{{ post.id }}' realsrc="{{ post.remote_image_url }}" ></a>
+       <a href="{{ post.remote_image_url }}"><img style='max-width: 100%;' class='expanded-post-image rounded' id='expand-src-{{ post.id }}' realsrc="{{ post.remote_image_url }}" ></a>
     {% else %}
         <div class='expanded-selftext rounded'>
             <div class='inner-selftext-wrapper'>

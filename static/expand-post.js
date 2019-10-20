@@ -6,9 +6,7 @@ $(document).ready(function() {
 	if (maxWidth <= widthBreak) {
 		maxWidth = maxWidth + 80; // thumbnail will be hidden on expansion, it is 80px
 	}
-	$("<style type='text/css'> .expanded-post-image { max-width: 100%; max-width: -webkit-fill-available;'" + 
-	" max-width: -moz-avaliable;max-height: " + 
-		(maxWidth) + "px; } </style>").appendTo("body");
+	$("<style type='text/css'> .expanded-post-image {max-height: " + (maxWidth) + "px; } </style>").appendTo("body");
 
 	pe = $('#is-pre-expanded');
 	if (pe != undefined) {
@@ -75,6 +73,7 @@ function expandPost(pid, ptype, vid) {
 
 	if (vid == false) {
 		realsource = $('#expand-src-' + pid);
+		realsource.attr('max-width', '100%');
 		src = realsource.attr('realsrc');
 		realsource.attr('src', src);
 		realsource.html(realsource);
