@@ -19,6 +19,12 @@ var preExpandVideo = false;
 </script>
 {% endif %}
 
+
+{% if session['username'] %}
+{% else %}
+<style>.post-com-wrap{ margin-left: 0.5rem; }</style>
+{% endif %}
+
 {% set comment_thread = False %}
 {% if loop is defined %}
 {% if loop.last and not loop.first %}
@@ -143,7 +149,7 @@ var preExpandVideo = false;
     </div>
     {% endif %}
     <div class="row post-row bottom_inner_row" style='display: inline-block; width: 100%;'>
-
+    <div class='post-com-wrap' style='display: inline-block;'>
         <div style='display: inline-block;' class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
             {% if post.has_voted|string == '1' %}
             <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
@@ -158,7 +164,7 @@ var preExpandVideo = false;
             {% endif %}
         </div>
         <a style='display: inline-block;' class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/"><span class='num-and-com'>{{ post.comment_count }}</span> <span class='comment-span'>comments</span> <i class='comment-fontawesome fa fa-comment'></i></a>
-
+    </div>
 
 <script>document.write('<style> .hidden-buttons {opacity: 0; position: absolute; font-size:0px; pointer-events: none; };</style>');</script>
 
