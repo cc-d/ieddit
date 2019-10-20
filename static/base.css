@@ -88,6 +88,7 @@ textarea {
 		width: 3.75rem;
 		min-height: 1rem;
 		min-width: 1rem;
+		margin-right: 0.25rem;
 	}
 
 	.posts-media-body a {
@@ -714,7 +715,7 @@ ul {
 }
 
 .row.post-row {
-	margin-top: 0.5rem;
+	margin-top: 0.0rem;
 	margin-bottom: 1rem;
 }
 
@@ -760,11 +761,14 @@ margin-top: 0px;
 }
 
 .comment-button-dropdown {
-	font-size: 65%;
+	font-size: 0.75rem;
 }
 
 .comment-more {
 	font-size: 0.75rem;
+    padding: 0;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
 }
 
 .fa.fa-ellipsis-v {
@@ -802,7 +806,7 @@ margin-top: 0px;
 
 .btn-description {
 	display: inline-block;
-	font-size: 100%;
+	font-size: 0.75rem;
 }
 
 .btn-bot {
@@ -810,13 +814,22 @@ margin-top: 0px;
     margin: 0;
     padding-left: 0.25rem;
     padding-right: 0.25rem;
-    font-size: 80%;
+    margin-top: 0.25rem;
+    height: 1.5rem;
+    font-size: 0.75rem;
 }
 
+.btn-com-bot {
+    padding: 0;
+    margin: 0;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    height: 1.5rem;
+    font-size: 0.75rem;
+}
 
 @media only screen and (max-width: 992px) {
 	.btn-description {
 		display: none;
 	}
 }
-
