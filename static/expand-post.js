@@ -6,7 +6,8 @@ $(document).ready(function() {
 	if (maxWidth <= widthBreak) {
 		maxWidth = maxWidth + 80; // thumbnail will be hidden on expansion, it is 80px
 	}
-	$("<style type='text/css'> .expanded-post-image { max-width: " + maxWidth + "px; max-height: " + 
+	$("<style type='text/css'> .expanded-post-image { max-width: 100%; max-width: -webkit-fill-available;'" + 
+	" max-width: -moz-avaliable;max-height: " + 
 		(maxWidth) + "px; } </style>").appendTo("body");
 
 	pe = $('#is-pre-expanded');
