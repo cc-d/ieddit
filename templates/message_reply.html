@@ -63,6 +63,11 @@
   {% endif %}
   {% endif %}
   <input name='msgencrypted' id='msgencrypted' value='' type='hidden'>
+  {% if other_pgp %}
+  <input name='key_id' id='key_id' value='{{ other_pgp.id }}' type='hidden'>
+  {% else %}
+  <input name='key_id' id='key_id' value='' type='hidden'>
+  {% endif %}
 </form>
 
 {% endblock %}  

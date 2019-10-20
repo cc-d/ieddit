@@ -1,5 +1,5 @@
 <div class="media">
-{% if message.encrypted %}
+{% if message.encrypted and message.is_sent != True %}
 <div style='border: 1px solid green;' class="media-body message-body rounded">
 <textarea id='other-pgp-pubkey-{{ message.id }}' style='display: none;'>{{ message.sender_pgp.pubkey }}</textarea>
 {% else %}
@@ -25,7 +25,7 @@
   	</div>
   	{% endif %}
     <h5 class="mt-0 message-title">{{ message.title }}</h5>
-    {% if message.encrypted == False %}
+    {% if message.encrypted == False or message.is_sent %}
 		  <div class="safe-markup-text comment-markup-text" id='message-{{ message.id }}'>{{ message.new_text|safe }}</div>
     {% else %}
       <div class="safe-markup-text" style='color: green; margin: 1rem;'>

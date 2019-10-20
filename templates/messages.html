@@ -23,19 +23,56 @@
 {% if unread != None %}
 <h2 class='margin-lr'> unread messages </h2>
 {% for message in unread %}
-{% include 'message.html' %}
+
+{% if has_encrypted %}
+	{% if message.encrypted == True and message.encrypted_key_id == self_pgp.id %}
+		{% include 'message.html' %}
+	{% elif message.encrypted == True %}
+	<p style='color: red;'>you have encrypted messages but cannot read them</p>
+	{% endif %}
+{% else %}
+	{% include 'message.html' %}
+{% endif %}
+
 {% else %}
 <p class='margin-lr'> no unread messages</p><br><br>
 {% endfor %}
 {% endif %}
 
-{% if read != None %}
+
+
+
+{% if read != [] %}
 <h2 class='margin-lr'> read messages </h2>
 {% for message in read %}
+{% include 'message.html' %}
+
+{% if has_encrypted %}
+	{% if message.encrypted == True and message.encrypted_key_id == self_pgp.id %}
+		{% include 'message.html' %}
+	{% elif message.encrypted == True %}
+	<div class='missing-message margin-lr' style='border: 1px dashed red; margin: 0.5rem;'>
+	<p class='margin-lr' style='color: red;'>a message was encrypted with a old/different pgp key. it has been hidden</p>
+	</div>
+	{% endif %}
+{% else %}
+	{% include 'message.html' %}
+{% endif %}
+
+{% else %}
+{% endfor %}
+{% endif %}
+
+{% if sent != [] %}
+<h2 class='margin-lr'> sent messages </h2>
+{% for message in sent %}
 {% include 'message.html' %}
 {% else %}
 
 {% endfor %}
 {% endif %}
+
+
+
 
 {% endblock %}

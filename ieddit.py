@@ -1329,8 +1329,9 @@ def create_comment():
 
 	return redirect(post_url, 302)
 
-def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=None, encrypted=False):
-	new_message = Message(title=title, text=text, sent_to=sent_to, sender=sender, in_reply_to=in_reply_to, encrypted=encrypted)
+def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=None, encrypted=False, encrypted_key_id=None):
+	new_message = Message(title=title, text=text, sent_to=sent_to, sender=sender,
+		in_reply_to=in_reply_to, encrypted=encrypted, encrypted_key_id=encrypted_key_id)
 	db.session.add(new_message)
 	db.session.commit()
 
@@ -1353,12 +1354,18 @@ def user_messages(username=None):
 			read = read.order_by((Message.created).desc()).limit(50).all()
 			unread = unread.order_by((Message.created).desc()).limit(50).all()
 
+			sent = db.session.query(Message).filter_by(sender=username, read=False)
+			sent = sent.order_by((Message.created).desc()).limit(5).all()
+
+			for s in sent:
+				s.is_sent = True
+				if s.encrypted:
+					s.new_text = '<p style="color: green;">ENCRYPTED</p>'
 
 			for r in read:
 				if r.encrypted == False:
 					r.new_text = pseudo_markup(r.text)
 				else:
-					#r.text = r.text.replace('<br>', '')
 					r.sender_pgp = get_pgp_from_username(r.sender)
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
@@ -1377,9 +1384,7 @@ def user_messages(username=None):
 				if r.encrypted == False:
 					r.new_text = pseudo_markup(r.text)
 				else:
-					#r.text = r.text.replace('<br>');
 					r.sender_pgp = get_pgp_from_username(r.sender)
-					#r.sender_pubkey = r.sender_pubkey = r.sender_pubkey.pubkey
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
 				if r.encrypted == True:
@@ -1390,7 +1395,8 @@ def user_messages(username=None):
 			else:
 				self_pgp = False
 
-			return render_template('messages.html', read=read, unread=unread, has_encrypted=has_encrypted, self_pgp=self_pgp)
+			return render_template('messages.html', read=read, unread=unread, has_encrypted=has_encrypted, self_pgp=self_pgp,
+				sent=sent)
 
 @app.route('/u/<username>/messages/reply/<mid>', methods=['GET'])
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -1416,9 +1422,8 @@ def reply_message(username=None, mid=None):
 		return render_template('message_reply.html', message=m, sendto=False, self_pgp=get_pgp_from_username(session['username']),
 			other_pgp=get_pgp_from_username(m.sender), other_user=get_user_from_name(username))
 
-def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False):
-
-	new_message = Message(title=title, text=text, sender=sender, sent_to=sent_to, encrypted=encrypted)
+def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False, encrypted_key_id=None):
+	new_message = Message(title=title, text=text, sender=sender, sent_to=sent_to, encrypted=encrypted, encrypted_key_id=encrypted_key_id)
 	db.session.add(new_message)
 	db.session.commit()
 
@@ -1434,11 +1439,14 @@ def msg(username=None):
 		title = request.form.get('message_title')
 		sent_to = request.form.get('sent_to')
 		encrypted = request.form.get('msgencrypted')
+		encrypted_key_id = request.form.get('key_id')
 
 		if encrypted != None:
 			encrypted = True
+			encrypted_key_id = encrypted_key_id
 		else:
 			encrypted = False
+			encrypted_key_id = None
 
 		if sent_to == None:
 			sent_to = username
@@ -1459,7 +1467,8 @@ def msg(username=None):
 
 		sender = session['username']
 
-		sendmsg(title=title, text=text, sender=session['username'], sent_to=sent_to, encrypted=encrypted)
+		sendmsg(title=title, text=text, sender=session['username'], sent_to=sent_to, encrypted=encrypted,
+			encrypted_key_id=encrypted_key_id)
 		
 
 		set_rate_limit()

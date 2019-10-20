@@ -4,8 +4,8 @@
 {% include 'crypto.html' %}
 <div class='margin-lr'>
 {% if pgp.privkey %}
-<h5 style='color:red;'> WARNING: You are generating a NEW keypair.</h5>
-<h6 style='color:red;'> This will OVERWRITE your existing keypair. </h6><br>
+<h5 style='color:#ff3333;'> WARNING: You are generating a NEW keypair.</h5>
+<h6 style='color:#ff3333;'> This will OVERWRITE your existing keypair. </h6><br>
 {% endif %}
 <div id='passphrase' style='display: none;'>
 <h6 style='color:yellow;'>Press 'UPDATE KEY' at the bottom of page to save a new key.</h6>
@@ -29,7 +29,7 @@
 <br><br>
 <div id='scrollDownText' style='display: none;'>
 <h3 style='color: greenyellow;'> scroll down to confirm update key </h3>
-<small style='color: red;'> If you already have pgp keys, you will NOT be able to sent any messages sent to you in the past with this new pair</small>
+<small style='color: #ff3333;'> If you already have pgp keys, you will NOT be able to read any messages sent to you in the past with this new pair</small>
 </div><br>
 </div>
 
