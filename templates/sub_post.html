@@ -20,7 +20,7 @@ var preExpandVideo = false;
 {% endif %}
 
 
-{% if session['username'] %}
+{% if post.author == session['username'] or session['username'] in post.mods %}
 {% else %}
 <style>.post-com-wrap{ margin-left: 0.5rem; }</style>
 {% endif %}

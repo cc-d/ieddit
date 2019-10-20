@@ -49,6 +49,7 @@ textarea {
 }
 
 .posts-media-body {
+	max-width: 100%;
 	max-width: -webkit-fill-available;
 	max-width: -moz-available;
 }
@@ -154,6 +155,7 @@ textarea {
 .comment-reply-box-expand {
 	min-width: 300px;
 	max-width: 700px;
+	width: 100%;
     width: -webkit-fill-available;
     width: -moz-available;
     min-height: 8rem;
@@ -616,6 +618,7 @@ blockquote {
 }
 
 .expanded-post {
+	width: 100%;
 	width: -webkit-fill-available;
 	width: -moz-available;
 }
