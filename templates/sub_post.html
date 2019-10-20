@@ -142,7 +142,7 @@ var preExpandVideo = false;
     {% endif %}
     </div>
     {% endif %}
-    <div class="row post-row" style='display: inline-block; width: 100%;'>
+    <div class="row post-row bottom_inner_row" style='display: inline-block; width: 100%;'>
 
         <div style='display: inline-block;' class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="session['user_id']" has_voted="{{ post.has_voted }}">
             {% if post.has_voted|string == '1' %}

@@ -796,6 +796,6 @@ margin-top: 0px;
 	display: inline-block;
 }
 
-
-
-
+.bottom_inner_row {
+	margin-left: -23px;
+}
