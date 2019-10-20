@@ -799,3 +799,24 @@ margin-top: 0px;
 .bottom_inner_row {
 	margin-left: -23px;
 }
+
+.btn-description {
+	display: inline-block;
+	font-size: 100%;
+}
+
+.btn-bot {
+    padding: 0;
+    margin: 0;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    font-size: 80%;
+}
+
+
+@media only screen and (max-width: 992px) {
+	.btn-description {
+		display: none;
+	}
+}
+

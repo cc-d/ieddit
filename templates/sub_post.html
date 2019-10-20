@@ -178,8 +178,7 @@ var preExpandVideo = false;
 {% if session['username'] == post.author %}
 <!-- USER MENU -->
 <div class="dropdown bottom-post-dropdown">
-  <button class="btn btn-secondary btn-sm bottom-dropdown" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class='fa fa-pencil'></i>
+  <button class="btn btn-secondary btn-sm bottom-dropdown btn-bot" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class='fa fa-pencil'></i> <h6 class='btn-description'>user</h6>
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             {% if session['username'] == post.author %}
@@ -203,8 +202,7 @@ var preExpandVideo = false;
 <!-- mod menu -->
 {% if session['username'] in post.mods or session['admin'] == True %}
 <div class="dropdown bottom-post-dropdown">
-  <button class="btn btn-info btn-sm bottom-dropdown" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class='fa fa-gavel'></i>  </button>
+  <button class="btn btn-info btn-sm bottom-dropdown btn-bot" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-gavel' style='display: inline-block;'></i> <h6 class='btn-description'>mod</h6>  </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
             {% if session['username'] != post.author %}
             {% if post.nsfw == False  and post.author %}
