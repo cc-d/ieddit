@@ -978,6 +978,11 @@ def view_user(username):
 
 		p.remote_url_parsed = post_url_parse(p.url)
 
+		if hasattr(p, 'text'):
+			p.new_text = pseudo_markup(p.text)
+		if thumb_exists(p.id):
+			p.thumbnail = 'thumbnails/thumb-' + str(p.id) + '.PNG'
+
 	comments_with_posts = []
 
 	for c in comments:
@@ -1414,11 +1419,10 @@ def user_messages(username=None):
 			unread = unread.order_by((Message.created).desc()).limit(50).all()
 
 			read = [x for x in read if x.sender == None or get_user_from_name(x.sender).id not in session['blocked']['other_user']]
+			unread = [x for x in unread if x.sender == None or get_user_from_name(x.sender).id not in session['blocked']['other_user']]
 
 			for r in unread:
 				r.read = True
-
-			unread = [x for x in unread if x.sender == None or get_user_from_name(x.sender).id not in session['blocked']['other_user']]
 
 			sent = db.session.query(Message).filter_by(sender=username, read=False)
 			sent = sent.order_by((Message.created).desc()).limit(5).all()
