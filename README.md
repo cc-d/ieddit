@@ -90,7 +90,7 @@ There is a ton of room for UI improvements in the more out-of-the-way areas of t
 
 It would be trivial to offer a hidden service option if there is demand for one. As of now, no hidden service option exists, to avoid making the deployment proccess slightly more tedius and the hosting costs. 
 
-I'm sunk a solid month of my time into this, and most of the core functionality is now completed, so I'll most likely take a step back and adopt a more gradual pace of development. Areas such as tests, error handling, logging, etc have been neglected due to an emphasis on implementing as many features as possible in a very narrow time window.
+I've sunk a solid month of my time into this, and most of the core functionality is now completed, so I'll most likely take a step back and adopt a more gradual pace of development. Areas such as tests, code refractoring, error handling, logging, etc have been neglected due to an emphasis on implementing as many features as possible in a very narrow time window.
 
 ### How To Use
 
