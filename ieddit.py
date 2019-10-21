@@ -96,6 +96,10 @@ def before_request():
 	if 'username' in session:
 		has_messages(session['username'])
 
+	if 'blocked' not in session:
+		session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[]}
+
+
 	# disabled due to lack of use
 
 	#if 'set_darkmode_initial' not in session:
@@ -587,6 +591,10 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 			else:
 				posts.insert(0, sticky)
 
+	if 'blocked' in session:
+		posts = [post for post in posts if post.id not in session['blocked']['post_id']]
+		posts = [post for post in posts if post.author_id not in session['blocked']['other_user']]
+
 
 	if more and len(posts) > 0:
 		posts[len(posts)-1].more = True
@@ -684,7 +692,10 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 
 	return render_template('sub.html', posts=sub_posts, url=config.URL, show_top=show_top)
 
-	#return str(hasattr(request.environ, 'QUERY_STRING'))#str(vars(request))
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_cached_children(comment, deleted=False):
+	return comment.get_children(deleted=deleted)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def recursive_children(comment=None, current_depth=0, max_depth=8, deleted=False):
@@ -707,8 +718,7 @@ def recursive_children(comment=None, current_depth=0, max_depth=8, deleted=False
 
 	return found_children
 
-
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None, deleted=False):
 	post = None
 	parent_comment = None
@@ -751,21 +761,33 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 		if comment_id == None:
 			print(1)
 			comments = db.session.query(Comment).filter_by(post_id=post_id, deleted=deleted).all()
+			show_blocked = False
 		
 		else:
 			print(2)
 			comments = []
 			parent_comment = db.session.query(Comment).filter_by(id=comment_id).first()
+			show_blocked = False
+
+			# if direct link, just show it 
+			if parent_comment.id in session['blocked']['comment_id'] or parent_comment.author_id in session['blocked']['other_user']:
+				flash('you are viewing a comment you have blocked', 'danger')
+				show_blocked = True
+
 			comments = recursive_children(comment=parent_comment, deleted=True)
 			
 	else:
 		print(3)
 		comments = db.session.query(Comment).filter(Comment.author_id == user_id,
 			Comment.deleted == deleted).order_by(Comment.created.desc()).all()
-
+		show_blocked = False
 
 	if 'blocked_subs' in session and 'username' in session:
 		comments = [c for c in comments if c.sub_name not in session['blocked_subs']]
+
+	if 'blocked' in session and show_blocked != True:
+		comments = [c for c in comments if c.id not in session['blocked']['comment_id']]
+		comments = [c for c in comments if c.id not in session['blocked']['other_user']]
 
 	#print(comments)
 	for c in comments:
@@ -791,13 +813,19 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 @app.route('/i/<sub>/<post_id>/<inurl_title>/')
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort_by=None, comments_only=False, user_id=None):
+	print(comment_id)
 	try:
 		if sub == None or post_id == None or inurl_title == None:
 			if not comments_only:
 				return 'badlink'
 
 		sub = normalize_sub(sub)
-	
+
+		if comment_id == None:
+			is_parent = False
+		else:
+			is_parent = True
+
 		comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
 		
 		if post != None and 'username' in session:
@@ -813,11 +841,21 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 			tree = create_id_tree(comments, parent_id=comment_id)
 	
 		tree = comment_structure(comments, tree)
+
+		last = '%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title)
+
+		if comment_id != False and comment_id != None:
+			last = last + str(comment_id)
+
+		session['last_return_url'] = last
+
 		return render_template('comments.html', comments=comments, post_id=post_id, 
 			post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), 
-			post=post, tree=tree, parent_comment=parent_comment)
+			post=post, tree=tree, parent_comment=parent_comment, is_parent=is_parent,
+			config=config)
 	except Exception as e:
-		print(e)
+		print(str(e))
+		return(str(e))
 		db.session.rollback()
 
 
@@ -865,6 +903,7 @@ def create_sub():
 		if subname.lower() == 'all':
 			flash('reserved name')
 			return redirect(url_for('create_sub'))
+
 		if config.CAPTCHA_ENABLE:
 			if request.form.get('captcha') == '':
 				flash('no captcha', 'danger')
@@ -878,6 +917,7 @@ def create_sub():
 				if rl > 0:
 					flash('rate limited, try again in %s seconds' % str(rl), 'danger')
 					return redirect('/')
+
 		if subname != None and verify_subname(subname) and 'username' in session:
 			if len(subname) > 30 or len(subname) < 1:
 				return 'invalid length'
@@ -1236,11 +1276,27 @@ def create_comment():
 	sub_name = request.form.get('sub_name')
 	anonymous = request.form.get('anonymous')
 
-	if 'rate_limit' in session and config.RATE_LIMIT == True:
-		rl = session['rate_limit'] - time.time()
-		if rl > 0:
-			flash('rate limited, try again in %s seconds' % str(rl))
+	if config.CAPTCHA_ENABLE:
+		if request.form.get('captcha') == '':
+			flash('no captcha', 'danger')
+			if 'last_return_url' in session:
+				return redirect(session['last_return_url'])
 			return redirect('/')
+
+		if captcha.validate() == False:
+			flash('invalid captcha', 'danger')
+			if 'last_return_url' in session:
+				return redirect(session['last_return_url'])
+			return redirect('/')
+
+
+		if 'rate_limit' in session and config.RATE_LIMIT == True:
+			rl = session['rate_limit'] - time.time()
+			if rl > 0:
+				flash('rate limited, try again in %s seconds' % str(rl), 'danger')
+				if 'last_return_url' in session:
+					return redirect(session['last_return_url'])
+				return redirect('/')
 
 	if anonymous != None:
 		anonymous = True
@@ -1327,6 +1383,7 @@ def create_comment():
 
 	set_rate_limit()
 
+	flash('created new comment', 'success')
 	return redirect(post_url, 302)
 
 def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=None, encrypted=False, encrypted_key_id=None):
@@ -1354,6 +1411,13 @@ def user_messages(username=None):
 			read = read.order_by((Message.created).desc()).limit(50).all()
 			unread = unread.order_by((Message.created).desc()).limit(50).all()
 
+			read = [x for x in read if x.sender == None or get_user_from_name(x.sender).id not in session['blocked']['other_user']]
+
+			for r in unread:
+				r.read = True
+
+			unread = [x for x in unread if x.sender == None or get_user_from_name(x.sender).id not in session['blocked']['other_user']]
+
 			sent = db.session.query(Message).filter_by(sender=username, read=False)
 			sent = sent.order_by((Message.created).desc()).limit(5).all()
 
@@ -1374,9 +1438,6 @@ def user_messages(username=None):
 			
 			session['has_messages'] = False
 			session['unread_messages'] = None
-
-			for r in unread:
-				r.read = True
 			
 			db.session.commit()
 
@@ -1700,6 +1761,8 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 		comments = comments.offset(offset).limit(limit).all()
 	else:
 		comments = comments.offset(offset).limit(limit).all()
+
+	comments = [c for c in comments if comment.id not in session['blocked']['comment_id'] and user.id not in session['blocked']['other_user']]
 
 	for c in comments:
 		c.new_text = pseudo_markup(c.text)

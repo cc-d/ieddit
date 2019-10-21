@@ -169,15 +169,19 @@ var preExpandVideo = false;
 <script>document.write('<style> .hidden-buttons {opacity: 0; position: absolute; font-size:0px; pointer-events: none; };</style>');</script>
 
 
-<!--
+
 <div style='display:inline-block;' class="dropup btn-group rounded v-button" id='dot-button-{{ post.id }}'>
-    <button class="btn btn-secondary rounded btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-cog'></i>  </button>
+    <button class="btn btn-secondary rounded btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-ellipsis-h'></i>  </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>
+        <!-- <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>-->
+        {% if post.id not in session['blocked'] %}
         <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("post_id", "{{ post.id }}")'>hide post</a>
+        {% else %}
+        <a class="dropdown-item" id='show-post-{{ post.id }}' href='javascript:showObject("post_id", "{{ post.id }}")'>hide post</a>
+        {% endif %}
     </div>
 </div>
--->
+
 
 
  <div style='margin-top: -3px;' class='mod-option-wrapper user-options next-to-comments'><small>

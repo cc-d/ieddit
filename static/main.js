@@ -143,11 +143,6 @@ $(document).ready(function() {
 	setTimeout(function() {
 		autoFadeErrors(); 
 	}, 5000);
-
-	$('#modMarkSubNSFW').click(function(e){
-		$(e.currentTarget).parent().append("<br><input type='checkbox' name='alsoposts' value='alsoposts'>Also update all posts in sub?</input>");
-	})
-
 });
 
 // Suggest Title
@@ -375,26 +370,40 @@ $(document).ready(function() {
 */
 
 
-function minHide(cid) {
+function minHide(cid, startingLevel, hide) {
 	comment = $('#comment-' + cid);
 	hcomment = $('#hide-comment-' + cid);
 
-	comment.css('display', 'none');
-	hcomment.css('display', 'block');
+	if (startingLevel === undefined) {
+		startingLevel = comment.attr('level');
+	}
+
+	if (hide === undefined) {
+		comment.css('display', 'none');
+		hcomment.css('display', 'block');
+	} else {
+		comment.css('display', 'none');
+		hcomment.css('display', 'none');		
+	}
 
 	child = comment.next().next()
 
 	clevel = child.attr('level')
 
-	if (clevel > 0)	{
-		minHide(child.attr('id').split('-')[1])
+
+	if (parseInt(clevel) > parseInt(startingLevel))	{
+		minHide(child.attr('id').split('-')[1], startingLevel, hide)
 	}
 
 }
 
-function minShow(cid) {
+function minShow(cid, startingLevel) {
 	comment = $('#comment-' + cid)
 	hcomment = $('#hide-comment-' + cid);
+
+	if (startingLevel === undefined) {
+		startingLevel = comment.attr('level');
+	}
 
 	comment.css('display', 'block');
 	hcomment.css('display', 'none');
@@ -403,10 +412,12 @@ function minShow(cid) {
 
 	clevel = child.attr('level')
 
-	if (clevel > 0)	{
-		minShow(child.attr('id').split('-')[1])
+	if (parseInt(clevel) > parseInt(startingLevel))	{
+		minShow(child.attr('id').split('-')[1], startingLevel)
 	}
 
 }
 
-console.log('loaded');
+function jslogin() {
+	window.location.href = '/login';
+}

@@ -405,9 +405,17 @@ def user_add_pgp():
 
 @ubp.route('/hide', methods=['POST'])
 def hide_obj():
-	post_id = request.form.get('post_id')
-	comment_id = request.form.get('comment_id')
-	other_user = request.form.get('other_user')
+	post_id = None
+	comment_id = None
+	other_user = None
+	d = json.loads(request.form.get('d'))
+	for k in d.keys():
+		if k == 'post_id':
+			post_id = d[k]
+		elif k == 'comment_id':
+			comment_id = d[k]
+		elif k == 'other_user':
+			other_user = d[k]
 
 	if 'username' in session:
 		new_hidden = Hidden(post_id=post_id, comment_id=comment_id, username=session['username'],
@@ -418,16 +426,85 @@ def hide_obj():
 	if 'blocked' not in session:
 		session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[]}
 
-	d = {'post_id':post_id, 'comment_id':comment_id, 'other_users':other_user}
+	d = {'post_id':post_id, 'comment_id':comment_id, 'other_user':other_user}
 
 	for i in d.keys():
 		if d[i] != None:
-			session['blocked'][i].append(d[i])
+			d[i] = int(d[i])
+			if d[i] not in session['blocked'][i]:
+				session['blocked'][i].append(d[i])
 
-	print(session['blocked'])
+	return 'ok'
+	
+@ubp.route('/show', methods=['POST'])
+def show_obj():
+	post_id = None
+	comment_id = None
+	other_user = None
+	d = json.loads(request.form.get('d'))
+	for k in d.keys():
+		if k == 'post_id':
+			post_id = d[k]
+			itype = 'post_id'
+			iid = d[k]
+		elif k == 'comment_id':
+			comment_id = d[k]
+			itype = 'comment_id'
+			iid = d[k]
+		elif k == 'other_user':
+			other_user = d[k]
+			itype = 'other_user'
+			iid = d[k]
 
-	return redirect('/')
+	print(str(session['blocked'][itype]))
 
+	if int(iid) not in session['blocked'][itype]:
+		return 'ok'
+
+	if 'username' in session:
+		hid = db.session.query(Hidden).filter_by(post_id=post_id, comment_id=comment_id, other_user=other_user).delete()
+		db.session.commit()
+		print(iid)
+		session['blocked'][itype].pop(session['blocked'][itype].index(int(iid)))
+	else:
+		print(iid)
+		session['blocked'][itype].pop(session['blocked'][itype].index(int(iid)))
+
+	return 'ok'
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_total_blocked():
+	uids, pids, cids = [], [], []
+	for u in session['blocked']['other_user']:
+		u2 = db.session.query(Iuser).filter_by(id=int(u)).first()
+		u2.created_ago = time_ago(u2.created)
+		u2.type = 'user'
+		u2.key = 'other_user'
+		u2.permalink = config.URL + '/u/' + u2.username
+		uids.append(u2)
+
+	for p in session['blocked']['post_id']:
+		p2 = db.session.query(Post).filter_by(id=int(p)).first()
+		p2.created_ago = time_ago(p2.created)
+		p2.type = 'post'
+		p2.key = 'post_id'
+		pids.append(p2)
+
+	for c in session['blocked']['comment_id']:
+		c2 = db.session.query(Comment).filter_by(id=int(c)).first()
+		c2.created_ago = time_ago(c2.created)
+		c2.type = 'comment'
+		c2.key = 'comment_id'
+		cids.append(c2)
+
+	blocked = uids + pids + cids
+	blocked.sort(key=lambda x: x.created, reverse=True)
+
+	return blocked
+
+@ubp.route('/blocked/', methods=['GET'])
+def show_blocked():
+	return render_template('blocked.html', blocked=get_total_blocked())
 
 
 

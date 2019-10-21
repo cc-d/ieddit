@@ -284,8 +284,8 @@ textarea {
 }
 
 .comment-post-voting{
-	margin-left: 15px;
-	margin-right: 1em;
+	margin-left: 1rem;
+	margin-right: 0.5em;
 	font-size:16px;
 }
 .top-sort {
@@ -563,11 +563,15 @@ blockquote {
 }
 
 .alert.success {
-  background-color: green;
+  background-color: green!important;
 }
 
 .alert.error {
-  background-color: red;
+  background-color: red!important;
+}
+
+.alert.danger {
+	background-color: red!important;
 }
 
 .form-input-text {
@@ -762,23 +766,22 @@ ul {
 }
 
 .three-dots {
-    margin-top: -1px;
-	margin-left: 4px;
-    width: 14px;
-    height: 1.5rem;
-    padding: 0px;
-    font-size: 127%;
-        margin-top: 4px;
-    width: 23px;
+	margin-left: 0.5rem;
+	background-color: transparent;
+	padding: 0;
+	font-size: 1rem;
+	border: 1px solid transparent;
 }
 
+.three-dots:focus {
+	border: 1px solid transparent;
+	box-shadow: none;
+	background-color: transparent;
+}
+
+
 .v-button {
-margin-top: 0px;
-    margin-top: -10px;
-    margin-left: 3px;
-    margin-bottom: 0px;
-    padding: -5px;
-    font-size: 11px;
+
 }
 
 .comment-button-dropdown {
@@ -854,3 +857,26 @@ margin-top: 0px;
 		display: none;
 	}
 }
+
+.disabled {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+.commcaptcha {
+	display: inline;
+}
+
+.commcaptcha img {
+	margin-left: 0.5rem;
+	height: 4rem;
+    margin-bottom: 4px;
+}
+
+.commcaptcha-message {
+	margin: 0;
+    padding: 0;
+    display: block;
+    margin-top: -25px;
+}
+

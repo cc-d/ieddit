@@ -1,7 +1,7 @@
 DEBUG = True
 
 DATABASE = 'ieddit'
-PG_USER = 'test'
+PG_USER = 'postgres'
 PG_PASSWORD = 'test'
 PG_HOST = 'localhost'
 
@@ -20,10 +20,10 @@ elif DB_TYPE == 'postgres':
 # This will be unique every time create_db.py is ran when testing
 # to force clear sessions
 
-SECRET_KEY = 'not-a-real-key-|r|dTk_Z7dld_|r|'
+SECRET_KEY = 'not-a-real-key-|r|Q09P8YG1P2|r|'
 
 # Chhange this to your local URL. IE http://127.0.0.1
-URL = 'http://localhost:8888'
+URL = 'http://dev.ieddit.com'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -38,8 +38,15 @@ DEFAULT_CACHE_TIME = 600
 RATE_LIMIT = False
 RATE_LIMIT_TIME = 5
 LIMITER_DEFAULTS = ['600 per minute']
+
 CAPTCHA_ENABLE = False
-CAPTCHA_NUMERIC_DIGITS = 8
+
+# documentation of lib here is incorrect...
+#CAPTCHA_NUMERIC_DIGITS = 2
+CAPTCHA_LENGTH = 3
+
+# Show captcha on comments
+CAPTCHA_COMMENTS = False
 
 SESSION_TYPE = 'filesystem'
 USE_PROXIES = False
