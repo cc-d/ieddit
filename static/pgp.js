@@ -28,38 +28,92 @@ $(document).ready(function() {
 		c.select();
 		c.setSelectionRange(0,99999);
 		document.execCommand('copy');
+
 		$('#copyText').css('display', 'block');
-		window.setTimeout(function() {
-			$('#copyText').fadeOut();
-			$('#copyText').css('display', 'none');
-			//$('#copyToClipboard').text(
-		}, 3000);
+
+		customFade($('#copyText'));
 	});
 
 	$('#decrypt-button').click(function() {
 		decryptAll();
 	});
-
-
 });
 
+var cf = undefined;
 
-function decryptAll() {
+function customFade(element) {
+	counter = 0;
+	cf = window.setInterval(function() {
+		counter += 4;
+		setOpacity(element, counter);	
+	}, 100);
+}
+
+
+function setOpacity(element, fadeLevel) {
+		if (fadeLevel == undefined) {
+			fadeLevel = 1;
+		}
+		op = (100 - fadeLevel);
+		if (('' + op).length == 1) {
+			op = '0' + (op + '')
+		}
+		op = '0.' + op;
+
+		$(element).css('opacity', op);
+		
+		if (fadeLevel >= 100) {
+			clearInterval(cf);
+		}
+}
+
+function autoGetPhrase(ask=false) {
 	passPhrase = localStorage.getItem('pgp_passphrase');
-	if (passPhrase == undefined) {
+	console.log(passPhrase, ask)
+	if (passPhrase === 'undefined' || ask === true) {
+		console.log('asking');
 		passPhrase = prompt('could not find phrase in local storage. please enter');
+		localStorage.setItem('pgp_passphrase', passPhrase);
 	}
-	console.log('passphrase is ' + passPhrase);
+	return passPhrase;
+}
+
+var success = false;
+
+function decryptAll(attempts) {
 	var emsgs = $('.emessage');
+	var passPhrase = autoGetPhrase(ask=false);
+
+	if (attempts === undefined) {
+		console.log('first setting 0');
+		var attempts = 0;
+	} else {
+		if (attempts === 1) {
+			console.log('second asking');
+			passPhrase = autoGetPhrase(ask=true);
+		} else {
+			console.log(attempts);
+			alert('could not get passphrase');
+			return false;
+		}
+	}
+
+
 	for(i=0; i<emsgs.length; i++) {
 		try {
 			eid = $(emsgs[i]).attr('id').split('-')[2]
 			console.log('trying to decrypt ' + eid);
 			decryptMessage(eid, passPhrase);
+			success = true;
 		} catch (err) {
 			console.log(err);
 		}
 	}
+
+	if (success === false) {
+		decryptAll(attempts=attempts + 1);
+	}
+
 }
 
 /* to generate a mnemonic */
@@ -76,13 +130,13 @@ function generatePassphrase() {
 }
 
 
-const encryptMessage = async() => {
+const encryptMessage = async(ask=false) => {
 	$('#msgencrypted').val(true);
 	var privkey = $('#self-pgp-privkey').val();
 	var pubkey = $('#other-pgp-pubkey').val();
-	var passphrase = prompt("passphrase");
+	var passphrase = autoGetPhrase(ask=ask);
 	var msg = $('#message-textarea').val()
-
+	console.log(ask);
 	try{
 		const privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0]
 		await privKeyObj.decrypt(passphrase)
@@ -96,13 +150,22 @@ const encryptMessage = async() => {
 		openpgp.encrypt(options).then(ciphertext => {
 			encrypted = ciphertext.data;
 			$('#message-textarea').val(encrypted);
+			$('#encryptMessageButton').replaceWith($('<button type="button" class="btn btn-sm btn-success" ' + 
+				'id="encryptMessageButton" disabled><i class="fa fa-lock"></i> message encrypted</button>'));
+			$('#msgencrypted').val('true');
 		});
+
 	}catch (e) {
-		alert("There was an error using your key. Please ensure you have the correct passphrase or reset it in your profile");
+		if (ask === false) {
+			console.log('invalid passphrase');
+			encryptMessage(ask=true);
+		} else {
+
+			alert('could not decrypt');
+		}
 	}
 
 };
-
 
 const decryptMessage = async(msgid, passphrase) => {
 	let privkey = $('#self-pgp-privkey').val();
@@ -122,7 +185,7 @@ const decryptMessage = async(msgid, passphrase) => {
 			$('#decryptedContent-' + msgid).prev().css('display', 'none');
 		});
 	}catch (e) {
-		$('#decryptedContent-' + msgid).text("There was an error decrypting the message. Please ensure you have the correct passphrase.").fadeIn();
+		
 	}
 };
 
@@ -178,6 +241,7 @@ function makeKeys(pphrase){
 }
 
 function customPhrase() {
+	$('#secret-lock').css('display', 'none');
 	$('#secret').removeAttr('readonly');
 	$('#secret').before($('<style>#secret{background-color: white!important;}</style>'));
 	$('#secret').css('border', '1px dotted red');

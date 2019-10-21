@@ -4,7 +4,7 @@
 {% if self_pgp %}
 {% include 'keys.html' %}
 {% include 'crypto.html' %}
-<script src="{{ url_for('static', filename='encrypt-message-button.js') }}{{ g.cache_bust }}"></script>
+
 {% endif %}
 
 {% if message %}
@@ -55,13 +55,18 @@
   <div class="comment-reply-box-wrapper">
     <textarea id='message-textarea' class="comment-reply-box-expand rounded" name="message_text"></textarea>
   </div>
-  <input name='msgencrypted' id='msgencrypted' value='' type='hidden'>
 {% endif %}
   <input class="btn btn-primary rounded" style='color: white!important;' type='submit' value='send message'>
   {% if self_pgp %}
   {% if other_pgp.username %}
   <button type="button" class="btn btn-sm btn-success" id="encryptMessageButton"><i class='fa fa-lock'></i> encrypt</button>
   {% endif %}
+  {% endif %}
+  <input name='msgencrypted' id='msgencrypted' value='' type='hidden'>
+  {% if other_pgp %}
+  <input name='key_id' id='key_id' value='{{ other_pgp.id }}' type='hidden'>
+  {% else %}
+  <input name='key_id' id='key_id' value='' type='hidden'>
   {% endif %}
 </form>
 

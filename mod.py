@@ -29,7 +29,7 @@ def mod_delete_post():
 			msg = 'undeleted'
 		else:
 			post.deleted = True
-		mod_action(session['username'], msg, post.permalink, post.sub)
+		mod_action(session['username'], msg, post.get_permalink(), post.sub)
 		db.session.commit()
 
 		flash('post %s' % msg, category='success')
@@ -53,11 +53,11 @@ def mod_delete_comment():
 					Moderator.sub.like(post.sub)).exists()).scalar()
 	if is_mod:
 		comment.deleted = True
-		mod_action(session['username'], 'delete', comment.permalink, comment.sub_name)
+		mod_action(session['username'], 'delete', comment.get_permalink(), comment.sub_name)
 		db.session.commit()
 
 		flash('comment deleted', category='success')
-		return redirect(post.permalink)		
+		return redirect(post.get_permalink())		
 	else:
 		return '403'
 
@@ -80,12 +80,12 @@ def mod_sticky_post():
 		for s in old_sticky:
 			s.stickied = False
 			db.session.commit()	
-			mod_action(session['username'], 'unstickied', post.permalink, post.sub)
+			mod_action(session['username'], 'unstickied', post.get_permalink(), post.sub)
 
 		post.stickied = True
 		db.session.commit()
 
-		mod_action(session['username'], 'stickied', post.permalink, post.sub)
+		mod_action(session['username'], 'stickied', post.get_permalink(), post.sub)
 		flash('stickied post', category='success')
 		return redirect(config.URL + '/i/' + post.sub)
 	else:
@@ -107,7 +107,7 @@ def mod_unsticky_post():
 		is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
 					Moderator.sub.like(post.sub)).exists()).scalar()
 	if is_mod:
-		mod_action(session['username'], 'unstickied', post.permalink, post.sub)
+		mod_action(session['username'], 'unstickied', post.get_permalink(), post.sub)
 		post.stickied = False
 		db.session.commit()
 
@@ -138,17 +138,17 @@ def mod_lock_post():
 					Moderator.sub.like(post.sub)).exists()).scalar()
 	if is_mod:
 		if action == 'lock':
-			mod_action(session['username'], 'locked', post.permalink, post.sub)
+			mod_action(session['username'], 'locked', post.get_permalink(), post.sub)
 			post.locked = True
 			flash('locked post', category='success')
 		elif action == 'unlock':
-			mod_action(session['username'], 'unlocked', post.permalink, post.sub)
+			mod_action(session['username'], 'unlocked', post.get_permalink(), post.sub)
 			post.locked = False
 			flash('unlocked post', category='success')
 
 		db.session.commit()
 
-		return redirect(post.permalink)
+		return redirect(post.get_permalink())
 	else:
 		return '403'
 
@@ -159,8 +159,18 @@ def mod_ban_user():
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
 
-	iid = request.form.get('iid')
-	itype = request.form.get('itype')
+	dropdown = request.form.get('post_id')
+	if dropdown != None:
+		if dropdown.find('|') != -1:
+			params = dropdown.split('|')
+			iid = params[1]
+			itype = params[2]
+		else:
+			iid = request.form.get('iid')
+			itype = request.form.get('itype')
+	else:
+			iid = request.form.get('iid')
+			itype = request.form.get('itype')
 
 	is_mod = True
 
@@ -198,7 +208,7 @@ def mod_ban_user():
 			sub = obj.sub
 			db.session.add(new_ban)
 
-		mod_action(session['username'], 'ban', obj.permalink, sub)
+		mod_action(session['username'], 'ban', obj.get_permalink(), sub)
 
 		db.session.commit()
 
@@ -264,7 +274,7 @@ def mod_addmod():
 		db.session.add(new_mod)
 		db.session.commit()
 
-		flash('new moderator ' + username, 'succes')
+		flash('new moderator ' + username, 'success')
 		return redirect('/i/' + sub + '/mods/')
 	else:
 		return '403'
@@ -348,7 +358,8 @@ def mod_marknsfw():
 		flash('marked as nsfw')
 		db.session.commit()
 		
-		return redirect(post.permalink)
+		return redirect(post.get_permalink())
+	return '403'
 
 @bp.route('/title', methods=['POST'])
 def mod_title():

@@ -3,18 +3,20 @@
 
 <div class="mod-settings-page">
 
-<nav class="nav mod-page-controls">
-  <a class="nav-link">Mod Controls: </a>
+<nav class="nav margin-lr">
+  <a class="nav-link" style='margin-left: -0.75rem;'>Mod Controls: </a>
+  <a class="nav-link" href="/i/{{ request.sub }}/stats/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Stats</button></a>
   <a class="nav-link" href="/i/{{ request.sub }}/mods/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Mod Log</button></a>
   <a class="nav-link" href="/i/{{ request.sub }}/mods/banned/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Banned Users</button></a>
  {% if request.is_mod %}
   <a class="nav-link" href="/i/{{ request.sub }}/mods/add/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Manage Mods</button></a>
   <a class="nav-link" href="/i/{{ request.sub }}/settings/"><button class='mod-page-button btn btn-sm btn-secondary rounded'>Settings</button></a>
+
 {% endif %}
 </nav>
 
 
-<nav class="nav mod-page-controls">
+<nav style='margin-left: 4px' class="nav mod-page-controls margin-lr">
 <p class="nav-link">Mods</p>
 {% for mod in mods %}
 <a style="color: lightblue!important;" class="user-icon-link nav-link" href="{{ config.URL }}/u/{{ mod }}"><i class="fa fa-user" style='color: lightblue!important;'></i>[m]{{ mod }}</a>
@@ -50,7 +52,8 @@
 
 
 {% if desc %}
-<h6 style="margin-left: 1rem;">{% if request.subtitle != None %}Title: {{ request.subtitle }}{% else %}no title{% endif %}</h6>
+<h6 style="margin-left: 1.25rem;">{% if request.subtitle != None %}Title: {{ request.subtitle }}{% else %}no title{% endif %}</h6><br>
+{% if request.is_mod %}
 <form action='/mod/title' method='POST' style="margin-left: 1rem;">
 <div class="input-group mb-3">
   <input type='hidden' name='sub' value='{{ request.sub }}'>
@@ -62,7 +65,9 @@
 <button type='submit' class="btn btn-primary rounded" style='margin-left: 0.25rem;' type="button">Update Title</button>
 </div>
 </form>
-<div id='display-rules'>
+{% endif %}
+<br>
+<div style='margin-left: 1.25rem;' id='display-rules'>
 
 <h3 style="">Description</h3>
 <selftext>
@@ -79,7 +84,7 @@ No Description
 <div id='rules' style='margin-top: 1rem;'>
 <form style="margin-left: 1rem;" action='/mod/edit/description' method='POST'>
   <div class="form-group">
-    <textarea name='rtext' class="form-control safe-markup-text" id="exampleFormControlTextarea1" rows="3" style='width: 450px; resize: both;'>{% if rules %}{{ rules|safe }}{% endif %}</textarea>
+    <textarea name='rtext' class="form-control safe-markup-text" id="exampleFormControlTextarea1" rows="3" style='width: 450px; resize: both;'>{% if rules %}{{ rules }}{% endif %}</textarea>
   </div>
   <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary " type="button">Update description</button>
 </form>

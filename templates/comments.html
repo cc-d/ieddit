@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
+
+{% if config.CAPTCHA_ENABLE and config.CAPTCHA_COMMENTS %}
+{% set capt = captcha() %}
+{% else %}
+{% set capt = False %}
+{% endif %}
+
 {% if post.anonymous %}
 {% set pauthor = 'Anonymous' %}
 {% set pauthor_type = 'user' %}
@@ -7,6 +14,8 @@
 {% set pauthor = post.author %}
 {% set pauthor_type = post.author_type %}
 {% endif %}
+
+
 <div id="comment-page-wrapper">
 	{% set pre_expand = True %}
 	{% include 'sub_post.html' %}
@@ -23,71 +32,35 @@
 	<a class="comment-link" href="{{ post_url }}{{ parent_comment.id }}/sort-new"><small>new</small></a>
 	{% endif %}
 </div>-->
-{% if not parent_comment.id %}
+
 {% if post.locked %}
 <h2>post is locked</h2>
 {% endif %}
-{% if post.locked == False %}
-{% if session['username'] and session['user_id'] %}
-<form id='post-reply-box' class='rounded' style='margin-left: 0.25rem; margin-top: 0.25rem;' action='/create_comment' method='POST'>
-	<div class="comment-reply-box-wrapper">
-		<textarea class="comment-reply-box-expand rounded" name="comment_text"></textarea>
-	</div>
-	<input type='hidden' name='post_id' value='{{ post_id }}'>
-	<input type='hidden' name='post_url' value='{{ post_url }}'>
-	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
-	<input class="post-text-area-button btn btn-secondary btn-sm" style='background-color: whitesmoke; margin-left: 0.25rem; ' type='submit' value='new comment'>
-	<small> anonymous? </small>
-	{% if session['anonymous'] %}
-	<input type='checkbox' name='anonymous' value='1' checked>
-	{% else %}
-	<input type='checkbox' name='anonymous' value='1'>
-	{% endif %}
-</form>
 
-<form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
-	<br>
-	<div class="comment-reply-box-wrapper">
-		<textarea class="comment-reply-box-expand" name="comment_text"></textarea>
-	</div>
-	<input type='hidden' name='post_id' value='{{ post_id }}'>
-	<input type='hidden' name='post_url' value='{{ post_url }}{{ parent_comment.id }}'>
-	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
-	<input type='hidden' name='parent_id' id='parent_id'>
-	<input class="comment-text-area-button" type='submit' value='reply'>
-	<small> anonymous? </small>
-	{% if session['anonymous'] %}
-	<input type='checkbox' name='anonymous' value='1' checked>
-	{% else %}
-	<input type='checkbox' name='anonymous' value='1'>
-	{% endif %}
-</form>
-{% else %}
-<form id='post-reply-box' action='/create_comment' method='POST'>
-	<div class="comment-reply-box-wrapper">
-		<textarea class="comment-reply-box-expand" name="comment_text" disabled="disabled"></textarea>
-	</div>
-	<input type='hidden' name='post_id' value='{{ post_id }}'>
-	<input type='hidden' name='post_url' value='{{ post_url }}'>
-	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
-	<input class="post-text-area-button" type='submit' value='new comment' disabled="disabled"><small> <a href="{{ config.URL }}/login">login to comment</a></small>
-</form>
+{% if is_parent == False %}
 
-<form id='comment-reply-box' action='/create_comment' method='POST' style="display: none;">
-	<br>
-	<div class="comment-reply-box-wrapper">
-		<textarea class="comment-reply-box-expand" name="comment_text" disabled="disabled"></textarea>
-	</div>
-	<input type='hidden' name='post_id' value='{{ post_id }}'>
-	<input type='hidden' name='post_url' value='{{ post_url }}{{ parent_comment.id }}'>
-	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
-	<input type='hidden' name='parent_id' id='parent_id'>
-	<input class="comment-text-area-button" type='submit' value='reply' disabled="disabled"><small> <a href="{{ config.URL }}/login">login to reply</a></small>
-</form>
+{% with %}
+{% set reptype = 'post' %}
+{% set h = False %}
+
+{% include 'comment-reply.html' %}
+
+{% endwith %}
+
+
+{% with %}
+{% set reptype = 'comment' %}
+{% set h = True %}
+{% include 'comment-reply.html' %}
+{% endwith %}
 
 {% endif %}
 
-{% endif %}
+<div id='comment-spacer' style='width: 100%; height: 1px; margin-bottom: 1rem;'></div>
+
+
+{% if parent_comment %}
+<h5 id='single-comment'> you are viewing a single comment - <a style='text-decoration: underline;' href="{{ post.permalink }}">view all comments</a></h5>
 {% endif %}
 
 <ul class="list-unstyled comment-reply-list">
@@ -133,15 +106,15 @@
 			</div>
 		</div>
 		<div class='comment-selftext-wrapper'>
-		<selftext class="comment-text comment-text-text safe-markup-text">{{ comment.text|safe }}</selftext>
+		<selftext class="comment-text comment-text-text safe-markup-text">{{ comment.new_text|safe }}</selftext>
 		</div>	
 		{% if session['user'] not in post.mods %}
-		<div class="row post-row comment-bottom" style='margin-bottom: 1rem!important;'>
+		<div class="row post-row comment-bottom" style='margin-bottom: 1rem!important; display: inline; width: 100%;'>
 		{% else %}
-		<div class="row post-row comment-bottom">
+		<div class="row post-row comment-bottom" style='display: inline; width: 100%;'>
 		{% endif %}
 
-<div class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="session['user_id']" has_voted="{{ comment.has_voted }}">
+<div style='display: inline;' class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="session['user_id']" has_voted="{{ comment.has_voted }}">
 	{% if comment.has_voted == 1 %}
 	<a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
 	{% else %}
@@ -154,61 +127,107 @@
 	<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
 	{% endif %}
 </div>
-			<div class="inner-div">
+			<div class="inner-div applyinline" style="display: inline;">
 				{% if post.locked == False %}
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>
 				{% endif %}
+
+
+<div style='display:inline-block;' class="dropup btn-group rounded v-button" id='dot-button-{{ post.id }}'>
+    <button class="btn btn-secondary rounded btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-ellipsis-h'></i>  </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <!-- <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>-->
+        <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("comment_id", "{{ comment.id }}")'>hide comment</a>
+    </div>
+</div>
+
+
+				{% if loop.depth0 == 4 and value|length > 0 %}
+					<a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
+						view more <i class='fa fa-arrow-circle-right '></i>
+					</button></a>
+				{% endif %}
+
+
+<div class='commoptions' style='float: right; margin: 0.5rem; margin-top: 0rem;'>
+        {% if session['username'] == comment.author %}
+<!-- USER MENU -->
+<div class="dropdown bottom-post-dropdown">
+  <button class="btn btn-secondary btn-com-bot btn-sm bottom-dropdown comment-button-dropdown" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class='fa fa-user'></i> <h6 class='btn-description'>user</h6> 
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% if session['username'] == post.author %}
+			<a class="dropdown-item" href="/user/edit/comment/{{ comment.id }}/">edit</a>
+            {% endif %}
+
+            {% if session['username'] == post.author %}
+    		<a class="dropdown-item" href="javascript:formSubmit('user-delete-comment-{{ comment.id }}')">delete</a>
+    		{% endif %}
+  </div>
+</div>
+<!-- END USER -->
+{% endif %}
+
+
+
+{% if session['username'] in post.mods or session['admin'] == True %}
+<div class="dropdown bottom-post-dropdown">
+  <button class="btn btn-info btn-sm btn-com-bot bottom-dropdown comment-button-dropdown" type="button" id="dropdownMenuButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class='fa fa-gavel'><h6 class='btn-description'>mod</h6> </i>
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% if session['username'] != comment.author %}
+			<a class="dropdown-item" href="javascript:formSubmit('mod-delete-comment-{{ comment.id }}')">delete</a>
+            {% endif %}
+    		<a class="dropdown-item" href="javascript:formSubmit('btn-mod-ban-comment-{{ comment.id }}')">ban</a>
+  </div>
+</div>
+{% endif %}
+
+
+
+
+			<script>document.write('<style>.hide-div{display: none;}</style>')</script>
 			{% if session['username'] == comment.author %}
-			<div class='mod-option-wrapper user-options user-options-comments'>
+			<div class='mod-option-wrapper user-options user-options-comments hide-div'>
 				<small>
 					<a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
 						<button type='submit' class='mod-option-button'>edit</button>
 					</a>
 					<form action='{{ config.URL }}/user/delete/comment' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-						<button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button'>delete</button>
+						<button id='btn-user-delete-comment-{{ comment.id }}' type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button'>delete</button>
 					</form>
 				</small>
 			</div>
 			{% endif %}
-				{% if loop.depth0 == 4 and value|length > 0 %}
-					<a class="comment-link  comment-more" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
-						more>>
-					</a>
-				{% endif %}
-			</div>
 			</div>
 			{% if session['username'] in post.mods %}
-			<div class='mod-option-wrapper-comments'><small>
+			<div class='mod-option-wrapper-comments hide-div'><small>
 					<form action='{{ config.URL }}/mod/delete/comment' method='POST' class='post-mod-option-form post-mod-delete-form'>
-						<button type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button post-delete-button'>delete</button>
+						<button id='btn-mod-delete-comment-{{ comment.id }}' type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button post-delete-button'>delete</button>
 					</form>|
 					<form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
 						<input name='iid' type='hidden' value='{{ comment.id }}'>
 						<input name='itype' type='hidden' value='comment'>
-						<button type='submit' name='post_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>ban</button>
+						<button type='submit' id='btn-mod-ban-comment-{{ comment.id }}' name='post_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>ban</button>
 					</form>
 			</small></div>
+			</div>
 			{% endif %}
+</div>
+
 	{% if parent_comment.id and loop.index0 == 0 and loop.depth0 == 0 %}
 	{% if post.locked == False %}
-<form id='comment-reply-box' action='/create_comment' method='POST' style="display: block;">
-	<br>
-	<div class="comment-reply-box-wrapper">
-		<textarea class="comment-reply-box-expand" name="comment_text"></textarea>
-	</div>
-	<input type='hidden' name='post_id' value='{{ post_id }}'>
-	<input type='hidden' name='post_url' value='{{ post_url }}{{ parent_comment.id }}'>
-	<input type='hidden' name='parent_id' id='parent_id' value='{{ parent_comment.id }}'>
-	<input type='hidden' name='sub_name' value='{{ post.sub }}'>
-	<input class="comment-text-area-button" type='submit' value='reply'>
-	<small> anonymous? </small>
-	{% if session['anonymous'] %}
-	<input type='checkbox' name='anonymous' value='1' checked>
-	{% else %}
-	<input type='checkbox' name='anonymous' value='1'>
-	{% endif %}
-</form>
+
+{% with %}
+{% set reptype = 'comment' %}
+{% set h = False %}
+{% include 'comment-reply.html' %}
 <script> $('#comment-reply-box').css('display', 'none'); </script>
+{% endwith %}
+
+
 	{% endif %}
 	{% endif %}
 	</div>
@@ -216,6 +235,7 @@
 	{%- if value %}
 	{{ loop(value.items()) }}
 	{% endif %}
+
 	{% endif %}
 	{% else %}
 	<p>no comments</p>

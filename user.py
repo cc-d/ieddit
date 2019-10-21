@@ -35,7 +35,7 @@ def user_delete_comment():
 		db.session.commit()
 
 		flash('post deleted', category='success')
-		return redirect(post.permalink)
+		return redirect(post.get_permalink())
 	else:
 		return '403'
 
@@ -107,17 +107,17 @@ def user_edit_post():
 		obj.edited = True
 		db.session.commit()
 		
-		flash('post edited', category='succes')
+		flash('post edited', category='success')
 		session['last_edit'] = None
-		return redirect(obj.permalink)
+		return redirect(obj.get_permalink())
 	elif hasattr(obj, 'text'):
 		obj.edited = True
 		obj.text = etext
 		db.session.commit()
 
-		flash('comment edited', category='succes')
+		flash('comment edited', category='success')
 		session['last_edit'] = None
-		return redirect(obj.permalink)
+		return redirect(obj.get_permalink())
 	else:
 		return '403'
 
@@ -137,7 +137,7 @@ def user_marknsfw(pid=None):
 	flash('marked as nsfw')
 	db.session.commit()
 	
-	return redirect(post.permalink)
+	return redirect(post.get_permalink())
 
 
 @ubp.route('/darkmode', methods=['POST'])
@@ -402,6 +402,109 @@ def user_add_pgp():
 	flash('updated pgp key', 'success')
 	return redirect('/u/' + user.username)
 
+
+@ubp.route('/hide', methods=['POST'])
+def hide_obj():
+	post_id = None
+	comment_id = None
+	other_user = None
+	d = json.loads(request.form.get('d'))
+	for k in d.keys():
+		if k == 'post_id':
+			post_id = d[k]
+		elif k == 'comment_id':
+			comment_id = d[k]
+		elif k == 'other_user':
+			other_user = d[k]
+
+	if 'username' in session:
+		new_hidden = Hidden(post_id=post_id, comment_id=comment_id, username=session['username'],
+							other_user=other_user)
+		db.session.add(new_hidden)
+		db.session.commit()
+
+	if 'blocked' not in session:
+		session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[]}
+
+	d = {'post_id':post_id, 'comment_id':comment_id, 'other_user':other_user}
+
+	for i in d.keys():
+		if d[i] != None:
+			d[i] = int(d[i])
+			if d[i] not in session['blocked'][i]:
+				session['blocked'][i].append(d[i])
+
+	return 'ok'
+	
+@ubp.route('/show', methods=['POST'])
+def show_obj():
+	post_id = None
+	comment_id = None
+	other_user = None
+	d = json.loads(request.form.get('d'))
+	for k in d.keys():
+		if k == 'post_id':
+			post_id = d[k]
+			itype = 'post_id'
+			iid = d[k]
+		elif k == 'comment_id':
+			comment_id = d[k]
+			itype = 'comment_id'
+			iid = d[k]
+		elif k == 'other_user':
+			other_user = d[k]
+			itype = 'other_user'
+			iid = d[k]
+
+	print(str(session['blocked'][itype]))
+
+	if int(iid) not in session['blocked'][itype]:
+		return 'ok'
+
+	if 'username' in session:
+		hid = db.session.query(Hidden).filter_by(post_id=post_id, comment_id=comment_id, other_user=other_user).delete()
+		db.session.commit()
+		print(iid)
+		session['blocked'][itype].pop(session['blocked'][itype].index(int(iid)))
+	else:
+		print(iid)
+		session['blocked'][itype].pop(session['blocked'][itype].index(int(iid)))
+
+	return 'ok'
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_total_blocked():
+	uids, pids, cids = [], [], []
+	for u in session['blocked']['other_user']:
+		u2 = db.session.query(Iuser).filter_by(id=int(u)).first()
+		u2.created_ago = time_ago(u2.created)
+		u2.type = 'user'
+		u2.key = 'other_user'
+		u2.permalink = config.URL + '/u/' + u2.username
+		uids.append(u2)
+
+	for p in session['blocked']['post_id']:
+		p2 = db.session.query(Post).filter_by(id=int(p)).first()
+		p2.created_ago = time_ago(p2.created)
+		p2.type = 'post'
+		p2.key = 'post_id'
+		pids.append(p2)
+
+	for c in session['blocked']['comment_id']:
+		c2 = db.session.query(Comment).filter_by(id=int(c)).first()
+		c2.created_ago = time_ago(c2.created)
+		c2.type = 'comment'
+		c2.key = 'comment_id'
+		cids.append(c2)
+
+	blocked = uids + pids + cids
+	blocked.sort(key=lambda x: x.created, reverse=True)
+
+	return blocked
+
+@ubp.route('/blocked/', methods=['GET'])
+def show_blocked():
+	return render_template('blocked.html', blocked=get_total_blocked())
 
 
 

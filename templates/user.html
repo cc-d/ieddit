@@ -9,6 +9,15 @@
 <div class="btn-group" role="group">
 {% if session['username'] != vuser.username %}
 <a href="/message/{{ vuser.username }}"><button type="button" class="btn btn-sm btn-secondary user-opt">send message</button></a>
+
+{% if vuser.id not in session['blocked']['other_user'] %}
+<a href="javascript:hideObject('other_user', '{{ vuser.id }}');"><button id='block-user-button' type="button" class="btn btn-sm btn-danger user-opt">block <i class='fa fa-ban'></i></button></a>
+<a href="javascript:showObject('other_user', '{{ vuser.id }}');"><button style='margin-top: 0.5rem; display: none;' id='block-user-button-u' type="button" class="btn btn-sm btn-success">unblock <i class='fa fa-undo'></i></button></a>
+{% else %}
+<a href="javascript:hideObject('other_user', '{{ vuser.id }}');"><button style='display: none;' id='block-user-button' type="button" class="btn btn-sm btn-danger user-opt">block <i class='fa fa-ban'></i></button></a>
+<a href="javascript:showObject('other_user', '{{ vuser.id }}');"><button style='margin-top: 0.5rem;' id='block-user-button-u' type="button" class="btn btn-sm btn-success">unblock <i class='fa fa-undo'></i></button></a>
+{% endif %}
+
 {% else %}
 
 <a href="/u/{{ session['username'] }}/messages/"><button type="button" class="btn btn-sm btn-secondary user-opt">view messages</button></a>
@@ -19,7 +28,7 @@
 
 <div class='btn-group' role='group'>
 <a href="/user/pgp/"><button type="button" class="btn btn-sm btn-secondary user-opt">pgp</button></a>
-
+<a href="/user/blocked/"><button type="button" class="btn btn-sm btn-secondary user-opt">blocked</button></a>
 
 
 <!-- Disabled for now due to lack of use 

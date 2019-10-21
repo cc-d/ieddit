@@ -2,12 +2,12 @@
 {% block content %}
 
 {% for sub in subs %}
-<div class="media explore-sub rounded ">
+<div class="media explore-sub rounded {% if sub.nsfw %}nsfwpost{%endif%}">
   <div class="media-body media-body-explore">
     <h5 class="mt-0"><a href="{{ config.URL }}/i/{{ sub.name }}">/i/{{ sub.name }} {% if sub.nsfw %}<a style="color: red;">nsfw</a>{% endif %} {% if sub.title != None %} - {{ sub.title }}{% endif %}</a></h5>
     {% if sub.rules %}
     <div class="safe-markup-text">
-    {{ sub.rules|safe }}
+    {{ sub.new_rules|safe }}
 </div>
     {% else %}
     This sub has no description.

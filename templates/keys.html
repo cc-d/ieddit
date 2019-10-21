@@ -1,6 +1,6 @@
 <textarea id='other-pgp-username' style='display: none;'>{% if other_pgp.username %}{{ other_pgp.username }}{% else %}{% endif %}</textarea>
-<textarea id='other-pgp-pubkey' style='display: none;'>{% if other_pgp.pubkey %}{{ other_pgp.pubkey }}{% else %}{% endif %}</textarea>
+<textarea id='other-pgp-pubkey' key_id='{{ other_pgp.id }}' style='display: none;'>{% if other_pgp.pubkey %}{{ other_pgp.pubkey }}{% else %}{% endif %}</textarea>
 
 <textarea id='self-pgp-username' style='display: none;'>{% if self_pgp.username %}{{ self_pgp.username }}{% else %}{% endif %}</textarea>
-<textarea id='self-pgp-privkey' style='display: none;'>{% if self_pgp.privkey %}{{ self_pgp.privkey }}{% else %}{% endif %}</textarea>
-<textarea id='self-pgp-pubkey' style='display: none;'>{% if self_pgp.pubkey %}{{ self_pgp.pubkey }}{% else %}{% endif %}</textarea>
+<textarea id='self-pgp-privkey' key_id='{{ self_pgp.id }}' style='display: none;'>{% if self_pgp.privkey %}{{ self_pgp.privkey }}{% else %}{% endif %}</textarea>
+<textarea id='self-pgp-pubkey' key_id='{{ self_pgp.id }}' style='display: none;'>{% if self_pgp.pubkey %}{{ self_pgp.pubkey }}{% else %}{% endif %}</textarea>
