@@ -1276,7 +1276,7 @@ def create_comment():
 	sub_name = request.form.get('sub_name')
 	anonymous = request.form.get('anonymous')
 
-	if config.CAPTCHA_ENABLE:
+	if config.CAPTCHA_ENABLE and config.CAPTCHA_COMMENTS:
 		if request.form.get('captcha') == '':
 			flash('no captcha', 'danger')
 			if 'last_return_url' in session:
@@ -1697,6 +1697,8 @@ def ccache():
 		return 'cleared'
 
 @app.route('/about/', methods=['GET'])
+@app.route('/readme/', methods=['GET'])
+@app.route('/news/2019/10/21/ieddit-beta-release/', methods=['GET'])
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def about():
 	from markdown import markdown
@@ -1762,7 +1764,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	else:
 		comments = comments.offset(offset).limit(limit).all()
 
-	comments = [c for c in comments if comment.id not in session['blocked']['comment_id'] and user.id not in session['blocked']['other_user']]
+	#comments = [c for c in comments if c.id not in session['blocked']['comment_id'] and c.author_id not in session['blocked']['other_user']]
 
 	for c in comments:
 		c.new_text = pseudo_markup(c.text)

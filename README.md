@@ -10,48 +10,6 @@ The wikimedia foundation has proven that such a model is feasible even at the up
 
 Last time this site was re-posted to HN, it was on day 1 of the public alpha. A significant amount has been changed since then - and I'm not alseep this time :) - so hopefully it will go a bit smoother.
 
-### How To Install
-
-#### Linux
-The following instructions worked on a fresh debian 9 vps.
-
-run ```sudo bash install.sh```
-
-edit ```config.py``` to the proper values (you should only need to change config.URL)
-
-run ```python3 create_db.py```
-
-start with ```python3 run.py``` or if you want to use a different port ```python3 run.py <PORT>```
-
-the site should be running on localhost:80  or the port you defined - the default username/password for an admin account is 'a' 'a'
-
-
-#### Windows
-
-If you do not have Python 3 on your machine, install it:
-https://www.python.org/downloads/
-
-Run ```install.sh``` script using Bash. If needed, a fast way to set Bash up is by 
-installing Git for Windows from: https://git-scm.com/download/win
-
-You can then run it by double clicking the file or opening Git Bash and running ```./install.sh``` in the folder.
-
-Edit ```config.py``` to the proper values (you should only need to change config.URL)
-
-Run Windows Powershell as admin (right click on powershell, run as administrator), navigate to the project's root folder, 
-then run:
-
-```py .\create_db.py```
-
-```py .\run.py```
-
-#### Error monitoring
-
-##### Sentry
-You can setup Sentry monitoring on your instance by setting ```SENTRY_ENABLED``` to ```True``` and filling in 
-```SENTRY_DSN``` in ```config.py```.
-
-
 ### Features
 
 * Fully Transparent Mod/Admin Action Logs
@@ -83,6 +41,8 @@ Tracking code will never be utilized, user data will never be up for sale. The s
 As of 10/21/2019, I can confirm the core site functionality still works perfectly in a js-disabled tor browser, and it's honestly been a little painful attempting to preserve it. A few things added recently like user/comment/post blocking will only work with javascript, but support for non-javascript browsers can be added easily if there is demand.
 
 Traffic logs are only stored for 1 day max on the prod server. No other logging information is stored on my end but functionality-related database records.
+
+All static files, JS/CSS/Thumbnails, are hosted locally. The only requests that are sent to external servers happen only during image/video expansion.
 
 ### Future
 
@@ -143,6 +103,48 @@ If you have read this far, I genuinely appreciate your time.
 A page with all releveant site usage stats can be found here: [https://ieddit.com/stats/](https://ieddit.com/stats/)
 
 Thank you to all those who have contributed.
+
+### How To Install
+
+#### Linux
+The following instructions worked on a fresh debian 9 vps.
+
+run ```sudo bash install.sh```
+
+edit ```config.py``` to the proper values (you should only need to change config.URL)
+
+run ```python3 create_db.py```
+
+start with ```python3 run.py``` or if you want to use a different port ```python3 run.py <PORT>```
+
+the site should be running on localhost:80  or the port you defined - the default username/password for an admin account is 'a' 'a'
+
+
+#### Windows
+
+If you do not have Python 3 on your machine, install it:
+https://www.python.org/downloads/
+
+Run ```install.sh``` script using Bash. If needed, a fast way to set Bash up is by
+installing Git for Windows from: https://git-scm.com/download/win
+
+You can then run it by double clicking the file or opening Git Bash and running ```./install.sh``` in the folder.
+
+Edit ```config.py``` to the proper values (you should only need to change config.URL)
+
+Run Windows Powershell as admin (right click on powershell, run as administrator), navigate to the project's root folder,
+then run:
+
+```py .\create_db.py```
+
+```py .\run.py```
+
+#### Error monitoring
+
+##### Sentry
+You can setup Sentry monitoring on your instance by setting ```SENTRY_ENABLED``` to ```True``` and filling in
+```SENTRY_DSN``` in ```config.py```.
+
 
 <br>
 <br>
