@@ -27,8 +27,19 @@ def admincp():
 @abp.route('/ban_and_delete', methods=['POST'])
 @admin_only
 def ban_and_delete():
-	username = request.form.get('username')
-	username = normalize_username(username)
+	post_id = request.form.get('post_id')
+	comment_id = request.form.get('comment_id')
+	print(post_id, comment_id)
+	if post_id != None:
+		username = db.session.query(Post).filter_by(id=post_id).first()
+		username = username.author
+	elif comment_id != None:
+		username = db.session.query(Post).filter_by(id=post_id).first()
+		username = username.author
+	else:
+		username = request.form.get('username')
+		username = normalize_username(username)
+
 	posts = db.session.query(Post).filter_by(author=username).all()
 	posts = [p for p in posts]
 

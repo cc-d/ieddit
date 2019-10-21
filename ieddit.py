@@ -963,7 +963,9 @@ def view_user(username):
 	posts = vuser.get_recent_posts()#.all()
 	comments = vuser.get_recent_comments()#.all()
 
+	print(posts)
 	for p in posts:
+		print(p)
 		p.created_ago = time_ago(p.created)
 		p.comment_count = db.session.query(Comment).filter_by(post_id=p.id).count()
 		p.mods = get_sub_mods(p.sub)
@@ -1764,7 +1766,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	else:
 		comments = comments.offset(offset).limit(limit).all()
 
-	#comments = [c for c in comments if c.id not in session['blocked']['comment_id'] and c.author_id not in session['blocked']['other_user']]
+	comments = [c for c in comments if c.id not in session['blocked']['comment_id'] and c.author_id not in session['blocked']['other_user']]
 
 	for c in comments:
 		c.new_text = pseudo_markup(c.text)

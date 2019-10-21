@@ -185,6 +185,7 @@ var preExpandVideo = false;
 
 
  <div style='margin-top: -3px;' class='mod-option-wrapper user-options next-to-comments'><small>
+
 {% if session['username'] == post.author %}
 <!-- USER MENU -->
 <div class="dropdown bottom-post-dropdown">
@@ -245,6 +246,21 @@ var preExpandVideo = false;
 
 </div>
 {% endif %}
+
+
+{% if session['admin'] == True %}
+<div class="dropdown bottom-post-dropdown">
+  <button class="btn btn-danger btn-sm bottom-dropdown btn-bot" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><h6 class='btn-description'>admin</h6>  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+            <a class="dropdown-item" href="javascript:banAndDeleteAll('post_id','{{ post.id }}');">b&d all</a>
+    </div>
+</div>
+{% endif %}
+
+
+
+
+
         </small><small>
 
 
