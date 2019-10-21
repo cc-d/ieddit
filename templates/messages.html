@@ -43,7 +43,7 @@
 {% if read != [] %}
 <h2 class='margin-lr'> read messages </h2>
 {% for message in read %}
-{% include 'message.html' %}
+
 {% if message.encrypted == True and message.encrypted_key_id|string == self_pgp.id|string %}
 	{% include 'message.html' %}
 {% elif message.encrypted == True and message.encrypted_key_id|string != self_pgp.id|string and message.encrypted_key_id|string != 'None' %}

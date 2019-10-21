@@ -42,11 +42,12 @@ var preExpandVideo = false;
 {% endif %}
 {% set comment_thread = True %}
 {% endif %}
+
 {% if session['username'] in post.mods %}
   <li class="media sub-post rounded">
 {% else %}
   <li class="media sub-post rounded" style='margin-bottom: -0.25rem;'>
-    {% endif %}
+{% endif %}
     <div class="post-image-container" id="post-thumb-{{ post.id }}">
         {% if post.post_type == 'url' %}
         <a href="{{ post.url }}">
