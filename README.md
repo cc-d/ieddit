@@ -8,7 +8,7 @@ The idea behind this project was to offer a website with functionality similar t
 
 The wikimedia foundation has proven that such a model is feasible even at the upper echelons of scale, if one is willing to operate leanly without the express pursuit of profit.
 
-Last time this site was re-posted to HN, it was on day 1 of the public alpha. A significant amount has been changed since then - and I'm not alseep this time :) - so hopefully it will go a bit smoother.
+Last time this site was re-posted to HN, it was on day 1 of the public alpha. A significant amount has been changed since then - and I'm not asleep this time :) - so hopefully it will go a bit smoother.
 
 ### How To Install
 
@@ -88,9 +88,9 @@ Traffic logs are only stored for 1 day max on the prod server. No other logging 
 
 There is a ton of room for UI improvements in the more out-of-the-way areas of the site. Examples being mod options, user settings, etc.
 
-It would be trivial to offer a hidden service option if there is demand for one. As of now, no hidden service option exists, to avoid making the deployment proccess slightly more tedius and the hosting costs. 
+It would be trivial to offer a hidden service option if there is demand for one. As of now, no hidden service option exists, to avoid making the deployment process slightly more tedious and the hosting costs. 
 
-I've sunk a solid month of my time into this, and most of the core functionality is now completed, so I'll most likely take a step back and adopt a more gradual pace of development. Areas such as tests, code refractoring, error handling, logging, etc have been neglected due to an emphasis on implementing as many features as possible in a very narrow time window.
+I've sunk a solid month of my time into this, and most of the core functionality is now completed, so I'll most likely take a step back and adopt a more gradual pace of development. Areas such as tests, code refactoring, error handling, logging, etc have been neglected due to an emphasis on implementing as many features as possible in a very narrow time window.
 
 ### How To Use
 
@@ -108,7 +108,7 @@ Please mark all content you would not want your boss looking over your shoulder 
 
 No Spam.
 
-Nothing that violates US law, or anything that would be considered 'gray area'. US speech protections are some of the strongest and most liberal in the world, if your content pushes the boundries of these laws, you should probably reconsider posting it.
+Nothing that violates US law, or anything that would be considered 'gray area'. US speech protections are some of the strongest and most liberal in the world, if your content pushes the boundaries of these laws, you should probably reconsider posting it.
 
 * To clarify, this rule is aimed mainly at anything which could be considered 'borderline cp'. Loli/Shota, jailbait, &etc. This is not the place for that type of content.
 
@@ -140,7 +140,7 @@ I can be contacted at the email in my github profile, or on HN/Reddit/this site 
 
 If you have read this far, I genuinely appreciate your time.
 
-A page with all releveant site usage stats can be found here: [https://ieddit.com/stats/](https://ieddit.com/stats/)
+A page with all relevant site usage stats can be found here: [https://ieddit.com/stats/](https://ieddit.com/stats/)
 
 Thank you to all those who have contributed.
 
