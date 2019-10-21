@@ -142,5 +142,7 @@ If you have read this far, I genuinely appreciate your time.
 
 A page with all releveant site usage stats can be found here: [https://ieddit.com/stats/](https://ieddit.com/stats/)
 
+Thank you to all those who have contributed.
+
 <br>
 <br>
