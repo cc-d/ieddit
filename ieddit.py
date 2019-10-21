@@ -1422,8 +1422,10 @@ def reply_message(username=None, mid=None):
 		return render_template('message_reply.html', message=m, sendto=False, self_pgp=get_pgp_from_username(session['username']),
 			other_pgp=get_pgp_from_username(m.sender), other_user=get_user_from_name(username))
 
-def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False, encrypted_key_id=None):
-	new_message = Message(title=title, text=text, sender=sender, sent_to=sent_to, encrypted=encrypted, encrypted_key_id=encrypted_key_id)
+
+def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False, encrypted_key_id=None, in_reply_to=None):
+	new_message = Message(title=title, text=text, sender=sender, in_reply_to=in_reply_to, sent_to=sent_to, encrypted=encrypted, 
+		encrypted_key_id=encrypted_key_id)
 	db.session.add(new_message)
 	db.session.commit()
 
@@ -1441,11 +1443,14 @@ def msg(username=None):
 		encrypted = request.form.get('msgencrypted')
 		encrypted_key_id = request.form.get('key_id')
 
-		if encrypted != None:
+		if encrypted == 'true':
 			encrypted = True
 			encrypted_key_id = encrypted_key_id
 		else:
 			encrypted = False
+			encrypted_key_id = None
+
+		if encrypted_key_id == '':
 			encrypted_key_id = None
 
 		if sent_to == None:

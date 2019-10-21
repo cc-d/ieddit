@@ -152,7 +152,9 @@ const encryptMessage = async(ask=false) => {
 			$('#message-textarea').val(encrypted);
 			$('#encryptMessageButton').replaceWith($('<button type="button" class="btn btn-sm btn-success" ' + 
 				'id="encryptMessageButton" disabled><i class="fa fa-lock"></i> message encrypted</button>'));
+			$('#msgencrypted').val('true');
 		});
+
 	}catch (e) {
 		if (ask === false) {
 			console.log('invalid passphrase');
