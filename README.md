@@ -1,11 +1,14 @@
 # **ieddit.com**
 
-###### This is an __alpha__ version of this website. It's the result of a few thousand lines of code written in only two weeks, there are a LOT of bugs, and the design is nowhere near final. I focused on getting __something__ out as fast as possible, in order to gauge interest. Even the name isn't set in stone.
+###### This site is the result of several thousand lines of code written over the past month, there are a LOT of bugs, has only now reached a state I'd describe as 'beta'. While the general layout/design is mostly complete, the UI is still a bit rough in some areas.
+
 ### About
 
 The idea behind this project was to offer a website with functionality similar to reddit's, with a focus on transparency, privacy, freedom of expression, and so on, while also trimming down the massive amount of design bloat reddit has accumulated over the years. To attempt to preserve these operating principles, this site will not pursue any form of monetization which would violate the privacy of users, regardless of growth. Additionally, this allows the site to operate fully independently without being beholden to the demands of advertisers.
 
 The wikimedia foundation has proven that such a model is feasible even at the upper echelons of scale, if one is willing to operate leanly without the express pursuit of profit.
+
+Last time this site was re-posted to HN, it was on day 1 of the public alpha. A significant amount has been changed since then - and I'm not alseep this time :) - so hopefully it will go a bit smoother.
 
 ### How To Install
 
@@ -53,11 +56,19 @@ You can setup Sentry monitoring on your instance by setting ```SENTRY_ENABLED```
 
 * Fully Transparent Mod/Admin Action Logs
 	
-Transparency is essential in trusting those who weld the power to control discussion. While censorship is often necessary, a lack of accountability and/or transparency is never acceptable.
+Transparency is essential in trusting those who weld the power to control discussion. While censorship is often necessary, a lack of accountability and/or transparency is never acceptable. An example modlog can be found here [https://ieddit.com/i/ieddit/actions/](https://ieddit.com/i/ieddit/actions/)
 
 * Anonymous Posting Option
 
-The worth of an idea should not solely be judged solely on how popular somebody is, or how well they conform to dogma.
+The worth of an idea should not solely be judged solely on how popular somebody is, or how well they conform to dogma. Users have the option of posting anonymously with every post/comment, or toggling anonymous by default.
+
+* (optional) Client-side PGP messaging between users.
+
+Thanks to openpgp.js, users have the option of using the built-in pgp messaging system to send messages which, in theory, ensures that any communications will be inaccessible to even those with access to the database. Both public and private keys are stored on the server, but the private key is stored in an incomplete form which should only be useful with the correct passphrase.
+
+This is nowhere close to fully secure, any sort of XSS vuln or other route in which an attacker can modify the code running on the page could result in pass-phrases being gathered. For convenience sake, once a passphrase is set or a message is decrypted, the passphrase is saved into localstorage. While I'll add the option to toggle this functionality this soon, JS in the browser is an inherently insecure environment for this sort of thing.
+
+Users who want to make absolutely sure their communications are truly private should continue to roll their own, locally hosted and thoroughly audited, PGP.
 
 * Fully Transparent Site Operation
 
@@ -69,11 +80,17 @@ Site finances will be always remain completely transparent. The site's code is c
 
 Tracking code will never be utilized, user data will never be up for sale. The site attempts to avoid using javascript where possible, and most core functionality can be achieved without. TOR/VPN users currently will have no issues using the site, and I'll make every effort to preserve these options.
 
+As of 10/21/2019, I can confirm the core site functionality still works perfectly in a js-disabled tor browser, and it's honestly been a little painful attempting to preserve it. A few things added recently like user/comment/post blocking will only work with javascript, but support for non-javascript browsers can be added easily if there is demand.
+
+Traffic logs are only stored for 1 day max on the prod server. No other logging information is stored on my end but functionality-related database records.
 
 ### Future
 
-At this stage of development, there is still an immense amount of work to be done. The ability to subscribe to subs will be added relatively soon, currently with zero traffic an opt-in model would not work well, as I'd have to set defaults. Some general things I'd like to see in the future are: a hidden service option, easy to use client-side javascript pgp messaging between users, much better caching than is currently implemented (basically none!), and so on.
+There is a ton of room for UI improvements in the more out-of-the-way areas of the site. Examples being mod options, user settings, etc.
 
+It would be trivial to offer a hidden service option if there is demand for one. As of now, no hidden service option exists, to avoid making the deployment proccess slightly more tedius and the hosting costs. 
+
+I'm sunk a solid month of my time into this, and most of the core functionality is now completed, so I'll most likely take a step back and adopt a more gradual pace of development. Areas such as tests, error handling, logging, etc have been neglected due to an emphasis on implementing as many features as possible in a very narrow time window.
 
 ### How To Use
 
@@ -101,22 +118,19 @@ Nothing that violates US law, or anything that would be considered 'gray area'. 
 
 ### Who am I?
 
-I'm just a random person who can write bad code and is fairly frustrated at the state the internet as of late, especially when it comes to the issues of censorship and privacy. Decentralized platforms are not an ideal solution for internet communities. TOR is also not an answer, the technical barrier in accessing hidden services alone disqualifies them as a practical alternative, before even considering the bandwidth/latency limitations.
+I'm just a random person who is fairly frustrated at the state the internet as of late, especially when it comes to the issues resulting from companies trampling on speech in the pursuit of monetization.
 
-The underlying infrastructure of the internet is fine. A centralized internet platform is still the most practical solution... centralization is only an issue if the centralized actor acts with impunity, against the best interests of its users. As seen with youtube, reddit, &c. With transparency and accountability, and without a significant profit incentive to do otherwise, the model still works.
+The underlying infrastructure of the internet is fine. Centralization is only an issue if the centralized actor acts with impunity, against the best interests of its users. As seen with youtube, reddit, &c. With transparency and accountability, and without a significant profit incentive to do otherwise, the model still works.
 
-I may have misjudged the demand for such a platform, if so I'll have lost no more than a few weeks of my life, and will know I at least put effort forward in providing an alternative.
+Currently everything is running on google cloud, due to $90 of credit I had on the platform (and they block outgoing port 25... annoying af but hey, it's free). Once this credit runs out, all hosting costs will be coming directly out of my pocket.
 
-Currently everything is running on google cloud, due to $90 of credit I had on the platform (and they block outgoing port 25... annoying af but hey, it's free). Once this credit runs out, I will not be able to sustain the site under any real amount of use for long financially.
+As of now, the total costs of running the single prod server, and outgoing proxy servers, are relatively low. When this site was on the front page of HN for nearly an entire day on day 1, it handled just fine once configured correctly on a 1 core 1.6GB vps.
 
-To contribute to server operations, for now the most practical option is crypto. If there ends up being significant demand for a platform like this, I'll go through the motions of setting up additional donation options. Server credit would also be immensely helpful, especially if it's on one of the big guys like aws.
-
+If this site ever starts receiving more traffic than can be handled on using the lowest-tier VPS offerings, I will not be able to sustain it for very long. That being said, unless for some reason the site starts receiving several million requests a day, hosting costs should not go above $20/$30 a month at most.
 
 ### Additional Info
 
 Code contributions are HIGHLY welcome.
-
-Patreon: [https://www.patreon.com/ieddit](https://www.patreon.com/ieddit)
 
 Bitcoin: 1698YXgDhYdoNqqcjxsGjrPrLb81XWNML5
 
@@ -126,7 +140,7 @@ I can be contacted at the email in my github profile, or on HN/Reddit/this site 
 
 If you have read this far, I genuinely appreciate your time.
 
-A page with all releveant site usage stats can be found here: [http://dev.ieddit.com/stats/](http://dev.ieddit.com/stats/)
+A page with all releveant site usage stats can be found here: [https://ieddit.com/stats/](https://ieddit.com/stats/)
 
 <br>
 <br>

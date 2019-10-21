@@ -157,7 +157,7 @@ def pseudo_markup(text):
 	text = html.escape(text).replace('&lt;br&gt;', '').replace('\n', '<br>')
 
 	max_escaped_len = 40000
-	max_tag_count = 100
+	max_tag_count = 500
 	current_tag_count = 0
 	current_len = 0
 

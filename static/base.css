@@ -880,3 +880,7 @@ ul {
     margin-top: -25px;
 }
 
+.col.inner-div.comment-inner-div {
+	min-height: 25px;
+	display: inline-block;	
+}
