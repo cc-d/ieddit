@@ -12,7 +12,11 @@
 <script src="{{ url_for('static', filename='expand-post.js') }}?1"></script>
 
 {% include 'sort-top.html' %}
-
+<div class="active_sub_users">
+Members: {{ active_sub_users }}
+    <br>
+Posts today: {{ dayposts }}
+</div>
 {% for post in posts %}
     {% include 'sub_post.html' %}
     {% if loop.last %}
