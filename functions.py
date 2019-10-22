@@ -147,7 +147,7 @@ def get_tag_count(text):
 	
 	return tag_count
 
-def pseudo_markup(text):
+def pseudo_markup(text, escape_only=False):
 	
 	# preserve more than 1 newline
 	text_len = len(text)
@@ -155,6 +155,8 @@ def pseudo_markup(text):
 
 	# if text is too long, too many tagss, etc
 	text = html.escape(text).replace('&lt;br&gt;', '').replace('\n', '<br>')
+	if escape_only:
+		return text
 
 	max_escaped_len = 40000
 	max_tag_count = 500

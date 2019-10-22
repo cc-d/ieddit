@@ -639,7 +639,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 	d = request.args.get('d')
 	s = request.args.get('s')
 	subi = normalize_sub(subi)
-	#active_sub_users = db.session.query(Post).filter_by(sub=subi).group_by(Post.author).count()
+	active_sub_users = db.session.query(Post).filter_by(sub=subi).group_by(Post.author).count()
 	if request.environ['QUERY_STRING'] == '':
 		session['off_url'] = request.url + '?offset=15'
 		session['prev_off_url'] = request.url
@@ -692,7 +692,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 		return sub_posts
 	(posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
 	 dayusers, timediff, uptime, subscripts) = get_stats(subi=subi)
-	return render_template('sub.html', posts=sub_posts, url=config.URL, show_top=show_top)
+	return render_template('sub.html', posts=sub_posts, url=config.URL, show_top=show_top, active_sub_users=active_sub_users, dayposts=dayposts)
 
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -1439,6 +1439,7 @@ def user_messages(username=None):
 					r.new_text = pseudo_markup(r.text)
 				else:
 					r.sender_pgp = get_pgp_from_username(r.sender)
+					r.new_text = pseudo_markup(r.text, escape_only=True)
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
 				if r.encrypted == True:
@@ -1454,6 +1455,7 @@ def user_messages(username=None):
 					r.new_text = pseudo_markup(r.text)
 				else:
 					r.sender_pgp = get_pgp_from_username(r.sender)
+					r.new_text = pseudo_markup(r.text, escape_only=True)
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
 				if r.encrypted == True:
