@@ -639,6 +639,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 	d = request.args.get('d')
 	s = request.args.get('s')
 	subi = normalize_sub(subi)
+	active_sub_users = db.session.query(Post).filter_by(sub=subi).group_by(Post.author).count()
 	if request.environ['QUERY_STRING'] == '':
 		session['off_url'] = request.url + '?offset=15'
 		session['prev_off_url'] = request.url
@@ -689,8 +690,9 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 
 	if posts_only:
 		return sub_posts
-
-	return render_template('sub.html', posts=sub_posts, url=config.URL, show_top=show_top)
+	(posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
+	 dayusers, timediff, uptime, subscripts) = get_stats(subi=subi)
+	return render_template('sub.html', posts=sub_posts, url=config.URL, show_top=show_top, active_sub_users=active_sub_users, dayposts=dayposts)
 
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -1619,7 +1621,7 @@ def description(sub=None):
 		rtext = False
 	else:
 		if subr.rules != None:
-			rtext = subr.rules
+			rtext = pseudo_markup(subr.rules)
 		else:
 			rtext = False
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
