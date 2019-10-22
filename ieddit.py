@@ -569,6 +569,10 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	if 'blocked_subs' in session and 'username' in session:
 		posts = [c for c in posts if c.sub not in session['blocked_subs']]
 
+	if 'blocked' in session:
+		posts = [post for post in posts if post.id not in session['blocked']['post_id']]
+		posts = [post for post in posts if post.author_id not in session['blocked']['other_user']]
+
 	posts = posts[offset:offset+limit]
 
 	stid = False
@@ -590,10 +594,6 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 					posts.insert(0, sticky)
 			else:
 				posts.insert(0, sticky)
-
-	if 'blocked' in session:
-		posts = [post for post in posts if post.id not in session['blocked']['post_id']]
-		posts = [post for post in posts if post.author_id not in session['blocked']['other_user']]
 
 
 	if more and len(posts) > 0:
@@ -1274,7 +1274,7 @@ def get_sub_list():
 
 
 
-@limiter.limit('5 per minute')
+@limiter.limit('10 per minute')
 @app.route('/create_comment', methods=['POST'])
 @notbanned
 def create_comment():
