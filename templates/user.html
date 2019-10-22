@@ -76,7 +76,7 @@
 
 {% for post in posts %}
 {% if count.append(count.pop() + 1) %}{% endif %}
-{% if post.anonymous == False and post.author != 'Anonymous' %}
+{% if post.anonymous == True and post.author == session['username'] %}
     {% include 'sub_post.html' %}
 {% endif %}
 {% else %}

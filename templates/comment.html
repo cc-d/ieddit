@@ -58,9 +58,10 @@
 				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>
 				{% endif %}
 
-
 <div style='display:inline-block;' class="dropup btn-group rounded v-button" id='dot-button-{{ post.id }}'>
-    <button class="btn btn-secondary rounded btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-ellipsis-h'></i>  </button>
+    <button class="btn btn-secondary rounded btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class='fa fa-ellipsis-h'></i>
+    </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <!-- <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>-->
         <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("comment_id", "{{ comment.id }}")'>hide comment</a>
@@ -69,7 +70,8 @@
 
 			{% if comminline %}
 				{% if loop.depth0 == 4 and value|length > 0 %}
-					<a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
+					<a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
+                        <button class = 'btn-sm btn btn-success comment-more'>
 						view more <i class='fa fa-arrow-circle-right '></i>
 					</button></a>
 				{% endif %}
@@ -82,8 +84,8 @@
   <button class="btn btn-secondary btn-com-bot btn-sm bottom-dropdown comment-button-dropdown" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class='fa fa-user'></i> <h6 class='btn-description'>user</h6> 
   </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            {% if session['username'] == post.author %}
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2"> {{ session['username'] + post.author}}
+            {% if session['user'] == post.author %}
 			<a class="dropdown-item" href="/user/edit/comment/{{ comment.id }}/">edit</a>
             {% endif %}
 
