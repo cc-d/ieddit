@@ -155,7 +155,7 @@ def only_cache_get(*args, **kwargs):
 		return False
 	return True
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_style(sub=None):
 	if sub != None:
 		sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
@@ -499,14 +499,14 @@ def register():
 def index():
 	return subi(subi='all', nsfw=False)
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def is_sub_nsfw(sub):
 	s = db.session.query(Sub).filter_by(name=sub).first()
 	if s.nsfw:
 		return True
 	return False
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=True, d=None, s=None):
 	if offset != None:
 		offset = int(offset)
@@ -867,7 +867,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 # this sort of recursion KILLS performance, especially when combined with the already
 # terrible comment_structure function.
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def list_of_child_comments(comment_id, sort_by=None):
 	comments = {}
 	current_comments = []

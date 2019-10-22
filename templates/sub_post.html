@@ -180,6 +180,21 @@ var preExpandVideo = false;
         {% else %}
         <a class="dropdown-item" id='show-post-{{ post.id }}' href='javascript:showObject("post_id", "{{ post.id }}")'>hide post</a>
         {% endif %}
+
+    {% if session['username'] == post.author %}
+    {% if post.self_text %}
+    <a class="dropdown-item" href="/user/edit/post/{{ post.id }}/">edit</a>
+    {% endif %}
+    {% endif %}
+
+    {% if session['username'] == post.author %}
+    <a class="dropdown-item" href="javascript:formSubmit('user-delete-post-{{ post.id }}')">delete</a>
+    {% endif %}
+
+    {% if post.nsfw == False and session['username'] == post.author %}
+    <a class="dropdown-item" href="javascript:formSubmit('user-nsfw-post-{{ post.id }}')">nsfw</a>
+    {% endif %}
+
     </div>
 </div>
 
@@ -189,23 +204,26 @@ var preExpandVideo = false;
 
 {% if session['username'] == post.author %}
 <!-- USER MENU -->
+<!--
 <div class="dropdown bottom-post-dropdown">
   <button class="btn btn-secondary btn-sm bottom-dropdown btn-bot" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class='fa fa-pencil'></i> <h6 class='btn-description'>user</h6>
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            {% if session['username'] == post.author %}
+    {% if session['username'] == post.author %}
     <a class="dropdown-item" href="/user/edit/post/{{ post.id }}/">edit</a>
-            {% endif %}
+    {% endif %}
 
-            {% if session['username'] == post.author %}
+    {% if session['username'] == post.author %}
     <a class="dropdown-item" href="javascript:formSubmit('user-delete-post-{{ post.id }}')">delete</a>
     {% endif %}
 
     {% if post.nsfw == False %}
     <a class="dropdown-item" href="javascript:formSubmit('user-nsfw-post-{{ post.id }}')">nsfw</a>
     {% endif %}
+
   </div>
 </div>
+-->
 {% endif %}
 
 
