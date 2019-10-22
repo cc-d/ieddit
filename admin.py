@@ -7,15 +7,21 @@ abp = Blueprint('admin', 'admin', url_prefix='/admin')
 def admin_only(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
+		auth_return = f(*args, **kwargs)
+
 		if 'admin' not in session:
-			return '403 ad sess'
+			auth_return = '403 ad sess'
+		
 		if 'username' not in session:
-			return '403 sess'
+			auth_return = '403 sess'
+		
 		admins = db.session.query(Iuser).filter_by(admin=True).all()
 		anames = [a.username for a in admins]
+		
 		if session['username'] not in anames:
-			return '403 names'
-		return f(*args, **kwargs)
+			auth_return = '403 names'
+		
+		return auth_return
 	return decorated_function
 
 
