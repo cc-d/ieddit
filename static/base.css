@@ -379,6 +379,10 @@ ul, li{
 	white-space: normal;
 }
 
+.safe-markup-text {
+	overflow: hidden;
+}
+
 .safe-markup-text ul {
 	display: inline-block;
 }
