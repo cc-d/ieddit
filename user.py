@@ -94,7 +94,7 @@ def user_edit_post():
 
 	if itype == 'post':
 		obj = db.session.query(Post).filter_by(id=iid).first()
-		if obj.self_text != None:
+		if obj.self_text == None:
 			return 'cannot edit this type of post'
 	elif itype == 'comment':
 		obj = db.session.query(Comment).filter_by(id=iid).first()
