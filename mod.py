@@ -1,4 +1,5 @@
 from ieddit import *
+from jinja2 import escape
 import json
 
 bp = Blueprint('mod', 'mod', url_prefix='/mod')
@@ -314,7 +315,7 @@ def mod_removemod():
 @bp.route('/edit/description', methods=['POST'])
 def mod_editrules():
 	sub = request.form.get('sub')
-	rtext = request.form.get('rtext')
+	rtext = escape(request.form.get('rtext'))
 	if 'username' not in session:
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
