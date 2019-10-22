@@ -117,6 +117,9 @@ textarea {
 
 }
 
+.sub-post-title-link {
+	overflow: hidden;
+}
 	#top-username {
 		max-width: 180px;
 		overflow: hidden;
@@ -385,6 +388,10 @@ ul, li{
 
 .safe-markup-text ul {
 	display: inline-block;
+}
+
+.safe-markup-text {
+	overflow: hidden;
 }
 
 .expanded-selftext {
@@ -759,6 +766,7 @@ ul {
 }
 
 .comment-markup-text {
+	overflow: hidden;
 	min-height: 3rem;
 }
 
@@ -896,4 +904,7 @@ ul {
 	margin: 5px;
 	text-align: right;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> ef9ef714a22063aede1d699d364f445d9d24414f

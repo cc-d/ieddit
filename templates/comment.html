@@ -32,7 +32,7 @@
 			</div>
 		</div>
 		<div class='comment-selftext-wrapper'>
-		<div class="comment-text comment-text-text safe-markup-text">{{ comment.new_text|safe }}</div> 
+		<div class="comment-text comment-text-text safe-markup-text">{{ comment.new_text|safe }}</div>
 		</div>	
 		{% if session['user'] not in post.mods %}
 		<div class="row post-row comment-bottom" style='margin-bottom: 1rem!important; display: inline; width: 100%;'>
