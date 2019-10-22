@@ -1621,7 +1621,7 @@ def description(sub=None):
 		rtext = False
 	else:
 		if subr.rules != None:
-			rtext = subr.rules
+			rtext = pseudo_markup(subr.rules)
 		else:
 			rtext = False
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
