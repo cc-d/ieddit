@@ -884,3 +884,10 @@ ul {
 	min-height: 25px;
 	display: inline-block;	
 }
+
+.active_sub_users {
+	float: right;
+	font-size: x-small;
+	margin: 5px;
+	text-align: right;
+}
