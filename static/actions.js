@@ -9,6 +9,12 @@ $(document).ready(function() {/*
 	//jsalert('test', 'danger');
 });
 
+function banAndDeleteAll(itype, iid) {
+	$.post('/admin/ban_and_delete', itype + '=' + iid).done(function(data) {
+		location.reload();
+	});
+}
+
 function hideObject(itype, iid) {
 	itype = itype + ''
 	iid = iid + ''
@@ -56,7 +62,6 @@ function showObject(itype, iid) {
 		}
 	});
 }
-
 
 function jsalert(message, atype) {
 	width = parseInt($('#content').width() * 0.75);

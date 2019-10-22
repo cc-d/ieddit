@@ -2,8 +2,13 @@
 {% block content %}
 
 <form action='/admin/ban_and_delete' method='POST'>
-	<input type='text' name='username'>
-	<button type='submit'>ban and delete</button>
+	<p>username</p>
+	<input style='color: black;' type='text' name='username'><br>
+	<p>post id</p>
+	<input style='color: black;' type='text' name='post_id'><br>
+	<p>comment id</p>
+	<input style='color: black;' type='text' name='comment_id'><br><br>
+	<button style='color: black;' type='submit'>ban and delete</button>
 </form>
 
 {% endblock %}

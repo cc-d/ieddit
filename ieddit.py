@@ -963,7 +963,9 @@ def view_user(username):
 	posts = vuser.get_recent_posts()#.all()
 	comments = vuser.get_recent_comments()#.all()
 
+	print(posts)
 	for p in posts:
+		print(p)
 		p.created_ago = time_ago(p.created)
 		p.comment_count = db.session.query(Comment).filter_by(post_id=p.id).count()
 		p.mods = get_sub_mods(p.sub)
@@ -975,6 +977,11 @@ def view_user(username):
 			p.new_self_text = pseudo_markup(p.self_text)
 
 		p.remote_url_parsed = post_url_parse(p.url)
+
+		if hasattr(p, 'text'):
+			p.new_text = pseudo_markup(p.text)
+		if thumb_exists(p.id):
+			p.thumbnail = 'thumbnails/thumb-' + str(p.id) + '.PNG'
 
 	comments_with_posts = []
 
@@ -1276,7 +1283,7 @@ def create_comment():
 	sub_name = request.form.get('sub_name')
 	anonymous = request.form.get('anonymous')
 
-	if config.CAPTCHA_ENABLE:
+	if config.CAPTCHA_ENABLE and config.CAPTCHA_COMMENTS:
 		if request.form.get('captcha') == '':
 			flash('no captcha', 'danger')
 			if 'last_return_url' in session:
@@ -1412,11 +1419,10 @@ def user_messages(username=None):
 			unread = unread.order_by((Message.created).desc()).limit(50).all()
 
 			read = [x for x in read if x.sender == None or get_user_from_name(x.sender).id not in session['blocked']['other_user']]
+			unread = [x for x in unread if x.sender == None or get_user_from_name(x.sender).id not in session['blocked']['other_user']]
 
 			for r in unread:
 				r.read = True
-
-			unread = [x for x in unread if x.sender == None or get_user_from_name(x.sender).id not in session['blocked']['other_user']]
 
 			sent = db.session.query(Message).filter_by(sender=username, read=False)
 			sent = sent.order_by((Message.created).desc()).limit(5).all()
@@ -1697,6 +1703,8 @@ def ccache():
 		return 'cleared'
 
 @app.route('/about/', methods=['GET'])
+@app.route('/readme/', methods=['GET'])
+@app.route('/news/2019/10/21/ieddit-beta-release/', methods=['GET'])
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def about():
 	from markdown import markdown
@@ -1762,7 +1770,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	else:
 		comments = comments.offset(offset).limit(limit).all()
 
-	comments = [c for c in comments if comment.id not in session['blocked']['comment_id'] and user.id not in session['blocked']['other_user']]
+	comments = [c for c in comments if c.id not in session['blocked']['comment_id'] and c.author_id not in session['blocked']['other_user']]
 
 	for c in comments:
 		c.new_text = pseudo_markup(c.text)
