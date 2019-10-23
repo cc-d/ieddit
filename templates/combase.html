@@ -51,7 +51,7 @@
             <div class="comment-text-text safe-markup-text">{{ comment.new_text|safe }}</div> 
         </div>
         <div class="row post-row comment-bottom">
-            <div class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="session['user_id']" has_voted="{{ comment.has_voted }}">
+            <div class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid=" {{ session['user_id'] }}" has_voted="{{ comment.has_voted }}">
 {% if comment.has_voted == 1 %}
                 <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
 {% else %}
