@@ -261,6 +261,11 @@ def get_subtitle(sub):
 	return title
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_api_key(username):
+	key = db.session.query(Api_key).filter_by(username=username).first()
+	return key
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def has_messages(username):
 	if 'username' in session:
 		messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
@@ -1189,7 +1194,14 @@ def create_post(postsub=None):
 		session['previous_post_form'] = {'title':title, 'url':url, 'sub':sub, 'self_post_text':self_post_text}
 
 		anonymous = request.form.get('anonymous')
-		if config.CAPTCHA_ENABLE:
+
+		show_captcha = True
+
+		api = get_api_key(session['username'])
+		if api != None:
+			show_captcha = False
+
+		if config.CAPTCHA_ENABLE and show_captcha:
 			if request.form.get('captcha') == '':
 				flash('no captcha', 'danger')
 				return redirect(url_for('create_post'))
@@ -1342,7 +1354,13 @@ def create_comment():
 	sub_name = request.form.get('sub_name')
 	anonymous = request.form.get('anonymous')
 
-	if config.CAPTCHA_ENABLE and config.CAPTCHA_COMMENTS:
+	show_captcha = True
+
+	api = get_api_key(session['username'])
+	if api != None:
+		show_captcha = False
+
+	if config.CAPTCHA_ENABLE and config.CAPTCHA_COMMENTS and show_captcha:
 		if request.form.get('captcha') == '':
 			flash('no captcha', 'danger')
 			if 'last_return_url' in session:
