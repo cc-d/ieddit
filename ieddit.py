@@ -95,14 +95,14 @@ def before_request():
 
 	if 'username' in session:
 		has_messages(session['username'])
-
-	if 'blocked' not in session:
-		if 'username' in session:
-			session['blocked'] = get_blocked(session['username'])
-		else:
-			session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[]}
+		get_blocked(session['username'])
+		session['blocked'] = get_blocked(session['username'])
+	else:
+		session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
 
 
+	if 'anon_user' not in session['blocked']:
+		session['blocked']['anon_user'] = []
 	# disabled due to lack of use
 
 	#if 'set_darkmode_initial' not in session:
@@ -287,9 +287,27 @@ def get_banned_subs(username):
 	return b
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def anon_block(obj):
+	for c in obj:
+		if c.anonymous:
+			if c.author_id in session['blocked']['anon_user']:
+				c.noblock = False
+			else:
+				c.noblock = True
+
+		else:
+			if c.author_id in session['blocked']['other_user']:
+				c.noblock = False
+			else:
+				c.noblock = True
+	return obj
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_blocked(username):
+	bdict = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
+	if username == None:
+		return bdict
 	blocked = db.session.query(Hidden).filter_by(username=username).all()
-	bdict = {'comment_id':[], 'post_id':[], 'other_user':[]}
 
 	if len(blocked) == 0:
 		return bdict
@@ -306,7 +324,10 @@ def get_blocked(username):
 		elif b.other_user != None:
 			i = db.session.query(Iuser).filter_by(id=b.other_user).first()
 			if i != None:
-				bdict['other_user'].append(i.id)
+				if b.anonymous != True:
+					bdict['other_user'].append(i.id)
+				else:
+					bdict['anon_user'].append(i.id)
 
 	return bdict
 
@@ -375,6 +396,8 @@ def get_all_subs(explore=False):
 				continue
 
 			sub.comments = sub.get_comments(count=True)
+			#sub.comments = anon_block(sub.comments)
+
 			sub.score = sub.comments + sub.posts
 
 			esubs.append(sub)
@@ -592,13 +615,13 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	except:
 		offset = 0
 
-
 	if 'blocked_subs' in session and 'username' in session:
 		posts = [c for c in posts if c.sub not in session['blocked_subs']]
 
 	if 'blocked' in session:
 		posts = [post for post in posts if post.id not in session['blocked']['post_id']]
-		posts = [post for post in posts if post.author_id not in session['blocked']['other_user']]
+		posts = anon_block(posts)
+		posts = [post for post in posts if post.noblock == True]
 
 	posts = posts[offset:offset+limit]
 
@@ -811,12 +834,16 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 			Comment.deleted == deleted).order_by(Comment.created.desc()).all()
 		show_blocked = False
 
+
+
 	if 'blocked_subs' in session and 'username' in session:
 		comments = [c for c in comments if c.sub_name not in session['blocked_subs']]
 
 	if 'blocked' in session and show_blocked != True:
 		comments = [c for c in comments if c.id not in session['blocked']['comment_id']]
-		comments = [c for c in comments if c.id not in session['blocked']['other_user']]
+		comments = anon_block(comments)
+
+		comments = [c for c in comments if c.noblock == True]
 
 	#print(comments)
 	for c in comments:
@@ -1801,7 +1828,11 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	else:
 		comments = comments.offset(offset).limit(limit).all()
 
-	comments = [c for c in comments if c.id not in session['blocked']['comment_id'] and c.author_id not in session['blocked']['other_user']]
+	comments = [c for c in comments if c.id not in session['blocked']['comment_id']]
+
+	comments = anon_block(comments)
+	comments = [c for c in comments if c.author_id if c.noblock == True]
+
 
 	for c in comments:
 		c.new_text = pseudo_markup(c.text)

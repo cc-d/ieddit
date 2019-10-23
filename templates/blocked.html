@@ -13,7 +13,14 @@
   </thead>
   <tbody>
   	{% for b in blocked %}
-    {% if b.anonymous == False %}
+    {% if b.anonymous == True %}
+    <tr id='{{ b.key }}-{{ b.id }}'>
+      <th scope="row"><a href='javascript:showObject("{{ b.key }}", {{ b.id }});'><i style='color: #28a745;' class='fa fa-repeat'></i></a></th>
+      <td>{{ b.type }}</td>
+      <td>{{ b.created_ago }}</td>
+      <td><a style='color: #fff!important;' href="{{ config.URL }}/u/Anonymous">{{ config.URL }}/u/Anonymous</a></td>
+    </tr>
+    {% else %}
     <tr id='{{ b.key }}-{{ b.id }}'>
       <th scope="row"><a href='javascript:showObject("{{ b.key }}", {{ b.id }});'><i style='color: #28a745;' class='fa fa-repeat'></i></a></th>
       <td>{{ b.type }}</td>

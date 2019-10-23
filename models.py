@@ -90,6 +90,9 @@ class Post(db.Model):
 	def get_score(self):
 		return (self.ups - self.downs)
 
+	def get_type(self):
+		return 'post'
+
 	def __repr__(self):
 		return '<Post %r>' % self.id
 
@@ -130,6 +133,9 @@ class Comment(db.Model):
 
 	def get_score(self):
 		return int(self.ups) - int(self.downs)
+
+	def get_type(self):
+		return 'comment'
 
 	def __repr__(self):
 		return '<Comment %r>' % self.id
@@ -226,7 +232,7 @@ class Hidden(db.Model):
 	comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
 	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)	
 	other_user = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=True)
-	anonymous = anonymous = db.Column(db.Boolean, default=False)
+	anonymous = db.Column(db.Boolean, default=False)
 
 	def __repr__(self):
 		return '<Hidden %r>' % self.id

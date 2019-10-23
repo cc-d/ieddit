@@ -65,8 +65,24 @@
         <!-- <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>-->
         <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("comment_id", "{{ comment.id }}")'>hide comment</a>
 
-        {% if comment.author_id not in session['blocked']['other_user'] %}
-        <a class="dropdown-item" href="javascript:blockUser('comment_id','{{ post.id }}');">block user</a>
+        {% if comment.anonymous == False %}
+
+        {% if comment.author_id in session['blocked']['other_user'] %}
+
+        {% if comment.author_id not in session['blocked']['anon_user'] %}
+        <a class="dropdown-item" href="javascript:blockUser('comment_id','{{ comment.id }}');">block user</a>
+        {% else %}
+
+        {% endif %}
+
+        {% else %}
+        <a class="dropdown-item" href="javascript:blockUser('comment_id','{{ comment.id }}');">block user</a>
+        {% endif %}
+
+        {% else %}
+        {% if comment.author_id not in session['blocked']['anon_user'] %}
+        <a class="dropdown-item" href="javascript:blockUser('comment_id','{{ comment.id }}');">block user</a>
+        {% endif %}
         {% endif %}
 
 
@@ -128,7 +144,7 @@
 					<form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
 						<input name='iid' type='hidden' value='{{ comment.id }}'>
 						<input name='itype' type='hidden' value='comment'>
-						<button type='submit' id='btn-mod-ban-comment-{{ comment.id }}' name='post_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>ban</button>
+						<button type='submit' id='btn-mod-ban-comment-{{ comment.id }}' name='comment_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>ban</button>
 					</form>
 			</small></div>
 			</div>
