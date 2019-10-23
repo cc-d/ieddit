@@ -94,6 +94,8 @@ def user_edit_post():
 
 	if itype == 'post':
 		obj = db.session.query(Post).filter_by(id=iid).first()
+		if obj.self_text == None:
+			return 'cannot edit this type of post'
 	elif itype == 'comment':
 		obj = db.session.query(Comment).filter_by(id=iid).first()
 	else:
@@ -435,6 +437,43 @@ def hide_obj():
 				session['blocked'][i].append(d[i])
 
 	return 'ok'
+
+
+@ubp.route('/block_user', methods=['POST'])
+def block_user_from_content():
+	post_id = request.form.get('post_id')
+	comment_id = request.form.get('comment_id')
+	print(post_id, comment_id)
+	if post_id != None:
+		username = db.session.query(Post).filter_by(id=post_id).first()
+		if username != None:
+			uid = username.author_id
+			anon = username.anonymous
+			username = username.author
+	elif comment_id != None:
+		username = db.session.query(Post).filter_by(id=comment_id).first()
+		if username != None:
+			uid = username.author_id
+			anon = username.anonymous
+			username = username.author
+
+	if uid == None:
+		return 'cannot find user'
+
+	if 'blocked' not in session:
+		session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[]}
+
+	if 'username' in session:
+		new_hidden = Hidden(post_id=None, comment_id=None, username=session['username'],
+							other_user=int(uid), anonymous=anon)
+		db.session.add(new_hidden)
+		db.session.commit()
+
+	session['blocked']['other_user'].append(int(uid))
+
+
+	return 'ok'
+
 	
 @ubp.route('/show', methods=['POST'])
 def show_obj():
@@ -477,6 +516,8 @@ def get_total_blocked():
 	uids, pids, cids = [], [], []
 	for u in session['blocked']['other_user']:
 		u2 = db.session.query(Iuser).filter_by(id=int(u)).first()
+		if u2 == None:
+			break
 		u2.created_ago = time_ago(u2.created)
 		u2.type = 'user'
 		u2.key = 'other_user'
@@ -485,6 +526,8 @@ def get_total_blocked():
 
 	for p in session['blocked']['post_id']:
 		p2 = db.session.query(Post).filter_by(id=int(p)).first()
+		if p2 == None:
+			break
 		p2.created_ago = time_ago(p2.created)
 		p2.type = 'post'
 		p2.key = 'post_id'
@@ -492,6 +535,8 @@ def get_total_blocked():
 
 	for c in session['blocked']['comment_id']:
 		c2 = db.session.query(Comment).filter_by(id=int(c)).first()
+		if c2 == None:
+			break
 		c2.created_ago = time_ago(c2.created)
 		c2.type = 'comment'
 		c2.key = 'comment_id'

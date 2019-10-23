@@ -30,34 +30,20 @@ def rstring(length1, length2=False):
 	return ''.join([random.choice(legal_chars) for n in range(random.randint(length1, length2))])
 
 def verify_username(username):
-	verified = False
-
 	if len(username) > 20 or len(username) < 1:
-		verified = True
-
-		for c in username:
-			if c in legal_chars:
-				pass
-			else:
-				verified = False
-				break
-			
-	return verified
+		return False
+	for c in username:
+		if c not in legal_chars:
+			return False
+	return True
 
 def verify_subname(subname):
-	verified = False
-
 	if len(subname) > 30 or len(subname) < 1:
-		verified = True
-
-		for c in subname:
-			if c in legal_chars:
-				pass
-			else:
-				verified = False
-				break
-
-	return verified
+		return False
+	for c in subname:
+		if c not in legal_chars:
+			return False
+	return True
 
 def convert_ied(url):
 	url = url.lower()
@@ -90,7 +76,6 @@ def time_ago(dt):
 # will change after release
 def create_id_tree(comments, parent_id=None):
 	tree = {}
-	
 	if not parent_id:
 		for i in [c for c in comments if c.parent_id == None]:
 			tree[i.id] = {}
@@ -162,7 +147,7 @@ def get_tag_count(text):
 	
 	return tag_count
 
-def pseudo_markup(text):
+def pseudo_markup(text, escape_only=False):
 	
 	# preserve more than 1 newline
 	text_len = len(text)
@@ -170,6 +155,8 @@ def pseudo_markup(text):
 
 	# if text is too long, too many tagss, etc
 	text = html.escape(text).replace('&lt;br&gt;', '').replace('\n', '<br>')
+	if escape_only:
+		return text
 
 	max_escaped_len = 40000
 	max_tag_count = 500

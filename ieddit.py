@@ -99,7 +99,10 @@ def before_request():
 		has_messages(session['username'])
 
 	if 'blocked' not in session:
-		session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[]}
+		if 'username' in session:
+			session['blocked'] = get_blocked(session['username'])
+		else:
+			session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[]}
 
 
 	# disabled due to lack of use
@@ -157,7 +160,7 @@ def only_cache_get(*args, **kwargs):
 		return False
 	return True
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_style(sub=None):
 	if sub != None:
 		sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
@@ -284,6 +287,30 @@ def get_banned_subs(username):
 	for s in subs:
 		b.append(s.sub)
 	return b
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_blocked(username):
+	blocked = db.session.query(Hidden).filter_by(username=username).all()
+	bdict = {'comment_id':[], 'post_id':[], 'other_user':[]}
+
+	if len(blocked) == 0:
+		return bdict
+
+	for b in blocked:
+		if b.comment_id != None:
+			i = db.session.query(Comment).filter_by(id=b.comment_id).first()
+			if i != None:
+				bdict['comment_id'].append(i.id)
+		elif b.post_id != None:
+			i = db.session.query(Post).filter_by(id=b.post_id).first()
+			if i != None:
+				bdict['post_id'].append(i.id)
+		elif b.other_user != None:
+			i = db.session.query(Iuser).filter_by(id=b.other_user).first()
+			if i != None:
+				bdict['other_user'].append(i.id)
+
+	return bdict
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def is_mod(obj, username):
@@ -501,14 +528,14 @@ def register():
 def index():
 	return subi(subi='all', nsfw=False)
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def is_sub_nsfw(sub):
 	s = db.session.query(Sub).filter_by(name=sub).first()
 	if s.nsfw:
 		return True
 	return False
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=True, d=None, s=None):
 	if offset != None:
 		offset = int(offset)
@@ -571,6 +598,10 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	if 'blocked_subs' in session and 'username' in session:
 		posts = [c for c in posts if c.sub not in session['blocked_subs']]
 
+	if 'blocked' in session:
+		posts = [post for post in posts if post.id not in session['blocked']['post_id']]
+		posts = [post for post in posts if post.author_id not in session['blocked']['other_user']]
+
 	posts = posts[offset:offset+limit]
 
 	stid = False
@@ -592,10 +623,6 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 					posts.insert(0, sticky)
 			else:
 				posts.insert(0, sticky)
-
-	if 'blocked' in session:
-		posts = [post for post in posts if post.id not in session['blocked']['post_id']]
-		posts = [post for post in posts if post.author_id not in session['blocked']['other_user']]
 
 
 	if more and len(posts) > 0:
@@ -641,7 +668,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 	d = request.args.get('d')
 	s = request.args.get('s')
 	subi = normalize_sub(subi)
-	active_sub_users = db.session.query(Post).filter_by(sub=subi).group_by(Post.author).count()
+	#active_sub_users = db.session.query(Post).filter_by(sub=subi).group_by(Post.author).count()
 	if request.environ['QUERY_STRING'] == '':
 		session['off_url'] = request.url + '?offset=15'
 		session['prev_off_url'] = request.url
@@ -694,7 +721,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 		return sub_posts
 	(posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
 	 dayusers, timediff, uptime, subscripts) = get_stats(subi=subi)
-	return render_template('sub.html', posts=sub_posts, url=config.URL, show_top=show_top, active_sub_users=active_sub_users, dayposts=dayposts)
+	return render_template('sub.html', posts=sub_posts, url=config.URL, show_top=show_top)
 
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -869,7 +896,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 # this sort of recursion KILLS performance, especially when combined with the already
 # terrible comment_structure function.
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def list_of_child_comments(comment_id, sort_by=None):
 	comments = {}
 	current_comments = []
@@ -1275,8 +1302,8 @@ def get_sub_list():
 		return ''
 
 
-
-@limiter.limit('5 per minute')
+@limiter.limit('1 per second')
+@limiter.limit('10 per minute')
 @app.route('/create_comment', methods=['POST'])
 @notbanned
 def create_comment():
@@ -1441,6 +1468,7 @@ def user_messages(username=None):
 					r.new_text = pseudo_markup(r.text)
 				else:
 					r.sender_pgp = get_pgp_from_username(r.sender)
+					r.new_text = pseudo_markup(r.text, escape_only=True)
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
 				if r.encrypted == True:
@@ -1456,6 +1484,7 @@ def user_messages(username=None):
 					r.new_text = pseudo_markup(r.text)
 				else:
 					r.sender_pgp = get_pgp_from_username(r.sender)
+					r.new_text = pseudo_markup(r.text, escape_only=True)
 				if r.in_reply_to != None:
 					r.ppath = r.in_reply_to.replace(config.URL, '')
 				if r.encrypted == True:
@@ -1623,7 +1652,7 @@ def description(sub=None):
 		rtext = False
 	else:
 		if subr.rules != None:
-			rtext = subr.rules
+			rtext = pseudo_markup(subr.rules)
 		else:
 			rtext = False
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=Markup(rtext))

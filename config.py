@@ -1,7 +1,7 @@
 DEBUG = True
 
 DATABASE = 'ieddit'
-PG_USER = 'postgres'
+PG_USER = 'test'
 PG_PASSWORD = 'test'
 PG_HOST = 'localhost'
 
@@ -20,7 +20,7 @@ elif DB_TYPE == 'postgres':
 # This will be unique every time create_db.py is ran when testing
 # to force clear sessions
 
-SECRET_KEY = 'not-a-real-key-|r|i0iMk9Dohl|r|'
+SECRET_KEY = 'not-a-real-key-|r|9llKxzJ6U7|r|'
 
 # Chhange this to your local URL. IE http://127.0.0.1
 URL = 'http://dev.ieddit.com'

@@ -143,7 +143,7 @@ var preExpandVideo = false;
     {% else %}
         <div class='expanded-selftext rounded'>
             <div class='inner-selftext-wrapper'>
-            <selftext class='safe-markup-text expanded-self-text'>{{ post.new_self_text|safe }}</selftext>
+            <div class='safe-markup-text expanded-self-text'>{{ post.new_self_text|safe }}</div> 
         </div>
         </div>
     {% endif %}
@@ -175,11 +175,32 @@ var preExpandVideo = false;
     <button class="btn btn-secondary rounded btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-ellipsis-h'></i>  </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <!-- <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>-->
-        {% if post.id not in session['blocked'] %}
+        {% if post.id not in session['blocked']['post_id'] %}
         <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("post_id", "{{ post.id }}")'>hide post</a>
         {% else %}
-        <a class="dropdown-item" id='show-post-{{ post.id }}' href='javascript:showObject("post_id", "{{ post.id }}")'>hide post</a>
+        <a class="dropdown-item" id='show-post-{{ post.id }}' href='javascript:showObject("post_id", "{{ post.id }}")'>show post</a>
         {% endif %}
+
+
+        {% if post.author_id not in session['blocked']['other_user'] %}
+        <a class="dropdown-item" href="javascript:blockUser('post_id','{{ post.id }}');">block user</a>
+        {% endif %}
+
+
+    {% if session['username'] == post.author %}
+    {% if post.self_text %}
+    <a class="dropdown-item" href="/user/edit/post/{{ post.id }}/">edit</a>
+    {% endif %}
+    {% endif %}
+
+    {% if session['username'] == post.author %}
+    <a class="dropdown-item" href="javascript:formSubmit('user-delete-post-{{ post.id }}')">delete</a>
+    {% endif %}
+
+    {% if post.nsfw == False and session['username'] == post.author %}
+    <a class="dropdown-item" href="javascript:formSubmit('user-nsfw-post-{{ post.id }}')">nsfw</a>
+    {% endif %}
+
     </div>
 </div>
 
@@ -189,23 +210,26 @@ var preExpandVideo = false;
 
 {% if session['username'] == post.author %}
 <!-- USER MENU -->
+<!--
 <div class="dropdown bottom-post-dropdown">
   <button class="btn btn-secondary btn-sm bottom-dropdown btn-bot" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class='fa fa-pencil'></i> <h6 class='btn-description'>user</h6>
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            {% if session['username'] == post.author %}
+    {% if session['username'] == post.author %}
     <a class="dropdown-item" href="/user/edit/post/{{ post.id }}/">edit</a>
-            {% endif %}
+    {% endif %}
 
-            {% if session['username'] == post.author %}
+    {% if session['username'] == post.author %}
     <a class="dropdown-item" href="javascript:formSubmit('user-delete-post-{{ post.id }}')">delete</a>
     {% endif %}
 
     {% if post.nsfw == False %}
     <a class="dropdown-item" href="javascript:formSubmit('user-nsfw-post-{{ post.id }}')">nsfw</a>
     {% endif %}
+
   </div>
 </div>
+-->
 {% endif %}
 
 
