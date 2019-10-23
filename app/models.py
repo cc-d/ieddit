@@ -4,9 +4,14 @@ from datetime import datetime, timedelta
 from functions.functions import *
 from sqlalchemy import orm
 
+from flask_caching import Cache
+
+
 app = Flask(__name__)
 app.config.from_object('config')
+cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
 db = SQLAlchemy(app)
+
 
 # iuser instead of user to avoid conflicting namespace with postgresql
 class Iuser(db.Model):
@@ -53,6 +58,21 @@ class Sub(db.Model):
 		if count == True:
 			return db.session.query(Post).filter_by(sub=self.name, deleted=deleted).count()
 		return db.session.query(Post).filter_by(sub=self.name, deleted=deleted)
+
+	def get_total_users(self, deleted=False, count=False):
+		posts = self.get_posts(deleted=False, count=False)
+		comments = self.get_comments(deleted=False, count=False)
+		users = []
+		
+		for i in db.session.query(Post.author_id).filter_by(sub=self.name, deleted=deleted).all():
+			if i not in users:
+				users.append(i)
+
+		for i in db.session.query(Comment.author_id).filter_by(sub_name=self.name, deleted=deleted).all():
+			if i not in users:
+				users.append(i)
+
+		return users
 
 	def __repr__(self):
 		return '<Sub %r>' % self.name
@@ -243,5 +263,8 @@ class Api_key(db.Model):
 	key = db.Column(db.String(20000), nullable=False)
 
 if __name__ == '__main__':
+	app = Flask(__name__)
+	app.config.from_object('config')
+	db = SQLAlchemy(app)
 	db.create_all()
 	db.session.commit()

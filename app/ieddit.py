@@ -24,13 +24,13 @@ import requests
 
 from email.mime.text import MIMEText
 
-from models import *
-
-from functions.functions import *
-
 app = Flask(__name__)
 app.config.from_object('config')
 cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
+
+from models import *
+
+from functions.functions import *
 
 if (config.SENTRY_ENABLED):
 	import sentry_sdk
@@ -1754,24 +1754,29 @@ def blocksub(sub=None):
 
 	return redirect('/i/%s/' % sub)
 
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def explore_stats(sub):
+	if hasattr(sub, 'rules'):
+		if sub.rules != None:
+			sub.new_rules = pseudo_markup(sub.rules)
+	sub.posts = sub.get_posts(count=True)
+
+	sub.comments = sub.get_comments(count=True)
+	sub.score = sub.comments + sub.posts
+	sub.users = len(sub.get_total_users())
+	return sub
+
 
 @app.route('/explore/', methods=['GET'])
 def explore():
 	esubs = []
 	subs = get_all_subs(explore=True)
 	for sub in subs:
-		if hasattr(sub, 'rules'):
-			if sub.rules != None:
-				sub.new_rules = pseudo_markup(sub.rules)
-		sub.posts = sub.get_posts(count=True)
-		if sub.posts == 0:
-			continue
-		sub.comments = sub.get_comments(count=True)
-		sub.score = sub.comments + sub.posts
+		new_sub = explore_stats(sub)
+		if new_sub.posts > 0:
+			esubs.append(new_sub)
 
-		esubs.append(sub)
-
-	esubs.sort(key=lambda x: x.score, reverse=True)
+	esubs.sort(key=lambda x: x.users, reverse=True)
 
 	return render_template('explore.html', subs=esubs)
 
