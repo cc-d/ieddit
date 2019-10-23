@@ -61,7 +61,7 @@
 
 
 	<div class="captcha-div">
-	{% if config.CAPTCHA_ENABLE %}
+	{% if config.CAPTCHA_ENABLE and config.CAPTCHA_POST %}
 	{{ captcha() }}
 	<input type="text" id='captcha' name="captcha">
 </div>

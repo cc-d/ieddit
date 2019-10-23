@@ -47,6 +47,12 @@ CAPTCHA_LENGTH = 3
 
 # Show captcha on comments
 CAPTCHA_COMMENTS = False
+CAPTCHA_POSTS = True
+CAPTCHA_REGISTER = True
+CAPTCHA_LOGIN = True
+CAPTCHA_CREATE = True
+CAPTCHA_EDIT = False
+
 
 SESSION_TYPE = 'filesystem'
 USE_PROXIES = False

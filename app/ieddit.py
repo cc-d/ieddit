@@ -447,7 +447,7 @@ def login():
 	if request.method == 'POST':
 		username = request.form.get('username')
 		password = request.form.get('password')
-		if config.CAPTCHA_ENABLE:
+		if config.CAPTCHA_ENABLE and config.CAPTCHA_LOGIN:
 			if request.form.get('captcha') == '':
 				flash('no captcha', 'danger')
 				return redirect(url_for('login'))
@@ -502,7 +502,7 @@ def logout():
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def register():
 	if request.method == 'POST':
-		if config.CAPTCHA_ENABLE:
+		if config.CAPTCHA_ENABLE and config.CAPTCHA_REGISTER:
 			if request.form.get('captcha') == '':
 				flash('no captcha', 'danger')
 				return redirect(url_for('register'))
@@ -968,7 +968,7 @@ def create_sub():
 			flash('reserved name')
 			return redirect(url_for('create_sub'))
 
-		if config.CAPTCHA_ENABLE:
+		if config.CAPTCHA_ENABLE and config.CAPTCHA_CREATE:
 			if request.form.get('captcha') == '':
 				flash('no captcha', 'danger')
 				return redirect(url_for('create_sub'))
@@ -1201,7 +1201,7 @@ def create_post(postsub=None):
 		if api != None:
 			show_captcha = False
 
-		if config.CAPTCHA_ENABLE and show_captcha:
+		if config.CAPTCHA_ENABLE and config.CAPTCHA_POSTS and show_captcha:
 			if request.form.get('captcha') == '':
 				flash('no captcha', 'danger')
 				return redirect(url_for('create_post'))

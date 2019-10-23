@@ -79,7 +79,7 @@ def user_edit_post():
 	if len(etext) < 1 or len(etext) > 20000:
 		return 'invalid edit length'
 
-	if config.CAPTCHA_ENABLE:
+	if config.CAPTCHA_ENABLE and config.CAPTCHA_EDIT:
 		if request.form.get('captcha') == '':
 			flash('no captcha', 'danger')
 			return redirect('/user/edit/%s/%s/' % (itype, iid))

@@ -10,7 +10,7 @@
 	<input name='title' type="text" class="form-control" id="create-post-title" placeholder="Example: A place to discuss baseball!">
 	</div>
 	<div class="captcha-div">
-	{% if config.CAPTCHA_ENABLE %}
+	{% if config.CAPTCHA_ENABLE and config.CAPTCHA_CREATE %}
 	{{ captcha() }}
 	<input type="text" id='captcha' name="captcha">
 </div>
