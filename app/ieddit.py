@@ -1795,7 +1795,7 @@ def ccache():
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def about():
 	from markdown import markdown
-	with open('README.md') as r:
+	with open('../README.md') as r:
 		return render_template('about.html', about=markdown(r.read()))
 
 
