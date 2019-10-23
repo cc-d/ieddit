@@ -263,8 +263,5 @@ class Api_key(db.Model):
 	key = db.Column(db.String(20000), nullable=False)
 
 if __name__ == '__main__':
-	app = Flask(__name__)
-	app.config.from_object('config')
-	db = SQLAlchemy(app)
 	db.create_all()
 	db.session.commit()

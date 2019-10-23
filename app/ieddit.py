@@ -359,9 +359,12 @@ def is_admin(username):
 		return True
 	return False
 
-def set_rate_limit():
+def set_rate_limit(limit_seconds=None):
 	if 'username' in session:
-		session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME)
+		if limit_seconds == None:
+			session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME)
+		else:
+			session['rate_limit'] = int(time.time()) + (limit_seconds)
 		#cache.clear()
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -2049,3 +2052,6 @@ app.register_blueprint(user.ubp)
 
 from blueprints import admin
 app.register_blueprint(admin.abp)
+
+from blueprints import api
+app.register_blueprint(api.bp)
