@@ -25,7 +25,8 @@ import requests
 from email.mime.text import MIMEText
 
 from models import *
-from functions import *
+
+from functions.functions import *
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -1264,7 +1265,7 @@ def create_post(postsub=None):
 		if post_type == 'url':
 			#os.system('python3 get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)))
 			#call(['python3', 'get_thumbnail.py', str(new_post.id), urllib.parse.quote(url)])
-			_thread.start_new_thread(os.system, ('python3 get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
+			_thread.start_new_thread(os.system, ('python3 utilities/get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
 
 		new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 		if is_admin(session['username']) and anonymous == False:
@@ -2017,11 +2018,11 @@ def stats(subi=None):
 		dayusers=dayusers, timediff=timediff, uptime=uptime, debug=debug, subi=subi, subscripts=subscripts)
 
 
-from mod import bp
-app.register_blueprint(bp)
+from blueprints import mod
+app.register_blueprint(mod.bp)
 
-from user import ubp
-app.register_blueprint(ubp)
+from blueprints import user
+app.register_blueprint(user.ubp)
 
-from admin import abp
-app.register_blueprint(abp)
+from blueprints import admin
+app.register_blueprint(admin.abp)

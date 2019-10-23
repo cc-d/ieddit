@@ -1,3 +1,8 @@
+import os, sys
+abspath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, abspath) 
+os.chdir(abspath)
+
 import requests
 import base64
 import sys
@@ -17,28 +22,22 @@ def add_remote_image(url, tid):
 	db.session.commit()
 	print('post has remote image %s %s', url, tid)
 
+
 def create_thumbnail(r, tid):
-	#r.raw.decode_content = rue
 
 	b = BytesIO(r.content)
 	im = Image.open(b)
 	size = 128, 128
 	im.thumbnail(size)
-	#im.save('thumbnails/' + str(tid) + '.JPEG', 'JPEG')
-	im.save('static/thumbnails/thumb-' + str(tid) + '.PNG', 'PNG')
-	#r = requests.get('http://127.0.0.1/clear_cache')
-	#print(r.text)
+	im.save(abspath + '/static/thumbnails/thumb-' + str(tid) + '.PNG', 'PNG')
 
 def main():
 	c = False
 	tid = int(sys.argv[1])
 	url = urllib.parse.unquote(sys.argv[2])
-	#url = 'https://i.redd.it/8ex7on41uzq31.png'
-	#tid = 1
 	r = requests.get(url, proxies=config.PROXIES,  allow_redirects=True)
 
 	if r.headers['Content-Type'].split('/')[0] == 'image':
-		#ext = r.headers['Content-Type'].split('/')[1]
 		create_thumbnail(r, tid)
 		add_remote_image(url, tid)
 		c = True
@@ -50,17 +49,12 @@ def main():
 			r = requests.get(iurl, proxies=config.PROXIES, allow_redirects=True)
 			soup = BeautifulSoup(r.text)
 			if r.headers['Content-Type'].split('/')[0] == 'image':
-				#ext = r.headers['Content-Type'].split('/')[1]
 				create_thumbnail(r, tid)
 				add_remote_image(iurl, tid)
 
 		except:
 			try:
 				raise Exception
-				#icon_link = soup.find("link", rel="shortcut icon")
-				#r = requests.get(icon_link['href'], proxies=config.PROXIES,  allow_redirects=True)
-				#soup = BeautifulSoup(r.text)
-				#create_thumbnail(r, tid)
 			except:
 				i = soup.findall('img')
 				guess = 0

@@ -1,3 +1,8 @@
+import os, sys
+abspath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, abspath) 
+os.chdir(abspath)
+
 from ieddit import *
 from html import escape
 

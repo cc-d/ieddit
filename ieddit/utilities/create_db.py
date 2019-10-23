@@ -1,18 +1,21 @@
+import os, sys
+abspath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, abspath) 
+os.chdir(abspath)
+
 import logging
 from flask import Flask, render_template, session, request
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from ieddit import db
 from models import *
-from functions import *
-import os
+from functions.functions import *
 import string
 from random import randint, choice
 from faker import Faker
 import json
 import config
 import psycopg2
-import os
 
 fake = Faker()
 
@@ -32,7 +35,8 @@ if config.DB_TYPE == 'postgres':
 		#cur.execute("ALTER SCHEMA public OWNER to postgres;")
 		logging.info('Succesfully provisioned database')
 	else:
-		os.system('bash recreate_psql_db.sh')
+		print('bash ' + abspath + '/utilities/recreate_psql_db.sh')
+		os.system('bash ' + abspath + '/utilities/recreate_psql_db.sh')
 elif config.DB_TYPE == 'sqlite':
 	try:
 		os.remove('{0}.db'.format(config.PG_USER))
