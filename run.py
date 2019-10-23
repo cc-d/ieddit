@@ -1,5 +1,5 @@
 from sys import argv
-from ieddit import app
+from ieddit.ieddit import app
 
 def main(port=80):
 	app.run(host='0.0.0.0', port=port)

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class='margin-lr'>
+<table class="table table-dark table-striped">
+  <thead>
+    <tr>
+      <th scope="col"><i class='fa fa-share-square-o'></i></th>
+      <th scope="col">type</th>
+      <th scope="col">when</th>
+      <th scope="col">url</th>
+    </tr>
+  </thead>
+  <tbody>
+  	{% for b in blocked %}
+    {% if b.anonymous == True %}
+    <tr id='{{ b.key }}-{{ b.id }}'>
+      <th scope="row"><a href='javascript:showObject("{{ b.key }}", {{ b.id }});'><i style='color: #28a745;' class='fa fa-repeat'></i></a></th>
+      <td>{{ b.type }}</td>
+      <td>{{ b.created_ago }}</td>
+      <td><a style='color: #fff!important;' href="{{ config.URL }}/u/Anonymous">{{ config.URL }}/u/Anonymous</a></td>
+    </tr>
+    {% else %}
+    <tr id='{{ b.key }}-{{ b.id }}'>
+      <th scope="row"><a href='javascript:showObject("{{ b.key }}", {{ b.id }});'><i style='color: #28a745;' class='fa fa-repeat'></i></a></th>
+      <td>{{ b.type }}</td>
+      <td>{{ b.created_ago }}</td>
+      <td><a style='color: #fff!important;' href="{{ b.permalink }}">{{ b.permalink }}</a></td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class='margin-lr' id='stats'>
+	{% if subi != None %}
+	<h3 class='stat'>stats for /i/{{ subi }}</h3><br><br>
+	{% endif %}
+
+	<h6 class='stat'>total users: {{ users }}</h6><h6 class='stat'>total posts: {{ posts }}</h6><h6 class='stat'>total comments: {{ comments }}</h6><br><br>
+	<h6 class='stat'>users active: {{ dayusers }}</h6><h6 class='stat'>posts today: {{ dayposts }}</h6><h6 class='stat'>comments today: {{ daycoms }}</h6><br><br>
+	<h6 class='stat'>total votes: {{ votes }}</h6>
+	{% if main_stats %}<h6 class='stat'>total messages: {{ messages }}</h6>{% endif %}
+	{% if main_stats %}
+	<h6 class='stat'>total subs: {{ subs }}</h6><br><br>
+	{% else %}
+	<h6 class='stat'>total subscribed: {{ subscripts }}</h6><br><br>
+	{% endif %}
+	<h6 class='stat'>votes today: {{ dayvotes }}</h6>
+	<h6 class='stat'>total bans: {{ bans }}</h6>
+	<h6 class='stat'>total mod actions: {{ mod_actions }}</h6><br><br>
+
+	{% if timediff != False %}
+	<br><h6 class='stat'>{{ timediff }}</h6><br><br>
+	<h6 class='stat'>time (in hours) since last restart/code update: {{ uptime }}</h6>
+	{% endif %}
+
+	{% if debug %}
+	<br><br><br>{{ debug }}
+	{% endif %}
+</div>
+
+{% endblock %}
