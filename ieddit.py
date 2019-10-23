@@ -97,7 +97,10 @@ def before_request():
 		has_messages(session['username'])
 
 	if 'blocked' not in session:
-		session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[]}
+		if 'username' in session:
+			session['blocked'] = get_blocked(session['username'])
+		else:
+			session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[]}
 
 
 	# disabled due to lack of use
@@ -282,6 +285,30 @@ def get_banned_subs(username):
 	for s in subs:
 		b.append(s.sub)
 	return b
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_blocked(username):
+	blocked = db.session.query(Hidden).filter_by(username=username).all()
+	bdict = {'comment_id':[], 'post_id':[], 'other_user':[]}
+
+	if len(blocked) == 0:
+		return bdict
+
+	for b in blocked:
+		if b.comment_id != None:
+			i = db.session.query(Comment).filter_by(id=b.comment_id).first()
+			if i != None:
+				bdict['comment_id'].append(i.id)
+		elif b.post_id != None:
+			i = db.session.query(Post).filter_by(id=b.post_id).first()
+			if i != None:
+				bdict['post_id'].append(i.id)
+		elif b.other_user != None:
+			i = db.session.query(Iuser).filter_by(id=b.other_user).first()
+			if i != None:
+				bdict['other_user'].append(i.id)
+
+	return bdict
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def is_mod(obj, username):
@@ -1273,7 +1300,7 @@ def get_sub_list():
 		return ''
 
 
-
+@limiter.limit('1 per second')
 @limiter.limit('10 per minute')
 @app.route('/create_comment', methods=['POST'])
 @notbanned

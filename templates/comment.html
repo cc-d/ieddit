@@ -65,6 +65,11 @@
         <!-- <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>-->
         <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("comment_id", "{{ comment.id }}")'>hide comment</a>
 
+        {% if comment.author_id not in session['blocked']['other_user'] %}
+        <a class="dropdown-item" href="javascript:blockUser('comment_id','{{ post.id }}');">block user</a>
+        {% endif %}
+
+
             {% if session['username'] == comment.author %}
 			<a class="dropdown-item" href="/user/edit/comment/{{ comment.id }}/">edit</a>
             {% endif %}

@@ -15,6 +15,12 @@ function banAndDeleteAll(itype, iid) {
 	});
 }
 
+function blockUser(itype, iid) {
+	$.post('/user/block_user', itype + '=' + iid).done(function(data) {
+		location.reload();
+	});
+}
+
 function hideObject(itype, iid) {
 	itype = itype + ''
 	iid = iid + ''
