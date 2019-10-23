@@ -38,7 +38,7 @@ def add_api_key():
 		new_key = Api_key(username=user.username, key=rstring(30))
 		db.session.add(new_key)
 		db.session.commit()
-		return 'ok'
+		return redirect('/admin/')
 	else:
 		return 'no user'
 
@@ -51,7 +51,7 @@ def del_api_key():
 		key = db.session.query(Api_key).filter_by(username=user.username).first()
 		db.session.delete(key)
 		db.session.commit()
-		return 'deleted'
+		return redirect('/admin/')
 	else:
 		return 'no user'
 
