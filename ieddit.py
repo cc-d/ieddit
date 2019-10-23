@@ -8,6 +8,8 @@ from flask_session_captcha import FlaskSessionCaptcha
 from datetime import timedelta, datetime
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address, get_ipaddr
+from jinja2 import escape, Markup
+
 
 import time
 import re
@@ -984,7 +986,7 @@ def create_sub():
 				return redirect('/create')
 
 			title = request.form.get('title')
-			new_sub = Sub(name=subname, created_by=session['username'], created_by_id=session['user_id'], title=title)
+			new_sub = Sub(name=escape(subname), created_by=session['username'], created_by_id=session['user_id'], title=escape(title))
 			db.session.add(new_sub)
 			db.session.commit()
 			new_mod = Moderator(username=new_sub.created_by, sub=new_sub.name)
@@ -1680,7 +1682,7 @@ def description(sub=None):
 			rtext = pseudo_markup(subr.rules)
 		else:
 			rtext = False
-	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
+	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=Markup(rtext))
 
 @app.route('/i/<sub>/settings/', methods=['GET'])
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
