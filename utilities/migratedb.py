@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+
 from ieddit.ieddit import *
 from ieddit.models import *
 

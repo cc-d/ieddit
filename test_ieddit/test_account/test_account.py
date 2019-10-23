@@ -1,5 +1,9 @@
+import sys
+import os
+sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+
 import unittest
-from ieddit import app
+from ieddit.ieddit import app
 import json
 from uuid import uuid4
 
