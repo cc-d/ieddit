@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, session, request
 from datetime import datetime, timedelta
-from functions import *
+from functions.functions import *
 from sqlalchemy import orm
 
 app = Flask(__name__)
