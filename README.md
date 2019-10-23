@@ -125,19 +125,28 @@ the site should be running on localhost:80  or the port you defined - the defaul
 If you do not have Python 3 on your machine, install it:
 https://www.python.org/downloads/
 
-Run ```install.sh``` script using Bash. If needed, a fast way to set Bash up is by
-installing Git for Windows from: https://git-scm.com/download/win
+If you do not have `scoop` package manager, install it:
+https://scoop.sh
 
-You can then run it by double clicking the file or opening Git Bash and running ```./install.sh``` in the folder.
+If you do not have `ruby`, install it:
+https://rubyinstaller.org
+
+If you do not have `sqlite3`, install it:
+https://www.sqlite.org/download.html (Grab precompiled binaries for SQLite3 and place in C:/Windows/System32 or another directory in your $PATH)
+
+Run `scoop install postgresql`
+
+Run `gem install sqlite3`
+
+Create a Virtualenv and run `pip install -r requirements.txt`
 
 Edit ```config.py``` to the proper values (you should only need to change config.URL)
 
-Run Windows Powershell as admin (right click on powershell, run as administrator), navigate to the project's root folder,
-then run:
+Run `python3 create_db.py`
 
-```py .\create_db.py```
+This is all you need to setup your development environment on Windows.
 
-```py .\run.py```
+To run the server simply run `python3 run.py` and it will spin up the local development server on `localhost:80`. 
 
 #### Error monitoring
 
