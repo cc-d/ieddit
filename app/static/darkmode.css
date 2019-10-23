@@ -1,0 +1,177 @@
+body {
+	background-color: #262626;
+	color: #bbb;
+}
+
+.bg-light {
+	background-color: #343a40!important;
+}
+
+body a {
+	background-color: rgba(0,0,0,0);
+	color: #bbb;
+}
+
+button {
+	color: #bbb;
+}
+
+#about-wrap {
+	background-color: #262626!important;
+}
+
+#inner-about {
+	margin: 1rem;
+
+}
+
+.comment-reply-list {
+	background-color: #343a40;
+}
+
+.btn-dark {
+	background-color: #262626;
+}
+
+.btn-background {
+	background-color: #262626!important;
+}
+
+input {
+	background-color: #dedede;
+	color: black!important;
+}
+
+textarea {
+    background-color: #a6a6a6!important;
+    color: black!important;
+}
+
+.message-body {
+	background-color: #262626;
+}
+
+.mod-page-controls {
+	background-color: #262626;
+}
+
+.mod-settings-page {
+	background-color: #262626;
+	padding-bottom: 1rem;
+}
+.add-mod {
+	margin-left: 1rem;
+}
+
+
+.sub-list {
+	background-color: #262626!important;
+}
+
+html {
+	background-color: #343a40;
+}
+
+#content {
+	margin-top: 0.5rem;
+}
+
+.explore-sub {
+	background-color: #262626;
+}
+
+.top-sort {
+	background-color: #262626;
+}
+
+.form-control:focus {
+	color: #dedede;
+}
+
+.list-group-item {
+	background-color: #262626;
+	border-color: black;
+}
+
+blockquote {
+	background-color: #343a40;
+	margin: 0 0;
+	margin: 0.5rem;
+}
+
+.safe-markup-text a {
+	text-decoration: underline;
+}
+
+.sub-list {
+	border: 1px solid black;
+}
+
+.user-icon-link {
+	color: #bbb;
+}
+
+.sub-post-title-link {
+	color: #dedede;
+}
+.sub-post-title-url {
+	color: #bbb;
+}
+
+.top-of-post {
+	color: #bbb;
+}
+
+.comment-link {
+	color: #bbb;
+}
+
+.fa-arrow-up {
+	color: #bbb;
+}
+
+.fa-arrow-down {
+	color: #bbb;
+}
+
+.comment-text-text {
+	color: #bbb;
+}
+
+.btn-outline-secondary {
+    color: #bbb;
+    border-color: #bbb;
+}
+
+.nav-link {
+	color: #bbb!important;
+}
+
+.navbar-brand {
+	color: #bbb!important;
+}
+
+.sub-comment {
+	background-color: #262626;
+	border: 1px solid black;
+}
+
+.user-opt {
+	background-color: #262626;
+}
+
+.user-icon-link:hover {
+	text-decoration: underline;
+	color: #bbb;
+}	
+
+.comment-post-container {
+	background-color: #262626;
+	border: 1px solid black;
+
+}
+
+.background-contain {
+	background-color: #262626;
+}
+

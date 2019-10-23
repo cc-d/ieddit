@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if vuser.admin %}
+<h6 style="color: red;"> admin </h6>
+{% endif %}
+<h6> user profile for {{ vuser.username }}</h6>
+
+
+<div class="btn-group" role="group">
+{% if session['username'] != vuser.username %}
+<a href="/message/{{ vuser.username }}"><button type="button" class="btn btn-sm btn-secondary user-opt">send message</button></a>
+
+{% if vuser.id not in session['blocked']['other_user'] %}
+<a href="javascript:hideObject('other_user', '{{ vuser.id }}');"><button id='block-user-button' type="button" class="btn btn-sm btn-danger user-opt">block <i class='fa fa-ban'></i></button></a>
+<a href="javascript:showObject('other_user', '{{ vuser.id }}');"><button style='margin-top: 0.5rem; display: none;' id='block-user-button-u' type="button" class="btn btn-sm btn-success">unblock <i class='fa fa-undo'></i></button></a>
+{% else %}
+<a href="javascript:hideObject('other_user', '{{ vuser.id }}');"><button style='display: none;' id='block-user-button' type="button" class="btn btn-sm btn-danger user-opt">block <i class='fa fa-ban'></i></button></a>
+<a href="javascript:showObject('other_user', '{{ vuser.id }}');"><button style='margin-top: 0.5rem;' id='block-user-button-u' type="button" class="btn btn-sm btn-success">unblock <i class='fa fa-undo'></i></button></a>
+{% endif %}
+
+{% else %}
+
+<a href="/u/{{ session['username'] }}/messages/"><button type="button" class="btn btn-sm btn-secondary user-opt">view messages</button></a>
+</div>
+
+
+<a href="/user/preferences/"><button type="button" class="btn btn-sm btn-secondary user-opt">preferences</button></a>
+
+<div class='btn-group' role='group'>
+<a href="/user/pgp/"><button type="button" class="btn btn-sm btn-secondary user-opt">pgp</button></a>
+<a href="/user/blocked/"><button type="button" class="btn btn-sm btn-secondary user-opt">blocked</button></a>
+
+
+<!-- Disabled for now due to lack of use 
+<form action='/user/darkmode' method='POST'>
+{% if vuser.darkmode == False and session['darkmod'] != True %}
+    <input type='hidden' name='action' value='enable'>
+    <button type="submit" class="btn btn-sm btn-secondary user-opt">enable darkmode</button></a>
+{% else %}
+    <input type='hidden' name='action' value='disable'>
+    <button type="submit" class="btn btn-sm btn-secondary user-opt">disable darkmode</button></a>
+{% endif %}
+</form>
+-->
+
+<form action='/user/anonymous' method='POST'>
+{% if vuser.anonymous == False %}
+    <input type='hidden' name='action' value='enable'>
+    <button type="submit" class="btn btn-sm btn-success user-opt">enable default anonymous</button></a>
+{% else %}
+    <input type='hidden' name='action' value='disable'>
+    <button type="submit" class="btn btn-sm btn-danger user-opt">disable default anonymous</button></a>
+{% endif %}
+</form>
+
+{% endif %}
+
+</div>
+
+
+<br><br>
+{% if vuser.mods|length > 0 %}
+<ul class="list-group">
+<li class="list-group-item">moderator of</li>
+<li class="list-group-item"> 
+{% for sub, rank in vuser.mods.items() %}
+  <a href="{{ config.URL }}/i/{{ sub }}/">/i/{{ sub }}</a>
+{% endfor %}
+ </li>
+</ul>
+{% endif %}
+<div id='user-recent'>
+<h6 class='margin-lr'> recent posts </h6>
+
+{% set count = [0] %}
+
+{% for post in posts %}
+{% if count.append(count.pop() + 1) %}{% endif %}
+{% if post.anonymous == False and post.author != 'Anonymous' %}
+    {% include 'sub_post.html' %}
+{% endif %}
+{% else %}
+	<p class='margin-lr'> no posts </p>
+{% endfor %}
+
+{% if count.pop() > 0 %}
+<!-- <p> user has additional anonymous posts </p> -->
+{% endif %}
+
+
+<h6 class='margin-lr'> recent comments </h6>
+<ul class="list-unstyled">
+{% include 'combase.html' %}
+</ul>
+</div>
+{% endblock %}
