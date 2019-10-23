@@ -4,11 +4,34 @@
 <form action='/admin/ban_and_delete' method='POST'>
 	<p>username</p>
 	<input style='color: black;' type='text' name='username'><br>
-	<p>post id</p>
-	<input style='color: black;' type='text' name='post_id'><br>
-	<p>comment id</p>
-	<input style='color: black;' type='text' name='comment_id'><br><br>
-	<button style='color: black;' type='submit'>ban and delete</button>
+	<button style='color: black; background-color: red;' type='submit'>ban and delete</button>
 </form>
 
+<br>
+
+{% if True %}
+<form action='/admin/add_api_key' method='POST'>
+	<p>username - api key add</p>
+	<input style='color: black;' type='text' name='username'><br>
+	<button style='color: black;' type='submit'>add api key</button>
+</form>
+
+<br>
+
+<style>th, td { padding-right: 1rem; }</style>
+<table class='margin-lr'>
+  <tr>
+  	<th>action</th>
+    <th>user</th>
+    <th>key</th>
+  </tr>
+  	{% for key in keys %}
+  	  <tr>
+    <td><a href='javascript:removeApiKey("{{ key.username }}");'><i class='fa fa-ban'></i></a></td>
+    <td>{{ key.username }}</td>
+    <td>{{ key.key }}</td>
+      </tr>
+    {% endfor %}
+</table>
+{% endif %}
 {% endblock %}

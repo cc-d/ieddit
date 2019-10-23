@@ -18,11 +18,43 @@ def admin_only(f):
 		return f(*args, **kwargs)
 	return decorated_function
 
-
 @abp.route('/',  methods=['GET'])
 @admin_only
 def admincp():
-	return render_template('admin.html')
+	keys = db.session.query(Api_key).all()
+	return render_template('admin.html', keys=keys)
+
+
+@abp.route('/add_api_key', methods=['POST'])
+@admin_only
+def add_api_key():
+	user = request.form.get('username')
+	user = normalize_username(user, dbuser=True)
+	if user:
+		keys = db.session.query(Api_key).all()
+		for k in keys:
+			if k.username == user.username:
+				return 'already has key'
+		new_key = Api_key(username=user.username, key=rstring(30))
+		db.session.add(new_key)
+		db.session.commit()
+		return 'ok'
+	else:
+		return 'no user'
+
+@abp.route('/remove_api_key', methods=['POST'])
+@admin_only
+def del_api_key():
+	user = request.form.get('username')
+	user = normalize_username(user, dbuser=True)
+	if user:
+		key = db.session.query(Api_key).filter_by(username=user.username).first()
+		db.session.delete(key)
+		db.session.commit()
+		return 'deleted'
+	else:
+		return 'no user'
+
 
 @abp.route('/ban_and_delete', methods=['POST'])
 @admin_only

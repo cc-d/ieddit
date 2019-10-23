@@ -21,6 +21,18 @@ function blockUser(itype, iid) {
 	});
 }
 
+function addApiKey(user) {
+	$.post('/admin/add_api_key', 'username' + '=' + user).done(function(data) {
+		location.reload();
+	});
+}
+
+function removeApiKey(user) {
+	$.post('/admin/remove_api_key', 'username' + '=' + user).done(function(data) {
+		location.reload();
+	});
+}
+
 function hideObject(itype, iid) {
 	itype = itype + ''
 	iid = iid + ''

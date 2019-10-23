@@ -237,6 +237,10 @@ class Hidden(db.Model):
 	def __repr__(self):
 		return '<Hidden %r>' % self.id
 
+class Api_key(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
+	key = db.Column(db.String(20000), nullable=False)
 
 if __name__ == '__main__':
 	db.create_all()
