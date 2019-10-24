@@ -18,7 +18,8 @@ def require_key(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
 		try:
-			verified = verify_api_key(request.headers['username'], request.headers['api_key'])
+			print(str(vars(headers)))
+			verified = verify_api_key(request.headers['username'], request.headers['akey'])
 			if verified == True:
 				return f(*args, **kwargs)
 			else:
