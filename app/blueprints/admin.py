@@ -3,18 +3,25 @@ from ieddit import *
 import json
 from functools import wraps
 
+# Logging Initialization
+import logging 
+logger = logging.getLogger(__name__)
+
 abp = Blueprint('admin', 'admin', url_prefix='/admin')
 
 def admin_only(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
 		if 'admin' not in session:
+			logger.critical("Unauthorized User Attempted to Access Admin Utilities")
 			return abort(403)
 		if 'username' not in session:
+			logger.critical("Unauthorized User Attempted to Access Admin Utilities")
 			return abort(403)
 		admins = db.session.query(Iuser).filter_by(admin=True).all()
 		anames = [a.username for a in admins]
 		if session['username'] not in anames:
+			logger.critical("Unauthorized User Attempted to Access Admin Utilities")
 			return abort(403)
 		return f(*args, **kwargs)
 	return decorated_function
@@ -23,7 +30,30 @@ def admin_only(f):
 @admin_only
 def admincp():
 	keys = db.session.query(Api_key).all()
-	return render_template('admin.html', keys=keys)
+	muted_subs = db.session.query(Sub).filter_by(muted=True).all()
+	return render_template('admin.html', keys=keys, muted_subs=muted_subs)
+
+@abp.route('/add_sub_mute', methods=['POST'])
+@admin_only
+def add_sub_mute():
+	sub = request.form.get('sub')
+	sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
+	if sub.muted == False:
+		sub.muted = True
+		db.session.add(sub)
+		db.session.commit()
+	return redirect('/admin/')
+
+@abp.route('/remove_sub_mute', methods=['POST'])
+@admin_only
+def remove_sub_mute():
+	sub = request.form.get('sub')
+	sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
+	if sub.muted == True:
+		sub.muted = False
+		db.session.add(sub)
+		db.session.commit()
+	return redirect('/admin/')
 
 
 @abp.route('/add_api_key', methods=['POST'])

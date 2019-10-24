@@ -323,6 +323,10 @@ def anon_block(obj):
 	return obj
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_muted_subs():
+	return [x.name for x in db.session.query(Sub).filter_by(muted=True).all()]
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_blocked(username):
 	bdict = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
 	if username == None:
@@ -584,6 +588,9 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	if offset != None:
 		offset = int(offset)
 
+
+	muted_subs = False
+
 	if subi != 'all':
 		subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
 		if subname == None:
@@ -591,8 +598,10 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		subi = subname.name
 		posts = db.session.query(Post).filter_by(sub=subi, deleted=False)
 	elif user_id != None:
+		muted_subs = get_muted_subs()
 		posts = db.session.query(Post).filter_by(author_id=user_id, deleted=False)
 	else:
+		muted_subs = get_muted_subs()
 		posts = db.session.query(Post).filter_by(deleted=False)
 
 # .order_by((Post.created).desc())
@@ -625,6 +634,9 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	#posts = [post for post in posts if post.created > ago]
 	
 
+	if muted_subs:
+		posts = [c for c in posts if c.sub not in muted_subs]	
+
 	if nsfw == False:
 		posts = [p for p in posts if p.nsfw == False]
 
@@ -637,6 +649,8 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 		offset + 1
 	except:
 		offset = 0
+
+
 
 	if 'blocked_subs' in session and 'username' in session:
 		posts = [c for c in posts if c.sub not in session['blocked_subs']]
@@ -1807,7 +1821,7 @@ def ccache():
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def about():
 	from markdown import markdown
-	with open('../README.md') as r:
+	with open('README.md') as r:
 		return render_template('about.html', about=markdown(r.read()))
 
 
@@ -1829,12 +1843,18 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	if s == None:
 		s = 'new'
 
+	muted_subs = False
+
 	if sub == 'all':
 		posts = subi('all', posts_only=True, nsfw=True)
+		muted_subs = get_muted_subs()
+		posts = [p for p in posts if p.sub not in muted_subs]	
 	elif sub != None:
 		posts = subi(sub, posts_only=True)
 	else:
 		posts = subi('all', posts_only=True, nsfw=False)
+		muted_subs = get_muted_subs()
+		posts = [p for p in posts if p.sub not in muted_subs]	
 
 
 	posts = posts[offset:offset+limit]
@@ -1871,9 +1891,11 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 
 	comments = [c for c in comments if c.id not in session['blocked']['comment_id']]
 
-	comments = anon_block(comments)
-	comments = [c for c in comments if c.author_id if c.noblock == True]
+	if muted_subs:
+		comments = [c for c in comments if c.sub_name not in muted_subs]
 
+	comments = anon_block(comments)
+	comments = [c for c in comments if c.noblock == True]
 
 	for c in comments:
 		c.new_text = pseudo_markup(c.text)

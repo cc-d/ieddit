@@ -48,6 +48,7 @@ class Sub(db.Model):
 	title = db.Column(db.String(1000), nullable=True, default=None)
 	nsfw = db.Column(db.Boolean, default=False, nullable=False)
 	css = db.Column(db.String(20000), default=None)
+	muted = db.Column(db.Boolean, default=False)
 
 	def get_comments(self, deleted=False, count=False):
 		if count == True:
