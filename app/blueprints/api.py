@@ -7,9 +7,9 @@ bp = Blueprint('api', 'api', url_prefix='/api')
 
 def verify_api_key(username, key):
     key = db.session.query(Api_key).filter_by(
-        username=normalize_username(username), key=key).first()
+	username=normalize_username(username), key=key).first()
     if key == None:
-        return False
+	return False
     return True
 
 # require auth
@@ -18,15 +18,15 @@ def verify_api_key(username, key):
 def require_key(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        try:
-        	verified = verify_api_key(request.headers['username'], request.headers['api_key'])
-        	if verified == True:
-        		return f(*args, **kwargs)
-        	else:
-        		return 'verify args failed'
-        except Exception as e:
-        	print(e)
-        	return json.dumps({'error':str(e)})
+	try:
+		verified = verify_api_key(request.headers['username'], request.headers['api_key'])
+		if verified == True:
+			return f(*args, **kwargs)
+		else:
+			return 'verify args failed'
+	except Exception as e:
+		print(e)
+		return json.dumps({'error':str(e)})
 
     return decorated_function
 
@@ -36,7 +36,7 @@ def require_key(f):
 def as_dict(obj):
     obj = {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
     if obj['created']:
-        obj['created'] = obj['created'].isoformat()
+	obj['created'] = obj['created'].isoformat()
     return obj
 
 # convert to obj and then pretty print
@@ -65,14 +65,14 @@ def get_posts(post_ids=None):
     r = []
 
     for pid in post_ids:
-        try:
-            int(pid)
-        except:
-            continue
-        post = db.session.query(Post).filter_by(id=pid).first()
-        print(post)
-        if post != None:
-            r.append(as_dict(post))
+	try:
+	    int(pid)
+	except:
+	    continue
+	post = db.session.query(Post).filter_by(id=pid).first()
+	print(post)
+	if post != None:
+	    r.append(as_dict(post))
 
     return json.dumps(r)
 
@@ -91,14 +91,14 @@ def get_comments(comment_ids=None):
     r = []
 
     for pid in comment_ids:
-        try:
-            int(pid)
-        except:
-            continue
-        comment = db.session.query(Comment).filter_by(id=pid).first()
-        print(comment)
-        if comment != None:
-            r.append(as_dict(comment))
+	try:
+	    int(pid)
+	except:
+	    continue
+	comment = db.session.query(Comment).filter_by(id=pid).first()
+	print(comment)
+	if comment != None:
+	    r.append(as_dict(comment))
 
     return json.dumps(r)
 
@@ -114,33 +114,33 @@ def new_comment(comment_ids=None):
     anonymous = request.form.get('anonymous')
 
     if anonymous != None:
-        anonymous = True
+	anonymous = True
     else:
-        anonymous = False
+	anonymous = False
 
     if parent_id == '':
-        parent_id = None
+	parent_id = None
 
     if post_url != None:
-        if post_url_parse(post_url) != post_url_parse(config.URL):
-            return json.dumps({'error': 'bad origin url'})
+	if post_url_parse(post_url) != post_url_parse(config.URL):
+	    return json.dumps({'error': 'bad origin url'})
 
     elif text == None or post_id == None or sub_name == None:
-        return json.dumps({'error': 'bad comment'})
+	return json.dumps({'error': 'bad comment'})
 
     if parent_id != None:
-        level = (db.session.query(Comment).filter_by(
-            id=parent_id).first().level) + 1
+	level = (db.session.query(Comment).filter_by(
+	    id=parent_id).first().level) + 1
     else:
-        level = None
+	level = None
 
     post = db.session.query(Post).filter_by(id=post_id).first()
     if post.locked == True:
-        return json.dumps({'error': 'post is locked'})
+	return json.dumps({'error': 'post is locked'})
 
     new_comment = Comment(post_id=post_id, sub_name=sub_name, text=text,
-                          author=request.headers['username'], author_id=session['user_id'],
-                          parent_id=parent_id, level=level, anonymous=anonymous, deleted=deleted)
+			  author=request.headers['username'], author_id=session['user_id'],
+			  parent_id=parent_id, level=level, anonymous=anonymous, deleted=deleted)
 
     db.session.add(new_comment)
     db.session.commit()
@@ -149,7 +149,7 @@ def new_comment(comment_ids=None):
     db.session.commit()
 
     new_vote = Vote(comment_id=new_comment.id, vote=1,
-                    user_id=session['user_id'], post_id=None)
+		    user_id=session['user_id'], post_id=None)
     db.session.add(new_vote)
 
     new_comment.ups += 1
@@ -171,18 +171,18 @@ def new_post(post_ids=None):
     url = request.form.get('url')
 
     if anonymous != None:
-        anonymous = True
+	anonymous = True
     else:
-        anonymous = False
+	anonymous = False
 
     if sub == None or title == None or post_type == None:
-        return json.dumps({'error': 'bad post'})
+	return json.dumps({'error': 'bad post'})
 
     author_id = (db.session.query(Iuser).filter_by(username=request.headers['username']).first().id)
 
     new_post = Post(post_type=post_type, anonymous=anonymous,
-                    remote_image_url=remote_image_url, self_text=self_text, sub=sub,
-                    title=title, url=url, inurl_title=convert_ied(title), author=request.headers['username'],
+		    remote_image_url=remote_image_url, self_text=self_text, sub=sub,
+		    title=title, url=url, inurl_title=convert_ied(title), author=request.headers['username'],
 					author_id=author_id)
 
     db.session.add(new_post)
