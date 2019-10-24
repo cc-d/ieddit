@@ -9,7 +9,6 @@
 
 <br>
 
-{% if True %}
 <form action='/admin/add_api_key' method='POST'>
 	<p>username - api key add</p>
 	<input style='color: black;' type='text' name='username'><br>
@@ -33,5 +32,31 @@
       </tr>
     {% endfor %}
 </table>
-{% endif %}
+
+<br>
+
+<form action='/admin/add_sub_mute' method='POST'>
+  <p>mute sub</p>
+  <input style='color: black;' type='text' name='sub'><br>
+  <button style='color: black;' type='submit'>mute sub</button>
+</form>
+
+<br>
+
+<style>th, td { padding-right: 1rem; }</style>
+<table class='margin-lr'>
+  <tr>
+    <th>action</th>
+    <th>sub</th>
+  </tr>
+    {% for sub in muted_subs %}
+      <tr>
+    <td><a href='javascript:removeSubMute("{{ sub.name }}");'><i class='fa fa-ban'></i></a></td>
+    <td>{{ sub.name }}</td>
+      </tr>
+    {% endfor %}
+</table>
+
+
+
 {% endblock %}

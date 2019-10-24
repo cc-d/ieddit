@@ -145,4 +145,3 @@ def new_comment(comment_ids=None):
 
 	return json.loads({'success':comment.permalink})
 
-

@@ -33,6 +33,18 @@ function removeApiKey(user) {
 	});
 }
 
+function addSubMute(sub) {
+	$.post('/admin/add_sub_mute', 'sub' + '=' + sub).done(function(data) {
+		location.reload();
+	});
+}
+
+function removeSubMute(sub) {
+	$.post('/admin/remove_sub_mute', 'sub' + '=' + sub).done(function(data) {
+		location.reload();
+	});
+}
+
 function hideObject(itype, iid) {
 	itype = itype + ''
 	iid = iid + ''

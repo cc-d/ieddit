@@ -22,7 +22,30 @@ def admin_only(f):
 @admin_only
 def admincp():
 	keys = db.session.query(Api_key).all()
-	return render_template('admin.html', keys=keys)
+	muted_subs = db.session.query(Sub).filter_by(muted=True).all()
+	return render_template('admin.html', keys=keys, muted_subs=muted_subs)
+
+@abp.route('/add_sub_mute', methods=['POST'])
+@admin_only
+def add_sub_mute():
+	sub = request.form.get('sub')
+	sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
+	if sub.muted == False:
+		sub.muted = True
+		db.session.add(sub)
+		db.session.commit()
+	return redirect('/admin/')
+
+@abp.route('/remove_sub_mute', methods=['POST'])
+@admin_only
+def remove_sub_mute():
+	sub = request.form.get('sub')
+	sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
+	if sub.muted == True:
+		sub.muted = False
+		db.session.add(sub)
+		db.session.commit()
+	return redirect('/admin/')
 
 
 @abp.route('/add_api_key', methods=['POST'])
