@@ -793,9 +793,7 @@ def recursive_children(comment=None, current_depth=0, max_depth=8, deleted=False
 	children = comment.get_children(deleted=deleted).all()
 
 	while len(children) > 0 and current_depth < max_depth :
-		print(children)
 		for c in children:
-			print(c)
 			if c not in found_children:
 				found_children.append(c)
 				c2 = c.get_children(deleted=deleted).all()
@@ -848,12 +846,10 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 				post.has_voted = post.has_voted.vote	
 
 		if comment_id == None:
-			print(1)
 			comments = db.session.query(Comment).filter_by(post_id=post_id, deleted=deleted).all()
 			show_blocked = False
 		
 		else:
-			print(2)
 			comments = []
 			parent_comment = db.session.query(Comment).filter_by(id=comment_id).first()
 			show_blocked = False
@@ -866,7 +862,6 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 			comments = recursive_children(comment=parent_comment, deleted=True)
 			
 	else:
-		print(3)
 		comments = db.session.query(Comment).filter(Comment.author_id == user_id,
 			Comment.deleted == deleted).order_by(Comment.created.desc()).all()
 		show_blocked = False
@@ -906,7 +901,6 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 @app.route('/i/<sub>/<post_id>/<inurl_title>/')
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort_by=None, comments_only=False, user_id=None):
-	print(comment_id)
 	try:
 		if sub == None or post_id == None or inurl_title == None:
 			if not comments_only:
@@ -984,7 +978,6 @@ def list_of_child_comments(comment_id, sort_by=None):
 				current_comments.append(c.id)
 				comments[c.id] = c
 			current_comments.remove(current_c)
-	print(comments)
 	return comments
 
 @app.route('/create', methods=['POST', 'GET'])
@@ -1056,9 +1049,7 @@ def view_user(username):
 	posts = vuser.get_recent_posts()#.all()
 	comments = vuser.get_recent_comments()#.all()
 
-	print(posts)
 	for p in posts:
-		print(p)
 		p.created_ago = time_ago(p.created)
 		p.comment_count = db.session.query(Comment).filter_by(post_id=p.id).count()
 		p.mods = get_sub_mods(p.sub)
@@ -1960,7 +1951,6 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 			session['off_url'] = session['off_url'].replace('/&', '/?')
 
 	if s == 'hot':
-			print(comments)
 			comments.sort(key=lambda x: x.hot, reverse=True)
 
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
