@@ -1,0 +1,90 @@
+version: 1
+objects:
+  queue:
+    class: queue.Queue
+    maxsize: 1000
+formatters:
+  simple:
+    format: '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+  file:
+    class: logging.FileHandler
+    level: WARNING
+    filename: 'ieddit.log'
+    formatter: simple
+  queue_listener:
+    class: utilities.log_utils.logger_util.QueueListenerHandler
+    handlers:
+      - cfg://handlers.console
+      - cfg://handlers.file
+    queue: cfg://objects.queue
+loggers:
+  __main__:
+    level: WARNING
+    handlers:
+      - queue_listener
+    propagate: false
+  models:
+    level: WARNING
+    handlers: 
+      - queue_listener
+    propagate: false
+  ieddit:
+    level: WARNING
+    handlers: 
+      - queue_listener
+    propagate: false
+  config:
+    level: WARNING
+    handlers: 
+      - queue_listener
+    propagate: false
+  blueprints.admin:
+    level: WARNING
+    handlers: 
+      - queue_listener
+    propagate: false
+  blueprints.api:
+    level: WARNING
+    handlers: 
+      - queue_listener
+    propagate: false
+  blueprints.mod:
+    level: WARNING
+    handlers: 
+      - queue_listener
+    propagate: false
+  blueprints.user:
+    level: WARNING
+    handlers: 
+      - queue_listener
+    propagate: false
+  functions.functions:
+    level: WARNING
+    handlers: 
+      - queue_listener
+    propagate: false
+  utilities.create_db:
+    level: WARNING
+    handlers: 
+      - queue_listener
+    propagate: false
+  utilities.generate_sitemap:
+    level: WARNING
+    handlers: 
+      - queue_listener
+    propagate: false
+  utilities.get_thumnail:
+    level: WARNING
+    handlers: 
+      - queue_listener
+    propagate: false  
+root:
+  level: WARNING
+  handlers:
+    - console

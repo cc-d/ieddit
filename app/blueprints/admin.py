@@ -3,18 +3,25 @@ from ieddit import *
 import json
 from functools import wraps
 
+# Logging Initialization
+import logging 
+logger = logging.getLogger(__name__)
+
 abp = Blueprint('admin', 'admin', url_prefix='/admin')
 
 def admin_only(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
 		if 'admin' not in session:
+			logger.critical("Unauthorized User Attempted to Access Admin Utilities")
 			return abort(403)
 		if 'username' not in session:
+			logger.critical("Unauthorized User Attempted to Access Admin Utilities")
 			return abort(403)
 		admins = db.session.query(Iuser).filter_by(admin=True).all()
 		anames = [a.username for a in admins]
 		if session['username'] not in anames:
+			logger.critical("Unauthorized User Attempted to Access Admin Utilities")
 			return abort(403)
 		return f(*args, **kwargs)
 	return decorated_function
