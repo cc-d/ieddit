@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, flash, url_for, Blu
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, exists
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.exceptions import HTTPException
 from flask_caching import Cache
 from flask_session import Session
 from flask_session_captcha import FlaskSessionCaptcha
@@ -66,7 +67,7 @@ def before_request():
 	if app.debug:
 		g.start = time.time()
 	session.permanent = True
-	
+
 	try:
 		request.sub
 	except:
@@ -161,6 +162,17 @@ def only_cache_get(*args, **kwargs):
 		return False
 	return True
 
+@app.errorhandler(Exception)
+def handle_error(error):
+	code = 500
+	description = error
+	if isinstance(error, HTTPException):
+		code = error.code
+		description = error.description
+
+
+	return render_template("error.html", error=description, code=code)
+
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_style(sub=None):
 	if sub != None:
@@ -239,7 +251,7 @@ def send_font(file=None, methods=['GET']):
 		else:
 			return app.send_static_file(file)
 	else:
-		return '403'
+		return abort(403)
 
 @app.route('/sitemap.xml')
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -1695,7 +1707,7 @@ def addmod(sub=None):
 	if hasattr(request, 'is_mod'):
 		if request.is_mod:
 			return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
-	return '403'
+	return abort(403)
 
 @app.route('/i/<sub>/mods/remove/', methods=['GET'])
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -1704,7 +1716,7 @@ def removemod(sub=None):
 	if hasattr(request, 'is_mod'):
 		if request.is_mod:
 			return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
-	return '403'
+	return abort(403)
 
 @app.route('/i/<sub>/info/', methods=['GET'])
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -1727,7 +1739,7 @@ def settings(sub=None):
 	subr = db.session.query(Sub).filter_by(name=sub).first()
 	if request.is_mod:
 		return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw, sub_object=subr)
-	return '403'
+	return abort(403)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_blocked_subs(username=None):
@@ -1743,7 +1755,7 @@ def blocksub(sub=None):
 		flash('not logged in', 'error')
 		return redirect(url_for('login'))
 	if sub == None:
-		return '500'
+		return abort(500)
 
 	blocks = db.session.query(Sub_block).filter_by(username=session['username']).all()
 	if blocks != None:

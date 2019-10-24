@@ -1,3 +1,4 @@
+from flask import abort
 from ieddit import *
 import json
 from functools import wraps
@@ -8,13 +9,13 @@ def admin_only(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
 		if 'admin' not in session:
-			return '403 ad sess'
+			return abort(403)
 		if 'username' not in session:
-			return '403 sess'
+			return abort(403)
 		admins = db.session.query(Iuser).filter_by(admin=True).all()
 		anames = [a.username for a in admins]
 		if session['username'] not in anames:
-			return '403 names'
+			return abort(403)
 		return f(*args, **kwargs)
 	return decorated_function
 
