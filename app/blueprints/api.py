@@ -4,28 +4,14 @@ import json
 
 bp = Blueprint('api', 'api', url_prefix='/api')
 
-
-def verify_api_key(username, key):
-	key = db.session.query(Api_key).filter_by(
-		username=normalize_username(username), key=key).first()
-	if key == None:
-		return False
-	return True
-
-
-# require auth
 def require_key(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
-		try:
-			verified = verify_api_key(request.headers['ieddit_username'], request.headers['ieddit_api_key'])
-			if verified == True:
-				return f(*args, **kwargs)
-			else:
-				return 'verify args failed'
-		except Exception as e:
-			print(e)
-			return json.dumps({'error':str(e)})
+		key = db.session.query(Api_key).filter_by(username=normalize_username(request.headers['ieddit-username']), key=request.headers['ieddit-api-key']).first()
+		if key != None:
+			return f(*args, **kwargs)
+		else:
+			return 'verify args failed'
 
 	return decorated_function
 
@@ -136,10 +122,10 @@ def new_comment():
 	if post.locked == True:
 		return json.dumps({'error': 'post is locked'})
 
-	author_id = get_user_from_name(request.headers['username']).id
+	author_id = get_user_from_name(request.headers['ieddit-username']).id
 
 	new_comment = Comment(post_id=post_id, sub_name=sub_name, text=text,
-			  author=request.headers['username'], author_id=author_id,
+			  author=request.headers['ieddit-username'], author_id=author_id,
 			  parent_id=parent_id, level=level, anonymous=anonymous)
 
 	db.session.add(new_comment)
@@ -196,11 +182,11 @@ def new_post():
 	if sub == None or title == None or post_type == None:
 		return json.dumps({'error': 'bad post'})
 
-	author_id = get_user_from_name(request.headers['username']).id
+	author_id = get_user_from_name(request.headers['ieddit-username']).id
 
 	new_post = Post(post_type=post_type, anonymous=anonymous,
 					self_text=self_text, sub=sub,
-					title=title, url=url, inurl_title=convert_ied(title), author=request.headers['username'],
+					title=title, url=url, inurl_title=convert_ied(title), author=request.headers['ieddit-username'],
 					author_id=author_id)
 
 	db.session.add(new_post)
