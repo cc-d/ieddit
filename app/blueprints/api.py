@@ -131,7 +131,7 @@ def new_comment():
 	db.session.add(new_comment)
 	db.session.commit()
 
-	new_comment.permalink = post.get_permalink() + str(new_comment.id)
+	new_comment.permalink = new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + new_post.inurl_title + '/' + str(new_comment.id) + '/'
 	db.session.commit()
 
 	new_vote = Vote(comment_id=new_comment.id, vote=1,
@@ -192,6 +192,7 @@ def new_post():
 	db.session.add(new_post)
 	db.session.commit()
 
+	new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + new_post.inurl_title + '/'
 	post_id = new_post.id
 	new_vote = Vote(vote=1, user_id=author_id, post_id=post_id)
 	db.session.add(new_vote)
