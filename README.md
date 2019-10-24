@@ -13,7 +13,7 @@ Last time this site was re-posted to HN, it was on day 1 of the public alpha. A 
 ### Features
 
 * Fully Transparent Mod/Admin Action Logs
-	
+
 Transparency is essential in trusting those who weld the power to control discussion. While censorship is often necessary, a lack of accountability and/or transparency is never acceptable. An example modlog can be found here [https://ieddit.com/i/ieddit/actions/](https://ieddit.com/i/ieddit/actions/)
 
 * Anonymous Posting Option
@@ -48,7 +48,7 @@ All static files, JS/CSS/Thumbnails, are hosted locally. The only requests that 
 
 There is a ton of room for UI improvements in the more out-of-the-way areas of the site. Examples being mod options, user settings, etc.
 
-It would be trivial to offer a hidden service option if there is demand for one. As of now, no hidden service option exists, to avoid making the deployment process slightly more tedious and the hosting costs. 
+It would be trivial to offer a hidden service option if there is demand for one. As of now, no hidden service option exists, to avoid making the deployment process slightly more tedious and the hosting costs.
 
 I've sunk a solid month of my time into this, and most of the core functionality is now completed, so I'll most likely take a step back and adopt a more gradual pace of development. Areas such as tests, code refactoring, error handling, logging, etc have been neglected due to an emphasis on implementing as many features as possible in a very narrow time window.
 
@@ -146,7 +146,7 @@ Run `python3 create_db.py`
 
 This is all you need to setup your development environment on Windows.
 
-To run the server simply run `python3 run.py` and it will spin up the local development server on `localhost:80`. 
+To run the server simply run `python3 run.py` and it will spin up the local development server on `localhost:80`.
 
 #### Error monitoring
 
