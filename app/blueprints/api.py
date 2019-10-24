@@ -19,7 +19,7 @@ def require_key(f):
 	def decorated_function(*args, **kwargs):
 		try:
 			print(str(vars(headers)))
-			verified = verify_api_key(request.headers['username'], request.headers['akey'])
+			verified = verify_api_key(request.headers['ieddit_username'], request.headers['ieddit_api_key'])
 			if verified == True:
 				return f(*args, **kwargs)
 			else:
