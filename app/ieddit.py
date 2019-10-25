@@ -1834,7 +1834,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
 		posts = [p for p in posts if p.sub not in muted_subs]	
 	elif sub != None:
 		subobj = db.session.query(Sub).filter_by(name=sub).first()
-		if sub.muted or sub.nsfw:
+		if subobj.muted or subobj.nsfw:
 			nsfw = True
 		posts = subi(sub, posts_only=True)
 	else:
