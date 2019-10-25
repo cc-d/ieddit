@@ -2,12 +2,14 @@ from flask import abort
 from ieddit import *
 import json
 from functools import wraps
+from utilities.error_decorator import exception_log
 
 # Logging Initialization
 import logging 
 logger = logging.getLogger(__name__)
 
 abp = Blueprint('admin', 'admin', url_prefix='/admin')
+
 
 def admin_only(f):
 	@wraps(f)
@@ -26,6 +28,7 @@ def admin_only(f):
 		return f(*args, **kwargs)
 	return decorated_function
 
+@exception_log(logger)
 @abp.route('/',  methods=['GET'])
 @admin_only
 def admincp():
@@ -33,6 +36,7 @@ def admincp():
 	muted_subs = db.session.query(Sub).filter_by(muted=True).all()
 	return render_template('admin.html', keys=keys, muted_subs=muted_subs)
 
+@exception_log(logger)
 @abp.route('/add_sub_mute', methods=['POST'])
 @admin_only
 def add_sub_mute():
@@ -44,6 +48,7 @@ def add_sub_mute():
 		db.session.commit()
 	return redirect('/admin/')
 
+@exception_log(logger)
 @abp.route('/remove_sub_mute', methods=['POST'])
 @admin_only
 def remove_sub_mute():
@@ -55,7 +60,7 @@ def remove_sub_mute():
 		db.session.commit()
 	return redirect('/admin/')
 
-
+@exception_log(logger)
 @abp.route('/add_api_key', methods=['POST'])
 @admin_only
 def add_api_key():
@@ -73,6 +78,7 @@ def add_api_key():
 	else:
 		return 'no user'
 
+@exception_log(logger)
 @abp.route('/remove_api_key', methods=['POST'])
 @admin_only
 def del_api_key():
@@ -86,7 +92,7 @@ def del_api_key():
 	else:
 		return 'no user'
 
-
+@exception_log(logger)
 @abp.route('/ban_and_delete', methods=['POST'])
 @admin_only
 def ban_and_delete():

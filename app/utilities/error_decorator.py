@@ -2,6 +2,7 @@ import functools
 def exception_log(logger):
     """
     Decorator for logging exceptions as they occur. 
+    Grabs unhandled exceptions only
     @param logger: The logging obj
     """
     def decorator(func):
