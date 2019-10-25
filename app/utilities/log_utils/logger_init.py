@@ -9,7 +9,7 @@ import logging
 import utilities.log_utils.logger_util
 
 # Pull in Logging Config
-path = os.path.join(os.getcwd(), 'app', 'utilities', 'log_utils', 'logger_config.yaml')
+path = os.path.join(os.getcwd(), 'utilities', 'log_utils', 'logger_config.yaml')
 with open(path, 'r') as stream:
     try:
       logging_config = yaml.load(stream, Loader=yaml.FullLoader)

@@ -10,7 +10,7 @@ from datetime import timedelta, datetime
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address, get_ipaddr
 from jinja2 import escape, Markup
-
+import logging
 
 import time
 import re
@@ -28,6 +28,8 @@ from email.mime.text import MIMEText
 app = Flask(__name__)
 app.config.from_object('config')
 cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
+
+logger = logging.getLogger(__name__)
 
 from models import *
 
@@ -170,7 +172,10 @@ def handle_error(error):
 		code = error.code
 		description = error.description
 
-
+	if code >= 500:
+		description = "A(n) {} occurred. The developers have been notified of this.".format(type(error).__name__  or 'unknown error')
+		print(error)
+		logger.error(error)
 	return render_template("error.html", error=description, code=code)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
