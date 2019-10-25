@@ -242,7 +242,7 @@ def suggest_title(url=None):
 	return ''
 
 @app.route('/fonts/<file>')
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+
 def send_font(file=None, methods=['GET']):
 	if file != None:
 		if len(re.findall('^.*.*$', file)) != 1:
@@ -253,12 +253,12 @@ def send_font(file=None, methods=['GET']):
 		return abort(403)
 
 @app.route('/sitemap.xml')
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+
 def sitemap():
 	return app.send_static_file('sitemap.xml')
 
 @app.route('/robots.txt')
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+
 def robotstxt():
 	return app.send_static_file('robots.txt')
 
@@ -458,7 +458,6 @@ def get_user_from_id(uid):
 	return db.session.query(Iuser).filter_by(id=uid).first()
 
 @app.route('/login/',  methods=['GET', 'POST'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def login():
 	if request.method == 'GET':
 		return render_template('login.html')
@@ -517,7 +516,6 @@ def logout():
 	return redirect(url_for('index'), 302)
 
 @app.route('/register', methods=['POST'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def register():
 	if request.method == 'POST':
 		if config.CAPTCHA_ENABLE and config.CAPTCHA_REGISTER:
@@ -571,7 +569,7 @@ def register():
 		return redirect(config.URL, 302)
 
 @app.route('/')
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+
 def index():
 	return subi(subi='all', nsfw=False)
 
@@ -719,7 +717,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
 	return p
 
 @app.route('/i/<subi>/')
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+
 def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, show_top=True, s=None, d=None):
 	offset = request.args.get('offset')
 	d = request.args.get('d')
@@ -898,7 +896,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 @app.route('/i/<sub>/<post_id>/<inurl_title>/<comment_id>/')
 @app.route('/i/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
 @app.route('/i/<sub>/<post_id>/<inurl_title>/')
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+
 def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort_by=None, comments_only=False, user_id=None):
 	try:
 		if sub == None or post_id == None or inurl_title == None:
@@ -981,7 +979,7 @@ def list_of_child_comments(comment_id, sort_by=None):
 
 @app.route('/create', methods=['POST', 'GET'])
 @notbanned
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+
 def create_sub():
 	if request.method == 'POST':
 		subname = request.form.get('subname')
@@ -1036,7 +1034,6 @@ def create_sub():
 		return render_template('create.html')
 
 @app.route('/u/<username>/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def view_user(username):
 	vuser = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
 	mod_of = db.session.query(Moderator).filter_by(username=vuser.username).all()
@@ -1198,7 +1195,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 
 @app.route('/create_post', methods=['POST', 'GET'])
 @notbanned
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+
 def create_post(postsub=None):
 	if 'previous_post_form' not in session:
 		session['previous_post_form'] = None
@@ -1497,7 +1494,6 @@ def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=N
 
 
 @app.route('/u/<username>/messages/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def user_messages(username=None):
 	if 'username' not in session or username == None:
 		flash('not logged in', 'danger')
@@ -1564,7 +1560,6 @@ def user_messages(username=None):
 				sent=sent)
 
 @app.route('/u/<username>/messages/reply/<mid>', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def reply_message(username=None, mid=None):
 	if 'username' not in session or username == None:
 		flash('not logged in', 'danger')
@@ -1596,7 +1591,6 @@ def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False, e
 
 @app.route('/message/', methods=['GET', 'POST'])
 @app.route('/message/<username>', methods=['GET', 'POST'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def msg(username=None):
 	if 'username' not in session:
 		flash('not logged in', 'danger')
@@ -1661,7 +1655,6 @@ def msg(username=None):
 
 
 @app.route('/i/<sub>/mods/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def submods(sub=None):
 	sub = normalize_sub(sub)
 	modactions = db.session.query(Mod_action).filter_by(sub=sub).limit(5).all()
@@ -1670,7 +1663,6 @@ def submods(sub=None):
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions)
 
 @app.route('/i/<sub>/actions/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def subactions(sub=None):
 	sub = normalize_sub(sub)
 	modactions = db.session.query(Mod_action).filter_by(sub=sub).all()
@@ -1680,7 +1672,6 @@ def subactions(sub=None):
 
 
 @app.route('/i/<sub>/mods/banned/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def bannedusers(sub=None):
 	sub = normalize_sub(sub)
 	banned = db.session.query(Ban).filter_by(sub=sub).all()
@@ -1691,7 +1682,6 @@ def bannedusers(sub=None):
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), banned=banned)
 
 @app.route('/i/<sub>/mods/add/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def addmod(sub=None):
 	sub = normalize_sub(sub)
 	if hasattr(request, 'is_mod'):
@@ -1700,7 +1690,6 @@ def addmod(sub=None):
 	return abort(403)
 
 @app.route('/i/<sub>/mods/remove/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def removemod(sub=None):
 	sub = normalize_sub(sub)
 	if hasattr(request, 'is_mod'):
@@ -1709,7 +1698,6 @@ def removemod(sub=None):
 	return abort(403)
 
 @app.route('/i/<sub>/info/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def description(sub=None):
 	sub = normalize_sub(sub)
 	subr = db.session.query(Sub).filter_by(name=sub).first()
@@ -1723,7 +1711,6 @@ def description(sub=None):
 	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
 
 @app.route('/i/<sub>/settings/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def settings(sub=None):
 	sub = normalize_sub(sub)
 	subr = db.session.query(Sub).filter_by(name=sub).first()
@@ -1809,7 +1796,6 @@ def clear_cache():
 @app.route('/about/', methods=['GET'])
 @app.route('/readme/', methods=['GET'])
 @app.route('/news/2019/10/21/ieddit-beta-release/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def about():
 	from markdown import markdown
 	with open('../README.md') as r:
@@ -1818,7 +1804,6 @@ def about():
 
 @app.route('/comments/', methods=['GET'])
 @app.route('/i/<sub>/comments/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def subcomments(sub=None, offset=0, limit=15, s=None):
 	# code is copy pasted from user page... the post stuff can probably be gotten rid of.
 	# the username stuff can be gotten rid of too
@@ -2107,7 +2092,6 @@ def get_stats(subi=None):
 
 @app.route('/i/<subi>/stats/', methods=['GET'])
 @app.route('/stats/', methods=['GET'])
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def stats(subi=None):
 	(posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
 		dayusers, timediff, uptime, subscripts) = get_stats(subi=subi)
