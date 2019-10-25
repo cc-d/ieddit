@@ -8,7 +8,6 @@ os.chdir(abspath)
 
 from discord_webhook import DiscordWebhook, DiscordEmbed
 import config
-print(config.DISCORD_URL)
 
 
 webhook = DiscordWebhook(url=config.DISCORD_URL)
