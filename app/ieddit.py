@@ -123,7 +123,7 @@ def handle_error(error):
         logger.error(error)
         logger.error(traceback.format_exc())
         if config.DISCORD_ENABLED:
-            send_discord_msg(title=title, description=str(tb))
+            send_discord_msg(title=title, description=str(trace_back))
 
     return render_template("error.html", error=description, code=code), code
 
