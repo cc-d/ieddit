@@ -1,5 +1,5 @@
 from flask import abort, make_response
-from ieddit import *
+from share import *
 import json
 from functools import wraps
 from utilities.error_decorator import exception_log
@@ -14,16 +14,19 @@ abp = Blueprint('admin', 'admin', url_prefix='/admin')
 @abp.route('/stats/', methods=['GET'])
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def show_admin_stats():
+    """
+    returns json string of every admin action for display
+    """
     j = {}
     j['site_banned'] = [sqla_to_dict(x) for x in db.session.query(Iuser).filter_by(banned=True).all()]
     j['muted_subs'] = [sqla_to_dict(x) for x in db.session.query(Sub).filter_by(muted=True).all()]
     j['api_key_users'] = [x.username for x in db.session.query(Api_key).all()]
 
     j = str(json.dumps(j))
-    #resp = Response(response=j, status=200, mimetype="application/json")
+
     r = make_response(j)
     r.mimetype = 'application/json'
-    return resp
+    return r
 
 
 def admin_only(f):
