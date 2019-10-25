@@ -1,75 +1,12 @@
-from flask import Flask, render_template, request, redirect, flash, url_for, Blueprint, g
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func, exists
-from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.exceptions import HTTPException
-from flask_caching import Cache
-from flask_session import Session
-from flask_session_captcha import FlaskSessionCaptcha
-from datetime import timedelta, datetime
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address, get_ipaddr
-from jinja2 import escape, Markup
-import logging
+"""
+Main ieddit code.
 
-import time
-import re
-import config
-import base64
-#from subprocess import call
-import os
-import _thread
-import urllib.parse
-from functools import wraps
-import requests
-
-from sqlalchemy.orm import load_only
-import traceback
-
-from email.mime.text import MIMEText
-
-from models import *
-
-from functions.functions import *
-
-from sqlalchemy.orm import load_only
-
-app = Flask(__name__)
-app.config.from_object('config')
-cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
-
-logger = logging.getLogger(__name__)
-
-
-if (config.SENTRY_ENABLED):
-    import sentry_sdk
-    from sentry_sdk.integrations.flask import \
-        FlaskIntegration
-
-    sentry_sdk.init(
-        config.SENTRY_DSN,
-        integrations=[FlaskIntegration()]
-    )
-
-db = SQLAlchemy(app)
-db.session.rollback()
-
-Session(app)
-captcha = FlaskSessionCaptcha(app)
-
-limiter = Limiter(
-    app,
-    key_func=get_ipaddr,
-    default_limits=config.LIMITER_DEFAULTS
-)
-
-#cache.clear()
-
-cache_bust = '?' + str(time.time()).split('.')[0]
+TODO: split this up into different views, function groups, etc.
+"""
+from share import *
 
 @app.before_request
 def before_request():
-
     g.cache_bust = cache_bust
 
     if app.debug:
@@ -171,16 +108,24 @@ def only_cache_get(*args, **kwargs):
 
 @app.errorhandler(Exception)
 def handle_error(error):
-    code = 500
-    description = error
+    title = str(error)
+    trace_back = traceback.format_exc()
+    code = 404
+
     if isinstance(error, HTTPException):
         code = error.code
         description = error.description
-    if code >= 500:
-        description = "A(n) {} occurred. The developers have been notified of this.".format(type(error).__name__  or 'unknown error')
+
+    if code >= 404:
+        description = "A(n) {} occurred. The developers have been notified of this."\
+        .format(type(error).__name__  or 'unknown error')
+
         logger.error(error)
         logger.error(traceback.format_exc())
-    return render_template("error.html", error=description, code=code)
+        if config.DISCORD_ENABLED:
+            send_discord_msg(title=title, description=str(tb))
+
+    return render_template("error.html", error=description, code=code), code
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_style(sub=None):
