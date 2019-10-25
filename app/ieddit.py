@@ -1107,12 +1107,13 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
             except:
                 logger.error('VPOST is undefined, line 1103. Need to investigate why.')
                 logger.error(str(sqla_to_dict(last_vote)))
+                score = '0'
 
 
             db.session.delete(last_vote)
             db.session.commit()
 
-            return str(vpost.ups - vpost.downs)
+            return score
 
         if last_vote == None:
             new_vote = Vote(user_id=user_id, vote=vote, comment_id=comment_id, post_id=post_id)
