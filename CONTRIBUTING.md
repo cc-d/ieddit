@@ -6,3 +6,5 @@ Welcome! We are glad to have you. Our community welcomes people of all levels of
 For formatting please install EditorConfig from the VS Code extensions extensions store. We have included a .editorconfig file that will help ensure the formatting of your code matches the current guidelines.
 
 For all else please refer to the [Pep8](https://www.python.org/dev/peps/pep-0008/) standards. They will instruct you on how to name classes, methods and, variables.
+
+[pylint](https://www.pylint.org/) is highly recommended to ensure adherence to standards.
