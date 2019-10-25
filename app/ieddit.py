@@ -4,6 +4,7 @@ Main ieddit code.
 TODO: split this up into different views, function groups, etc.
 """
 from share import *
+import _thread
 
 @app.before_request
 def before_request():
@@ -591,8 +592,6 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
         offset + 1
     except:
         offset = 0
-
-
 
     if 'blocked_subs' in session and 'username' in session:
         posts = [c for c in posts if c.sub not in session['blocked_subs']]

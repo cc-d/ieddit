@@ -8,7 +8,6 @@ import re
 import config
 import base64
 import os
-import _thread
 import urllib.parse
 from functools import wraps
 
