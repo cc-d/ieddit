@@ -776,8 +776,12 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 		return sub_posts
 
 	sub_stats = get_top_stats(subi)
+	if subi == 'all' and nsfw == True:
+		is_all = True
+	else:
+		is_all = False
 
-	return render_template('sub.html', posts=sub_posts, url=config.URL, sub_stats=sub_stats)
+	return render_template('sub.html', posts=sub_posts, url=config.URL, sub_stats=sub_stats, is_all=is_all)
 
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -788,6 +792,8 @@ def get_cached_children(comment, deleted=False):
 def recursive_children(comment=None, current_depth=0, max_depth=8, deleted=False):
 	found_children = []
 	found_children.append(comment)
+	if deleted:
+		deleted = False
 	children = comment.get_children(deleted=deleted).all()
 
 	while len(children) > 0 and current_depth < max_depth :
@@ -1804,7 +1810,7 @@ def about():
 
 @app.route('/comments/', methods=['GET'])
 @app.route('/i/<sub>/comments/', methods=['GET'])
-def subcomments(sub=None, offset=0, limit=15, s=None):
+def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
 	# code is copy pasted from user page... the post stuff can probably be gotten rid of.
 	# the username stuff can be gotten rid of too
 	mods = {}
@@ -1822,10 +1828,14 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	muted_subs = False
 
 	if sub == 'all':
+		nsfw = True
 		posts = subi('all', posts_only=True, nsfw=True)
 		muted_subs = get_muted_subs()
 		posts = [p for p in posts if p.sub not in muted_subs]	
 	elif sub != None:
+		subobj = db.session.query(Sub).filter_by(name=sub).first()
+		if sub.muted or sub.nsfw:
+			nsfw = True
 		posts = subi(sub, posts_only=True)
 	else:
 		posts = subi('all', posts_only=True, nsfw=False)
@@ -1850,11 +1860,8 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 		comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub))
 		comcount = comments.count()
 
-
 	if comcount <= offset:
 		more = comcount
-	
-
 
 	if s == 'top':
 		comments = comments.order_by((Comment.ups - Comment.downs).desc())
@@ -1872,6 +1879,22 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 
 	comments = anon_block(comments)
 	comments = [c for c in comments if c.noblock == True]
+
+
+	nsfw_subs = []
+	sfw_subs = []
+
+	if nsfw == False:
+		for c in comments:
+			if c.sub_name not in nsfw_subs and c.sub_name not in sfw_subs:
+				comsub = db.session.query(Sub).filter_by(name=c.sub_name).first()
+				if comsub.nsfw == True:
+					nsfw_subs.append(comsub.name)
+				else:
+					sfw_subs.append(comsub.name)
+
+	if nsfw == False:
+		comments = [c for c in comments if c.sub_name not in nsfw_subs]
 
 	for c in comments:
 		c.new_text = pseudo_markup(c.text)
