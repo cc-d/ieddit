@@ -134,18 +134,24 @@ function formSubmit(val) {
 	}
 	elem = $('#' + val);
 
-	if ($(elem).attr('href') !== 'undefined' ) {
+	if ($(elem).attr('href') !== undefined ) {
 		window.location = $(elem).attr('href');
 	}
 	btn = $('#btn-' + val);
 	console.log(btn);
 	console.log(elem);
+
+	formId = val
 	val = val.split('-');
+
 	itype = val[0]
 	action = val[1]
 	iid = val[2]
 	console.log(val);
-	$(btn).click();
+
+	console.log($(btn).parent().html());
+
+	$('#' + formId).parent().submit();
 }
 
 function copyToClipboard(text) {

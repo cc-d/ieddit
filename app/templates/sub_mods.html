@@ -84,7 +84,7 @@ No Description
 <div id='rules' style='margin-top: 1rem;'>
 <form style="margin-left: 1rem;" action='/mod/edit/description' method='POST'>
   <div class="form-group">
-    <textarea name='rtext' class="form-control safe-markup-text" id="exampleFormControlTextarea1" rows="3" style='width: 450px; resize: both;'>{% if rules %}{{ rules }}{% endif %}</textarea>
+    <textarea name='rtext' class="form-control safe-markup-text" id="exampleFormControlTextarea1" rows="3" style='width: 450px; resize: both;'>{% if rules != None %}{{ rules }}{% endif %}</textarea>
   </div>
   <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary " type="button">Update description</button>
 </form>
