@@ -1963,8 +1963,9 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def get_votes(obj):
-	return obj.get_votes()
+def mget_votes(obj):
+	v = obj.get_votes()
+	return v
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_top_stats(subi=None):
@@ -1982,18 +1983,18 @@ def get_top_stats(subi=None):
 	for p in posts:
 		if p.author not in users:
 			users.append(p.author)
-		[votes.append(v) for v in get_votes(p)]
+		[votes.append(v) for v in mget_votes(p) if v != None]
 
 	comments = [c for c in comments if ((datetime.now() - c.created).total_seconds()) < 86400]
 	for c in comments:
 		if c.author not in users:
 			users.append(c.author)
-		[votes.append(v) for v in get_votes(c)]
+		[votes.append(v) for v in mget_votes(c) if v != None]
 
 	for v in votes:
 		user = get_user_from_id(v.user_id)
 		if user.username not in users:
-			v.append(user.username)
+			users.append(user.username)
 
 	return {'active_users':len(users), 'posts_today':len(posts)}
 
