@@ -23,6 +23,7 @@ import urllib.parse
 from functools import wraps
 import requests
 
+from sqlalchemy.orm import load_only
 import traceback
 
 from email.mime.text import MIMEText
@@ -1808,7 +1809,8 @@ def explore():
 	return render_template('explore.html', subs=esubs)
 
 @app.route('/clear_cache', methods=['GET'])
-def ccache():
+def clear_cache():
+	#return str(vars(remote_addr))
 	if request.remote_addr == '127.0.0.1':
 		#cache.clear()
 		return 'cleared'
@@ -1963,7 +1965,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def mget_votes(obj):
+def get_votes(obj):
 	v = obj.get_votes()
 	return v
 
@@ -1971,25 +1973,25 @@ def mget_votes(obj):
 def get_top_stats(subi=None):
 	votes = []
 	users = []
+	filter_today = datetime.now() - timedelta(days=1)
 
 	if subi == None or subi == 'all':
-		posts = db.session.query(Post).all()
-		comments = db.session.query(Comment).all()
+		posts = db.session.query(Post).filter(Post.created >= filter_today).options(load_only('author')).all()
+		comments = db.session.query(Comment).filter(Comment.created >= filter_today).options(load_only('author')).all()
 	else:
-		posts = db.session.query(Post).filter_by(sub=subi).all()
-		comments = db.session.query(Comment).filter_by(sub_name=subi).all()
+		posts = db.session.query(Post).filter(Post.sub == subi, Post.created >= filter_today).options(load_only('author')).all()
+		comments = db.session.query(Comment).filter(Comment.sub_name == subi, Comment.created >= filter_today).options(load_only('author')).all()
 
-	posts = [p for p in posts if ((datetime.now() - p.created).total_seconds()) < 86400]
 	for p in posts:
 		if p.author not in users:
 			users.append(p.author)
-		[votes.append(v) for v in mget_votes(p) if v != None]
+		[votes.append(v) for v in get_votes(p) if v != None]
 
-	comments = [c for c in comments if ((datetime.now() - c.created).total_seconds()) < 86400]
+
 	for c in comments:
 		if c.author not in users:
 			users.append(c.author)
-		[votes.append(v) for v in mget_votes(c) if v != None]
+		[votes.append(v) for v in get_votes(c) if v != None]
 
 	for v in votes:
 		user = get_user_from_id(v.user_id)
