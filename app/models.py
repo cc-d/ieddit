@@ -114,6 +114,9 @@ class Post(db.Model):
 	def get_type(self):
 		return 'post'
 
+	def get_votes(self):
+		return db.session.query(Vote).filter_by(post_id=self.id).all()
+
 	def __repr__(self):
 		return '<Post %r>' % self.id
 
@@ -148,9 +151,8 @@ class Comment(db.Model):
 			return db.session.query(Comment).filter_by(parent_id=self.id, deleted=False).count()
 		return db.session.query(Comment).filter_by(parent_id=self.id).count()
 
-	def users_voted(self):
-		users = db.session.query(Vote).filter_by(comment_id=self.id)
-		return users
+	def get_votes(self):
+		return db.session.query(Vote).filter_by(comment_id=self.id).all()
 
 	def get_score(self):
 		return int(self.ups) - int(self.downs)

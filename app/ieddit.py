@@ -23,6 +23,8 @@ import urllib.parse
 from functools import wraps
 import requests
 
+import traceback
+
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
@@ -171,11 +173,10 @@ def handle_error(error):
 	if isinstance(error, HTTPException):
 		code = error.code
 		description = error.description
-
 	if code >= 500:
 		description = "A(n) {} occurred. The developers have been notified of this.".format(type(error).__name__  or 'unknown error')
-		print(error)
 		logger.error(error)
+		logger.error(traceback.format_exc())
 	return render_template("error.html", error=description, code=code)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -731,7 +732,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 	d = request.args.get('d')
 	s = request.args.get('s')
 	subi = normalize_sub(subi)
-	#active_sub_users = db.session.query(Post).filter_by(sub=subi).group_by(Post.author).count()
+
 	if request.environ['QUERY_STRING'] == '':
 		session['off_url'] = request.url + '?offset=15'
 		session['prev_off_url'] = request.url
@@ -782,9 +783,10 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 
 	if posts_only:
 		return sub_posts
-	(posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
-	 dayusers, timediff, uptime, subscripts) = get_stats(subi=subi)
-	return render_template('sub.html', posts=sub_posts, url=config.URL, show_top=show_top)
+
+	sub_stats = get_top_stats(subi)
+
+	return render_template('sub.html', posts=sub_posts, url=config.URL, sub_stats=sub_stats)
 
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
@@ -1961,8 +1963,46 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_votes(obj):
+	return obj.get_votes()
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_top_stats(subi=None):
+	votes = []
+	users = []
+
+	if subi == None or subi == 'all':
+		posts = db.session.query(Post).all()
+		comments = db.session.query(Comment).all()
+	else:
+		posts = db.session.query(Post).filter_by(sub=subi).all()
+		comments = db.session.query(Comment).filter_by(sub_name=subi).all()
+
+	posts = [p for p in posts if ((datetime.now() - p.created).total_seconds()) < 86400]
+	for p in posts:
+		if p.author not in users:
+			users.append(p.author)
+		[votes.append(v) for v in get_votes(p)]
+
+	comments = [c for c in comments if ((datetime.now() - c.created).total_seconds()) < 86400]
+	for c in comments:
+		if c.author not in users:
+			users.append(c.author)
+		[votes.append(v) for v in get_votes(c)]
+
+	for v in votes:
+		user = get_user_from_id(v.user_id)
+		if user.username not in users:
+			v.append(user.username)
+
+	return {'active_users':len(users), 'posts_today':len(posts)}
+
+
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_stats(subi=None):
 	if subi == None:
+		votes = db.session.query(Vote).all()
 		posts = db.session.query(Post).all()
 		comments = db.session.query(Comment).all()
 		users = db.session.query(Iuser).all()
@@ -1970,7 +2010,6 @@ def get_stats(subi=None):
 		messages = db.session.query(Message).count()
 		mod_actions = db.session.query(Mod_action).count()
 		subs = db.session.query(Sub).count()
-		votes = db.session.query(Vote).all()
 		subscripts = 0
 	else:
 		posts = db.session.query(Post).filter_by(sub=subi).all()
