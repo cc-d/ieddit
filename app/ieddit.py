@@ -130,8 +130,13 @@ def handle_error(error):
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_style(sub=None):
-    if sub != None:
+    """
+    returns sub style for a given sub
+    """
+    if sub is not None:
         sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
+        if sub is None:
+            return abort(404)
         return sub.css
     return None
 
@@ -1085,17 +1090,24 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
             return 'never voted'
 
 
-
         if vote == 0:
-            if last_vote.post_id != None:
-                if last_vote.post_id != None:
+            if last_vote.post_id is not None:
+                if last_vote.post_id is not None:
                     vpost = db.session.query(Post).filter_by(id=last_vote.post_id).first()
-                elif last_vote.comment_id != None:
+                elif last_vote.comment_id is not None:
                     vpost = db.session.query(Comment).filter_by(id=last_vote.comment_id).first()
+
                 if last_vote.vote == 1:
                     vpost.ups -= 1
                 elif last_vote.vote == -1:
                     vpost.downs -= 1
+
+            try:
+                score = str(vpost.ups - vpost.downs)
+            except:
+                logger.error('VPOST is undefined, line 1103. Need to investigate why.')
+                logger.error(str(sqla_to_dict(last_vote)))
+
 
             db.session.delete(last_vote)
             db.session.commit()
