@@ -202,3 +202,23 @@ def new_post():
 	db.session.commit()
 
 	return jcon(new_post)
+
+# single sub
+@bp.route('/get_sub/<sub_name>/', methods=['GET'])
+@require_key
+def get_sub(sub_name=None):
+	return jcon((db.session.query(Sub).filter_by(name=sub_name).first()))
+
+# multiple subs comma seperated, example /1,2,3,4,5/
+@bp.route('/get_subs/<sub_names>/', methods=['GET'])
+def get_subs(sub_names=None):
+	sub_names = sub_names.split(',')
+	r = []
+
+	for name in sub_names:
+		sub = db.session.query(Sub).filter_by(name=name).first()
+		print(sub)
+		if sub != None:
+			r.append(as_dict(sub))
+
+	return json.dumps(r)
