@@ -154,7 +154,6 @@ def apply_headers(response):
 	if request.environ['REQUEST_METHOD'] == 'POST':
 		cache.clear()
 
-
 	return response
 
 
@@ -191,16 +190,6 @@ def get_style(sub=None):
 	return None
 
 app.jinja_env.globals.update(get_style=get_style)
-
-
-def catch_all_exceptions(f):
-	@wraps(f)
-	def decorated_function(*args, **kwargs):
-		try:
-			return f(*args, **kwargs)
-		except Exception as e:
-			print('\n\nCaught unkown error in catch_all_exceptions wrapped function %s .\n\n' % f, e)
-	return decorated_function
 
 def notbanned(f):
 	@wraps(f)
@@ -1725,13 +1714,13 @@ def description(sub=None):
 	sub = normalize_sub(sub)
 	subr = db.session.query(Sub).filter_by(name=sub).first()
 	if hasattr(subr, 'rules') == False:
-		rtext = False
+		rtext = None
 	else:
 		if subr.rules != None:
 			rtext = pseudo_markup(subr.rules)
 		else:
-			rtext = False
-	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=Markup(rtext))
+			rtext = None
+	return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
 
 @app.route('/i/<sub>/settings/', methods=['GET'])
 #@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)

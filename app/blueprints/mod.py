@@ -411,16 +411,11 @@ def mod_settings():
 		sub = db.session.query(Sub).filter_by(name=sub).first()
 
 		if marknsfw:
-			if request.form.get('alsoposts'):
-				for p in db.session.query(Post).filter_by(sub=subr):
-					p.nsfw = True
-				db.session.commit()
+			for p in db.session.query(Post).filter_by(sub=subr):
+				p.nsfw = True
+			db.session.commit()
 			sub.nsfw = True
 		else:
-			if request.form.get('alsoposts'):
-				for p in db.session.query(Post).filter_by(sub=subr):
-					p.nsfw = False
-				db.session.commit()
 			sub.nsfw = False
 
 		if newcss != None:
