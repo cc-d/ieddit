@@ -28,15 +28,18 @@ import traceback
 
 from email.mime.text import MIMEText
 
+from models import *
+
+from functions.functions import *
+
+from sqlalchemy.orm import load_only
+
 app = Flask(__name__)
 app.config.from_object('config')
 cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
 
 logger = logging.getLogger(__name__)
 
-from models import *
-
-from functions.functions import *
 
 if (config.SENTRY_ENABLED):
 	import sentry_sdk
@@ -60,7 +63,7 @@ limiter = Limiter(
 	default_limits=config.LIMITER_DEFAULTS
 )
 
-cache.clear()
+#cache.clear()
 
 cache_bust = '?' + str(time.time()).split('.')[0]
 
@@ -1970,17 +1973,33 @@ def get_votes(obj):
 	return v
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+def get_posts_and_comments(subi=None, day=False):
+	filter_today = datetime.now() - timedelta(days=1)
+	if subi == None or subi == 'all':
+		posts = db.session.query(Post).filter(Post.created >= filter_today)
+		comments = db.session.query(Comment).filter(Comment.created >= filter_today)
+	else:
+		posts = db.session.query(Post).filter(Post.sub == subi, Post.created >= filter_today)
+		comments = db.session.query(Comment).filter(Comment.sub_name == subi, Comment.created >= filter_today)
+
+	if day:
+		posts = posts.filter(Post.created >= filter_today)
+		comments = comments.filter(Comment.created >= filter_today)
+
+	posts = posts.options(load_only('author'))
+	comments = comments.options(load_only('author'))
+
+	return posts.all(), comments.all()
+
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_top_stats(subi=None):
+	t = time.time()
 	votes = []
 	users = []
 	filter_today = datetime.now() - timedelta(days=1)
 
-	if subi == None or subi == 'all':
-		posts = db.session.query(Post).filter(Post.created >= filter_today).options(load_only('author')).all()
-		comments = db.session.query(Comment).filter(Comment.created >= filter_today).options(load_only('author')).all()
-	else:
-		posts = db.session.query(Post).filter(Post.sub == subi, Post.created >= filter_today).options(load_only('author')).all()
-		comments = db.session.query(Comment).filter(Comment.sub_name == subi, Comment.created >= filter_today).options(load_only('author')).all()
+	posts, comments = get_posts_and_comments(subi=subi, day=True)	
+	print(time.time() - t, '@@@@@@@@')	
 
 	for p in posts:
 		if p.author not in users:
@@ -1997,7 +2016,7 @@ def get_top_stats(subi=None):
 		user = get_user_from_id(v.user_id)
 		if user.username not in users:
 			users.append(user.username)
-
+	print(time.time() - t, '@@@@@@@@')
 	return {'active_users':len(users), 'posts_today':len(posts)}
 
 

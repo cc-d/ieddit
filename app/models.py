@@ -9,7 +9,7 @@ from flask_caching import Cache
 
 app = Flask(__name__)
 app.config.from_object('config')
-cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
+
 db = SQLAlchemy(app)
 
 
