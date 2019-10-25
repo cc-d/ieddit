@@ -110,13 +110,13 @@ def only_cache_get(*args, **kwargs):
 def handle_error(error):
     title = str(error)
     trace_back = traceback.format_exc()
-    code = 404
+    code = 500
 
     if isinstance(error, HTTPException):
         code = error.code
         description = error.description
 
-    if code >= 404:
+    if code >= 500:
         description = "A(n) {} occurred. The developers have been notified of this."\
         .format(type(error).__name__  or 'unknown error')
 
