@@ -1927,8 +1927,8 @@ def get_posts_and_comments(subi=None, day=False, load=None):
         posts = db.session.query(Post)
         comments = db.session.query(Comment)
     else:
-        posts = db.session.query(Post)
-        comments = db.session.query(Comment)
+        posts = db.session.query(Post).filter_by(sub=subi)
+        comments = db.session.query(Comment).filter_by(sub_name=subi)
 
     if day:
         posts = posts.filter(Post.created >= filter_today)
