@@ -7,7 +7,8 @@ bp = Blueprint('api', 'api', url_prefix='/api')
 def require_key(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
-		key = db.session.query(Api_key).filter_by(username=normalize_username(request.headers['ieddit-username']), key=request.headers['ieddit-api-key']).first()
+		key = db.session.query(Api_key).filter_by(username=normalize_username(request.headers['ieddit-username']),
+			key=request.headers['ieddit-api-key']).first()
 		if key != None:
 			return f(*args, **kwargs)
 		else:
@@ -16,34 +17,14 @@ def require_key(f):
 	return decorated_function
 
 
-# convert to dict
-def as_dict(obj):
-	obj = {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
-	if obj['created']:
-		obj['created'] = obj['created'].isoformat()
-	return obj
-
-
-# convert to obj and then pretty print
-def jcon(obj):
-	return json.dumps(as_dict(obj), sort_keys=True, indent=4, separators=(',', ': '))
-
-
-# just a pretty print function
-def pjson(obj):
-	return json.dumps(obj, sort_keys=True, indent=4, separators=(',', ': '))
-
-
 # single post
 @bp.route('/get_post/<post_id>/', methods=['GET'])
-@require_key
 def get_post(post_id=None):
-	return jcon((db.session.query(Post).filter_by(id=post_id).first()))
+	return sqla_to_json((db.session.query(Post).filter_by(id=post_id).first()))
 
 
 # multiple posts comma seperated, example /1,2,3,4,5/
 @bp.route('/get_posts/<post_ids>/', methods=['GET'])
-@require_key
 def get_posts(post_ids=None):
 	post_ids = post_ids.split(',')
 	r = []
@@ -62,14 +43,12 @@ def get_posts(post_ids=None):
 
 # single comment
 @bp.route('/get_comment/<comment_id>/', methods=['GET'])
-@require_key
 def get_comment(comment_id=None):
-	return jcon((db.session.query(Comment).filter_by(id=comment_id).first()))
+	return sqla_to_json((db.session.query(Comment).filter_by(id=comment_id).first()))
 
 
 # multiple comments comma seperated, example /1,2,3,4,5/
 @bp.route('/get_comments/<comment_ids>/', methods=['GET'])
-@require_key
 def get_comments(comment_ids=None):
 	comment_ids = comment_ids.split(',')
 	r = []
@@ -142,7 +121,7 @@ def new_comment():
 	db.session.add(new_comment)
 	db.session.commit()
 
-	return jcon(new_comment)
+	return sqla_to_json(new_comment)
 
 @bp.route('/new_post', methods=['POST'])
 @require_key
@@ -201,13 +180,12 @@ def new_post():
 	db.session.add(new_post)
 	db.session.commit()
 
-	return jcon(new_post)
+	return sqla_to_json(new_post)
 
 # single sub
 @bp.route('/get_sub/<sub_name>/', methods=['GET'])
-@require_key
 def get_sub(sub_name=None):
-	return jcon((db.session.query(Sub).filter_by(name=sub_name).first()))
+	return sqla_to_json((db.session.query(Sub).filter_by(name=sub_name).first()))
 
 # multiple subs comma seperated, example /1,2,3,4,5/
 @bp.route('/get_subs/<sub_names>/', methods=['GET'])

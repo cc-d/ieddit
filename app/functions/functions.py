@@ -345,3 +345,21 @@ def get_youtube_vid_id(url):
 		return url.split('.be/')[1]
 
 	return False
+
+# convert to dict
+def sqla_to_dict(obj):
+	obj = {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+	if obj['created']:
+		obj['created'] = obj['created'].isoformat()
+	return obj
+
+
+# convert to obj and then pretty print
+def sqla_to_json(obj):
+	return json.dumps(sqla_to_dict(obj), sort_keys=True, indent=4, separators=(',', ': '))
+
+
+# just a pretty print function
+def pretty_json(obj):
+	return json.dumps(obj, sort_keys=True, indent=4, separators=(',', ': '))
+
