@@ -1,27 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<!-- Bootstrap -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<script src="{{ url_for('static', filename='jquery-3.3.1.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='popper.min.js') }}"></script>
-	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
-	<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
-	<link href="{{ url_for('static', filename='font-awesome.min.css') }}" type="text/css" rel="stylesheet">
-	<!--  end bootstrap -->
 
-	<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}{{ g.cache_bust }}">
-	<script src="{{ url_for('static', filename='main.js') }}{{ g.cache_bust }}"></script>
-	<link rel="shortcut icon" href="{{ url_for('static', filename='globe.png') }}{{ g.cache_bust }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}{{ g.cache_bust }}">
-	<link rel="shortcut icon" href="{{ url_for('static', filename='globe.png') }}{{ g.cache_bust }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}{{ g.cache_bust }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}{{ g.cache_bust }}">
 
-	<link rel="stylesheet" href="{{ url_for('static', filename='darkmode.css') }}{{ g.cache_bust }}">
-
-	<script src="{{ url_for('static', filename='actions.js') }}{{ g.cache_bust }}"></script>
-
-	<script src="{{ url_for('static', filename='expand-post.js') }}{{ g.cache_bust }}"></script>
+	<link rel="shortcut icon" href="{{ url_for('static', filename='img/globe.png') }}{{ g.cache_bust }}">
 
 	{% if request.sub and request.sub != 'all' %}
 	<title>/i/{{ request.sub}} {% if request.subtitle != None %} - {{ request.subtitle }}{% endif %}</title>
@@ -60,7 +48,7 @@
 					<a class="nav-link" href="/about/">about</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="/i/all"><button type="button" class="btn btn-sm btn-danger">/i/all <i class='fa fa-users'></i></button></a>
+					<a class="nav-link" href="/i/all"><button type="button" class="btn btn-sm btn-danger"><i class='fa fa-users'></i> /i/all</button></a>
 				</li>
 				{% endif %}
 
@@ -70,28 +58,28 @@
 				<li class='nav-item nav-link'>
 				<input type='hidden' name='lol' value='1'>
 				{% if request.sub in session['blocked_subs'] %}
-					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'>subscribe <i class='fa fa-star'></i></button>
+					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'><i class='fa fa-star'></i> subscribe</button>
 				{% else %}
-					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger	'>unsubscribe <i class='fa fa-ban'></i></button>
+					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger	'><i class='fa fa-ban'></i> unsubscribe</button>
 				{% endif %}
 			</li>
 				</form>
 				<li class="nav-item">
-					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success">Create Post +</button></a>
+					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> create post</button></a>
 				</li>
 				{% endif %}
 
 				{% else %}
 				<li class="nav-item">
-					<a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-primary">Create Sub +</button></a>
+					<a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> create sub</button></a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="/explore/"><button type="button" class="btn btn-sm btn-success">Explore <i class='fa fa-paper-plane'></i></button></a>
+					<a class="nav-link" href="/explore/"><button type="button" class="btn btn-sm btn-success"><i class='fa fa-paper-plane'></i> explore</button></a>
 				</li>
 				{% endif %}
 				{% if session['username'] %}
 				<li class="nav-item active">
-					<a class="nav-link" id='logout-left' href="/logout">logout</a>
+					<a class="nav-link" id='logout-left' href="/logout"><i class="fas fa-sign-out-alt"></i> logout</a>
 				</li>
 				{% endif %}
 			</ul>
@@ -119,7 +107,7 @@
 					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> (0)</a>
 					{% endif %}
 				<li class="nav-item active">
-					<a class="nav-link" id='logout-right' href="/logout">logout</a>
+					<a class="nav-link" id='logout-right' href="/logout"><i class="fas fa-sign-out-alt"></i> logout</a>
 				</li>
 			</ul>
 			{% endif %}
@@ -163,12 +151,19 @@
 <!-- ? -->
 <small>
 <div id='footer'>
-	<a href='https://ieddit.com' class='footer-link'><i class='fa fa-globe'></i> ieddit.com</a>
+	<a href='https://ieddit.com' class='footer-link'><i class='fa fa-globe'></i> home</a>
 	<a href='https://kiwiirc.com/nextclient/irc.freenode.net/#ieddit' class='footer-link'><i class='fa fa-comment'></i> irc</a>
-	<a href='https://discord.gg/pdGCV6K' class='footer-link'><i class='fa fa-phone-square'></i> discord</a>	
-	<a href='https://github.com/cc-d/ieddit' class='footer-link'><i class='fa fa-github'></i> github</a>
+	<a href='https://discord.gg/pdGCV6K' class='footer-link'><i class="fab fa-discord"></i> discord</a>
+	<a href='https://github.com/cc-d/ieddit' class='footer-link'><i class='fab fa-github'></i> github</a>
 </div>
 </small>
+
+	<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/main.js') }}{{ g.cache_bust }}"></script>
+	<script src="{{ url_for('static', filename='js/actions.js') }}{{ g.cache_bust }}"></script>
+	<script src="{{ url_for('static', filename='js/expand-post.js') }}{{ g.cache_bust }}"></script>
 
 </body>
 </html>

@@ -895,9 +895,8 @@ ul {
 
 .col.inner-div.comment-inner-div {
 	min-height: 25px;
-	display: inline-block;	
+	display: inline-block;
 }
-
 .active_sub_users {
 	float: right;
 	font-size: x-small;

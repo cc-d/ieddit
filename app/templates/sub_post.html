@@ -55,17 +55,17 @@ var preExpandVideo = false;
                 {% if post.sub_nsfw %}
                 <img class="mr-3 post-image" src="{{ url_for('static', filename=post.thumbnail) }}" alt="Generic placeholder image">
                 {% else %}
-                <img class="mr-3 post-image" src="{{ url_for('static', filename='nsfw.png') }}" alt="Generic placeholder image">
+                <img class="mr-3 post-image" src="{{ url_for('static', filename='img/nsfw.png') }}" alt="Generic placeholder image">
                 {% endif %}
             {% elif post.thumbnail %}
             <img class="mr-3 post-image" src="{{ url_for('static', filename=post.thumbnail) }}" alt="Generic placeholder image">
             {% else %}
-            <img class="mr-3 post-image" src="{{ url_for('static', filename='globe.png') }}" alt="Generic placeholder image">
+            <img class="mr-3 post-image" src="{{ url_for('static', filename='img/globe.png') }}" alt="Generic placeholder image">
             {% endif %}
         </a>
         {% else %}
         <a href="{{ post.permalink }}">
-            <img class="mr-3 post-image" src="{{ url_for('static', filename='comment-white.png') }}" alt="Generic placeholder image">
+            <img class="mr-3 post-image" src="{{ url_for('static', filename='img/comment-white.png') }}" alt="Generic placeholder image">
         </a>
         {% endif %}
 
@@ -98,7 +98,7 @@ var preExpandVideo = false;
 
     <div class="sub-post-title">
     {% if post.post_type == 'url' and post.remote_image_url == None %}
-    
+
     {% else %}
     <div class='expand-post'>
         {% set fclass = '' %}
@@ -143,7 +143,7 @@ var preExpandVideo = false;
     {% else %}
         <div class='expanded-selftext rounded'>
             <div class='inner-selftext-wrapper'>
-            <div class='safe-markup-text expanded-self-text'>{{ post.new_self_text|safe }}</div> 
+            <div class='safe-markup-text expanded-self-text'>{{ post.new_self_text|safe }}</div>
         </div>
         </div>
     {% endif %}
@@ -294,7 +294,7 @@ var preExpandVideo = false;
 {% if session['username'] in post.mods %}
             <style>.mod-dropdown{opacity:0}</style>
             <script>document.write("<style>#mod-dropdown-{{  post.id }}{opacity:1}</style>");</script>
-    
+
 {% endif %}
          <!-- END MOD STYLE -->
 
@@ -387,11 +387,11 @@ var preExpandVideo = false;
 {% if loop.last %}
 
 {% if session.prev_off_url %}
-<a href="{{ session.prev_off_url }}" id="prev-button" class="sub-posts-next"><button type="button" class="btn btn-secondary ">prev</button></a>
+<a href="{{ session.prev_off_url }}" id="prev-button" class="sub-posts-next"><button type="button" class="btn btn-secondary "><i class="fas fa-arrow-left"></i> prev</button></a>
 
 {% endif %}
 {% if post.more %}
-<a href="{{ session.off_url }}" class="sub-posts-next"><button type="button" class="btn btn-secondary ">next</button></a>
+<a href="{{ session.off_url }}" class="sub-posts-next"><button type="button" class="btn btn-secondary ">next <i class="fas fa-arrow-right"></i></button></a>
 {% endif %}
 {% endif %}
 {% endif %}

@@ -421,3 +421,5 @@ function minShow(cid, startingLevel) {
 function jslogin() {
 	window.location.href = '/login';
 }
+
+$('[data-toggle="tooltip"]').tooltip()
