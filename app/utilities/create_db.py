@@ -3,6 +3,7 @@ abspath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, abspath) 
 os.chdir(abspath)
 
+from datetime import timedelta
 import logging
 from flask import Flask, render_template, session, request
 from flask_sqlalchemy import SQLAlchemy
@@ -106,6 +107,7 @@ for i in range(50):
 		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='url', author_type='mod')
 	db.session.add(new_post)
 	db.session.commit()
+	new_post.created = new_post.created - timedelta(days=randint(0,8))
 	new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 	db.session.commit()
 for i in range(50):
@@ -114,6 +116,7 @@ for i in range(50):
 		author='test', author_id=1, sub='test', ups=randint(1,20), downs=randint(1,5), post_type='self_post', author_type='mod')
 	db.session.add(new_post)
 	db.session.commit()
+	new_post.created = new_post.created - timedelta(days=randint(0,8))
 	new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 	db.session.commit()
 

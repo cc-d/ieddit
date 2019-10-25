@@ -1967,23 +1967,30 @@ def subcomments(sub=None, offset=0, limit=15, s=None):
 	return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
-def get_posts_and_comments(subi=None, day=False):
+def get_posts_and_comments(subi=None, day=False, load=None):
 	filter_today = datetime.now() - timedelta(days=1)
 	if subi == None or subi == 'all':
-		posts = db.session.query(Post).filter(Post.created >= filter_today)
-		comments = db.session.query(Comment).filter(Comment.created >= filter_today)
+		posts = db.session.query(Post)
+		comments = db.session.query(Comment)
 	else:
-		posts = db.session.query(Post).filter(Post.sub == subi, Post.created >= filter_today)
-		comments = db.session.query(Comment).filter(Comment.sub_name == subi, Comment.created >= filter_today)
+		posts = db.session.query(Post)
+		comments = db.session.query(Comment)
 
 	if day:
 		posts = posts.filter(Post.created >= filter_today)
 		comments = comments.filter(Comment.created >= filter_today)
 
-	posts = posts.options(load_only('author'))
-	comments = comments.options(load_only('author'))
+	if load != None:
+		posts = posts.options(load_only('author'))
+		comments = comments.options(load_only('author'))
 
-	return posts.all(), comments.all()
+
+	hidden_subs = [s.name for s in db.session.query(Sub).filter_by(muted=True).all()]
+
+	posts = [p for p in posts.all() if p.sub not in hidden_subs]
+	comments = [c for c in comments.all() if c.sub_name not in hidden_subs]
+
+	return posts, comments
 
 @cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_top_stats(subi=None):
