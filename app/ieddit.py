@@ -840,7 +840,10 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 
     session['last_return_url'] = last
 
-    is_modv = is_mod_of(session['username'], normalize_sub(sub))    
+    if 'username' in session:
+        is_modv = is_mod_of(session['username'], normalize_sub(sub))
+    else:
+        is_modv = False
 
     return render_template('comments.html', comments=comments, post_id=post_id, 
         post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), 
@@ -1255,7 +1258,8 @@ def create_post(postsub=None):
         is_modv = False
         if postsub:
             if postsub != '' and postsub is not None:
-                is_modv = is_mod_of(session['username'], postsub)
+                if 'username' in session:
+                    is_modv = is_mod_of(session['username'], postsub)
 
         sppf = session['previous_post_form']
         session['previous_post_form'] = None
