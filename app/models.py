@@ -1,20 +1,17 @@
+import sys
+import urllib
+
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, session, request
 from datetime import datetime, timedelta
-import sys
-import urllib
-from functions import *
 from sqlalchemy import orm
+
 from flask_caching import Cache
 
 sys.path.append('functions/')
 
+from share import db
 import config
-
-app = Flask(__name__)
-app.config.from_object('config')
-
-db = SQLAlchemy(app)
 
 
 # iuser instead of user to avoid conflicting namespace with postgresql
@@ -107,7 +104,7 @@ class Post(db.Model):
     remote_image_url = db.Column(db.String(2000), default=None, nullable=True)
 
     def get_permalink(self):
-        return config.URL + urllib.parse.urlparse(self.permalink).path
+        return config.URL + str(urllib.parse.urlparse(self.permalink).path)
 
     def has_voted(self, user_id):
         return db.session.query(Vote).filter_by(post_id=self.id, user_id=user_id).first()
@@ -143,7 +140,7 @@ class Comment(db.Model):
     edited = db.Column(db.Boolean, default=False, nullable=False)
 
     def get_permalink(self):
-        return config.URL + urllib.parse.urlparse(self.permalink).path
+        return config.URL + str(urllib.parse.urlparse(self.permalink).path)
 
     def get_children(self, deleted=False):
         if deleted == False:
@@ -257,7 +254,7 @@ class Hidden(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
     comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=True)
-    username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)    
+    username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
     other_user = db.Column(db.Integer, db.ForeignKey('iuser.id'), nullable=True)
     anonymous = db.Column(db.Boolean, default=False)
 
@@ -268,6 +265,9 @@ class Api_key(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
     key = db.Column(db.String(20000), nullable=False)
+
+    def __repr__(self):
+        return '<Api_key %r>' % self.id
 
 if __name__ == '__main__':
     db.create_all()

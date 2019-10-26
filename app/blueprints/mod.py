@@ -101,6 +101,7 @@ def mod_unsticky_post():
 
     pid = request.form.get('post_id')
     post = db.session.query(Post).filter_by(id=pid).first()
+    print(post, pid)
 
     if 'admin' in session:
         is_mod = True

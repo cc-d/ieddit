@@ -133,10 +133,10 @@ function formSubmit(val) {
 		return;
 	}
 	elem = $('#' + val);
-
+	/*
 	if ($(elem).attr('href') !== undefined ) {
 		window.location = $(elem).attr('href');
-	}
+	}*/
 	btn = $('#btn-' + val);
 	console.log(btn);
 	console.log(elem);
@@ -148,10 +148,7 @@ function formSubmit(val) {
 	action = val[1]
 	iid = val[2]
 	console.log(val);
-
-	console.log($(btn).parent().html());
-
-	$('#' + formId).parent().submit();
+	$('#btn-' + formId).click();
 }
 
 function copyToClipboard(text) {

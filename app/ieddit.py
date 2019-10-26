@@ -8,6 +8,9 @@ from functions.db_functions import *
 from functions.functions import *
 import _thread
 
+abs_path = os.path.abspath(os.path.dirname(__file__))
+os.chdir(abs_path)
+app.static_folder = 'static'
 
 @app.before_request
 def before_request():
@@ -1783,18 +1786,24 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
         sub = 'all'
 
     if sub == 'all':
-        filter_nsfw = False
         if nsfw:
+            print(1)
             comments = db.session.query(Comment)
         else:
-            comments = db.session.query(Comment)#.all()
-            #comments = db.session.query(comments)#.filter(is_sub_nsfw(Comment.sub_name) == False)
-            filter_nsfw = True
+            print(2)
+            sfw_subs = [n.name for n in db.session.query(Sub).filter_by(nsfw=False).all()]
+
+            comments = db.session.query(Comment)
+            comments = comments.filter(Comment.sub_name.in_(sfw_subs))
+
 
         comcount = comments.count()
     else:
+        print(3)
+        print(normalize_sub(sub), sub)
         comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub))
         comcount = comments.count()
+        print(comcount)
 
     if comcount <= offset:
         more = comcount
@@ -1849,9 +1858,6 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
                         Comment.is_mod = True
                     else:
                         Comment.is_mod = False
-
-
-
 
     if request.environ['QUERY_STRING'] == '':
         session['off_url'] = request.url + '?offset=15'

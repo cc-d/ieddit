@@ -11,7 +11,7 @@ import os
 import urllib.parse
 from functools import wraps
 
-from flask import Flask, render_template, request, redirect, flash, url_for, Blueprint, g, abort
+from flask import Flask, render_template, request, redirect, flash, url_for, Blueprint, g, abort, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, exists
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -34,8 +34,6 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)) + 'functions/')
 
-from models import *
-
 from functions import *
 
 from sqlalchemy.orm import load_only
@@ -45,7 +43,6 @@ app.config.from_object('config')
 cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
 
 logger = logging.getLogger(__name__)
-
 
 if (config.SENTRY_ENABLED):
     import sentry_sdk
@@ -62,6 +59,8 @@ if config.DISCORD_ENABLED:
 
 db = SQLAlchemy(app)
 db.session.rollback()
+
+from models import *
 
 Session(app)
 captcha = FlaskSessionCaptcha(app)
