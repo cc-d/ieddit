@@ -1,15 +1,17 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, session, request
 from datetime import datetime, timedelta
-from functions.functions import *
+import sys
+from functions import *
 from sqlalchemy import orm
 
 from flask_caching import Cache
 
+sys.path.append('functions/')
 
 app = Flask(__name__)
 app.config.from_object('config')
-cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
+
 db = SQLAlchemy(app)
 
 

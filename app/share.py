@@ -30,9 +30,13 @@ import traceback
 
 from email.mime.text import MIMEText
 
+import sys
+
+sys.path.append(os.path.abspath(os.path.dirname(__file__)) + 'functions/')
+
 from models import *
 
-from functions.functions import *
+from functions import *
 
 from sqlalchemy.orm import load_only
 
