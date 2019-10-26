@@ -422,7 +422,7 @@ def hide_obj():
 
     if 'username' in session:
         new_hidden = Hidden(post_id=post_id, comment_id=comment_id, username=session['username'],
-                            other_user=other_user, anonymouse=False)
+                            other_user=other_user, anonymous=False)
         db.session.add(new_hidden)
         db.session.commit()
 
