@@ -12,7 +12,6 @@ from share import *
 
 
 ##### Sub Functions #####
-
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_sub_nsfw(sub):
     """
@@ -50,3 +49,17 @@ def normalize_username(username, dbuser=False):
             return username
         return username.username
     return False
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def is_admin(username):
+    """
+    returns bool if user is admin or not
+    """
+    if db.session.query(db.session.query(Iuser).filter_by(admin=True, username=username).exists()).scalar():
+        return True
+    return False
+
+
+
+
+

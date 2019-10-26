@@ -323,13 +323,6 @@ def is_mod(obj, username):
             return True
     return False
 
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def is_admin(username):
-    if db.session.query(db.session.query(Iuser).filter_by(admin=True, username=username).exists()).scalar():
-    #if 'admin' in session:
-        return True
-    return False
-
 def set_rate_limit(limit_seconds=None):
     if 'username' in session:
         if limit_seconds == None:
@@ -647,7 +640,6 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
     return p
 
 @app.route('/i/<subi>/')
-
 def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, show_top=True, s=None, d=None):
     offset = request.args.get('offset')
     d = request.args.get('d')
@@ -1791,10 +1783,14 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
         sub = 'all'
 
     if sub == 'all':
+        filter_nsfw = False
         if nsfw:
             comments = db.session.query(Comment)
         else:
-            comments = db.session.query(Comment).filter_by(nsfw=nsfw)
+            comments = db.session.query(Comment)#.all()
+            #comments = db.session.query(comments)#.filter(is_sub_nsfw(Comment.sub_name) == False)
+            filter_nsfw = True
+
         comcount = comments.count()
     else:
         comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub))
