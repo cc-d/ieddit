@@ -32,3 +32,21 @@ def normalize_sub(sub):
     if subl != None:
         return subl.name
     return sub
+
+
+##### User Functions #####
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def normalize_username(username, dbuser=False):
+    """
+    returns a capitalization corrected username normally,
+    if dbuser=true is passed, it will return the entire
+    user object
+    """
+    if username == None:
+        return False
+    username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
+    if username != None:
+        if dbuser:
+            return username
+        return username.username
+    return False

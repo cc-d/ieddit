@@ -339,17 +339,6 @@ def set_rate_limit(limit_seconds=None):
         #cache.clear()
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def normalize_username(username, dbuser=False):
-    if username == None:
-        return False
-    username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
-    if username != None:
-        if dbuser:
-            return username
-        return username.username
-    return False
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_all_subs(explore=False):
     subs = db.session.query(Sub).all()
     if explore == False:
@@ -982,6 +971,7 @@ def create_sub():
 
 @app.route('/u/<username>/', methods=['GET'])
 def view_user(username):
+    username = normalize_username(username)
     vuser = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
     mod_of = db.session.query(Moderator).filter_by(username=vuser.username).all()
     mods = {}
