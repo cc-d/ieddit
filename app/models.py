@@ -2,12 +2,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, session, request
 from datetime import datetime, timedelta
 import sys
+import urllib
 from functions import *
 from sqlalchemy import orm
-
 from flask_caching import Cache
 
 sys.path.append('functions/')
+
+import config
 
 app = Flask(__name__)
 app.config.from_object('config')
