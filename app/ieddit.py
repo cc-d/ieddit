@@ -247,16 +247,6 @@ def has_messages(username):
     return False
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_sub_mods(sub, admin=True):
-    mod_subs = db.session.query(Moderator).filter_by(sub=sub).all()
-    if admin == False:
-        return [m.username for m in mod_subs]
-    admins = db.session.query(Iuser).filter_by(admin=True).all()
-    for a in admins:
-        mod_subs.append(a)
-    return [m.username for m in mod_subs]
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_banned_subs(username):
     subs = db.session.query(Ban).filter_by(username=username).all()
     b = []
@@ -313,18 +303,6 @@ def get_blocked(username):
 
     return bdict
 
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def is_mod(obj, username):
-    if hasattr(obj, 'inurl_title'):
-        post = obj
-        if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(username),
-            Moderator.sub.like(obj.sub)).exists()).scalar():
-            return True
-    elif hasattr(obj, 'parent_id'):
-        if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-            Moderator.sub.like(obj.sub)).exists()).scalar():
-            return True
-    return False
 
 def set_rate_limit(limit_seconds=None):
     if 'username' in session:
@@ -557,7 +535,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
             p.hot = hot(p.ups, p.downs, p.created)
         posts.sort(key=lambda x: x.hot, reverse=True)
     #posts = [post for post in posts if post.created > ago]
-    
+   
 
     if muted_subs:
         posts = [c for c in posts if c.sub not in muted_subs]    
@@ -827,51 +805,48 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 @app.route('/i/<sub>/<post_id>/<inurl_title>/<comment_id>/')
 @app.route('/i/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
 @app.route('/i/<sub>/<post_id>/<inurl_title>/')
-
 def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort_by=None, comments_only=False, user_id=None):
-    try:
-        if sub == None or post_id == None or inurl_title == None:
-            if not comments_only:
-                return 'badlink'
+    if sub == None or post_id == None or inurl_title == None:
+        if not comments_only:
+            return 'badlink'
 
-        sub = normalize_sub(sub)
+    sub = normalize_sub(sub)
 
-        if comment_id == None:
-            is_parent = False
-        else:
-            is_parent = True
+    if comment_id == None:
+        is_parent = False
+    else:
+        is_parent = True
 
-        comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
-        
-        if post != None and 'username' in session:
-            if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
-                post.is_mod = True
-    
-        if comments_only:
-            return comments
-    
-        if not comment_id:
-            tree = create_id_tree(comments)
-        else:
-            tree = create_id_tree(comments, parent_id=comment_id)
-    
-        tree = comment_structure(comments, tree)
+    comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
+   
+    if post != None and 'username' in session:
+        if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
+            post.is_mod = True
+   
+    if comments_only:
+        return comments
+  
+    if not comment_id:
+        tree = create_id_tree(comments)
+    else:
+        tree = create_id_tree(comments, parent_id=comment_id)
 
-        last = '%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title)
+    tree = comment_structure(comments, tree)
 
-        if comment_id != False and comment_id != None:
-            last = last + str(comment_id)
+    last = '%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title)
 
-        session['last_return_url'] = last
+    if comment_id is not False and comment_id is None:
+        last = last + str(comment_id)
 
-        return render_template('comments.html', comments=comments, post_id=post_id, 
-            post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), 
-            post=post, tree=tree, parent_comment=parent_comment, is_parent=is_parent,
-            config=config)
-    except Exception as e:
-        print(str(e))
-        return(str(e))
-        db.session.rollback()
+    session['last_return_url'] = last
+
+    is_modv = is_mod_of(session['username'], normalize_sub(sub))    
+
+    return render_template('comments.html', comments=comments, post_id=post_id, 
+        post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), 
+        post=post, tree=tree, parent_comment=parent_comment, is_parent=is_parent,
+        config=config, is_modv=is_modv)
+
 
 
 
@@ -1079,7 +1054,10 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
                 elif last_vote.vote == -1:
                     vpost.downs -= 1
 
-            if vpost is None:
+            try:
+                if vpost is None:
+                    raise ValueError('vpost is none. %s' % str(last_vote))
+            except:
                 raise ValueError('vpost is none. %s' % str(last_vote))
 
             score = str(vpost.ups - vpost.downs)
@@ -1132,7 +1110,6 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 
 @app.route('/create_post', methods=['POST', 'GET'])
 @notbanned
-
 def create_post(postsub=None):
     if 'previous_post_form' not in session:
         session['previous_post_form'] = None
@@ -1203,6 +1180,12 @@ def create_post(postsub=None):
         if sub in get_banned_subs(session['username']):
             deleted = True
 
+
+        if request.form.get('override') is None:
+            override = False
+        else:
+            override = True
+
         if post_type == 'url':
             if len(url) > 2000 or len(url) < 1:
                 flash('invalid url length', 'danger')
@@ -1213,7 +1196,7 @@ def create_post(postsub=None):
                 url = 'https://' + url
             new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'],
                         author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
-                        deleted=deleted)
+                        deleted=deleted, override=override)
 
         elif post_type == 'self_post':
             if len(self_post_text) < 1 or len(self_post_text) > 20000:
@@ -1221,7 +1204,7 @@ def create_post(postsub=None):
                 return redirect(url_for('create_post'))
             new_post = Post(self_text=self_post_text, title=title, inurl_title=convert_ied(title),
                 author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
-                deleted=deleted)
+                deleted=deleted, override=override)
 
         db.session.add(new_post)
         db.session.commit()
@@ -1268,10 +1251,15 @@ def create_post(postsub=None):
             if len(subref) == 1:
                 if len(subref[0]) > 0:
                     postsub = subref[0]
-        
+
+        is_modv = False
+        if postsub:
+            if postsub != '' and postsub is not None:
+                is_modv = is_mod_of(session['username'], postsub)
+
         sppf = session['previous_post_form']
         session['previous_post_form'] = None
-        return render_template('create_post.html', postsub=postsub, sppf=sppf)
+        return render_template('create_post.html', postsub=postsub, sppf=sppf, is_modv=is_modv)
 
 @app.route('/get_sub_list', methods=['GET'])
 def get_sub_list():
@@ -1306,11 +1294,12 @@ def create_comment():
     parent_id = request.form.get('parent_id')
     sub_name = request.form.get('sub_name')
     anonymous = request.form.get('anonymous')
+    override = request.form.get('override')
 
     show_captcha = True
 
     api = get_api_key(session['username'])
-    if api != None:
+    if api is not None:
         show_captcha = False
 
     if config.CAPTCHA_ENABLE and config.CAPTCHA_COMMENTS and show_captcha:
@@ -1374,23 +1363,44 @@ def create_comment():
         #return redirect(post.get_permalink())
     sub_name = sub
 
-    new_comment = Comment(post_id=post_id, sub_name = sub_name, text=text,
+    if override != None:
+        override = True
+    else:
+        override = False
+
+
+    if is_admin(session['username']) and anonymous is False:
+        author_type = 'admin'
+    elif is_mod(post.sub, session['username']) and anonymous is False:
+        author_type = 'mod'
+    elif is_mod_of(session['username'], sub_name):
+        author_type = 'mod'
+    else:
+        author_type = 'user'
+
+
+
+    new_comment = Comment(post_id=post_id, sub_name=sub_name, text=text,
         author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level,
-        anonymous=anonymous, deleted=deleted)
+        anonymous=anonymous, deleted=deleted, override=override, author_type=author_type)
+
     db.session.add(new_comment)
     db.session.commit()
-    
-    new_comment.permalink = post.get_permalink() +  str(new_comment.id)
 
-    if is_admin(session['username']) and anonymous == False:
+    new_comment.permalink = post.get_permalink() +  str(new_comment.id)
+    '''
+    if is_admin(session['username']) and anonymous is False:
         new_comment.author_type = 'admin'
-    elif is_mod(post.sub, session['username']) and anonymous == False:
+
+    elif is_mod(post.sub, session['username']) and anonymous is False:
         new_comment.author_type = 'mod'
     else:
         new_comment.author_type = 'user'
+    '''
 
+    db.session.add(new_comment)
     db.session.commit()
-    
+
 
     new_vote = Vote(comment_id=new_comment.id, vote=1, user_id=session['user_id'], post_id=None)
     db.session.add(new_vote)
@@ -1399,9 +1409,9 @@ def create_comment():
     db.session.add(new_comment)
 
     db.session.commit()
-    
 
     sender = new_comment.author
+
 
     if new_comment.parent_id and not deleted:
         cparent = db.session.query(Comment).filter_by(id=new_comment.parent_id).first()
@@ -1700,7 +1710,7 @@ def blocksub(sub=None):
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def explore_stats(sub):
     if hasattr(sub, 'rules'):
-        if sub.rules != None:
+        if sub.rules is not None:
             sub.new_rules = pseudo_markup(sub.rules)
     sub.posts = sub.get_posts(count=True)
 

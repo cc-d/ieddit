@@ -7,14 +7,16 @@
 {% set capt = False %}
 {% endif %}
 
-{% if post.anonymous %}
-{% set pauthor = 'Anonymous' %}
-{% set pauthor_type = 'user' %}
-{% else %}
-{% set pauthor = post.author %}
-{% set pauthor_type = post.author_type %}
-{% endif %}
 
+{% if post.override == False %}
+	{% if post.anonymous %}
+		{% set pauthor = 'Anonymous' %}
+		{% set pauthor_type = 'user' %}
+	{% else %}
+		{% set pauthor = post.author %}
+		{% set pauthor_type = post.author_type %}
+	{% endif %}
+{% endif %}
 
 <title>{{ post.title }}</title>
 

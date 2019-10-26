@@ -102,6 +102,7 @@ class Post(db.Model):
     locked = db.Column(db.Boolean, default=False, nullable=False)
     nsfw = db.Column(db.Boolean, default=False, nullable=False)
     remote_image_url = db.Column(db.String(2000), default=None, nullable=True)
+    override = db.Column(db.Boolean, default=False, nullable=False)
 
     def get_permalink(self):
         return config.URL + str(urllib.parse.urlparse(self.permalink).path)
@@ -138,6 +139,7 @@ class Comment(db.Model):
     permalink = db.Column(db.String(2000), nullable=True)
     anonymous = db.Column(db.Boolean, default=False, nullable=False)
     edited = db.Column(db.Boolean, default=False, nullable=False)
+    override = db.Column(db.Boolean, default=False, nullable=False)
 
     def get_permalink(self):
         return config.URL + str(urllib.parse.urlparse(self.permalink).path)

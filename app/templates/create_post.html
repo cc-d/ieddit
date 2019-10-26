@@ -74,6 +74,12 @@
 	{% else %}
 	<input type='checkbox' name='anonymous' value='1' id="anon-checkbox">
 	{% endif %}
+
+	{% if session['admin'] or is_modv %}
+	<label for="normal-checkbox"> non-mod?</label>
+	<input type='checkbox' name='override' id="normal-checkbox">
+	{% endif %}
+
 	<br><br><br>
 </form>
 

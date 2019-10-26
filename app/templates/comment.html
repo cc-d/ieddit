@@ -7,6 +7,11 @@
 		<div class="row post-row">
 			<div class="col inner-div comment-inner-div">
 			<small>
+
+            {% if comment.override == True and is_modv %}
+                {% set cauthor_type = 'user' %}
+            {% endif %}
+
 			{% if comment.edited %}* {% endif %}
 			{% if cauthor_type == 'admin' %}
 			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>

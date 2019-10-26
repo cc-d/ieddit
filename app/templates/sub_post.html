@@ -73,6 +73,11 @@ var preExpandVideo = false;
     <div class="media-body posts-media-body" id='media-body-{{ post.id }}'>
     <div class="row post-row top-post-row">
     	<div class="col inner-div post-inner-div">
+
+            {% if post.override == True %}
+                {% set pauther_type = 'user' %}
+            {% endif %}
+
             {% if post.stickied == True %}
             <i class="fa fa-thumb-tack" style="margin-right: 0.5rem;"></i>
             {% endif %}
@@ -80,6 +85,7 @@ var preExpandVideo = false;
             <i class="fa fa-lock" style="margin-right: 0.5rem;"></i>
             {% endif %}
             <small>
+
             {% if post.edited %}* {% endif %}
             {% if pauther_type == 'admin' %}
             <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[a]{{ pauther }}</a>
@@ -88,15 +94,17 @@ var preExpandVideo = false;
             {% else %}
     		<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">{{ pauther }}</a>
             {% endif %}
+
             </small>
 
             <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/i/{{ post.sub }}">/i/{{ post.sub }}</a></small>
             <small class="created-ago"><a class="comment-link" href="{{ post.permalink }}">{{ post.created_ago }}</a></small>
 
+
     	</div>
     </div>
 
-    <div class="sub-post-title">
+    <div class="sust-title">
     {% if post.post_type == 'url' and post.remote_image_url == None %}
     
     {% else %}

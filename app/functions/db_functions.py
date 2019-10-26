@@ -22,6 +22,7 @@ def is_sub_nsfw(sub):
         return True
     return False
 
+
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def normalize_sub(sub):
     """
@@ -32,6 +33,7 @@ def normalize_sub(sub):
     if subl != None:
         return subl.name
     return sub
+
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_sub_mods(sub, admin=True):
@@ -66,6 +68,7 @@ def normalize_username(username, dbuser=False):
             return username
         return username.username
     return False
+    
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_admin(username):
@@ -77,6 +80,7 @@ def is_admin(username):
         return True
     return False
 
+
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_mod_of(username, sub):
     """
@@ -84,9 +88,10 @@ def is_mod_of(username, sub):
     """
     mods = get_sub_mods(sub)
     username = normalize_username(username)
-    if username in [m.username for m in mods]:
+    if username in [m for m in mods]:
         return True
     return False
+
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_mod(obj, username):
