@@ -148,6 +148,12 @@ function formSubmit(val) {
 	action = val[1]
 	iid = val[2]
 	console.log(val);
+
+	if (val[2] == 'ban' || val[2] == 'unban') {
+		$('#' + formId).click();
+		return;
+	}
+
 	$('#btn-' + formId).click();
 }
 

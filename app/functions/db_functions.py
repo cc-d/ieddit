@@ -27,13 +27,29 @@ def normalize_sub(sub):
     """
     if a subname is incorrectly capitalized, correct it
     """
-    subl = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
+    subl = db.session.query(Sub). \
+        filter(func.lower(Sub.name) == func.lower(sub)).first()
     if subl != None:
         return subl.name
     return sub
 
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_sub_mods(sub, admin=True):
+    """
+    returns the list of mods in a given sub
+    the optional admin kwarg just also includes admins
+    as mods for simplicty sake
+    """
+    mod_subs = db.session.query(Moderator).filter_by(sub=sub).all()
+    if admin == False:
+        return [m.username for m in mod_subs]
+    admins = db.session.query(Iuser).filter_by(admin=True).all()
+    for a in admins:
+        mod_subs.append(a)
+    return [m.username for m in mod_subs]
 
-##### User Functions #####
+
+##### Username Functions #####
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def normalize_username(username, dbuser=False):
     """
@@ -41,10 +57,11 @@ def normalize_username(username, dbuser=False):
     if dbuser=true is passed, it will return the entire
     user object
     """
-    if username == None:
+    if username is None:
         return False
-    username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
-    if username != None:
+    username = db.session.query(Iuser) \
+    .filter(func.lower(Iuser.username) == func.lower(username)).first()
+    if username is not None:
         if dbuser:
             return username
         return username.username
@@ -55,11 +72,36 @@ def is_admin(username):
     """
     returns bool if user is admin or not
     """
-    if db.session.query(db.session.query(Iuser).filter_by(admin=True, username=username).exists()).scalar():
+    if db.session.query(db.session.query(Iuser) \
+        .filter_by(admin=True, username=username).exists()).scalar():
         return True
     return False
 
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def is_mod_of(username, sub):
+    """
+    returns bool if user is mod of a sub
+    """
+    mods = get_sub_mods(sub)
+    username = normalize_username(username)
+    if username in [m.username for m in mods]:
+        return True
+    return False
 
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def is_mod(obj, username):
+    """
+    sees if a username is a mod of a post/comment
+    the order of args here should be changed
+    """
+    username = normalize_username(username)
+    if hasattr(obj, 'inurl_title'):
+        if is_mod_of(username, obj.sub):
+            return True
 
+    elif hasattr(obj, 'parent_id'):
+        if is_mod_of(username, obj.sub_name):
+            return True
 
+    return False
 

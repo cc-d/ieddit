@@ -1787,10 +1787,8 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
 
     if sub == 'all':
         if nsfw:
-            print(1)
             comments = db.session.query(Comment)
         else:
-            print(2)
             sfw_subs = [n.name for n in db.session.query(Sub).filter_by(nsfw=False).all()]
 
             comments = db.session.query(Comment)
@@ -1799,11 +1797,8 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
 
         comcount = comments.count()
     else:
-        print(3)
-        print(normalize_sub(sub), sub)
         comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub))
         comcount = comments.count()
-        print(comcount)
 
     if comcount <= offset:
         more = comcount
