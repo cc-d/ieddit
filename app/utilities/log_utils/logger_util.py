@@ -1,8 +1,12 @@
 from logging.config import ConvertingList, ConvertingDict, valid_ident
 from logging.handlers import QueueHandler, QueueListener
+import logging
 from queue import Queue
 import atexit
 
+import config
+
+from discord_webhook import DiscordEmbed, DiscordWebhook
 
 def _resolve_handlers(l):
     if not isinstance(l, ConvertingList):
@@ -56,3 +60,31 @@ class QueueListenerHandler(QueueHandler):
 
     def emit(self, record):
         return super().emit(record)
+
+
+class DiscordHandler(logging.Handler):
+    """
+    Custom handler to send certain logs to Discord
+    """
+    def __init__(self):
+        logging.Handler.__init__(self)
+        self.discordWebhook = DiscordWebhook(url=config.DISCORD_URL)
+
+    def emit(self, record):
+        """
+        sends a message to discord
+        """
+        desc = [
+            record.message,
+            record.exc_info,
+            str(record.func) + " : " + str(record.lineno),
+            record.sinfo
+            ]
+
+        embed = DiscordEmbed(
+            title=record.level,
+            description="\n".join(desc),
+            color=16711680)
+        self.discordWebhook.add_embed(embed)
+        self.discordWebhook.execute()
+

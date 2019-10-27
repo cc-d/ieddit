@@ -6,7 +6,13 @@ objects:
 formatters:
   simple:
     format: '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+  discordFormatter:
+    format: ' %(message)s'
 handlers:
+  discord:
+    class: utilities.log_utils.logger_util.DiscordHandler
+    level: ERROR
+    formatter: discordFormatter
   console:
     class: logging.StreamHandler
     level: DEBUG
@@ -22,6 +28,7 @@ handlers:
     handlers:
       - cfg://handlers.console
       - cfg://handlers.file
+      - cfg://handlers.discord
     queue: cfg://objects.queue
 loggers:
   __main__:
@@ -31,59 +38,59 @@ loggers:
     propagate: false
   models:
     level: WARNING
-    handlers: 
+    handlers:
       - queue_listener
     propagate: false
   ieddit:
     level: WARNING
-    handlers: 
+    handlers:
       - queue_listener
     propagate: false
   config:
     level: WARNING
-    handlers: 
+    handlers:
       - queue_listener
     propagate: false
   blueprints.admin:
     level: WARNING
-    handlers: 
+    handlers:
       - queue_listener
     propagate: false
   blueprints.api:
     level: WARNING
-    handlers: 
+    handlers:
       - queue_listener
     propagate: false
   blueprints.mod:
     level: WARNING
-    handlers: 
+    handlers:
       - queue_listener
     propagate: false
   blueprints.user:
     level: WARNING
-    handlers: 
+    handlers:
       - queue_listener
     propagate: false
   functions.functions:
     level: WARNING
-    handlers: 
+    handlers:
       - queue_listener
     propagate: false
   utilities.create_db:
     level: WARNING
-    handlers: 
+    handlers:
       - queue_listener
     propagate: false
   utilities.generate_sitemap:
     level: WARNING
-    handlers: 
+    handlers:
       - queue_listener
     propagate: false
   utilities.get_thumnail:
     level: WARNING
-    handlers: 
+    handlers:
       - queue_listener
-    propagate: false  
+    propagate: false
 root:
   level: WARNING
   handlers:
