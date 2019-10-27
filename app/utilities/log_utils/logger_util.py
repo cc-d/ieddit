@@ -87,4 +87,4 @@ class DiscordHandler(logging.Handler):
             color=16711680)
         self.discordWebhook.add_embed(embed)
         self.discordWebhook.execute()
-        return True
+
