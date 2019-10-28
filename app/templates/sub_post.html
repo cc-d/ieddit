@@ -106,7 +106,7 @@ var preExpandVideo = false;
 
     <div class="sust-title">
     {% if post.post_type == 'url' and post.remote_image_url == None %}
-    
+
     {% else %}
     <div class='expand-post'>
         {% set fclass = '' %}
@@ -151,7 +151,7 @@ var preExpandVideo = false;
     {% else %}
         <div class='expanded-selftext rounded'>
             <div class='inner-selftext-wrapper'>
-            <div class='safe-markup-text expanded-self-text'>{{ post.new_self_text|safe }}</div> 
+            <div class='safe-markup-text expanded-self-text'>{{ post.new_self_text|safe }}</div>
         </div>
         </div>
     {% endif %}
@@ -189,10 +189,11 @@ var preExpandVideo = false;
         <a class="dropdown-item" id='show-post-{{ post.id }}' href='javascript:showObject("post_id", "{{ post.id }}")'>show post</a>
         {% endif %}
 
-
         {% if post.author_id not in session['blocked']['other_user'] %}
         <a class="dropdown-item" href="javascript:blockUser('post_id','{{ post.id }}');">block user</a>
         {% endif %}
+
+        <a href="javascript:copyToClipboard('{{ post.permalink }}')" class="dropdown-item">copy link</a>
 
 
     {% if session['username'] == post.author %}
@@ -302,7 +303,7 @@ var preExpandVideo = false;
 {% if session['username'] in post.mods %}
             <style>.mod-dropdown{opacity:0}</style>
             <script>document.write("<style>#mod-dropdown-{{  post.id }}{opacity:1}</style>");</script>
-    
+
 {% endif %}
          <!-- END MOD STYLE -->
 
