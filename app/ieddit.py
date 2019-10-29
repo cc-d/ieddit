@@ -98,6 +98,9 @@ def apply_headers(response):
     if request.environ['REQUEST_METHOD'] == 'POST':
         cache.clear()
 
+    response.cache_control.private = True
+    response.cache_control.public = False
+
     return response
 
 
