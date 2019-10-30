@@ -14,9 +14,9 @@
 {% include 'sort-top.html' %}
 
 <div class="active_sub_users">
-Users Active: {{ sub_stats['active_users'] }}
+users active <span class="text-white">{{ sub_stats['active_users'] }}</span>
     <br>
-Posts Today: {{ sub_stats['posts_today'] }}
+posts today <span class="text-white">{{ sub_stats['posts_today'] }}</span>
 </div>
 
 {% for post in posts %}

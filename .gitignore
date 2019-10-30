@@ -11,6 +11,7 @@ static/sitemap.xml
 .idea
 config.py
 test.db-journal
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
