@@ -77,13 +77,15 @@ class DiscordHandler(logging.Handler):
         desc = [
             record.message,
             record.exc_info,
-            str(record.func) + " : " + str(record.lineno),
-            record.sinfo
+            str(record.funcName) + " : " + str(record.lineno),
+            record.stack_info
             ]
 
+        filteredDesc = [record for record in desc if record != None]
+
         embed = DiscordEmbed(
-            title=record.level,
-            description="\n".join(desc),
+            title=record.levelname,
+            description="\n".join(filteredDesc),
             color=16711680)
         self.discordWebhook.add_embed(embed)
         self.discordWebhook.execute()
