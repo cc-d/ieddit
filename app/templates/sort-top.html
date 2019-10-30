@@ -1,22 +1,14 @@
-<!-- <div class="btn-group" role="group" aria-label="Basic example"> -->
-<div class="btn-toolbar d-inline-flex">
-  <div class="dropdown">
-    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      sort
-    </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-      <a class="dropdown-item top-sort" href="{{ session['hot_url'] }}">hot</a>
-      <a class="dropdown-item top-sort" href="{{ session['top_url'] }}">top</a>
-      <a class="dropdown-item top-sort" href="{{ session['new_url'] }}">new</a>
-    </div>
-  </div>
-  <div class="mx-1"></div>
-  <a class="btn btn-sm btn-secondary"
-    href="{% if request.sub %}{{ config.URL }}/i/{{ request.sub }}/comments/{% elif is_all == True %}{{ config.URL }}/i/all/comments/{% else %}{{ config.URL }}/comments/{% endif %}">comments</a>
-
-</div>
-<!-- <a class="top-sort" href="{{ session['hot_url'] }}"><button type="button" class="btn btn-sm btn-secondary">Hot</button></a>
+<div class="btn-group" role="group" aria-label="Basic example">
+    <a class="top-sort" href="{{ session['hot_url'] }}"><button type="button" class="btn btn-sm btn-secondary">Hot</button></a>
   <a class="top-sort" href="{{ session['top_url'] }}"><button type="button" class="btn btn-sm btn-secondary">Top</button></a>
-  <a class="top-sort" href="{{ session['new_url'] }}"><button type="button" class="btn btn-sm btn-secondary">New</button></a> -->
-<!-- </div> -->
+  <a class="top-sort" href="{{ session['new_url'] }}"><button type="button" class="btn btn-sm btn-secondary">New</button></a>
+</div>
+<div class="btn-group">
+{% if request.sub %}
+<a class="top-sort" href="{{ config.URL }}/i/{{ request.sub }}/comments/"><button type="button" class="btn btn-sm btn-secondary">Comments</button></a>
+{% elif is_all == True %}
+<a class="top-sort" href="{{ config.URL }}/i/all/comments/"><button type="button" class="btn btn-sm btn-secondary">Comments</button></a>
+{% else %}
+<a class="top-sort" href="{{ config.URL }}/comments/"><button type="button" class="btn btn-sm btn-secondary">Comments</button></a>
+{% endif %}
+</div>

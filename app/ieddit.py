@@ -352,7 +352,7 @@ def get_pgp_from_username(username):
 
     else:
         pgp = db.session.query(Pgp).filter_by(username=normalize_username(username)).first()
-
+    
     if pgp != None:
         return pgp
     return False
@@ -535,10 +535,10 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
             p.hot = hot(p.ups, p.downs, p.created)
         posts.sort(key=lambda x: x.hot, reverse=True)
     #posts = [post for post in posts if post.created > ago]
-
+   
 
     if muted_subs:
-        posts = [c for c in posts if c.sub not in muted_subs]
+        posts = [c for c in posts if c.sub not in muted_subs]    
 
     if nsfw == False:
         posts = [p for p in posts if p.nsfw == False]
@@ -730,7 +730,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
                 post.sub_nsfw = False
             if hasattr(post, 'text'):
                 post.new_text = pseudo_markup(post.text)
-
+            
             if thumb_exists(post.id):
                 post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
             elif hasattr(post, 'url'):
@@ -750,24 +750,24 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
         if 'user_id' in session:
             post.has_voted = db.session.query(Vote).filter_by(post_id=post.id, user_id=session['user_id']).first()
             if post.has_voted != None:
-                post.has_voted = post.has_voted.vote
+                post.has_voted = post.has_voted.vote    
 
         if comment_id == None:
             comments = db.session.query(Comment).filter_by(post_id=post_id, deleted=deleted).all()
             show_blocked = False
-
+        
         else:
             comments = []
             parent_comment = db.session.query(Comment).filter_by(id=comment_id).first()
             show_blocked = False
 
-            # if direct link, just show it
+            # if direct link, just show it 
             if parent_comment.id in session['blocked']['comment_id'] or parent_comment.author_id in session['blocked']['other_user']:
                 flash('you are viewing a comment you have blocked', 'danger')
                 show_blocked = True
 
             comments = recursive_children(comment=parent_comment, deleted=True)
-
+            
     else:
         comments = db.session.query(Comment).filter(Comment.author_id == user_id,
             Comment.deleted == deleted).order_by(Comment.created.desc()).all()
@@ -818,14 +818,14 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
         is_parent = True
 
     comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
-
+   
     if post != None and 'username' in session:
         if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
             post.is_mod = True
-
+   
     if comments_only:
         return comments
-
+  
     if not comment_id:
         tree = create_id_tree(comments)
     else:
@@ -845,8 +845,8 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
     else:
         is_modv = False
 
-    return render_template('comments.html', comments=comments, post_id=post_id,
-        post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title),
+    return render_template('comments.html', comments=comments, post_id=post_id, 
+        post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title), 
         post=post, tree=tree, parent_comment=parent_comment, is_parent=is_parent,
         config=config, is_modv=is_modv)
 
@@ -1006,7 +1006,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
             vote = request.form.get('vote')
         else:
             vote = str(vote)
-
+    
         if 'username' not in session or 'user_id' not in session:
             return 'not logged in'
         elif user_id == None:
@@ -1021,7 +1021,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 
         if vote not in ['1', '-1', '0']:
             return 'invalid vote amount'
-
+    
         vote = int(vote)
 
         invert_vote = False
@@ -1104,8 +1104,8 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
                 vcom.downs += 1
                 vcom.ups -= 1
 
-        db.session.commit()
-
+        db.session.commit()    
+        
 
         return str(vcom.ups - vcom.downs)
     elif request.method == 'GET':
@@ -1211,7 +1211,7 @@ def create_post(postsub=None):
 
         db.session.add(new_post)
         db.session.commit()
-
+        
 
         if post_type == 'url':
             #os.system('python3 get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)))
@@ -1225,7 +1225,7 @@ def create_post(postsub=None):
             new_post.author_type = 'mod'
 
         db.session.commit()
-
+        
 
         url = new_post.permalink
         set_rate_limit()
@@ -1485,10 +1485,10 @@ def user_messages(username=None):
                     r.ppath = r.in_reply_to.replace(config.URL, '')
                 if r.encrypted == True:
                     has_encrypted = True
-
+            
             session['has_messages'] = False
             session['unread_messages'] = None
-
+            
             db.session.commit()
 
             for r in unread:
@@ -1535,7 +1535,7 @@ def reply_message(username=None, mid=None):
 
 
 def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False, encrypted_key_id=None, in_reply_to=None):
-    new_message = Message(title=title, text=text, sender=sender, in_reply_to=in_reply_to, sent_to=sent_to, encrypted=encrypted,
+    new_message = Message(title=title, text=text, sender=sender, in_reply_to=in_reply_to, sent_to=sent_to, encrypted=encrypted, 
         encrypted_key_id=encrypted_key_id)
     db.session.add(new_message)
     db.session.commit()
@@ -1584,7 +1584,7 @@ def msg(username=None):
 
         sendmsg(title=title, text=text, sender=session['username'], sent_to=sent_to, encrypted=encrypted,
             encrypted_key_id=encrypted_key_id)
-
+        
 
         set_rate_limit()
         flash('sent message', category='success')
@@ -1752,20 +1752,6 @@ def about():
     with open('../README.md') as r:
         return render_template('about.html', about=markdown(r.read()))
 
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_commits():
-    import requests
-    headers = {'User-Agent': 'ieddit beta - github.com/civicsoft/ieddit'}
-    req = requests.get('https://api.github.com/repos/civicsoft/ieddit/commits', headers=headers)
-    commits = req.json()
-
-    return commits
-
-@app.route('/changelog/', methods=['GET'])
-def changelog():
-    commits = get_commits()
-
-    return render_template('changelog.html', commits=commits, time_ago=time_ago, strptime=datetime.strptime)
 
 @app.route('/comments/', methods=['GET'])
 @app.route('/i/<sub>/comments/', methods=['GET'])
@@ -1790,7 +1776,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
         nsfw = True
         posts = subi('all', posts_only=True, nsfw=True)
         muted_subs = get_muted_subs()
-        posts = [p for p in posts if p.sub not in muted_subs]
+        posts = [p for p in posts if p.sub not in muted_subs]    
     elif sub != None:
         subobj = db.session.query(Sub).filter_by(name=sub).first()
         if subobj.muted or subobj.nsfw:
@@ -1799,7 +1785,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
     else:
         posts = subi('all', posts_only=True, nsfw=False)
         muted_subs = get_muted_subs()
-        posts = [p for p in posts if p.sub not in muted_subs]
+        posts = [p for p in posts if p.sub not in muted_subs]    
 
 
     posts = posts[offset:offset+limit]
@@ -1961,7 +1947,7 @@ def get_top_stats(subi=None):
     users = []
     filter_today = datetime.now() - timedelta(days=1)
 
-    posts, comments = get_posts_and_comments(subi=subi, day=True)
+    posts, comments = get_posts_and_comments(subi=subi, day=True)    
 
     for p in posts:
         if p.author not in users:
