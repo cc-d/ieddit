@@ -508,7 +508,7 @@ blockquote {
 .comment-text-text {
 	white-space: /*pre-wrap*/ normal;
 	word-break: break-word;
-	max-height: 100rem;
+	max-height: 100%;
 	overflow: hidden;
 }
 .mod-option-wrapper {
