@@ -908,3 +908,7 @@ ul {
 	margin: 5px;
 	text-align: right;
 }
+
+.post-title {
+	min-height: 2.5rem;
+}
