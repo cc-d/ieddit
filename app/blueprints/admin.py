@@ -4,6 +4,7 @@ import json
 from functools import wraps
 from utilities.error_decorator import exception_log
 from html import escape
+from functions import *
 
 # Logging Initialization
 import logging 
@@ -12,7 +13,6 @@ logger = logging.getLogger(__name__)
 abp = Blueprint('admin', 'admin', url_prefix='/admin')
 
 @abp.route('/stats/', methods=['GET'])
-@cache.memoize(config.DEFAULT_CACHE_TIME)
 def show_admin_stats():
     """
     returns json string of every admin action for display

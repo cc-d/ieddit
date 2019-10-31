@@ -2,11 +2,10 @@ textarea {
 	resize: both;
 }
 
-#sub-dropdown-search {
+#sub-dropdown-search{
 	margin-left: 1rem;
 	margin-right: 1rem;
 }
-
 .allcomment-comment {
 	margin-top: 0.5rem;
 }
@@ -31,13 +30,17 @@ textarea {
 	overflow: auto;
 }
 
+.row.post-row.top-post-row {
+	margin-bottom: 0rem;
+}
+
 .post-row-top {
 	font-size: 0.8rem;
 }
 
 .post-image {
 	margin-left: 0.5rem;
-	margin-right: 0.5rem !important;
+	margin-right: 0.5rem!important;
 	min-height: 1.5rem;
 	min-width: 1.5rem;
 	max-height: 5rem;
@@ -72,24 +75,19 @@ textarea {
 	.comment-fontawesome {
 		display: inline;
 	}
-
 	.comment-span {
 		display: none;
 	}
-
 	.comment-page-image {
 		display: none;
 	}
-
 	.sub-post-comment-page {
 		margin-left: 0.5rem;
 	}
-
 	.post-image {
 		max-height: 3rem;
 		max-width: 3rem;
 	}
-
 	.post-image-container {
 		height: 3.75rem;
 		width: 3.75rem;
@@ -101,28 +99,21 @@ textarea {
 	.posts-media-body a {
 		font-size: 90%;
 	}
-
 	.sub-post-title-link {
-		font-size: 100% !important;
+		font-size: 100%!important;
 	}
-
 	.comment-link {
-		font-size: 100% !important;
+		font-size: 100%!important;
 	}
-
 	.posts-media-body button {
 		font-size: 90%;
 	}
-
 	.sub-post-title {
 		margin-right: 10px;
 	}
-
 	.navbar-brand {
-		margin-right: 0.25rem;
-		;
+		margin-right: 0.25rem;;
 	}
-
 	#top-username {
 		max-width: 136px;
 		overflow: hidden;
@@ -133,22 +124,21 @@ textarea {
 .sub-post-title-link {
 	overflow: hidden;
 }
-
-#top-username {
-	max-width: 180px;
-	overflow: hidden;
-}
+	#top-username {
+		max-width: 180px;
+		overflow: hidden;
+	}
 
 #user-nav {
 	padding-left: 0px;
 }
 
 #logout-right {
-	margin-right: -1rem;
-	float: right;
-	margin-left: 1rem;
+    margin-right: -1rem;
+    float: right;
+    margin-left: 1rem;
 	font-size: 80%;
-	margin-top: 0.25rem;
+    margin-top: 0.25rem;
 }
 
 #logout-left {
@@ -159,7 +149,6 @@ textarea {
 	#logout-right {
 		display: none;
 	}
-
 	#logout-left {
 		display: inline-block;
 	}
@@ -191,15 +180,15 @@ textarea {
 	min-width: 300px;
 	max-width: 700px;
 	width: 100%;
-	width: -webkit-fill-available;
-	width: -moz-available;
-	min-height: 8rem;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    min-height: 8rem;
 }
 
 #comment-reply-box {
-	margin-left: 0.5rem !important;
-	margin-right: 0.5rem !important;
-	margin-top: 0.5rem !important;
+	margin-left: 0.5rem!important;
+    margin-right: 0.5rem!important;
+    margin-top: 0.5rem!important;
 	max-width: 40rem;
 }
 
@@ -217,15 +206,13 @@ textarea {
 
 .comment-image {
 	margin-left: 0.5rem;
-	margin-right: 1.5rem !important;
+	margin-right: 1.5rem!important;
 	height: 88px;
 	width: 88px;
 }
-
 .post-title-h5 {
 	margin-top: 4px;
 }
-
 .comment-text {
 	min-height: 50px;
 	margin-top: 4px;
@@ -264,15 +251,14 @@ textarea {
 .user-icon-link {
 	margin-left: 0.25rem;
 	text-decoration: none;
-	color: #212529
-}
+	color: #212529}
 
 .user-icon-link:hover {
-	color: #212529;
-	text-decoration: underline;
-	text-decoration-line: underline;
-	text-decoration-style: none;
-	text-decoration-color: none;
+    color: #212529;
+    text-decoration: underline;
+    text-decoration-line: underline;
+    text-decoration-style: none;
+    text-decoration-color: none;
 }
 
 .user-icon-link a {
@@ -297,8 +283,7 @@ textarea {
 	margin-right: 1rem;
 	width: 18rem;
 	display: inline-block;
-	vertical-align: top
-}
+	vertical-align: top}
 
 .comment-voting {
 	margin-left: 1em;
@@ -306,16 +291,15 @@ textarea {
 	display: inline-block;
 }
 
-.comment-post-voting {
+.comment-post-voting{
 	margin-left: 1rem;
 	margin-right: 0.5em;
-	font-size: 16px;
+	font-size:16px;
 }
-
 .top-sort {
 	margin-right: 0.25rem;
 	margin-top: 0.25rem;
-	background-color: transparent !important;
+	background-color: transparent!important;
 }
 
 #prev-button {
@@ -329,7 +313,6 @@ textarea {
 	overflow: hidden;
 	word-break: break-word;
 }
-
 .comment-media-body {
 	padding-bottom: 0.25rem;
 	min-height: 75px !important;
@@ -344,7 +327,7 @@ textarea {
 	margin-right: 1rem;
 }
 
-#comment-page-wrapper {
+#comment-page-wrapper{
 	margin-left: 0.5em;
 	margin-right: 0.5em;
 }
@@ -399,8 +382,7 @@ textarea {
 	color: orange;
 }
 
-ul,
-li {
+ul, li{
 	white-space: normal;
 }
 
@@ -423,22 +405,18 @@ li {
 }
 
 selftext {
-	white-space: normal
-		/*pre-wrap*/
-	;
+	white-space: normal/*pre-wrap*/;
 	max-height: 200rem;
 	overflow: hidden;
 	word-break: break-word;
 }
-
 .reply-fa-user {
 	margin-top: 4px;
 }
 
 blockquote {
-	background-color: lightgrey;
+   background-color: lightgrey;
 }
-
 .nsfw {
 	display: inline;
 	color: red;
@@ -454,17 +432,14 @@ blockquote {
 .explore-link {
 	margin-right: 1rem;
 }
-
 .sub-post-title-url {
 	font-size: 0.8rem;
 	color: #212529;
 }
-
 .explore-sub {
 	margin-top: 1rem;
 	border: 1px solid black;
 }
-
 .media-body-explore {
 	margin: 0.5rem;
 	max-height: 100rem;
@@ -472,7 +447,6 @@ blockquote {
 	word-break: break-word;
 	white-space: inherit;
 }
-
 .created-ago {
 	margin-left: 1rem;
 }
@@ -501,34 +475,32 @@ blockquote {
 
 
 .user-dropdown {
-	background-color: #262626 !important;
-	outline: none !important;
-	box-shadow: none !important;
-	text-align-last: center;
-	padding-bottom: 3px;
-	font-size: 80%;
+	background-color: #262626!important;
+	outline: none!important;
+	box-shadow: none!important;
+    text-align-last: center;
+    padding-bottom: 3px;
+    font-size: 80%;
 }
 
 .user-dropdown:focus {
-	background-color: #262626 !important;
-	outline: none !important;
-	box-shadow: none !important;
+	background-color: #262626!important;
+	outline: none!important;
+	box-shadow: none!important;
 	font-size: 125%;
 }
-
 .mod-dropdown {
-	background-color: #262626 !important;
-	outline: none !important;
-	box-shadow: none !important;
-	text-align-last: center;
-	padding-bottom: 3px;
-	font-size: 80%;
+	background-color: #262626!important;
+	outline: none!important;
+	box-shadow: none!important;
+    text-align-last: center;
+    padding-bottom: 3px;
+    font-size: 80%;
 }
-
 .mod-dropdown:focus {
-	background-color: #262626 !important;
-	outline: none !important;
-	box-shadow: none !important;
+	background-color: #262626!important;
+	outline: none!important;
+	box-shadow: none!important;
 	font-size: 125%;
 }
 
@@ -538,14 +510,11 @@ blockquote {
 }
 
 .comment-text-text {
-	white-space:
-		/*pre-wrap*/
-		normal;
+	white-space: /*pre-wrap*/ normal;
 	word-break: break-word;
-	max-height: 100rem;
+	max-height: 100%;
 	overflow: hidden;
 }
-
 .mod-option-wrapper {
 	float: right;
 	margin-right: 0.5rem;
@@ -565,7 +534,7 @@ blockquote {
 }
 
 .mod-option-button {
-	background-color: rgb(0, 0, 0, 0);
+	background-color: rgb(0,0,0,0);
 	margin-bottom: 1px;
 	padding: 0px;
 	margin: 0px;
@@ -578,18 +547,19 @@ blockquote {
 	display: block;
 }
 
-.post-delete-button {}
+.post-delete-button {
 
-.post-sticky-button {}
+}
+.post-sticky-button {
+
+}
 
 .bottom-subposts {
 	margin: 0;
 }
-
 .user-options {
 	margin-left: -5rem;
 }
-
 .user-options-mod-post {
 	margin-left: 0rem;
 	float: right;
@@ -609,20 +579,20 @@ blockquote {
 }
 
 .alert.success {
-	background-color: green !important;
+  background-color: green!important;
 }
 
 .alert.error {
-	background-color: red !important;
+  background-color: red!important;
 }
 
 .alert.danger {
-	background-color: red !important;
+	background-color: red!important;
 }
 
 .form-input-text {
-	max-width: 35rem;
-	min-height: 5rem;
+    max-width: 35rem;
+    min-height: 5rem;
 }
 
 .sub-posts-next {
@@ -633,9 +603,9 @@ blockquote {
 .expand-post {
 	font-size: 105%;
 	display: inline-block;
-	margin-left: 0;
-	margin-right: 0.25rem;
-	font-size: larger;
+    margin-left: 0;
+    margin-right: 0.25rem;
+    font-size: larger;
 }
 
 .expanded-selftext {
@@ -645,9 +615,7 @@ blockquote {
 }
 
 .inline-code {
-	white-space:
-		/*pre-wrap*/
-		normal;
+	white-space: /*pre-wrap*/normal;
 	background-color: #222222;
 	margin-top: 0.5rem;
 	margin-bottom: 0.5rem;
@@ -669,10 +637,10 @@ blockquote {
 
 #footer {
 	text-align: center;
-	width: 300px;
-	margin: 0 auto;
-	margin-top: 5rem;
-	margin-bottom: 2rem;
+	width: 350px;
+    margin: 0 auto;
+    margin-top: 5rem;
+    margin-bottom: 2rem;
 }
 
 #footer p {
@@ -709,7 +677,6 @@ ul {
 .preference-option {
 	margin-left: 1.5rem;
 }
-
 .col.inner-div {
 	white-space: nowrap;
 	overflow: hidden;
@@ -719,7 +686,7 @@ ul {
 }
 
 .nsfwpost {
-	border: 1px solid #660000 !important;
+	border: 1px solid #660000!important;
 }
 
 .recent {
@@ -746,7 +713,7 @@ ul {
 }
 
 .banned-user {
-	border: 1px solid #bbb !important;
+	border: 1px solid #bbb!important;
 	margin: 1rem;
 }
 
@@ -761,25 +728,25 @@ ul {
 }
 
 .video-play-btn {
-	font-size: 60%;
-	border: 1px solid #bbb;
-	padding-left: 4px;
-	padding-right: 3px;
-	padding-top: 2px;
-	padding-bottom: 1px;
-	font-family: auto;
+    font-size: 60%;
+    border: 1px solid #bbb;
+    padding-left: 4px;
+    padding-right: 3px;
+    padding-top: 2px;
+    padding-bottom: 1px;
+    font-family: auto;
 }
 
 .col.inner-div.comment-inner-div {
-	margin-top: -0rem !important;
+	margin-top: -0rem!important;
 }
 
 .inner-combase {
-	margin-top: -3px !important;
+	margin-top: -3px!important;
 }
 
 .comment-color-1 {
-	background-color: #333333 !important;
+	background-color: #333333!important;
 }
 
 @media only screen and (max-width: 992px) {
@@ -794,7 +761,7 @@ ul {
 }
 
 .post-inner-div {
-	margin-top: -0.5rem !important;
+	margin-top: -0.5rem!important;
 }
 
 
@@ -830,7 +797,9 @@ ul {
 }
 
 
-.v-button {}
+.v-button {
+
+}
 
 .comment-button-dropdown {
 	font-size: 0.75rem;
@@ -838,21 +807,21 @@ ul {
 
 .comment-more {
 	font-size: 0.75rem;
-	padding: 0;
-	padding-left: 0.25rem;
-	padding-right: 0.25rem;
+    padding: 0;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
 }
 
 .fa.fa-ellipsis-v {
-	font-size: 90%;
-	margin-bottom: 7px;
+    font-size: 90%;
+    margin-bottom: 7px;
 }
 
 .fa.fa-cog {
 	border: 0px solid white;
 	/*color: #ff6666;*/
-	font-size: 90%;
-	margin-bottom: 7px;
+    font-size: 90%;
+    margin-bottom: 7px;
 }
 
 .commoptions {
@@ -882,22 +851,22 @@ ul {
 }
 
 .btn-bot {
-	padding: 0;
-	margin: 0;
-	padding-left: 0.25rem;
-	padding-right: 0.25rem;
-	margin-top: 0.25rem;
-	height: 1.5rem;
-	font-size: 0.75rem;
+    padding: 0;
+    margin: 0;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    margin-top: 0.25rem;
+    height: 1.5rem;
+    font-size: 0.75rem;
 }
 
 .btn-com-bot {
-	padding: 0;
-	margin: 0;
-	padding-left: 0.25rem;
-	padding-right: 0.25rem;
-	height: 1.5rem;
-	font-size: 0.75rem;
+    padding: 0;
+    margin: 0;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    height: 1.5rem;
+    font-size: 0.75rem;
 }
 
 @media only screen and (max-width: 992px) {
@@ -918,19 +887,19 @@ ul {
 .commcaptcha img {
 	margin-left: 0.5rem;
 	height: 4rem;
-	margin-bottom: 4px;
+    margin-bottom: 4px;
 }
 
 .commcaptcha-message {
 	margin: 0;
-	padding: 0;
-	display: block;
-	margin-top: -25px;
+    padding: 0;
+    display: block;
+    margin-top: -25px;
 }
 
 .col.inner-div.comment-inner-div {
 	min-height: 25px;
-	display: inline-block;
+	display: inline-block;	
 }
 
 .active_sub_users {
@@ -940,6 +909,6 @@ ul {
 	text-align: right;
 }
 
-.text-decoration-none {
-	text-decoration: none !important;
+.post-title {
+	min-height: 2.5rem;
 }
