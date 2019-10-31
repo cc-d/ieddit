@@ -611,7 +611,7 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
         if subi != 'all':
             post.site_url = config.URL + '/i/' + subi + '/' + str(post.id) + '/' + post.inurl_title
         post.remote_url_parsed = post_url_parse(post.url)
-        post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
+        post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).filter_by(deleted=False).count()
         if 'user_id' in session and 'username' in session:
 
             v = post.has_voted(session['user_id'])
