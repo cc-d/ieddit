@@ -127,9 +127,9 @@
 			{% if session['username'] %}
 			<ul class="navbar-nav mr-auto navbar-right">
 					{% if session['has_messages'] %}
-					<a class="has-messages messages nav-link user-icon-link text-decoration-none" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> <sup class="badge badge-warning" style="font-size: .25rem; right: 9px; top: -9px;">{{ session['unread_messages'] }}</sup></a>
+					<a class="has-messages messages nav-link user-icon-link text-decoration-none" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> <sup class="badge badge-warning" style="font-size: 12px; right: 9px; top: -9px;">{{ session['unread_messages'] }}</sup></a>
 					{% else %}
-					<a class="has-messages messages nav-link user-icon-link text-decoration-none" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> <sup class="badge badge-secondary" style="font-size: .25rem; right: 9px; top: -9px;">0</sup></a>
+					<a class="has-messages messages nav-link user-icon-link text-decoration-none" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> <sup class="badge badge-secondary" style="font-size: 12px; right: 9px; top: -9px;">0</sup></a>
 					{% endif %}
 				<li class="nav-item active">
 					<a class="nav-link" id='logout-right' href="/logout"><i class="fas fa-sign-out-alt"></i> log out</a>
