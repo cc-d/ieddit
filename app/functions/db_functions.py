@@ -12,7 +12,7 @@ from share import *
 
 
 ##### Sub Functions #####
-@cache.memoize(config.DEFAULT_CACHE_TIME)
+#@cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_sub_nsfw(sub):
     """
     returns a boolean if a sub obj is nsfw
@@ -23,7 +23,7 @@ def is_sub_nsfw(sub):
     return False
 
 
-@cache.memoize(config.DEFAULT_CACHE_TIME)
+#@cache.memoize(config.DEFAULT_CACHE_TIME)
 def normalize_sub(sub):
     """
     if a subname is incorrectly capitalized, correct it
@@ -35,7 +35,7 @@ def normalize_sub(sub):
     return sub
 
 
-@cache.memoize(config.DEFAULT_CACHE_TIME)
+#@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_sub_mods(sub, admin=True):
     """
     returns the list of mods in a given sub
@@ -52,7 +52,7 @@ def get_sub_mods(sub, admin=True):
 
 
 ##### Username Functions #####
-@cache.memoize(config.DEFAULT_CACHE_TIME)
+#@cache.memoize(config.DEFAULT_CACHE_TIME)
 def normalize_username(username, dbuser=False):
     """
     returns a capitalization corrected username normally,
@@ -70,7 +70,7 @@ def normalize_username(username, dbuser=False):
     return False
     
 
-@cache.memoize(config.DEFAULT_CACHE_TIME)
+#@cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_admin(username):
     """
     returns bool if user is admin or not
@@ -81,7 +81,7 @@ def is_admin(username):
     return False
 
 
-@cache.memoize(config.DEFAULT_CACHE_TIME)
+#@cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_mod_of(username, sub):
     """
     returns bool if user is mod of a sub
@@ -93,7 +93,7 @@ def is_mod_of(username, sub):
     return False
 
 
-@cache.memoize(config.DEFAULT_CACHE_TIME)
+#@cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_mod(obj, username):
     """
     sees if a username is a mod of a post/comment
