@@ -32,6 +32,14 @@ def user_delete_comment():
 
     if comment.author == session['username']:
         comment.deleted = True
+        children = db.session.query(Comment).filter_by(parent_id=cid).all()
+        if children:
+            for c in children:
+                cc = db.session.query(Comment).filter_by(parent_id=c.id).all()
+                if cc:
+                    for ccc in cc:
+                        ccc.deleted=True
+                c.deleted=True
         db.session.commit()
 
         flash('post deleted', category='success')
