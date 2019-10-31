@@ -15,7 +15,7 @@ def main(port=80):
 if __name__ == '__main__':
     try:
         port = 80
-        if len(argv > 1):
+        if len(argv) > 1:
             port = int(argv[1])    
 
         logger.info(f"Attempting to start app on Port: {port}")
