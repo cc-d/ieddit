@@ -1814,7 +1814,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
 
         comcount = comments.count()
     else:
-        comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub))
+        comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub)).filter_by(deleted=False)
         comcount = comments.count()
 
     if comcount <= offset:
