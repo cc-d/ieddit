@@ -1049,7 +1049,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 
 
         if vote == 0:
-            if last_vote.post_id is not None:
+            if last_vote.post_id is not None or last_vote.comment_id is not None:
                 if last_vote.post_id is not None:
                     vpost = db.session.query(Post).filter_by(id=last_vote.post_id).first()
                 elif last_vote.comment_id is not None:
