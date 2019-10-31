@@ -30,6 +30,10 @@ textarea {
 	overflow: auto;
 }
 
+.row.post-row.top-post-row {
+	margin-bottom: 0rem;
+}
+
 .post-row-top {
 	font-size: 0.8rem;
 }

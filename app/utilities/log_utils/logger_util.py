@@ -74,6 +74,8 @@ class DiscordHandler(logging.Handler):
         """
         sends a message to discord
         """
+        if config.DISCORD_ENABLED == False:
+            return False
         desc = [
             record.message,
             record.exc_info,
