@@ -14,7 +14,7 @@ app.static_folder = 'static'
 
 @app.before_request
 def before_request():
-    flash(session.sid)
+    #flash(session.sid)
     if 'username' in session:
         if session['identifier'] != request.cookies['session'] + ' ' + session['username']:
             logout()
