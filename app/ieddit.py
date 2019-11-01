@@ -756,7 +756,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
                 post.has_voted = post.has_voted.vote    
 
         if comment_id == None:
-            comments = db.session.query(Comment).filter_by(post_id=post_id, deleted=deleted).all()
+            comments = db.session.query(Comment).filter_by(post_id=post_id).all()
             show_blocked = False
         
         else:
