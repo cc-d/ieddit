@@ -14,6 +14,15 @@ app.static_folder = 'static'
 
 @app.before_request
 def before_request():
+    flash(session.sid)
+    if 'username' in session:
+        if session['identifier'] != request.cookies['session'] + ' ' + session['username']:
+            logout()
+            flash('invalid session')
+            raise ValueError('session does not match cookie')
+            return redirect('/')
+
+
     g.cache_bust = cache_bust
 
     if app.debug:
@@ -139,7 +148,7 @@ def handle_error(error):
     print(trace_back)
     return render_template("error.html", error=description, code=code), code
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_style(sub=None):
     """
     returns sub style for a given sub
@@ -224,7 +233,7 @@ def sitemap():
 def robotstxt():
     return app.send_static_file('robots.txt')
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_subtitle(sub):
     try:
         title = db.session.query(Sub).filter_by(name=sub).first()
@@ -233,12 +242,12 @@ def get_subtitle(sub):
         title = None
     return title
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_api_key(username):
     key = db.session.query(Api_key).filter_by(username=username).first()
     return key
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def has_messages(username):
     if 'username' in session:
         messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
@@ -249,7 +258,7 @@ def has_messages(username):
                 return True
     return False
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_banned_subs(username):
     subs = db.session.query(Ban).filter_by(username=username).all()
     b = []
@@ -257,7 +266,7 @@ def get_banned_subs(username):
         b.append(s.sub)
     return b
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def anon_block(obj):
     for c in obj:
         if c.anonymous:
@@ -273,11 +282,11 @@ def anon_block(obj):
                 c.noblock = True
     return obj
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_muted_subs():
     return [x.name for x in db.session.query(Sub).filter_by(muted=True).all()]
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_blocked(username):
     bdict = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
     if username == None:
@@ -315,7 +324,7 @@ def set_rate_limit(limit_seconds=None):
             session['rate_limit'] = int(time.time()) + (limit_seconds)
         #cache.clear()
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_all_subs(explore=False):
     subs = db.session.query(Sub).all()
     if explore == False:
@@ -347,7 +356,7 @@ def get_all_subs(explore=False):
         return esubs
 
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_pgp_from_username(username):
     u = normalize_username(username)
     if u == False:
@@ -360,13 +369,13 @@ def get_pgp_from_username(username):
         return pgp
     return False
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_user_from_name(username):
     if username == '' or username == False or username == None:
         return False
     return normalize_username(username, dbuser=True)
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_user_from_id(uid):
     if uid == None or uid == False:
         return False
@@ -401,6 +410,8 @@ def login():
             if check_password_hash(hashed_pw, password):
                 logout()
                 [session.pop(key) for key in list(session.keys())]
+
+                session['identifier'] = session.sid + ' ' + login_user.username
 
                 session['username'] = login_user.username
                 session['user_id'] = login_user.id
@@ -477,6 +488,7 @@ def register():
         logout()
         session['username'] = new_user.username
         session['user_id'] = new_user.id
+        session['identifier'] = session.sid + ' ' + new_user.username
         set_rate_limit()
 
         #cache.clear()
@@ -489,7 +501,7 @@ def index():
 
 
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=True, d=None, s=None):
     if offset != None:
         offset = int(offset)
@@ -690,11 +702,11 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
     return render_template('sub.html', posts=sub_posts, url=config.URL, sub_stats=sub_stats, is_all=is_all)
 
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_cached_children(comment, deleted=False):
     return comment.get_children(deleted=deleted)
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def recursive_children(comment=None, current_depth=0, max_depth=8, deleted=False):
     found_children = []
     found_children.append(comment)
@@ -715,7 +727,7 @@ def recursive_children(comment=None, current_depth=0, max_depth=8, deleted=False
 
     return found_children
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None, deleted=False):
     post = None
     parent_comment = None
@@ -861,7 +873,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 # this sort of recursion KILLS performance, especially when combined with the already
 # terrible comment_structure function.
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def list_of_child_comments(comment_id, sort_by=None):
     comments = {}
     current_comments = []
@@ -1672,7 +1684,7 @@ def settings(sub=None):
         return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw, sub_object=subr)
     return abort(403)
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_blocked_subs(username=None):
     subs = db.session.query(Sub_block).filter_by(username=session['username']).all()
     if subs != None:
@@ -1714,7 +1726,7 @@ def blocksub(sub=None):
 
     return redirect('/i/%s/' % sub)
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def explore_stats(sub):
     if hasattr(sub, 'rules'):
         if sub.rules is not None:
@@ -1917,7 +1929,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
 
     return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_posts_and_comments(subi=None, day=False, load=None):
     filter_today = datetime.now() - timedelta(days=1)
     if subi == None or subi == 'all':
@@ -1943,7 +1955,7 @@ def get_posts_and_comments(subi=None, day=False, load=None):
 
     return posts, comments
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_top_stats(subi=None):
     t = time.time()
     votes = []
@@ -1971,7 +1983,7 @@ def get_top_stats(subi=None):
 
 
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_stats(subi=None):
     if subi == None:
         votes = db.session.query(Vote).all()
