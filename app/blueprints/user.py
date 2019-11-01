@@ -523,7 +523,7 @@ def show_obj():
 
     return 'ok'
 
-#@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
 def get_total_blocked():
     uids, pids, cids = [], [], []
     ano = session['blocked']['anon_user']

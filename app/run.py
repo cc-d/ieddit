@@ -14,15 +14,11 @@ def main(port=80):
 
 if __name__ == '__main__':
     try:
-        port = 80
-        if len(argv) > 1:
-            port = int(argv[1])    
-
-        logger.info(f"Attempting to start app on Port: {port}")
+        logger.info("Attempting to run on custom port")
+        port = int(argv[1])
         main(port)
-
     except:
-        logger.exception("Unable to start app.")
-
+        logger.warning("Unable to start on custom port. Using port 80")
+        main()
 
 

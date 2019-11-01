@@ -56,7 +56,7 @@
 <div class='page-continer'>
 <div class="page mx-auto">
 	<nav class="navbar navbar-expand-lg navbar-light rounded">
-		<a class="navbar-brand" href="/">ieddit</a>
+		<a class="navbar-brand" href="/">ieddit<sup><small class="badge badge-light">beta</small></sup></a>
 
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto navbar-right">
@@ -66,14 +66,14 @@
 					<a class="nav-link" href="/i/{{ request.sub }}">/i/{{ request.sub }}</a>
 				</li>
 				<li class="nav-item active">
-					<a class="nav-link" href="/i/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary"><i class='fa fa-gears'></i> information</button></a>
+					<a class="nav-link" href="/i/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary"><i class='fas fa-cogs'></i> information</button></a>
 				</li>
 				{% else %}
 				<li class="nav-item active" style="margin-top: 0.25rem;">
 					<a class="nav-link" href="/about/">about</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="/i/all"><button type="button" class="btn btn-sm btn-danger">/i/all <i class='fa fa-users'></i></button></a>
+					<a class="nav-link" href="/i/all"><button type="button" class="btn btn-sm btn-danger"><i class='fa fa-users'></i> /i/all</button></a>
 				</li>
 				{% endif %}
 
@@ -83,23 +83,23 @@
 				<li class='nav-item nav-link'>
 				<input type='hidden' name='lol' value='1'>
 				{% if request.sub in session['blocked_subs'] %}
-					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'>subscribe <i class='fa fa-star'></i></button>
+					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'><i class='fa fa-star'></i> subscribe</button>
 				{% else %}
-					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger	'>unsubscribe <i class='fa fa-ban'></i></button>
+					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger'><i class='fa fa-ban'></i> unsubscribe</button>
 				{% endif %}
 			</li>
 				</form>
 				<li class="nav-item">
-					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success">Create Post +</button></a>
+					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> create post</button></a>
 				</li>
 				{% endif %}
 
 				{% else %}
 				<li class="nav-item">
-					<a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-primary">Create Sub +</button></a>
+					<a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> create sub</button></a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="/explore/"><button type="button" class="btn btn-sm btn-success">Explore <i class='fa fa-paper-plane'></i></button></a>
+					<a class="nav-link" href="/explore/"><button type="button" class="btn btn-sm btn-success"><i class='fa fa-paper-plane'></i> explore</button></a>
 				</li>
 				{% endif %}
 				{% if session['username'] %}
@@ -119,7 +119,7 @@
 			</div>
 				{% else %}
 				<li class="nav-item">
-					<a class="nav-link" href="/login/"><button type="button" class="btn btn-sm btn-secondary">Login</button></a>
+					<a class="nav-link" href="/login/"><button type="button" class="btn btn-sm btn-secondary">login</button></a>
 				</li>
 				{% endif %}
 			</ul>
@@ -127,12 +127,12 @@
 			{% if session['username'] %}
 			<ul class="navbar-nav mr-auto navbar-right">
 					{% if session['has_messages'] %}
-					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> ({{ session['unread_messages'] }})</a>
+					<a class="has-messages messages nav-link user-icon-link text-decoration-none" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> <sup class="badge badge-warning" style="font-size: .25rem; right: 9px; top: -9px;">{{ session['unread_messages'] }}</sup></a>
 					{% else %}
-					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> (0)</a>
+					<a class="has-messages messages nav-link user-icon-link text-decoration-none" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> <sup class="badge badge-secondary" style="font-size: .25rem; right: 9px; top: -9px;">0</sup></a>
 					{% endif %}
 				<li class="nav-item active">
-					<a class="nav-link" id='logout-right' href="/logout">logout</a>
+					<a class="nav-link" id='logout-right' href="/logout"><i class="fas fa-sign-out-alt"></i> log out</a>
 				</li>
 			</ul>
 			{% endif %}
@@ -178,8 +178,9 @@
 <div id='footer'>
 	<a href='https://ieddit.com' class='footer-link'><i class='fa fa-globe'></i> ieddit.com</a>
 	<a href='https://kiwiirc.com/nextclient/irc.freenode.net/#ieddit' class='footer-link'><i class='fa fa-comment'></i> irc</a>
-	<a href='https://discord.gg/pdGCV6K' class='footer-link'><i class='fa fa-phone-square'></i> discord</a>	
-	<a href='https://github.com/cc-d/ieddit' class='footer-link'><i class='fa fa-github'></i> github</a>
+	<a href='https://discord.gg/pdGCV6K' class='footer-link'><i class='fa fa-phone-square'></i> discord</a>
+	<a href='https://github.com/cc-d/ieddit' class='footer-link'><i class="fab fa-github"></i> github</a>
+	<a href='/changelog/' class='footer-link'><i class="fas fa-clock"></i> changelog</a>
 </div>
 </small>
 
