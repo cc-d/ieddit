@@ -1791,4 +1791,319 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
     if sub == 'all':
         nsfw = True
         posts = subi('all', posts_only=True, nsfw=True)
-        muted_subs = 
+        muted_subs = get_muted_subs()
+        posts = [p for p in posts if p.sub not in muted_subs]    
+    elif sub != None:
+        subobj = db.session.query(Sub).filter_by(name=sub).first()
+        if subobj.muted or subobj.nsfw:
+            nsfw = True
+        posts = subi(sub, posts_only=True)
+    else:
+        posts = subi('all', posts_only=True, nsfw=False)
+        muted_subs = get_muted_subs()
+        posts = [p for p in posts if p.sub not in muted_subs]    
+
+
+    posts = posts[offset:offset+limit]
+
+    for p in posts:
+        p.mods = get_sub_mods(p.sub)
+
+    comments_with_posts = []
+
+    if sub is None:
+        nsfw = False
+        sub = 'all'
+
+    if sub == 'all':
+        if nsfw:
+            comments = db.session.query(Comment)
+        else:
+            sfw_subs = [n.name for n in db.session.query(Sub).filter_by(nsfw=False).all()]
+
+            comments = db.session.query(Comment)
+            comments = comments.filter(Comment.sub_name.in_(sfw_subs))
+
+
+        comcount = comments.count()
+    else:
+        comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub)).filter_by(deleted=False)
+        comcount = comments.count()
+
+    if comcount <= offset:
+        more = comcount
+
+    if s == 'top':
+        comments = comments.order_by((Comment.ups - Comment.downs).desc())
+        comments = comments.offset(offset).limit(limit).all()
+    elif s == 'new':
+        comments = comments.order_by((Comment.created).desc())
+        comments = comments.offset(offset).limit(limit).all()
+    else:
+        comments = comments.offset(offset).limit(limit).all()
+
+    comments = [c for c in comments if c.id not in session['blocked']['comment_id']]
+
+    if muted_subs:
+        comments = [c for c in comments if c.sub_name not in muted_subs]
+
+    comments = anon_block(comments)
+    comments = [c for c in comments if c.noblock == True]
+
+
+    nsfw_subs = []
+    sfw_subs = []
+
+    if nsfw == False:
+        for c in comments:
+            if c.sub_name not in nsfw_subs and c.sub_name not in sfw_subs:
+                comsub = db.session.query(Sub).filter_by(name=c.sub_name).first()
+                if comsub.nsfw == True:
+                    nsfw_subs.append(comsub.name)
+                else:
+                    sfw_subs.append(comsub.name)
+
+    if nsfw == False:
+        comments = [c for c in comments if c.sub_name not in nsfw_subs]
+
+    for c in comments:
+        c.new_text = pseudo_markup(c.text)
+        c.mods = get_sub_mods(c.sub_name)
+        cpost = db.session.query(Post).filter_by(id=c.post_id).first()
+        comments_with_posts.append((c, cpost))
+        c.hot = hot(c.ups, c.downs, c.created)
+        c.created_ago = time_ago(c.created)
+
+        if 'user_id' in session:
+            c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
+            if c.has_voted != None:
+                c.has_voted = c.has_voted.vote
+                if Comment.sub_name:
+                    if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(Comment.sub_name)).exists()).scalar():
+                        Comment.is_mod = True
+                    else:
+                        Comment.is_mod = False
+
+    if request.environ['QUERY_STRING'] == '':
+        session['off_url'] = request.url + '?offset=15'
+        session['prev_off_url'] = request.url
+    else:
+        if offset == None:
+            session['off_url'] = request.url + '&offset=15'
+            session['prev_off_url'] = request.url
+        else:
+            offset = str(offset)
+
+            if (int(offset) - 15) > 0:
+                session['prev_off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) -15))
+            else:
+                session['prev_off_url'] = re.sub('[&\?]?offset=(\d+)', '', request.url)
+            session['off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) +15))
+    if request.url.find('offset=') == -1:
+        session['off_url'] = request.url + '&offset=15'
+        session['prev_off_url'] = False
+
+    session['top_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=top'
+    session['new_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=new'
+    session['hot_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=hot'
+
+    session['hour_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=hour'
+    session['day_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=day'
+    session['week_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=week'
+    session['month_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=month'
+
+    for a in ['top_url', 'new_url', 'day_url', 'week_url', 'hour_url', 'month_url', 'hot_url']:
+        if session[a].find('/&') != -1:
+            session[a] = session[a].replace('/&', '/?')
+
+    if 'prev_off_url' in session:
+        if session['prev_off_url']:
+            if session['prev_off_url'].find('/&'):
+                session['prev_off_url'] = session['prev_off_url'].replace('/&', '/?')
+
+    if 'off_url' in session:
+        if session['off_url']:
+            session['off_url'] = session['off_url'].replace('/&', '/?')
+
+    if s == 'hot':
+            comments.sort(key=lambda x: x.hot, reverse=True)
+
+    return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_posts_and_comments(subi=None, day=False, load=None):
+    filter_today = datetime.now() - timedelta(days=1)
+    if subi == None or subi == 'all':
+        posts = db.session.query(Post)
+        comments = db.session.query(Comment)
+    else:
+        posts = db.session.query(Post)
+        comments = db.session.query(Comment)
+
+    if day:
+        posts = posts.filter(Post.created >= filter_today)
+        comments = comments.filter(Comment.created >= filter_today)
+
+    if load != None:
+        posts = posts.options(load_only('author'))
+        comments = comments.options(load_only('author'))
+
+
+    hidden_subs = [s.name for s in db.session.query(Sub).filter_by(muted=True).all()]
+
+    posts = [p for p in posts.all() if p.sub not in hidden_subs]
+    comments = [c for c in comments.all() if c.sub_name not in hidden_subs]
+
+    return posts, comments
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_top_stats(subi=None):
+    t = time.time()
+    votes = []
+    users = []
+    filter_today = datetime.now() - timedelta(days=1)
+
+    posts, comments = get_posts_and_comments(subi=subi, day=True)    
+
+    for p in posts:
+        if p.author not in users:
+            users.append(p.author)
+        [votes.append(v) for v in db.session.query(Vote).filter_by(post_id=p.id).all()]
+
+    for c in comments:
+        if c.author not in users:
+            users.append(c.author)
+        [votes.append(v) for v in db.session.query(Vote).filter_by(comment_id=c.id).all()]
+
+    for v in votes:
+        user = get_user_from_id(v.user_id)
+        if user.username not in users:
+            users.append(user.username)
+
+    return {'active_users':len(users), 'posts_today':len(posts)}
+
+
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_stats(subi=None):
+    if subi == None:
+        votes = db.session.query(Vote).all()
+        posts = db.session.query(Post).all()
+        comments = db.session.query(Comment).all()
+        users = db.session.query(Iuser).all()
+        bans = db.session.query(Ban).count()
+        messages = db.session.query(Message).count()
+        mod_actions = db.session.query(Mod_action).count()
+        subs = db.session.query(Sub).count()
+        subscripts = 0
+    else:
+        posts = db.session.query(Post).filter_by(sub=subi).all()
+        comments = db.session.query(Comment).filter_by(sub_name=subi).all()
+        bans = db.session.query(Ban).filter_by(sub=subi).count()
+        mod_actions = db.session.query(Mod_action).filter_by(sub=subi).count()
+        users = []
+        votes = []
+        for v in posts:
+            [votes.append(vv) for vv in db.session.query(Vote).filter_by(post_id=v.id).all()]
+            [users.append(vv) for vv in db.session.query(Iuser).filter_by(username=v.author).all()]
+        for v in comments:
+            [votes.append(vv) for vv in db.session.query(Vote).filter_by(comment_id=v.id).all()]
+            [users.append(vv) for vv in db.session.query(Iuser).filter_by(username=v.author).all()]
+        users_blocked = [n.username for n in db.session.query(Sub_block).filter_by(sub=subi).all()]
+        subscripts = len([u for u in db.session.query(Iuser) if u.username not in users_blocked])
+        messages = 0
+        subs = 0
+
+    daycoms = [c for c in comments if ((datetime.now() - c.created).total_seconds()) < 86400]
+
+
+    dayusers = []
+
+    for uu in daycoms:
+        if uu.author not in dayusers:
+            dayusers.append(uu.author)
+
+    dayposts = [p for p in posts if ((datetime.now() - p.created).total_seconds()) < 86400]
+
+    for uuu in dayposts:
+        if uuu.author not in dayusers:
+            dayusers.append(uuu.author)
+
+    dayvotes = []
+
+    for vvv in votes:
+        if hasattr(vvv, 'created'):
+            if((datetime.utcnow() - vvv.created).total_seconds()) < 86400:
+                dayvotes.append(vvv)
+
+    for vz in dayvotes:
+        new_user = db.session.query(Iuser).filter(Iuser.id == vz.user_id).first()
+        if hasattr(new_user, 'username'):
+            if new_user.username not in dayusers:
+                dayusers.append(new_user.username)
+
+    users = len(users)
+    daycoms = len(daycoms)
+    dayposts = len(dayposts)
+    dayvotes = len(dayvotes)
+    dayusers = len(dayusers)
+
+    # requires user be on linux, and have log file in this location, so this is
+    # only set to try to be calculated on the ieddit prod/dev server. it makes
+    # assumptions that cannot be made for any user on a different setup
+    if config.URL == 'https://ieddit.com' or config.URL == 'http://dev.ieddit.com' and subi == None:
+        try:
+            fline = str(os.popen('head -n 1 /var/log/nginx/access.log').read()).split(' ')[3][1:]
+            lline = str(os.popen('tail -n 1 /var/log/nginx/access.log').read()).split(' ')[3][1:]
+
+            fline = datetime.strptime(fline, '%d/%b/%Y:%H:%M:%S')
+            lline = datetime.strptime(lline, '%d/%b/%Y:%H:%M:%S')
+
+            timediff = lline - fline
+
+            timediff = ' total requests in past %s hours' % str(timediff.total_seconds() / 60 / 24)
+
+            lc = str(os.popen('wc -l /var/log/nginx/access.log').read()).split(' ')[0]
+
+            timediff = lc + timediff
+
+
+            # cache_bust = '?' + str(time.time()).split('.')[0]
+            uptime = (time.time() - int(cache_bust[1:])) / 60 / 60
+        except Exception as e:
+            print(e)
+            timediff, uptime = False, False
+    else:
+        timediff, uptime = False, False
+
+
+    return (len(posts), len(comments), users, bans, messages, mod_actions, subs, len(votes), daycoms, dayposts, dayvotes, dayusers,
+        timediff, uptime, subscripts)
+
+@app.route('/i/<subi>/stats/', methods=['GET'])
+@app.route('/stats/', methods=['GET'])
+def stats(subi=None):
+    (posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
+        dayusers, timediff, uptime, subscripts) = get_stats(subi=subi)
+
+    if 'admin' in session:
+        debug = str(vars(request))
+    else:
+        debug = False
+
+    return render_template('stats.html', posts=posts, dayposts=dayposts, comments=comments, daycoms=daycoms,
+        users=users, bans=bans, messages=messages, mod_actions=mod_actions, subs=subs, votes=votes, dayvotes=dayvotes,
+        dayusers=dayusers, timediff=timediff, uptime=uptime, debug=debug, subi=subi, subscripts=subscripts)
+
+
+from blueprints import mod
+app.register_blueprint(mod.bp)
+
+from blueprints import user
+app.register_blueprint(user.ubp)
+
+from blueprints import admin
+app.register_blueprint(admin.abp)
+
+from blueprints import api
+app.register_blueprint(api.bp)
