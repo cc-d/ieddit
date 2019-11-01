@@ -16,11 +16,12 @@ app.static_folder = 'static'
 def before_request():
     flash(session.sid)
     if 'username' in session:
+        session.sid = request.cookies['session']
+        
         if session['identifier'] != request.cookies['session'] + ' ' + session['username']:
-            logout()
             flash('invalid session')
+            logout()
             raise ValueError('session does not match cookie')
-            return redirect('/')
 
 
     g.cache_bust = cache_bust
