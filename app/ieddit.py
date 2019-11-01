@@ -225,12 +225,10 @@ def send_font(file=None, methods=['GET']):
         return abort(403)
 
 @app.route('/sitemap.xml')
-
 def sitemap():
     return app.send_static_file('sitemap.xml')
 
 @app.route('/robots.txt')
-
 def robotstxt():
     return app.send_static_file('robots.txt')
 
