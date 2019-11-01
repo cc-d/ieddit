@@ -14,6 +14,15 @@ app.static_folder = 'static'
 
 @app.before_request
 def before_request():
+    flash(session.sid)
+    if 'username' in session:
+        if session['identifier'] != request.cookies['session'] + ' ' + session['username']:
+            logout()
+            flash('invalid session')
+            raise ValueError('session does not match cookie')
+            return redirect('/')
+
+
     g.cache_bust = cache_bust
 
     if app.debug:
@@ -402,6 +411,8 @@ def login():
                 logout()
                 [session.pop(key) for key in list(session.keys())]
 
+                session['identifier'] = session.sid + ' ' + login_user.username
+
                 session['username'] = login_user.username
                 session['user_id'] = login_user.id
                 if login_user.admin:
@@ -477,6 +488,7 @@ def register():
         logout()
         session['username'] = new_user.username
         session['user_id'] = new_user.id
+        session['identifier'] = session.sid + ' ' + new_user.username
         set_rate_limit()
 
         #cache.clear()
