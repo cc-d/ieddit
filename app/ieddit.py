@@ -14,6 +14,7 @@ app.static_folder = 'static'
 
 @app.before_request
 def before_request():
+    #flash(session.sid)
 
     g.cache_bust = cache_bust
 
