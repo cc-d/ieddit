@@ -1,0 +1,57 @@
+ * Serving Flask app "ieddit" (lazy loading)
+ * Environment: production
+[31m   WARNING: This is a development server. Do not use it in a production deployment.[0m
+[2m   Use a production WSGI server instead.[0m
+ * Debug mode: off
+ * Serving Flask app "ieddit" (lazy loading)
+ * Environment: production
+[31m   WARNING: This is a development server. Do not use it in a production deployment.[0m
+[2m   Use a production WSGI server instead.[0m
+ * Debug mode: off
+Traceback (most recent call last):
+  File "run.py", line 10, in <module>
+    main(port)
+  File "run.py", line 5, in main
+    app.run(host='0.0.0.0', port=port)
+  File "/usr/local/lib/python3.7/dist-packages/flask/app.py", line 990, in run
+    run_simple(host, port, self, **options)
+  File "/usr/local/lib/python3.7/dist-packages/werkzeug/serving.py", line 1010, in run_simple
+    inner()
+  File "/usr/local/lib/python3.7/dist-packages/werkzeug/serving.py", line 963, in inner
+    fd=fd,
+  File "/usr/local/lib/python3.7/dist-packages/werkzeug/serving.py", line 806, in make_server
+    host, port, app, request_handler, passthrough_errors, ssl_context, fd=fd
+  File "/usr/local/lib/python3.7/dist-packages/werkzeug/serving.py", line 699, in __init__
+    HTTPServer.__init__(self, server_address, handler)
+  File "/usr/lib/python3.7/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/usr/lib/python3.7/http/server.py", line 137, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/lib/python3.7/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "run.py", line 12, in <module>
+    main()
+  File "run.py", line 5, in main
+    app.run(host='0.0.0.0', port=port)
+  File "/usr/local/lib/python3.7/dist-packages/flask/app.py", line 990, in run
+    run_simple(host, port, self, **options)
+  File "/usr/local/lib/python3.7/dist-packages/werkzeug/serving.py", line 1010, in run_simple
+    inner()
+  File "/usr/local/lib/python3.7/dist-packages/werkzeug/serving.py", line 963, in inner
+    fd=fd,
+  File "/usr/local/lib/python3.7/dist-packages/werkzeug/serving.py", line 806, in make_server
+    host, port, app, request_handler, passthrough_errors, ssl_context, fd=fd
+  File "/usr/local/lib/python3.7/dist-packages/werkzeug/serving.py", line 699, in __init__
+    HTTPServer.__init__(self, server_address, handler)
+  File "/usr/lib/python3.7/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/usr/lib/python3.7/http/server.py", line 137, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/usr/lib/python3.7/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 13] Permission denied

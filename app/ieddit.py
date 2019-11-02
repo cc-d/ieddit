@@ -12,17 +12,16 @@ abs_path = os.path.abspath(os.path.dirname(__file__))
 os.chdir(abs_path)
 app.static_folder = 'static'
 
+Session(app)
+captcha = FlaskSessionCaptcha(app)
+
 @app.before_request
 def before_request():
     #flash(session.sid)
     if 'username' in session:
-        session.sid = request.cookies['session']
-        
-        if session['identifier'] != request.cookies['session'] + ' ' + session['username']:
-            flash('invalid session')
+        if session.sid != request.cookies['session']:
+            logger.error('invalid session: server - %s | client - %s' % (session.sid, request.cookies['session']))
             logout()
-            raise ValueError('session does not match cookie')
-
 
     g.cache_bust = cache_bust
 
@@ -387,6 +386,8 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+        username = normalize_username(username)
+
         if config.CAPTCHA_ENABLE and config.CAPTCHA_LOGIN:
             if request.form.get('captcha') == '':
                 flash('no captcha', 'danger')
@@ -2093,6 +2094,15 @@ def stats(subi=None):
         users=users, bans=bans, messages=messages, mod_actions=mod_actions, subs=subs, votes=votes, dayvotes=dayvotes,
         dayusers=dayusers, timediff=timediff, uptime=uptime, debug=debug, subi=subi, subscripts=subscripts)
 
+
+@app.route('/debug/', methods=['GET'])
+def debug_info():
+    d = ''
+    d += str(vars(request))
+    d += '<br><br><br>'
+    d += str(vars(session))
+    d += '<br><br><br>'
+    return d
 
 from blueprints import mod
 app.register_blueprint(mod.bp)

@@ -10,7 +10,6 @@ sys.path.append('..')
 import config
 from share import *
 
-
 ##### Sub Functions #####
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_sub_nsfw(sub):

@@ -62,8 +62,6 @@ db.session.rollback()
 
 from models import *
 
-Session(app)
-captcha = FlaskSessionCaptcha(app)
 
 limiter = Limiter(
     app,
