@@ -78,18 +78,6 @@ def user_edit_post():
     if len(etext) < 1 or len(etext) > 20000:
         return 'invalid edit length'
 
-    if config.CAPTCHA_ENABLE and config.CAPTCHA_EDIT:
-        if request.form.get('captcha') == '':
-            flash('no captcha', 'danger')
-            return redirect('/user/edit/%s/%s/' % (itype, iid))
-        if captcha.validate() == False:
-            flash('invalid captcha', 'danger')
-            return redirect('/user/edit/%s/%s/' % (itype, iid))
-#        if 'rate_limit' in session and config.RATE_LIMIT == True:
-#            rl = session['rate_limit'] - time.time()
-#            if rl > 0:
-#                flash('rate limited, try again in %s seconds' % str(rl))
-#                return redirect('/user/edit/%s/%s/' % (itype, iid))
 
     if itype == 'post':
         obj = db.session.query(Post).filter_by(id=iid).first()
@@ -203,14 +191,6 @@ def reset_page():
 @ubp.route('/password_reset', methods=['POST', 'GET'])
 def password_reset(email=None):
     if request.method == 'POST':
-        if config.CAPTCHA_ENABLE:
-            if request.form.get('captcha') == '':
-                flash('no captcha', 'danger')
-                return redirect('/user/reset_password/')
-
-            if captcha.validate() == False:
-                flash('invalid captcha', 'danger')
-                return redirect('/user/reset_password/')
 
         email = request.form.get('email')
         if email == None:

@@ -23,7 +23,7 @@ elif DB_TYPE == 'postgres':
 SECRET_KEY = 'not-a-real-key-|r|JYumh8XiLK|r|'
 
 # Chhange this to your local URL. IE http://127.0.0.1
-URL = 'http://127.0.0.1'
+URL = 'http://dev.ieddit.com'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -39,22 +39,6 @@ RATE_LIMIT = False
 RATE_LIMIT_TIME = 5
 LIMITER_DEFAULTS = ['600 per minute']
 
-CAPTCHA_ENABLE = False
-
-# documentation of lib here is incorrect...
-#CAPTCHA_NUMERIC_DIGITS = 2
-CAPTCHA_LENGTH = 3
-
-# Show captcha on comments
-CAPTCHA_COMMENTS = False
-CAPTCHA_POSTS = True
-CAPTCHA_REGISTER = True
-CAPTCHA_LOGIN = True
-CAPTCHA_CREATE = True
-CAPTCHA_EDIT = False
-
-
-SESSION_TYPE = 'filesystem'
 USE_PROXIES = False
 
 MAIL_TYPE = 'mailgun'

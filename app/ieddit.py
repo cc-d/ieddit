@@ -12,16 +12,9 @@ abs_path = os.path.abspath(os.path.dirname(__file__))
 os.chdir(abs_path)
 app.static_folder = 'static'
 
-Session(app)
-captcha = FlaskSessionCaptcha(app)
 
 @app.before_request
 def before_request():
-    #flash(session.sid)
-    if 'username' in session:
-        if session.sid != request.cookies['session']:
-            logger.error('invalid session: server - %s | client - %s' % (session.sid, request.cookies['session']))
-            logout()
 
     g.cache_bust = cache_bust
 
@@ -388,13 +381,6 @@ def login():
         password = request.form.get('password')
         username = normalize_username(username)
 
-        if config.CAPTCHA_ENABLE and config.CAPTCHA_LOGIN:
-            if request.form.get('captcha') == '':
-                flash('no captcha', 'danger')
-                return redirect(url_for('login'))
-            if captcha.validate() == False:
-                flash('invalid captcha', 'danger')
-                return redirect(url_for('login'))
         if username == None or password == None:
             flash('Username or Password missing.', 'danger')
             return redirect(url_for('login'), 302)
@@ -411,7 +397,6 @@ def login():
                 logout()
                 [session.pop(key) for key in list(session.keys())]
 
-                session['identifier'] = session.sid + ' ' + login_user.username
 
                 session['username'] = login_user.username
                 session['user_id'] = login_user.id
@@ -444,14 +429,6 @@ def logout():
 @app.route('/register', methods=['POST'])
 def register():
     if request.method == 'POST':
-        if config.CAPTCHA_ENABLE and config.CAPTCHA_REGISTER:
-            if request.form.get('captcha') == '':
-                flash('no captcha', 'danger')
-                return redirect(url_for('register'))
-
-            if captcha.validate() == False:
-                flash('invalid captcha', 'danger')
-                return redirect(url_for('login'))
         username = request.form.get('username')
         password = request.form.get('password')
         email = request.form.get('email')
@@ -488,7 +465,6 @@ def register():
         logout()
         session['username'] = new_user.username
         session['user_id'] = new_user.id
-        session['identifier'] = session.sid + ' ' + new_user.username
         set_rate_limit()
 
         #cache.clear()
@@ -911,20 +887,6 @@ def create_sub():
             flash('reserved name')
             return redirect(url_for('create_sub'))
 
-        if config.CAPTCHA_ENABLE and config.CAPTCHA_CREATE:
-            if request.form.get('captcha') == '':
-                flash('no captcha', 'danger')
-                return redirect(url_for('create_sub'))
-
-            if captcha.validate() == False:
-                flash('invalid captcha', 'danger')
-                return redirect(url_for('create_sub'))
-            if 'rate_limit' in session and config.RATE_LIMIT == True:
-                rl = session['rate_limit'] - time.time()
-                if rl > 0:
-                    flash('rate limited, try again in %s seconds' % str(rl), 'danger')
-                    return redirect('/')
-
         if subname != None and verify_subname(subname) and 'username' in session:
             if len(subname) > 30 or len(subname) < 1:
                 return 'invalid length'
@@ -1143,25 +1105,6 @@ def create_post(postsub=None):
 
         anonymous = request.form.get('anonymous')
 
-        show_captcha = True
-
-        api = get_api_key(session['username'])
-        if api != None:
-            show_captcha = False
-
-        if config.CAPTCHA_ENABLE and config.CAPTCHA_POSTS and show_captcha:
-            if request.form.get('captcha') == '':
-                flash('no captcha', 'danger')
-                return redirect(url_for('create_post'))
-            if captcha.validate() == False:
-                flash('invalid captcha', 'danger')
-                return redirect(url_for('create_post'))
-            if 'rate_limit' in session and config.RATE_LIMIT == True:
-                rl = session['rate_limit'] - time.time()
-                if rl > 0:
-                    flash('rate limited, try again in %s seconds' % str(rl))
-                    return redirect('/')
-
         sub = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
         if sub == None:
             flash('sub does not exist', 'danger')
@@ -1315,33 +1258,6 @@ def create_comment():
     anonymous = request.form.get('anonymous')
     override = request.form.get('override')
 
-    show_captcha = True
-
-    api = get_api_key(session['username'])
-    if api is not None:
-        show_captcha = False
-
-    if config.CAPTCHA_ENABLE and config.CAPTCHA_COMMENTS and show_captcha:
-        if request.form.get('captcha') == '':
-            flash('no captcha', 'danger')
-            if 'last_return_url' in session:
-                return redirect(session['last_return_url'])
-            return redirect('/')
-
-        if captcha.validate() == False:
-            flash('invalid captcha', 'danger')
-            if 'last_return_url' in session:
-                return redirect(session['last_return_url'])
-            return redirect('/')
-
-
-        if 'rate_limit' in session and config.RATE_LIMIT == True:
-            rl = session['rate_limit'] - time.time()
-            if rl > 0:
-                flash('rate limited, try again in %s seconds' % str(rl), 'danger')
-                if 'last_return_url' in session:
-                    return redirect(session['last_return_url'])
-                return redirect('/')
 
     if anonymous != None:
         anonymous = True

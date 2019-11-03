@@ -17,8 +17,6 @@ from sqlalchemy import func, exists
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.exceptions import HTTPException
 from flask_caching import Cache
-from flask_session import Session
-from flask_session_captcha import FlaskSessionCaptcha
 from flask_limiter import Limiter
 from flask_limiter.util import get_ipaddr
 from jinja2 import escape, Markup

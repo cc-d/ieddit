@@ -9,13 +9,6 @@
 	<label for="create-post-title">Sub Title (optional)</label>
 	<input name='title' type="text" class="form-control" id="create-post-title" placeholder="Example: A place to discuss baseball!">
 	</div>
-	<div class="captcha-div">
-	{% if config.CAPTCHA_ENABLE and config.CAPTCHA_CREATE %}
-	{{ captcha() }}
-	<input type="text" id='captcha' name="captcha">
-</div>
-	<br>
-	{% endif %}
 	<button type="submit" class="btn btn-primary btn-dark">Create Sub</button>
 	<br><br><br>
 </form>

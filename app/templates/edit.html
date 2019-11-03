@@ -13,13 +13,6 @@
 	{% endif %}
 
 	</div>
-	<div class="captcha-div">
-	{% if config.CAPTCHA_ENABLE and config.CAPTCHA_EDIT %}
-	{{ captcha() }}
-	<input type="text" id='captcha' name="captcha">
-</div>
-	<br>
-	{% endif %}
 	<button type="submit" class="btn btn-primary btn-dark">edit {{ itype }}</button>
 	<br><br><br>
 </form>

@@ -1,11 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% if config.CAPTCHA_ENABLE and config.CAPTCHA_COMMENTS %}
-{% set capt = captcha() %}
-{% else %}
-{% set capt = False %}
-{% endif %}
 
 
 {% if post.override == False %}

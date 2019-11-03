@@ -60,13 +60,6 @@
 
 
 
-	<div class="captcha-div">
-	{% if config.CAPTCHA_ENABLE and config.CAPTCHA_POST %}
-	{{ captcha() }}
-	<input type="text" id='captcha' name="captcha">
-</div>
-	<br>
-	{% endif %}
 	<button type="submit" class="btn btn-primary btn-dark">Create Post</button>
 	<label for="anon-checkbox">anonymous?</label>
 	{% if session['anonymous'] %}
