@@ -22,7 +22,7 @@ elif DB_TYPE == 'postgres':
 
 SECRET_KEY = 'not-a-real-key-|r|JYumh8XiLK|r|'
 
-# Chhange this to your local URL. IE http://127.0.0.1
+# Change this to your local URL. IE http://127.0.0.1
 URL = 'http://dev.ieddit.com'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -34,9 +34,15 @@ SESSION_COOKIE_SAMESITE='Lax'
 CACHE_TYPE = 'simple'
 DEFAULT_CACHE_TIME = 600
 
+# specific rate limit times in seconds
+SUB_RATE_LIMIT = '1 per second; 3 per minute'
+COMMENT_RATE_LIMIT = '1 per second; 5 per minute'
+POST_RATE_LIMIT = '1 per second; 5 per minute'
+MESSAGE_RATE_LIMIT = '1 per second; 10 per minute'
+REGISTER_RATE_LIMIT = '1 per second; 5 per minute'
+LOGIN_RATE_LIMIT = '1 per second; 25 per minute'
+RECOVERY_EMAIL_RATE_LIMIT = '1 per second; 5 per hour'
 
-RATE_LIMIT = False
-RATE_LIMIT_TIME = 5
 LIMITER_DEFAULTS = ['600 per minute']
 
 USE_PROXIES = False

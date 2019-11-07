@@ -13,7 +13,6 @@ app.static_folder = 'static'
 
 @app.before_request
 def before_request():
-
     g.cache_bust = cache_bust
 
     if app.debug:
@@ -59,6 +58,7 @@ def before_request():
 
     if 'anon_user' not in session['blocked']:
         session['blocked']['anon_user'] = []
+
     # disabled due to lack of use
 
     #if 'set_darkmode_initial' not in session:
@@ -303,14 +303,14 @@ def get_blocked(username):
 
     return bdict
 
+def set_rate_limit():
+    """
+    sets a value of current_time plus either the
+    default rate limit value or a provided one.
+    """
+    session['rate_limit'] = time.time()
 
-def set_rate_limit(limit_seconds=None):
-    if 'username' in session:
-        if limit_seconds == None:
-            session['rate_limit'] = int(time.time()) + (config.RATE_LIMIT_TIME)
-        else:
-            session['rate_limit'] = int(time.time()) + (limit_seconds)
-        #cache.clear()
+    return True
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_all_subs(explore=False):
@@ -369,21 +369,29 @@ def get_user_from_id(uid):
         return False
     return db.session.query(Iuser).filter_by(id=uid).first()
 
-@app.route('/login/',  methods=['GET', 'POST'])
+@limiter.limit(config.LOGIN_RATE_LIMIT)
+@app.route('/login/', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        username = normalize_username(username)
 
-        if username == None or password == None:
+        if username is None or password is None:
             flash('Username or Password missing.', 'danger')
-            return redirect(url_for('login'), 302)
+            return redirect(url_for('login'))
+
         if username == '' or password == '' or len(username) > 20 or len(password) > 100:
-            flash('Username or Password empty.', 'danger')
-            return redirect(url_for('login'), 302)
+            flash('Username or Password empty or too long.', 'danger')
+            return redirect(url_for('login'))
+
+        username = normalize_username(username)
+        if username is False:
+            flash('user does not exist', 'danger')
+            set_rate_limit()
+            return redirect(url_for('login'))
 
         if db.session.query(db.session.query(Iuser)
                 .filter_by(username=username)
@@ -410,7 +418,6 @@ def login():
                 if get_pgp_from_username(login_user.username):
                     session['pgp_enabled'] = True
 
-
                 return redirect(url_for('index'), 302)
 
         flash('Username or Password incorrect.', 'danger')
@@ -419,10 +426,11 @@ def login():
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
-    [session.pop(key) for key in list(session.keys())]
+    [session.pop(key) for key in list(session.keys()) if key is not 'rate_limit']
 
     return redirect(url_for('index'), 302)
 
+@limiter.limit(config.REGISTER_RATE_LIMIT)
 @app.route('/register', methods=['POST'])
 def register():
     if request.method == 'POST':
@@ -434,7 +442,7 @@ def register():
             flash('already logged in', 'danger')
             return redirect('/')
 
-        if username == None or password == None:
+        if username is None or password is None:
             flash('username or password missing', 'danger')
             return redirect(url_for('login'))
 
@@ -462,7 +470,6 @@ def register():
         logout()
         session['username'] = new_user.username
         session['user_id'] = new_user.id
-        set_rate_limit()
 
         #cache.clear()
 
@@ -876,7 +883,7 @@ def list_of_child_comments(comment_id, sort_by=None):
 
 @app.route('/create', methods=['POST', 'GET'])
 @notbanned
-
+@limiter.limit(config.SUB_RATE_LIMIT)
 def create_sub():
     if request.method == 'POST':
         subname = request.form.get('subname')
@@ -901,8 +908,6 @@ def create_sub():
             db.session.add(new_mod)
             db.session.commit()
 
-
-            set_rate_limit()
             flash('You have created a new sub! Mod actions are under the "info" tab.', 'success')
             return redirect(config.URL + '/i/' + subname, 302)
 
@@ -1086,6 +1091,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
         return 'get'
 
 @app.route('/create_post', methods=['POST', 'GET'])
+@limiter.limit(config.POST_RATE_LIMIT)
 @notbanned
 def create_post(postsub=None):
     if 'previous_post_form' not in session:
@@ -1181,7 +1187,6 @@ def create_post(postsub=None):
         
 
         url = new_post.permalink
-        set_rate_limit()
 
         new_vote = Vote(post_id=new_post.id, vote=1, user_id=session['user_id'], comment_id=None)
         db.session.add(new_vote)
@@ -1240,8 +1245,7 @@ def get_sub_list():
         return ''
 
 
-@limiter.limit('1 per second')
-@limiter.limit('10 per minute')
+@limiter.limit(config.COMMENT_RATE_LIMIT)
 @app.route('/create_comment', methods=['POST'])
 @notbanned
 def create_comment():
@@ -1358,8 +1362,6 @@ def create_comment():
                 db.session.add(new_message)
                 db.session.commit()
 
-    set_rate_limit()
-
     flash('created new comment', 'success')
     return redirect(post_url, 302)
 
@@ -1466,6 +1468,7 @@ def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False, e
     db.session.add(new_message)
     db.session.commit()
 
+@limiter.limit(config.MESSAGE_RATE_LIMIT)
 @app.route('/message/', methods=['GET', 'POST'])
 @app.route('/message/<username>', methods=['GET', 'POST'])
 def msg(username=None):
@@ -1511,8 +1514,6 @@ def msg(username=None):
         sendmsg(title=title, text=text, sender=session['username'], sent_to=sent_to, encrypted=encrypted,
             encrypted_key_id=encrypted_key_id)
         
-
-        set_rate_limit()
         flash('sent message', category='success')
         return redirect(url_for('msg'))
 

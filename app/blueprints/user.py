@@ -187,7 +187,7 @@ def user_uanonymous(username=None):
 def reset_page():
     return render_template('reset_password.html')
 
-@limiter.limit(['5 per hour'])
+@limiter.limit(config.RECOVERY_EMAIL_RATE_LIMIT)
 @ubp.route('/password_reset', methods=['POST', 'GET'])
 def password_reset(email=None):
     if request.method == 'POST':
