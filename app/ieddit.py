@@ -597,14 +597,14 @@ def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limi
             post.site_url = config.URL + '/i/' + subi + '/' + str(post.id) + '/' + post.inurl_title
         post.remote_url_parsed = post_url_parse(post.url)
         post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
-        if 'user_id' in session and 'username' in session:
-
-            v = post.has_voted(session['user_id'])
+        if 'username' in session:
+            v = post.get_has_voted(session['user_id'])
             if v != None:
-                post.has_voted = v.vote
+                post.has_voted = str(v.vote)
 
-            if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
+            if is_mod_of(session['username'], post.sub):
                 post.is_mod = True
+
         p.append(post)
     return p
 
@@ -736,9 +736,9 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
             post = None
 
         if 'user_id' in session:
-            post.has_voted = db.session.query(Vote).filter_by(post_id=post.id, user_id=session['user_id']).first()
+            post.has_voted = post.get_has_voted
             if post.has_voted != None:
-                post.has_voted = post.has_voted.vote    
+                post.has_voted = str(post.has_voted.vote)
 
         if comment_id == None:
             comments = db.session.query(Comment).filter_by(post_id=post_id, deleted=deleted).all()
@@ -934,7 +934,7 @@ def view_user(username):
         p.comment_count = db.session.query(Comment).filter_by(post_id=p.id).count()
         p.mods = get_sub_mods(p.sub)
         if 'user_id' in session:
-            v = p.has_voted(session['user_id'])
+            v = p.get_has_voted(session['user_id'])
             if v != None:
                 p.has_voted = str(v.vote)
         if p.self_text != None:
