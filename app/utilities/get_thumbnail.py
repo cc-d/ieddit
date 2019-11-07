@@ -22,14 +22,13 @@ def add_remote_image(url, tid):
     db.session.commit()
     print('post has remote image %s %s', url, tid)
 
-
 def create_thumbnail(r, tid):
-
     b = BytesIO(r.content)
     im = Image.open(b)
     size = 128, 128
     im.thumbnail(size)
     im.save(abspath + '/static/thumbnails/thumb-' + str(tid) + '.PNG', 'PNG')
+    r = requests.post(config.URL + '/clear_cache')
 
 def main():
     c = False

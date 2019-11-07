@@ -1169,8 +1169,6 @@ def create_post(postsub=None):
         
 
         if post_type == 'url':
-            #os.system('python3 get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)))
-            #call(['python3', 'get_thumbnail.py', str(new_post.id), urllib.parse.quote(url)])
             _thread.start_new_thread(os.system, ('python3 utilities/get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
 
         new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
@@ -1665,7 +1663,7 @@ def explore():
 
     return render_template('explore.html', subs=esubs)
 
-@app.route('/clear_cache', methods=['GET'])
+@app.route('/clear_cache', methods=['POST'])
 def clear_cache():
     #return str(vars(remote_addr))
     if request.remote_addr == '127.0.0.1':
