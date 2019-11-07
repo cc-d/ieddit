@@ -30,9 +30,14 @@ from email.mime.text import MIMEText
 
 import sys
 
-sys.path.append(os.path.abspath(os.path.dirname(__file__)) + 'functions/')
+sys.path.append(os.path.abspath(os.path.dirname(__file__)) + '/functions/')
+sys.path.append('.')
 
-from functions import *
+from utilities.discord_logger import *
+
+logger = logging.getLogger('ieddit.py')
+
+from functions.functions import *
 
 from sqlalchemy.orm import load_only
 
@@ -40,7 +45,6 @@ app = Flask(__name__)
 app.config.from_object('config')
 cache = Cache(app, config={'CACHE_TYPE': config.CACHE_TYPE})
 
-logger = logging.getLogger(__name__)
 
 if (config.SENTRY_ENABLED):
     import sentry_sdk
@@ -52,13 +56,13 @@ if (config.SENTRY_ENABLED):
         integrations=[FlaskIntegration()]
     )
 
-if config.DISCORD_ENABLED:
-    from utilities.discord_logger import *
 
 db = SQLAlchemy(app)
 db.session.rollback()
 
 from models import *
+
+from db_functions import *
 
 
 limiter = Limiter(

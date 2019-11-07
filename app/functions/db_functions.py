@@ -6,9 +6,9 @@ as possible from ieddit.py
 """
 import sys
 import os
-sys.path.append('..')
 import config
 from share import *
+from functions import *
 
 ##### Sub Functions #####
 @cache.memoize(config.DEFAULT_CACHE_TIME)

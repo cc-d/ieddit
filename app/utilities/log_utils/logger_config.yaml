@@ -6,13 +6,7 @@ objects:
 formatters:
   simple:
     format: '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
-  discordFormatter:
-    format: ' %(message)s'
 handlers:
-  discord:
-    class: utilities.log_utils.logger_util.DiscordHandler
-    level: ERROR
-    formatter: discordFormatter
   console:
     class: logging.StreamHandler
     level: DEBUG
@@ -28,7 +22,6 @@ handlers:
     handlers:
       - cfg://handlers.console
       - cfg://handlers.file
-      - cfg://handlers.discord
     queue: cfg://objects.queue
 loggers:
   __main__:

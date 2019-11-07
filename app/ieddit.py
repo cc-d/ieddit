@@ -4,8 +4,6 @@ Main ieddit code.
 TODO: split this up into different views, function groups, etc.
 """
 from share import *
-from functions.db_functions import *
-from functions.functions import *
 import _thread
 
 abs_path = os.path.abspath(os.path.dirname(__file__))
@@ -76,8 +74,6 @@ def before_request():
 def apply_headers(response):
     if response.status_code == 500:
         db.session.rollback()
-        print(str(vars(response)))
-
 
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-XSS-Protection"] = "1; mode=block"
@@ -128,17 +124,18 @@ def handle_error(error):
         code = error.code
         description = error.description
 
+    complete_error = str(request.method) + ' ' + str(request.url) + \
+                     '\n' + title + '\n' + str(trace_back)
+
     if code >= 500:
-        description = "A(n) {} occurred. The developers have been notified of this."\
+        description = "A(n) {} occurred. The developers have been notified of this." \
         .format(type(error).__name__  or 'unknown error')
 
-        logger.error(title)
-        logger.error(str(trace_back))
-        if config.DISCORD_ENABLED:
-            send_discord_msg(title=title, description=str(trace_back))
+        logger.error(complete_error)
 
-    print(title)
-    print(trace_back)
+        if config.DISCORD_ENABLED:
+            send_discord_msg(title=title, description=complete_error)
+
     return render_template("error.html", error=description, code=code), code
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)

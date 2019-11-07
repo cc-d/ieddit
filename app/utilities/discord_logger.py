@@ -9,7 +9,6 @@ os.chdir(abspath)
 from discord_webhook import DiscordWebhook, DiscordEmbed
 import config
 
-
 webhook = DiscordWebhook(url=config.DISCORD_URL)
 
 def send_discord_msg(title='error', description='An error occured'):
