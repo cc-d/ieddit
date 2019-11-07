@@ -24,7 +24,7 @@
             <div class="col inner-div inner-combase">
             <small>
 
-            {% if comment.override != True or is_modv %}
+            {% if comment.override == True %}
                 {% set cauthor_type = 'user' %}
             {% endif %}
 
