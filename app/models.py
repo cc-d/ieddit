@@ -107,7 +107,7 @@ class Post(db.Model):
     def get_permalink(self):
         return config.URL + str(urllib.parse.urlparse(self.permalink).path)
 
-    def has_voted(self, user_id):
+    def get_has_voted(self, user_id):
         return db.session.query(Vote).filter_by(post_id=self.id, user_id=user_id).first()
 
     def get_score(self):
