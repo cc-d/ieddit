@@ -736,7 +736,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
             post = None
 
         if 'user_id' in session:
-            post.has_voted = post.get_has_voted
+            post.has_voted = post.get_has_voted(session['user_id'])
             if post.has_voted != None:
                 post.has_voted = str(post.has_voted.vote)
 
