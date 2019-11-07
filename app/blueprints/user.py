@@ -32,6 +32,7 @@ def user_delete_comment():
 
     if comment.author == session['username']:
         comment.deleted = True
+        comment.removed_by = 'removed by author'
         db.session.commit()
 
         flash('post deleted', category='success')

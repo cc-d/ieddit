@@ -55,6 +55,7 @@ def mod_delete_comment():
     if is_mod:
         comment.deleted = True
         mod_action(session['username'], 'delete', comment.get_permalink(), comment.sub_name)
+        comment.removed_by = session['username']
         db.session.commit()
 
         flash('comment deleted', category='success')

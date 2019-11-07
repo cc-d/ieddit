@@ -683,22 +683,21 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
 
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_cached_children(comment, deleted=False):
-    return comment.get_children(deleted=deleted)
+def get_cached_children(comment, show_deleted=True):
+    return comment.get_children(show_deleted=show_deleted)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def recursive_children(comment=None, current_depth=0, max_depth=8, deleted=False):
+def recursive_children(comment=None, current_depth=0, max_depth=8, show_deleted=True):
     found_children = []
     found_children.append(comment)
-    if deleted:
-        deleted = False
-    children = comment.get_children(deleted=deleted).all()
+
+    children = comment.get_children(show_deleted=show_deleted).all()
 
     while len(children) > 0 and current_depth < max_depth :
         for c in children:
             if c not in found_children:
                 found_children.append(c)
-                c2 = c.get_children(deleted=deleted).all()
+                c2 = c.get_children(show_deleted=show_deleted).all()
                 if c2 != None:
                     [children.append(c3) for c3 in c2]
             ex = [x for x in children if x != c]
@@ -708,7 +707,7 @@ def recursive_children(comment=None, current_depth=0, max_depth=8, deleted=False
     return found_children
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None, deleted=False):
+def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
     post = None
     parent_comment = None
     if not comments_only:
@@ -748,7 +747,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
                 post.has_voted = str(post.has_voted.vote)
 
         if comment_id == None:
-            comments = db.session.query(Comment).filter_by(post_id=post_id, deleted=deleted).all()
+            comments = db.session.query(Comment).filter_by(post_id=post_id).all()
             show_blocked = False
         
         else:
@@ -761,7 +760,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
                 flash('you are viewing a comment you have blocked', 'danger')
                 show_blocked = True
 
-            comments = recursive_children(comment=parent_comment, deleted=True)
+            comments = recursive_children(comment=parent_comment)
             
     else:
         comments = db.session.query(Comment).filter(Comment.author_id == user_id,

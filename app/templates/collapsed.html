@@ -1,18 +1,23 @@
-<li id="hide-comment-{{ comment.id }}" class="hidden-comment media sub-comment media-body rounded" level="{{ loop.depth - 1 }}" style="margin-left:{{ loop.depth - 1 }}rem; overflow: hidden; height: 2 rem; display: none; height: 2rem; min-height: 2rem;" loop='{{ loop.index0 }} {{ loop.depth0 }}'>
+<li id="hide-comment-{{ comment.id }}" class="hidden-comment media sub-comment media-body rounded" level="{{ loop.depth - 1 }}" style="margin-left:{{ loop.depth - 1 }}rem; overflow: hidden; height: 2 rem; display: none; height: 2rem; min-height: 2rem;{% if comment.deleted %} opacity: 0.3 {% endif %}" loop='{{ loop.index0 }} {{ loop.depth0 }}'>
 		<div class="media-body comment-media-body">
 		<div class="row post-row">
 			<div class="col inner-div">
 			<small>
 			
 			{% if comment.edited %}* {% endif %}
-			{% if cauthor_type == 'admin' %}
-			<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
-			{% elif cauthor_type == 'mod' %}
-			<i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ pauthor }}</a>
+
+			{% if comment.deleted == True %}
+				<i class="fa fa-user"></i><a class="user-icon-link">[deleted]</a>
 			{% else %}
-			<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
+				{% if cauthor_type == 'admin' %}
+					<i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
+				{% elif cauthor_type == 'mod' %}
+					<i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ pauthor }}</a>
+				{% else %}
+					<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
+				{% endif %}
 			{% endif %}
-			
+
 			</small>
 			<a href="{{ comment.permalink }}">
 				<small class="created-ago comment-link">32m</small>

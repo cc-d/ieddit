@@ -140,13 +140,14 @@ class Comment(db.Model):
     anonymous = db.Column(db.Boolean, default=False, nullable=False)
     edited = db.Column(db.Boolean, default=False, nullable=False)
     override = db.Column(db.Boolean, default=False, nullable=False)
+    removed_by = db.Column(db.String(30), default=None)
 
     def get_permalink(self):
         return config.URL + str(urllib.parse.urlparse(self.permalink).path)
 
-    def get_children(self, deleted=False):
-        if deleted == False:
-            return db.session.query(Comment).filter_by(parent_id=self.id, deleted=deleted)
+    def get_children(self, show_deleted=True):
+        if show_deleted is False:
+            return db.session.query(Comment).filter_by(parent_id=self.id, deleted=False)
         return db.session.query(Comment).filter_by(parent_id=self.id)
 
     def child_count(self, deleted=False):
