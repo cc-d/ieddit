@@ -480,7 +480,7 @@ def index():
     return subi(subi='all', nsfw=False)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_subi(subi, user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=True, d=None, s=None):
+def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=True, d=None, s=None):
     if offset != None:
         offset = int(offset)
 
@@ -657,9 +657,9 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
                 session['prev_off_url'] = session['prev_off_url'].replace('/&', '/?')
 
     if 'user_id' in session:
-        user_id = session['user_id']
+        view_user_id = session['user_id']
 
-    sub_posts = get_subi(subi=subi, user_id=user_id, posts_only=posts_only, deleted=False, offset=offset, limit=15, d=d, s=s, nsfw=nsfw)
+    sub_posts = get_subi(subi=subi, view_user_id=user_id, posts_only=posts_only, deleted=False, offset=offset, limit=15, d=d, s=s, nsfw=nsfw)
     if type(sub_posts) == dict:
         if 'error' in sub_posts.keys():
             flash(sub_posts['error'], 'danger')
