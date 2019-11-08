@@ -201,7 +201,6 @@ def pseudo_markup(text, escape_only=False):
 
     for i in range(len(mtext)):
         if mtext[i].find('```') != -1:
-            #
             if not found:
                 startindex = i
                 start = mtext[i].find('```')
@@ -287,12 +286,9 @@ def pseudo_markup(text, escape_only=False):
     mtext = mtext.replace('\n<div class="inline-code"><code>\n', '<div class="inline-code"><code>')
     mtext = mtext.replace('<code>\n', '<code>')
     mtext = mtext.replace('\n</code></div>\n', '</code></div>')
-    #mtext = mtext.replace('\n\n</code>', '</code>')
-    mtext = mtext.replace('\n</code>', '</code>')
-    #mtext = mtext.replace('</code>\n<code>', '</code><code>')
-    #mtext = mtext.replace('</code>\n', '</code>')
 
-    #mtext = mtext.replace('\n<code>', '\n    </code>')
+    mtext = mtext.replace('\n</code>', '</code>')
+
     mtext = mtext.replace('<code>', '<code>&nbsp;&nbsp;&nbsp;&nbsp;')
 
     mtext = mtext.replace('</blockquote>\n<br>', '</blockquote>\n')
