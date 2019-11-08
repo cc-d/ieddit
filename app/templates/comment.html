@@ -45,12 +45,24 @@
 		</div>
 		<div class='comment-selftext-wrapper'>
 
+
 		{% if comment.deleted == True %}
 			{% if comment.removed_by == 'removed by author' or comment.removed_by == None %}
-				<div class="comment-text comment-text-text safe-markup-text">[deleted]</div>
+				<div class="comment-text comment-text-text safe-markup-text">[deleted]
 			{% else %}
-				<div class="comment-text comment-text-text safe-markup-text">[removed by <a href="/u/{{ comment.removed_by }}">/u/{{ comment.removed_by }}</a>]</div>
+				<div class="comment-text comment-text-text safe-markup-text">[removed by <a href="/u/{{ comment.removed_by }}">/u/{{ comment.removed_by }}</a>]
 			{% endif %}
+
+			{% if cominline and comment.deleted == True %}
+				{% if loop.depth0 == 4 and value|length > 0 %}
+					<a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
+						view more <i class='fa fa-arrow-circle-right '></i>
+					</button></a>
+				{% endif %}
+			{% endif %}
+
+			</div>
+
 		{% else %}
 			<div class="comment-text comment-text-text safe-markup-text">{{ comment.new_text|safe }}</div>
 		{% endif %}
@@ -121,7 +133,7 @@
 </div>
 
 {% endif %}
-			{% if cominline %}
+			{% if cominline and comment.deleted == False %}
 				{% if loop.depth0 == 4 and value|length > 0 %}
 					<a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
 						view more <i class='fa fa-arrow-circle-right '></i>
