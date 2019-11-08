@@ -656,6 +656,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
             if session['prev_off_url'].find('/&'):
                 session['prev_off_url'] = session['prev_off_url'].replace('/&', '/?')
 
+    view_user_id = None
     if 'user_id' in session:
         view_user_id = session['user_id']
 
