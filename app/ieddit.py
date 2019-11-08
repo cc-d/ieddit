@@ -660,7 +660,10 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
     if 'user_id' in session:
         view_user_id = session['user_id']
 
-    sub_posts = get_subi(subi=subi, view_user_id=user_id, posts_only=posts_only, deleted=False, offset=offset, limit=15, d=d, s=s, nsfw=nsfw)
+    sub_posts = get_subi(subi=subi, view_user_id=view_user_id,
+                        posts_only=posts_only, deleted=False, user_id=user_id,
+                        offset=offset, limit=15, d=d, s=s, nsfw=nsfw)
+
     if type(sub_posts) == dict:
         if 'error' in sub_posts.keys():
             flash(sub_posts['error'], 'danger')
