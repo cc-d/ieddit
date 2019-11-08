@@ -35,7 +35,7 @@ def before_request():
     uri = request.environ['REQUEST_URI']
     if len(uri) > 2:
         if uri[:3] == '/i/':
-            getsub = re.findall('\/i\/([a-zA-Z1-9-_]*)', request.environ['REQUEST_URI'])
+            getsub = re.findall('\/i\/([a-zA-Z0-9-_]*)', request.environ['REQUEST_URI'])
             if len(getsub) > 0:
                 if getsub[0] != 'all':
                     getsub[0] = normalize_sub(getsub[0])
@@ -484,7 +484,6 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
     if offset != None:
         offset = int(offset)
 
-
     muted_subs = False
 
     if subi != 'all':
@@ -916,7 +915,7 @@ def create_sub():
             return redirect(config.URL + '/i/' + subname, 302)
 
         if verify_subname(subname) == False:
-            flash('Invalid sub name. Valid Characters are A-Z 1-9 - _ ')
+            flash('Invalid sub name. Valid Characters are A-Z 0-9 - _ ')
             return(redirect(config.URL + '/create'))
         return 'invalid'
     elif request.method == 'GET':
@@ -1211,7 +1210,7 @@ def create_post(postsub=None):
             flash('please log in to create new posts', 'danger')
             return redirect(url_for('login'))
         if request.referrer:
-            subref = re.findall('\/i\/([a-zA-z1-9-_]*)', request.referrer)
+            subref = re.findall('\/i\/([a-zA-z0-9-_]*)', request.referrer)
         if 'subref' in locals():
             if len(subref) == 1:
                 if len(subref[0]) > 0:
@@ -1527,7 +1526,7 @@ def msg(username=None):
                 flash('invalid username')
                 return redirect('/')
         if request.referrer:
-            ru = re.findall('\/i\/([a-zA-z1-9-_]*)', request.referrer)
+            ru = re.findall('\/i\/([a-zA-z0-9-_]*)', request.referrer)
             if ru != None:
                 if len(ru) == 1:
                     if len(ru[0]) > 0:
@@ -1738,6 +1737,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
 
             comments = db.session.query(Comment)
             comments = comments.filter(Comment.sub_name.in_(sfw_subs))
+
 
         comcount = comments.count()
     else:
