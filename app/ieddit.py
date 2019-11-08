@@ -1742,11 +1742,13 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
 
         comcount = comments.count()
     else:
-        comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub)).filter_by(deleted=False)
+        comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub))
         comcount = comments.count()
 
     if comcount <= offset:
         more = comcount
+
+    comments = comments.filter_by(deleted=False)
 
     if s == 'top':
         comments = comments.order_by((Comment.ups - Comment.downs).desc())
