@@ -6,7 +6,7 @@ PG_PASSWORD = 'test'
 PG_HOST = 'localhost'
 
 
-DB_TYPE = 'postgres'
+DB_TYPE = 'sqlite'
 USE_RECREATE = True
 
 if DB_TYPE == 'sqlite':
@@ -20,10 +20,10 @@ elif DB_TYPE == 'postgres':
 # This will be unique every time create_db.py is ran when testing
 # to force clear sessions
 
-SECRET_KEY = 'not-a-real-key-|r|l-10Ud4Jis|r|'
+SECRET_KEY = 'not-a-real-key-|r|tiq0EfPIWE|r|'
 
 # Change this to your local URL. IE http://127.0.0.1
-URL = 'http://dev.ieddit.com'
+URL = 'http://127.0.0.1'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
