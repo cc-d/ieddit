@@ -155,12 +155,14 @@ app.jinja_env.globals.update(get_style=get_style)
 def notbanned(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'username' not in session:
+        if 'username' not in session and api is False:
             return redirect(url_for('login'))
         busers = db.session.query(Iuser).filter_by(banned=True).all()
         bnames = [a.username for a in busers]
-        if session['username'] in bnames:
-            return redirect('/')
+
+        if api is False:
+            if session['username'] in bnames:
+                return redirect('/')
         return f(*args, **kwargs)
     return decorated_function
 
@@ -1088,7 +1090,6 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 
         db.session.commit()    
         
-
         return str(vcom.ups - vcom.downs)
     elif request.method == 'GET':
         return 'get'
@@ -1096,18 +1097,28 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 @app.route('/create_post', methods=['POST', 'GET'])
 @limiter.limit(config.POST_RATE_LIMIT)
 @notbanned
-def create_post(postsub=None):
-    if 'previous_post_form' not in session:
+def create_post(postsub=None, api=False, *args, **kwargs):
+    if 'previous_post_form' not in session and not api:
         session['previous_post_form'] = None
 
-    if request.method == 'POST':
-        title = request.form.get('title')
-        url = request.form.get('url')
-        sub = request.form.get('sub')
-        #if db.session.query(db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).exists()).scalar():
-        self_post_text = request.form.get('self_post_text')
+    if request.method == 'POST' or api:
+        if api:
+            username = request.headers['ieddit-username']
+            user_id = db.session.query(Iuser).filter_by(username=username).first().id
+            title = kwargs['title']
+            url = kwargs['url']
+            sub = kwargs['sub']
+            self_post_text = kwargs['self_post_text']
+        else:
+            username = session['username']
+            user_id = session['user_id']
+            title = request.form.get('title')
+            url = request.form.get('url')
+            sub = request.form.get('sub')
+            self_post_text = request.form.get('self_post_text')
 
-        session['previous_post_form'] = {'title':title, 'url':url, 'sub':sub, 'self_post_text':self_post_text}
+        if api is False:
+            session['previous_post_form'] = {'title':title, 'url':url, 'sub':sub, 'self_post_text':self_post_text}
 
         anonymous = request.form.get('anonymous')
 
@@ -1136,15 +1147,19 @@ def create_post(postsub=None):
             flash('invalid post type, not url or self', 'danger')
             return redirect(url_for('create_post'))
 
-        if title == None or 'username' not in session or 'user_id' not in session:
-            flash('invalid post, no title/username/uid', 'danger')
-            return redirect(url_for('create_post'))
+
+        if api is False:
+            if title is None or 'username' not in session or 'user_id' not in session:
+                flash('invalid post, no title/username/uid', 'danger')
+                return redirect(url_for('create_post'))
+
         if len(title) > 400 or len(title) < 1 or len(sub) > 30 or len(sub) < 1:
             flash('invalid title/sub length', 'danger')
             return redirect(url_for('create_post'))
 
+        print('mid')
         deleted = False
-        if sub in get_banned_subs(session['username']):
+        if sub in get_banned_subs(username):
             deleted = True
 
 
@@ -1161,8 +1176,8 @@ def create_post(postsub=None):
             prot = re.findall('^https?:\/\/', url)
             if len(prot) != 1:
                 url = 'https://' + url
-            new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=session['username'],
-                        author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
+            new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=username,
+                        author_id=user_id, sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
                         deleted=deleted, override=override)
 
         elif post_type == 'self_post':
@@ -1170,28 +1185,26 @@ def create_post(postsub=None):
                 flash('invalid self post length', 'danger')
                 return redirect(url_for('create_post'))
             new_post = Post(self_text=self_post_text, title=title, inurl_title=convert_ied(title),
-                author=session['username'], author_id=session['user_id'], sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
+                author=username, author_id=user_id, sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
                 deleted=deleted, override=override)
 
         db.session.add(new_post)
         db.session.commit()
-        
 
         if post_type == 'url':
             _thread.start_new_thread(os.system, ('python3 utilities/get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
 
         new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
-        if is_admin(session['username']) and anonymous == False:
+        if is_admin(username) and anonymous == False:
             new_post.author_type = 'admin'
-        elif is_mod(new_post, session['username']) and anonymous == False:
+        elif is_mod(new_post, username) and anonymous == False:
             new_post.author_type = 'mod'
 
         db.session.commit()
-        
 
         url = new_post.permalink
 
-        new_vote = Vote(post_id=new_post.id, vote=1, user_id=session['user_id'], comment_id=None)
+        new_vote = Vote(post_id=new_post.id, vote=1, user_id=user_id, comment_id=None)
         db.session.add(new_vote)
 
         new_post.ups += 1
@@ -1199,18 +1212,24 @@ def create_post(postsub=None):
         db.session.add(new_post)
         db.session.commit()
 
-
-
-        if 'previous_post_form' in session:
+        if 'previous_post_form' in session and api is False:
             session['previous_post_form'] = None
+
+        print('end')
+
+        if api:
+            return sqla_to_dict(new_post)
+
         return redirect(url)
 
-    if request.method == 'GET':
+    if request.method == 'GET' and not api:
         if 'username' not in session:
             flash('please log in to create new posts', 'danger')
             return redirect(url_for('login'))
+
         if request.referrer:
             subref = re.findall('\/i\/([a-zA-z0-9-_]*)', request.referrer)
+
         if 'subref' in locals():
             if len(subref) == 1:
                 if len(subref[0]) > 0:
@@ -1220,7 +1239,7 @@ def create_post(postsub=None):
         if postsub:
             if postsub != '' and postsub is not None:
                 if 'username' in session:
-                    is_modv = is_mod_of(session['username'], postsub)
+                    is_modv = is_mod_of(username, postsub)
 
         sppf = session['previous_post_form']
         session['previous_post_form'] = None
@@ -1251,7 +1270,7 @@ def get_sub_list():
 @limiter.limit(config.COMMENT_RATE_LIMIT)
 @app.route('/create_comment', methods=['POST'])
 @notbanned
-def create_comment():
+def create_comment(api=False, *args, **kwargs):
     text = request.form.get('comment_text')
     post_id = request.form.get('post_id')
     post_url = request.form.get('post_url')
@@ -1260,6 +1279,33 @@ def create_comment():
     anonymous = request.form.get('anonymous')
     override = request.form.get('override')
 
+    if api:
+        username = request.headers['ieddit-username']
+        user_id = db.session.query(Iuser).filter_by(username=username).first().id
+        parent_type = kwargs['parent_type']
+        parent_id = kwargs['parent_id']
+        anonymous = kwargs['anonymous']
+        override = kwargs['override']
+
+        print(parent_id)
+
+        if parent_type == 'comment':
+            post_obj = get_post_from_comment_id(parent_id)
+        else:
+            post_obj = db.session.query(Post).filter_by(id=parent_id).first()
+            parent_id = None
+
+        print(username, user_id, parent_type, parent_id, post_obj)
+
+        post_id = post_obj.id
+        sub_name = post_obj.sub
+
+        text = kwargs['text']
+
+
+    else:
+        username = session['username']
+        user_id = session['user_id']
 
     if anonymous != None:
         anonymous = True
@@ -1269,18 +1315,19 @@ def create_comment():
     if parent_id == '':
         parent_id = None
 
-    if post_url != None:
+    if post_url != None and api is False:
         if post_url_parse(post_url) != post_url_parse(config.URL):
             flash('bad origin url', 'danger')
             return redirect(request.referrer or '/')
 
-    if 'username' not in session:
+    if 'username' not in session and api is False:
         flash('not logged in', 'danger')
         return redirect(post_url)
 
     elif text == None or post_id == None or sub_name == None:
         flash('bad comment', 'danger')
-        return redirect(post_url)
+        if api is False:
+            return redirect(post_url)
 
     if parent_id != None:
         level = (db.session.query(Comment).filter_by(id=parent_id).first().level) + 1
@@ -1288,13 +1335,13 @@ def create_comment():
         level = None
 
     post = db.session.query(Post).filter_by(id=post_id).first()
-    if post.locked == True:
+    if post.locked == True and api is False:
         flash('post is locked', 'danger')
         return redirect(post.get_permalink())
 
     deleted = False
     sub = normalize_sub(sub_name)
-    if sub in get_banned_subs(session['username']):
+    if sub in get_banned_subs(username):
         deleted = True
         #flash('you are banned from commenting', 'danger')
         #return redirect(post.get_permalink())
@@ -1306,11 +1353,11 @@ def create_comment():
         override = False
 
 
-    if is_admin(session['username']) and anonymous is False:
+    if is_admin(username) and anonymous is False:
         author_type = 'admin'
-    elif is_mod(post.sub, session['username']) and anonymous is False:
+    elif is_mod(post.sub, username) and anonymous is False:
         author_type = 'mod'
-    elif is_mod_of(session['username'], sub_name):
+    elif is_mod_of(username, sub_name):
         author_type = 'mod'
     else:
         author_type = 'user'
@@ -1318,28 +1365,18 @@ def create_comment():
 
 
     new_comment = Comment(post_id=post_id, sub_name=sub_name, text=text,
-        author=session['username'], author_id=session['user_id'], parent_id=parent_id, level=level,
+        author=username, author_id=user_id, parent_id=parent_id, level=level,
         anonymous=anonymous, deleted=deleted, override=override, author_type=author_type)
 
     db.session.add(new_comment)
     db.session.commit()
 
     new_comment.permalink = post.get_permalink() +  str(new_comment.id)
-    '''
-    if is_admin(session['username']) and anonymous is False:
-        new_comment.author_type = 'admin'
-
-    elif is_mod(post.sub, session['username']) and anonymous is False:
-        new_comment.author_type = 'mod'
-    else:
-        new_comment.author_type = 'user'
-    '''
 
     db.session.add(new_comment)
     db.session.commit()
 
-
-    new_vote = Vote(comment_id=new_comment.id, vote=1, user_id=session['user_id'], post_id=None)
+    new_vote = Vote(comment_id=new_comment.id, vote=1, user_id=user_id, post_id=None)
     db.session.add(new_vote)
 
     new_comment.ups += 1
@@ -1352,20 +1389,23 @@ def create_comment():
 
     if new_comment.parent_id and not deleted:
         cparent = db.session.query(Comment).filter_by(id=new_comment.parent_id).first()
-        if cparent.author != session['username']:
+        if cparent.author != username:
             new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
                 sent_to=cparent.author, in_reply_to=new_comment.permalink, anonymous=anonymous)
             db.session.add(new_message)
             db.session.commit()
     else:
         if not deleted:
-            if post.author != session['username']:
+            if post.author != username:
                 new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
                     sent_to=post.author, in_reply_to=post.get_permalink(), anonymous=anonymous)
                 db.session.add(new_message)
                 db.session.commit()
 
     flash('created new comment', 'success')
+
+    if api:
+        return sqla_to_dict(new_comment)
     return redirect(post_url, 302)
 
 def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=None, encrypted=False, encrypted_key_id=None):

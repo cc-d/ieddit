@@ -9,10 +9,13 @@ def require_key(f):
     def decorated_function(*args, **kwargs):
         key = db.session.query(Api_key).filter_by(username=normalize_username(request.headers['ieddit-username']),
             key=request.headers['ieddit-api-key']).first()
-        if key != None:
+
+        if key is not None:
+            #session['username'] = key.username
+            #session['user_id'] = (db.session.query(Iuser).filter_by(username=key.username).first())
             return f(*args, **kwargs)
-        else:
-            return 'verify args failed'
+        
+        return 'verify args failed'
 
     return decorated_function
 
@@ -70,117 +73,33 @@ def get_comments(comment_ids=None):
 @bp.route('/new_comment', methods=['POST'])
 @require_key
 def new_comment():
-    text = request.form.get('comment_text')
-    post_id = request.form.get('post_id')
+    """
+    Create a new comment through api, same post data as main
+    """
+    text = request.form.get('text')
     parent_id = request.form.get('parent_id')
+    parent_type = request.form.get('parent_type')
+
     anonymous = request.form.get('anonymous')
+    override = request.form.get('override')
 
-    post_obj = db.session.query(Post).filter_by(id=post_id).first()
+    return str(create_comment(api=True, text=text, parent_id=parent_id, parent_type=parent_type,
+                            override=override, anonymous=anonymous))
 
-    sub_name = post_obj.sub
-
-    if anonymous != None:
-        anonymous = True
-    else:
-        anonymous = False
-
-    if parent_id == '':
-        parent_id = None
-
-    print(text, post_id, sub_name)
-    if text == None or post_id == None or sub_name == None:
-        return json.dumps({'error': 'bad comment'})
-
-    if parent_id != None:
-        level = (db.session.query(Comment).filter_by(
-            id=parent_id).first().level) + 1
-    else:
-        level = None
-
-    post = db.session.query(Post).filter_by(id=post_id).first()
-    if post.locked == True:
-        return json.dumps({'error': 'post is locked'})
-
-    author_id = get_user_from_name(request.headers['ieddit-username']).id
-
-    new_comment = Comment(post_id=post_id, sub_name=sub_name, text=text,
-              author=request.headers['ieddit-username'], author_id=author_id,
-              parent_id=parent_id, level=level, anonymous=anonymous)
-
-    db.session.add(new_comment)
-    db.session.commit()
-
-    new_comment.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title + '/' + str(new_comment.id) + '/'
-    db.session.commit()
-
-    new_vote = Vote(comment_id=new_comment.id, vote=1,
-                    user_id=author_id, post_id=None)
-    db.session.add(new_vote)
-
-    new_comment.ups += 1
-    db.session.add(new_comment)
-    db.session.commit()
-
-    return sqla_to_json(new_comment)
 
 @bp.route('/new_post', methods=['POST'])
 @require_key
 def new_post():
-    anonymous = request.form.get('anonymous')
-    self_text = request.form.get('self_text')
-    sub = request.form.get('sub')
+    """
+    Create a new post through api, same post data as main
+    """
     title = request.form.get('title')
     url = request.form.get('url')
+    sub = request.form.get('sub')
+    self_post_text = request.form.get('self_post_text')
 
-    sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
+    return str(create_post(api=True, title=title, url=url, sub=sub, self_post_text=self_post_text))
 
-    if sub.nsfw:
-        nsfw = True
-    else:
-        nsfw = False
-
-    sub = sub.name
-
-    if anonymous != None:
-        anonymous = True
-    else:
-        anonymous = False
-
-    if self_text != None:
-        post_type = 'self_post'
-    elif url != None:
-        post_type = 'url'
-    else:
-        return json.dumps({'error':'invalid post type, not url or self'})
-
-    if title == None:
-        json.dumps({'error':'invalid post, no title'})
-    if len(title) > 400 or len(title) < 1 or len(sub) > 30 or len(sub) < 1:
-        json.dumps({'error':'invalid title/sub length'})
-
-    if sub == None or title == None or post_type == None:
-        return json.dumps({'error': 'bad post'})
-
-    author_id = get_user_from_name(request.headers['ieddit-username']).id
-
-    new_post = Post(post_type=post_type, anonymous=anonymous,
-                    self_text=self_text, sub=sub,
-                    title=title, url=url, inurl_title=convert_ied(title), author=request.headers['ieddit-username'],
-                    author_id=author_id)
-
-    db.session.add(new_post)
-    db.session.commit()
-
-    new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title + '/'
-    post_id = new_post.id
-    new_vote = Vote(vote=1, user_id=author_id, post_id=post_id)
-    db.session.add(new_vote)
-
-    new_post.ups += 1
-    db.session.add(new_post)
-    db.session.commit()
-
-    return sqla_to_json(new_post)
 
 # single sub
 @bp.route('/get_sub/<sub_name>/', methods=['GET'])

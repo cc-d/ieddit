@@ -109,3 +109,10 @@ def is_mod(obj, username):
 
     return False
 
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_post_from_comment_id(cid):
+    """
+    returns post id from a given comment id
+    """
+    pid = db.session.query(Comment).filter_by(id=cid).first().post_id
+    return db.session.query(Post).filter_by(id=pid).first()
