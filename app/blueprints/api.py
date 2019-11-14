@@ -14,7 +14,7 @@ def require_key(f):
             #session['username'] = key.username
             #session['user_id'] = (db.session.query(Iuser).filter_by(username=key.username).first())
             return f(*args, **kwargs)
-        
+
         return 'verify args failed'
 
     return decorated_function
@@ -69,7 +69,7 @@ def get_comments(comment_ids=None):
     return json.dumps(r)
 
 
-#r = requests.post('http://dev.ieddit.com/api/new_comment', data={text='comment text', post_id=1) 
+#r = requests.post('http://dev.ieddit.com/api/new_comment', data={text='comment text', post_id=1)
 @bp.route('/new_comment', methods=['POST'])
 @require_key
 def new_comment():
@@ -119,3 +119,10 @@ def get_subs(sub_names=None):
             r.append(as_dict(sub))
 
     return json.dumps(r)
+
+@bp.route("/get_user/<username>/", methods=["GET"])
+def get_user(username=None):
+    return {
+        "meta": sqla_to_dict((db.session.query(Iuser).filter_by(username=username).first()), expunge=["email", "password"]),
+        "posts": [sqla_to_dict(post) for post in (db.session.query(Post).filter_by(author=username))]
+    }

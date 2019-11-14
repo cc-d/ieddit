@@ -31,7 +31,7 @@
 <a href="/user/blocked/"><button type="button" class="btn btn-sm btn-secondary user-opt">blocked</button></a>
 
 
-<!-- Disabled for now due to lack of use 
+<!-- Disabled for now due to lack of use
 <form action='/user/darkmode' method='POST'>
 {% if vuser.darkmode == False and session['darkmod'] != True %}
     <input type='hidden' name='action' value='enable'>
@@ -55,6 +55,8 @@
 
 {% endif %}
 
+<button onclick="javascript:downloadUserData('{{ vuser.username }}')" class="btn btn-sm btn-info user-opt">download user data</button></a>
+
 </div>
 
 
@@ -62,7 +64,7 @@
 {% if vuser.mods|length > 0 %}
 <ul class="list-group">
 <li class="list-group-item">moderator of</li>
-<li class="list-group-item"> 
+<li class="list-group-item">
 {% for sub, rank in vuser.mods.items() %}
   <a href="{{ config.URL }}/i/{{ sub }}/">/i/{{ sub }}</a>
 {% endfor %}
