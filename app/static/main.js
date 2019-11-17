@@ -141,7 +141,7 @@ function autoFadeErrors() {
 
 $(document).ready(function() {
 	setTimeout(function() {
-		autoFadeErrors(); 
+		autoFadeErrors();
 	}, 5000);
 });
 
@@ -293,7 +293,7 @@ if (re.test(window.location)) {
 
 /* Preseving this in history to remind myself I should never write code like
 	this again. The difference between these two functions, and the new
-	min hide/show, is literally a 2000%+ increase in speed due to far less 
+	min hide/show, is literally a 2000%+ increase in speed due to far less
 	computational complexity.
 
 function hideComments(comment) {
@@ -345,7 +345,7 @@ function showComments(comment) {
 		plevel = parent.attr('level')
 
 		child = parent.next()
-		
+
 		if (child != undefined) {
 			clevel = child.attr('level');
 			console.log(clevel, plevel);
@@ -383,7 +383,7 @@ function minHide(cid, startingLevel, hide) {
 		hcomment.css('display', 'block');
 	} else {
 		comment.css('display', 'none');
-		hcomment.css('display', 'none');		
+		hcomment.css('display', 'none');
 	}
 
 	child = comment.next().next()

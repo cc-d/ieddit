@@ -174,7 +174,7 @@ function downloadData(data, filename=null) {
 	// I hate this, but if we want to support older browsers we need to do this.
 	var blob = new Blob([data]);
 	var link = document.createElement("a");
-	$(link).css({"display": "none"})
+	$(link).css({"display": "none"});
     link.href = window.URL.createObjectURL(blob);
     link.download = filename;
     link.click();
