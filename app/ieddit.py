@@ -713,7 +713,7 @@ def recursive_children(comment=None, current_depth=0, max_depth=8, show_deleted=
     return found_children
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None):
+def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, sort_by=None, comments_only=False, user_id=None, cache_for=None):
     post = None
     parent_comment = None
     if not comments_only:
@@ -817,7 +817,11 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
     else:
         is_parent = True
 
-    comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id)
+    cache_for = None
+    if 'user_id' in session:
+        cache_for = session['user_id']
+
+    comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id, cache_for=cache_for)
 
     if post != None and 'username' in session:
         if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():

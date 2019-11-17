@@ -163,7 +163,8 @@ def pseudo_markup(text, escape_only=False):
     # properly after making sure it at least works currently
 
     random_sequence = rstring(10)
-    
+    reverse_sequence = random_sequence[::-1]
+
     text = text.splitlines()
     for i in range(len(text)):
         if text[i] == '':
@@ -182,7 +183,13 @@ def pseudo_markup(text, escape_only=False):
             else:
                 if t % 2 != 0:
                     if (len(text) - 1) > t:
-                        new_text += '<div class="clean-code-wrap"><code class="clean-code">' + html.escape(text[t]) + '</code></div>'
+                        etext = html.escape(text[t])
+                        
+                        # again using random sequence as a place holder
+                        etext = etext.replace('\n', reverse_sequence)
+                        etext = etext.replace(random_sequence, reverse_sequence)
+
+                        new_text += '<div class="clean-code-wrap"><code class="clean-code">' + etext + '</code></div>'
                     else:
                         new_text += clean_and_linkify(text[t])
                 else:
@@ -194,6 +201,9 @@ def pseudo_markup(text, escape_only=False):
     # remove the line placeholder
     clean_text = clean_text.replace(random_sequence, '')
     clean_text = clean_text.replace('\n', '<br>')
+
+    # restore newlines for pre-wrap code blocks
+    clean_text = clean_text.replace(reverse_sequence, '\n')
 
     # html tags that should not end in <br>
     clean_tags = ['<ol>', '</ol>', '<li>', '</li>', '<ul>', '</ul>']
