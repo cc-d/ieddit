@@ -20,9 +20,10 @@ def get_new_commits():
     
 
     try:
-        sleep_for = int(r.headers['X-RateLimit-Reset']) - int(datetime.utcnow().strftime('%s'))
-        print('bot is rate limited. sleeping for', sleep_for)
-        return False
+        if r.headers['X-RateLimit-Remaining'] == '0':
+            sleep_for = int(r.headers['X-RateLimit-Reset']) - int(datetime.utcnow().strftime('%s'))
+            print('bot is rate limited. sleeping for', sleep_for)
+            return False
     except Exception as e:
         pass
 
