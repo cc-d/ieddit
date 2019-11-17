@@ -6,6 +6,8 @@ import requests
 import json
 import os.path
 import time
+from datetime import datetime
+
 
 bot = None
 
@@ -15,6 +17,16 @@ def get_new_commits():
         commit_urls = c.read().splitlines()
 
     r = requests.get('https://api.github.com/repos/civicsoft/ieddit/commits')
+    
+
+    try:
+        sleep_for = int(r.headers['X-RateLimit-Reset']) - int(datetime.utcnow().strftime('%s'))
+        print('bot is rate limited. sleeping for', sleep_for)
+        return False
+    except Exception as e:
+        pass
+
+
     commits_json = json.loads(r.text)
 
     for commit in commits_json:
