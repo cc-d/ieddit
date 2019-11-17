@@ -98,7 +98,7 @@ function jsalert(message, atype) {
 	if (atype === 'undefined') {
 		atype = 'success';
 	}
-	html = `		
+	html = `
 	<div id='alert-container' class='js-alert' style='margin-top: -70px; display: inline-block; z-index: 101; width: ` + width + `px; position: fixed;' class='bg-light'>
 			<ul style='display: inline-block; width: 100%; margin: 0; padding: 0;' class='flashes generic-alert bg-light'>
 			<div style='display: inline-block; width: 100%; margin: 0;' class="alert alert-dismissible alert-` + atype + ` fade show" role="alert">
@@ -168,4 +168,20 @@ function copyToClipboard(text) {
     dummy.select();
     document.execCommand("copy");
     document.body.removeChild(dummy);
+}
+
+function downloadData(data, filename=null) {
+	// I hate this, but if we want to support older browsers we need to do this.
+	var blob = new Blob([data]);
+	var link = document.createElement("a");
+	$(link).css({"display": "none"})
+    link.href = window.URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+}
+
+function downloadUserData(username) {
+	$.get("/api/get_user/" + username).done(function (data) {
+		return downloadData(data, username + "_data.json");
+	});
 }

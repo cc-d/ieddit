@@ -131,14 +131,14 @@ def split_link(sst, s):
     sindex = s.find(sst[0])
     new_s.append(s[:sindex-1])
     new_s.append(s[sindex:sindex + len(sst[0])])
-    sindex = s.find(sst[1])  
+    sindex = s.find(sst[1])
     new_s.append(s[(sindex):sindex+len(sst[1])])
     new_s.append(s[sindex+len(sst[1])+1:])
     return new_s
 
 def get_tag_count(text):
-    
-    
+
+
     tag_count = len(re.findall('<[a-zA-Z0-9]*>[^<>"\']*<\/[a-zA-Z0-9]*>', text))
     tag_count += text.count('<br>')
     if text.find('\n') != -1:
@@ -146,11 +146,11 @@ def get_tag_count(text):
     elif text.find('\r\n') != -1:
         tag_count += text.count('\r\n')
 
-    
+
     return tag_count
 
 def pseudo_markup(text, escape_only=False):
-    
+
     # preserve more than 1 newline
     text_len = len(text)
     mtext = text.splitlines()
@@ -166,7 +166,7 @@ def pseudo_markup(text, escape_only=False):
     current_len = 0
 
     for i in range(0, len(mtext)):
-        mtext[i] = clean(markdown(mtext[i]), strip=True) 
+        mtext[i] = clean(markdown(mtext[i]), strip=True)
 
         regstrs = ['<[^liu].*>.*<\/[^liu]>', '^<[^liu].*>', '<\/[^liu].*>$']
 
@@ -191,7 +191,7 @@ def pseudo_markup(text, escape_only=False):
         current_len += len(mtext[i])
         current_tag_count += get_tag_count(mtext[i])
 
-        
+
         if current_len >= max_escaped_len or current_tag_count >= max_tag_count:
             return text
 
@@ -220,43 +220,43 @@ def pseudo_markup(text, escape_only=False):
 
         current_len += len(mtext[i])
         current_tag_count += get_tag_count(mtext[i])
-        
-        
+
+
         if current_len >= max_escaped_len or current_tag_count >= max_tag_count:
             return text
 
     for i in range(len(mtext)):
         # different variations of possible links, space at start, no
-        # space, etc 
+        # space, etc
         links = re.findall(' https?:\/\/.*\.\S+ ', mtext[i])
 
         if len(links) > 0:
             for link in links:
                 mtext[i] = mtext[i].replace(link, ' <a href="%s">%s</a> ' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
-        
 
-        links = re.findall('^https?:\/\/.*\.\S+ ', mtext[i])        
+
+        links = re.findall('^https?:\/\/.*\.\S+ ', mtext[i])
         if len(links) > 0:
             for link in links:
                 mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a> ' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
-        
 
-        links = re.findall('^https?:\/\/.*\.\S+$', mtext[i])        
+
+        links = re.findall('^https?:\/\/.*\.\S+$', mtext[i])
         if len(links) > 0:
             for link in links:
-                mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))        
-        
+                mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
 
-        links = re.findall(' https?:\/\/.*\.\S+$', mtext[i])        
+
+        links = re.findall(' https?:\/\/.*\.\S+$', mtext[i])
         if len(links) > 0:
             for link in links:
-                mtext[i] = mtext[i].replace(link, '<a href="%s"> %s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))    
-        
+                mtext[i] = mtext[i].replace(link, '<a href="%s"> %s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
 
-        links = re.findall(' https?:\/\/.*\.\S+$', mtext[i])        
+
+        links = re.findall(' https?:\/\/.*\.\S+$', mtext[i])
         if len(links) > 0:
             for link in links:
-                mtext[i] = mtext[i].replace(link, '<a href="%s"> %s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))    
+                mtext[i] = mtext[i].replace(link, '<a href="%s"> %s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
 
 
         if mtext[i].find('<br>') == -1:
@@ -265,7 +265,7 @@ def pseudo_markup(text, escape_only=False):
 
         current_len += len(mtext[i])
         current_tag_count += get_tag_count(mtext[i])
-        
+
         if current_len >= max_escaped_len or current_tag_count >= max_tag_count:
             return text
 
@@ -307,7 +307,7 @@ def pseudo_markup(text, escape_only=False):
 
     if mtext == '':
         return '<br>'
-    
+
     return mtext
 
 epoch = datetime(1970, 1, 1)
@@ -343,19 +343,25 @@ def get_youtube_vid_id(url):
     return False
 
 # convert to dict
-def sqla_to_dict(obj):
-    obj = {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+def sqla_to_dict(obj, expunge=None):
+    if expunge is None:
+        expunge = []
+
+    obj = {c.name: getattr(obj, c.name) for c in obj.__table__.columns if c.name not in expunge}
+
     if obj['created']:
         obj['created'] = obj['created'].isoformat()
     return obj
 
 
 # convert to obj and then pretty print
-def sqla_to_json(obj):
-    return json.dumps(sqla_to_dict(obj), sort_keys=True, indent=4, separators=(',', ': '))
+def sqla_to_json(obj, expunge=None):
+    if expunge is None:
+        expunge = []
+
+    return json.dumps(sqla_to_dict(obj, expunge), sort_keys=True, indent=4, separators=(',', ': '))
 
 
 # just a pretty print function
 def pretty_json(obj):
     return json.dumps(obj, sort_keys=True, indent=4, separators=(',', ': '))
-
