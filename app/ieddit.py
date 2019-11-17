@@ -1226,6 +1226,8 @@ def create_post(postsub=None, api=False, *args, **kwargs):
         if 'username' not in session:
             flash('please log in to create new posts', 'danger')
             return redirect(url_for('login'))
+        else:
+            username = session['username']
 
         if request.referrer:
             subref = re.findall('\/i\/([a-zA-z0-9-_]*)', request.referrer)

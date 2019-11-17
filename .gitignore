@@ -143,3 +143,6 @@ dmypy.json
 
 # Database Files
 *.db
+
+# Bot Config Files
+bot.config

@@ -10,7 +10,7 @@ import config
 import os.path
 import os
 from markdown import markdown
-from bleach import clean
+from bleach import clean, linkify
 
 from datetime import datetime, timedelta
 from math import log
@@ -149,166 +149,43 @@ def get_tag_count(text):
 
     return tag_count
 
+'''
+def linkify(url):
+    url = html.escape(url)
+    return '<a href="%s">%s</a>' % (url, url)
+'''
+
+def clean_and_linkify(text):
+    clean_text = clean(markdown(text), strip=True)
+    return clean_text
+
+
 def pseudo_markup(text, escape_only=False):
-
-    # preserve more than 1 newline
-    text_len = len(text)
-    mtext = text.splitlines()
-
-    # if text is too long, too many tagss, etc
-    text = html.escape(text).replace('&lt;br&gt;', '').replace('\n', '<br>')
     if escape_only:
-        return text
+        return html.escape(text).replace('&lt;br&gt;', '').replace('\n', '<br>')
 
-    max_escaped_len = 40000
-    max_tag_count = 500
-    current_tag_count = 0
-    current_len = 0
-
-    for i in range(0, len(mtext)):
-        mtext[i] = clean(markdown(mtext[i]), strip=True)
-
-        regstrs = ['<[^liu].*>.*<\/[^liu]>', '^<[^liu].*>', '<\/[^liu].*>$']
-
-        reg2 = ['<li>.*<\/li>', '<ul>.*<\/ul>', '<code>.*<\/code>', '<blockquote>.*<\/blockquote>']
-
-        addbr = True
-        addbr2 = True
-
-        for reg in regstrs:
-                if len(re.findall(reg, mtext[i])) != 0:
-                    addbr2 = True
-                    for r2 in reg2:
-                        if len(re.findall(r2, mtext[i])) != 0:
-                            addbr2 = False
-                else:
-                    addbr = True
-
-        if addbr and addbr2:
-            if len(re.findall('^https?:\/\/.*.*$', mtext[i])) == 0:
-                    mtext[i] = mtext[i] + '<br>'
-
-        current_len += len(mtext[i])
-        current_tag_count += get_tag_count(mtext[i])
-
-
-        if current_len >= max_escaped_len or current_tag_count >= max_tag_count:
-            return text
-
-    # code tags
-    start, end = 0, 0
-    found = False
-
-    for i in range(len(mtext)):
-        if mtext[i].find('```') != -1:
-            if not found:
-                startindex = i
-                start = mtext[i].find('```')
-                mtext[i] = mtext[i].replace('```','')
-                found = True
+    # clean code block formatting
+    if text.count('```') >= 2:
+        new_text = ''
+        text = text.split('```')
+        print(text)
+        for t in range(len(text)):
+            print(t, len(text))
+            if t == 0:
+                new_text += clean_and_linkify(text[t])
             else:
-                end = mtext[i].find('```')
-                mtext[startindex] = mtext[startindex][0:start] + '<pre class="inline-code"><code class="inner-code">' + mtext[startindex][start:]
-                mtext[i] = mtext[i][0:end] + '</code></pre>' + mtext[i][end+3:]
-
-                current_len += len(mtext[startindex])
-                current_len += len(mtext[i])
-
-                found = False
-                start = 0
-                end = 0
-
-        current_len += len(mtext[i])
-        current_tag_count += get_tag_count(mtext[i])
-
-
-        if current_len >= max_escaped_len or current_tag_count >= max_tag_count:
-            return text
-
-    for i in range(len(mtext)):
-        # different variations of possible links, space at start, no
-        # space, etc
-        links = re.findall(' https?:\/\/.*\.\S+ ', mtext[i])
-
-        if len(links) > 0:
-            for link in links:
-                mtext[i] = mtext[i].replace(link, ' <a href="%s">%s</a> ' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
-
-
-        links = re.findall('^https?:\/\/.*\.\S+ ', mtext[i])
-        if len(links) > 0:
-            for link in links:
-                mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a> ' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
-
-
-        links = re.findall('^https?:\/\/.*\.\S+$', mtext[i])
-        if len(links) > 0:
-            for link in links:
-                mtext[i] = mtext[i].replace(link, '<a href="%s">%s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
-
-
-        links = re.findall(' https?:\/\/.*\.\S+$', mtext[i])
-        if len(links) > 0:
-            for link in links:
-                mtext[i] = mtext[i].replace(link, '<a href="%s"> %s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
-
-
-        links = re.findall(' https?:\/\/.*\.\S+$', mtext[i])
-        if len(links) > 0:
-            for link in links:
-                mtext[i] = mtext[i].replace(link, '<a href="%s"> %s</a>' % (html.escape(link).replace(' ', ''), html.escape(link).replace(' ', '')))
-
-
-        if mtext[i].find('<br>') == -1:
-            if len(re.findall('$<a> href=".*"<br>', mtext[i])) == 0:
-                mtext[i] += '<br>'
-
-        current_len += len(mtext[i])
-        current_tag_count += get_tag_count(mtext[i])
-
-        if current_len >= max_escaped_len or current_tag_count >= max_tag_count:
-            return text
-
-    mtext = '\n'.join([x for x in mtext])
-
-
-    repstrings = ['</blockquote>']
-    for i in range(len(mtext)):
-        if i > 0:
-            past = mtext[i-1]
-            for rep in repstrings:
-                if past.find(rep) == -1:
-                    pass
+                if t % 2 != 0:
+                    if (len(text) - 1) > t:
+                        new_text += '<div class="clean-code-wrap"><code class="clean-code">' + html.escape(text[t]) + '</code></div>'
+                    else:
+                        new_text += clean_and_linkify(text[t])
                 else:
-                    mtext[i].replace('<br>', '')
+                    new_text += clean_and_linkify(text[t])
+        clean_text = new_text
+    else:
+        clean_text = clean_and_linkify(text)
 
-
-    mtext = mtext.replace('\n<div class="inline-code"><code>\n', '<div class="inline-code"><code>')
-    mtext = mtext.replace('<code>\n', '<code>')
-    mtext = mtext.replace('\n</code></div>\n', '</code></div>')
-
-    mtext = mtext.replace('\n</code>', '</code>')
-
-    mtext = mtext.replace('<code>', '<code>&nbsp;&nbsp;&nbsp;&nbsp;')
-
-    mtext = mtext.replace('</blockquote>\n<br>', '</blockquote>\n')
-    mtext = mtext.replace('</blockquote><br>', '</blockquote>')
-
-    mtext = mtext.replace('</pre><br>', '</pre>')
-
-
-    mtext = mtext.replace('<br>' +'</a>', '')
-    mtext = mtext.replace('<br>">', '">')
-    mtext = mtext.replace('&lt;br&gt;">', '">')
-    mtext = mtext.replace('&amp;lt;br&amp;gt;', '')
-    mtext = mtext.replace('</a></a>', '')
-    mtext = mtext.replace('&lt;/a&gt;">', '">')
-    mtext = mtext.replace('&lt;/a&gt;</a>', '</a>')
-
-    if mtext == '':
-        return '<br>'
-
-    return mtext
+    return clean_text
 
 epoch = datetime(1970, 1, 1)
 
