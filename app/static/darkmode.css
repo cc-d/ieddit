@@ -3,6 +3,17 @@ body {
 	color: #bbb;
 }
 
+code {
+	white-space: pre;
+	font-family: monospace;
+    font-size: 100%;
+    color: white;
+}
+
+.clean-code-wrap {
+	background-color: #222;
+}
+
 .bg-light {
 	background-color: #343a40!important;
 }

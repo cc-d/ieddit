@@ -122,7 +122,7 @@ def get_subs(sub_names=None):
 
 @bp.route("/get_user/<username>/", methods=["GET"])
 def get_user(username=None):
-    return {
-        "meta": sqla_to_dict((db.session.query(Iuser).filter_by(username=username).first()), expunge=["email", "password"]),
-        "posts": [sqla_to_dict(post) for post in (db.session.query(Post).filter_by(author=username))]
-    }
+    user = sqla_to_dict((db.session.query(Iuser).filter_by(username=username).first()), expunge=["email", "password"])
+    user['posts'] = [sqla_to_dict(post) for post in (db.session.query(Post).filter_by(author=username, anonymous=False, deleted=False))]
+    user['comments'] = [sqla_to_dict(comment) for comment in (db.session.query(Comment).filter_by(author=username, anonymous=False, deleted=False))]
+    return json.dumps(user)
