@@ -149,11 +149,6 @@ def get_tag_count(text):
 
     return tag_count
 
-'''
-def linkify(url):
-    url = html.escape(url)
-    return '<a href="%s">%s</a>' % (url, url)
-'''
 
 def clean_and_linkify(text):
     clean_text = clean(markdown(text), strip=True)
@@ -164,13 +159,24 @@ def pseudo_markup(text, escape_only=False):
     if escape_only:
         return html.escape(text).replace('&lt;br&gt;', '').replace('\n', '<br>')
 
+    # really hacky way of preserving newlines right now, will address the problem
+    # properly after making sure it at least works currently
+
+    random_sequence = rstring(10)
+    
+    text = text.splitlines()
+    for i in range(len(text)):
+        if text[i] == '':
+            text[i] = random_sequence
+
+    # empty newlines will now be preserved after clean/bleach
+    text = '\n'.join(text)
+
     # clean code block formatting
     if text.count('```') >= 2:
         new_text = ''
         text = text.split('```')
-        print(text)
         for t in range(len(text)):
-            print(t, len(text))
             if t == 0:
                 new_text += clean_and_linkify(text[t])
             else:
@@ -184,6 +190,15 @@ def pseudo_markup(text, escape_only=False):
         clean_text = new_text
     else:
         clean_text = clean_and_linkify(text)
+    
+    # remove the line placeholder
+    clean_text = clean_text.replace(random_sequence, '')
+    clean_text = clean_text.replace('\n', '<br>')
+
+    # html tags that should not end in <br>
+    clean_tags = ['<ol>', '</ol>', '<li>', '</li>', '<ul>', '</ul>']
+    for tag in clean_tags:
+        clean_text = clean_text.replace(tag + '<br>', tag)
 
     return clean_text
 
