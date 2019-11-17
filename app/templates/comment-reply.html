@@ -15,10 +15,10 @@
 
 	{% if 'username' not in session %}
 	<div onclick="jslogin()">
-	<input class="disabled post-text-area-button btn btn-secondary btn-sm" style='display: inline-block; background-color: whitesmoke; margin-left: 0.75rem; ' type='button' value='login'><a href='/login' style='display: inline-block; margin-left: 0.5rem; color:#007bff;'>login to comment </a></div>
+	<input class="disabled post-text-area-button btn btn-secondary btn-sm" style='display: inline-block; margin-left: 0.75rem; ' type='button' value='login'><a href='/login' style='display: inline-block; margin-left: 0.5rem; color:#007bff;'>login to comment </a></div>
 
 	{% else %}
-	<input class="post-text-area-button btn btn-secondary btn-sm" style='background-color: whitesmoke; margin-left: 0.25rem; display: inline-block;' type='submit' value='new comment'>
+	<input class="post-text-area-button btn btn-secondary btn-sm" style='margin-left: 0.25rem; display: inline-block;' type='submit' value='new comment'>
 	<small> anonymous? </small>
 
 	{% if session['anonymous'] %}
