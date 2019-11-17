@@ -51,7 +51,7 @@ def main():
 
     while True:
         get_new_commits()
-        time.sleep(10)
+        time.sleep(600)
 
 if __name__ == '__main__':
     main()
