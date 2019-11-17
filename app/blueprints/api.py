@@ -19,6 +19,10 @@ def require_key(f):
 
     return decorated_function
 
+@bp.after_request
+def set_json_type(response):
+    response.headers['content-type'] = 'application/json'
+    return response
 
 # single post
 @bp.route('/get_post/<post_id>/', methods=['GET'])
