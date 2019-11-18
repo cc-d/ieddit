@@ -245,11 +245,17 @@ def get_youtube_vid_id(url):
     return False
 
 # convert to dict
-def sqla_to_dict(obj, expunge=None, include_attrs=None):
+def sqla_to_dict(obj, expunge=None, include_attrs=None, show_anon=False):
     if expunge is None:
         expunge = []
 
     new_obj = {c.name: getattr(obj, c.name) for c in obj.__table__.columns if c.name not in expunge}
+
+    if 'anonymous' in new_obj.keys():
+        if new_obj['anonymous'] is True:
+            new_obj['author'] = 'Anonymous'
+            new_obj['author_id'] = 0
+            new_obj['author_type'] = 'user'
 
     if include_attrs is not None:
         for a in include_attrs:
@@ -272,3 +278,10 @@ def sqla_to_json(obj, expunge=None, include_attrs=None):
 # just a pretty print function
 def pretty_json(obj):
     return json.dumps(obj, sort_keys=True, indent=4, separators=(',', ': '))
+
+def anonymize_dict(obj):
+    for o in obj:
+        if o['anonymous'] == True:
+            o['author'] = 'Anonymous'
+            o['author_id'] = 0
+    return o

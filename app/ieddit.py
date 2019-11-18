@@ -623,6 +623,7 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
 
     if api is True:
         p = [sqla_to_dict(post, include_attrs=['comments']) for post in p]
+
         return pretty_json(p)
 
     return p
@@ -1909,6 +1910,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False, api=False):
 
     if api:
         comments = [sqla_to_dict(comment) for comment in comments]
+
         return pretty_json(comments)
 
     return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
