@@ -482,7 +482,9 @@ def index():
     return subi(subi='all', nsfw=False)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=False, offset=0, limit=15, nsfw=True, d=None, s=None):
+def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=False,
+             offset=0, limit=15, nsfw=True, d=None, s=None, api=False):
+
     if offset != None:
         offset = int(offset)
 
@@ -491,7 +493,7 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
     if subi != 'all':
         subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
         if subname == None:
-            return {'error':'sub does not exist'}
+            return pretty_json({'error':'sub does not exist'})
         subi = subname.name
         posts = db.session.query(Post).filter_by(sub=subi, deleted=False)
     elif user_id != None:
@@ -547,13 +549,14 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
     except:
         offset = 0
 
-    if 'blocked_subs' in session and 'username' in session:
-        posts = [c for c in posts if c.sub not in session['blocked_subs']]
+    if api is False:
+        if 'blocked_subs' in session and 'username' in session:
+            posts = [c for c in posts if c.sub not in session['blocked_subs']]
 
-    if 'blocked' in session:
-        posts = [post for post in posts if post.id not in session['blocked']['post_id']]
-        posts = anon_block(posts)
-        posts = [post for post in posts if post.noblock == True]
+        if 'blocked' in session:
+            posts = [post for post in posts if post.id not in session['blocked']['post_id']]
+            posts = anon_block(posts)
+            posts = [post for post in posts if post.noblock == True]
 
     posts = posts[offset:offset+limit]
 
@@ -569,7 +572,7 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
     if subi != 'all':
         sticky = db.session.query(Post).filter(func.lower(Post.sub) == subi.lower(), Post.stickied == True).first()
         if sticky:
-            if 'blocked_subs' in session:
+            if 'blocked_subs' in session and api is False:
                 if sticky.sub in session['blocked_subs']:
                     pass
                 else:
@@ -603,7 +606,8 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
             post.site_url = config.URL + '/i/' + subi + '/' + str(post.id) + '/' + post.inurl_title
         post.remote_url_parsed = post_url_parse(post.url)
         post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
-        if 'username' in session:
+
+        if 'username' in session and api is False:
             v = post.get_has_voted(session['user_id'])
             if v != None:
                 post.has_voted = str(v.vote)
@@ -611,7 +615,16 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
             if is_mod_of(session['username'], post.sub):
                 post.is_mod = True
 
+        if api:
+            comments = db.session.query(Comment).filter_by(post_id=post.id, deleted=False).all()
+            post.comments = [sqla_to_dict(c) for c in comments]
+        
         p.append(post)
+
+    if api is True:
+        p = [sqla_to_dict(post, include_attrs=['comments']) for post in p]
+        return pretty_json(p)
+
     return p
 
 @app.route('/i/<subi>/')
@@ -1735,7 +1748,7 @@ def changelog():
 
 @app.route('/comments/', methods=['GET'])
 @app.route('/i/<sub>/comments/', methods=['GET'])
-def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
+def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False, api=False):
     # code is copy pasted from user page... the post stuff can probably be gotten rid of.
     # the username stuff can be gotten rid of too
     mods = {}
@@ -1893,6 +1906,10 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False):
 
     if s == 'hot':
             comments.sort(key=lambda x: x.hot, reverse=True)
+
+    if api:
+        comments = [sqla_to_dict(comment) for comment in comments]
+        return pretty_json(comments)
 
     return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
