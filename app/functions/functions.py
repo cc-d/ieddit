@@ -245,23 +245,28 @@ def get_youtube_vid_id(url):
     return False
 
 # convert to dict
-def sqla_to_dict(obj, expunge=None):
+def sqla_to_dict(obj, expunge=None, include_attrs=None):
     if expunge is None:
         expunge = []
 
-    obj = {c.name: getattr(obj, c.name) for c in obj.__table__.columns if c.name not in expunge}
+    new_obj = {c.name: getattr(obj, c.name) for c in obj.__table__.columns if c.name not in expunge}
 
-    if obj['created']:
-        obj['created'] = obj['created'].isoformat()
-    return obj
+    if include_attrs is not None:
+        for a in include_attrs:
+            new_obj[a] = getattr(obj, a)
+
+    if new_obj['created']:
+        new_obj['created'] = new_obj['created'].isoformat()
+
+    return new_obj
 
 
 # convert to obj and then pretty print
-def sqla_to_json(obj, expunge=None):
+def sqla_to_json(obj, expunge=None, include_attrs=None):
     if expunge is None:
         expunge = []
 
-    return json.dumps(sqla_to_dict(obj, expunge), sort_keys=True, indent=4, separators=(',', ': '))
+    return json.dumps(sqla_to_dict(obj, expunge, include_attrs), sort_keys=True, indent=4, separators=(',', ': '))
 
 
 # just a pretty print function
