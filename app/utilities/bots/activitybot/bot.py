@@ -27,7 +27,6 @@ class Api:
         """
         r = requests.post(self.site_url + '/api/new_comment', headers=self.headers,
             data={'parent_id':parent_id, 'parent_type':parent_type, 'text':text, 'override':override, 'anonymous':anonymous})
-        
         return r.text
 
 def main():
