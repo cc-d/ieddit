@@ -59,12 +59,16 @@ def main():
         reddit_posts = json.loads(p.read())
 
     while True:
-        bot = choose_bot()
-        post = get_top_reddit_post()
+        ran = random.randint(0,post_chance)
+        print(ran)
+        if ran == 0:
+            bot = choose_bot()
+            print(bot)
+            post = get_top_reddit_post()
 
-        bot.create_post(sub=post.subreddit, title=post.title, url=post.url)
-        new_reddit('posts', str(post.id))
-
+            print(bot.create_post(sub=post.subreddit, title=post.title, url=post.url))
+            new_reddit('posts', str(post.id))
+        print('sleeping for', bot_interval)
         time.sleep(bot_interval)
 
 if __name__ == '__main__':
