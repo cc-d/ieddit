@@ -1733,13 +1733,6 @@ def explore():
 
     return render_template('explore.html', subs=esubs)
 
-@app.route('/clear_cache', methods=['POST'])
-def clear_cache():
-    #return str(vars(remote_addr))
-    if request.remote_addr == '127.0.0.1':
-        #cache.clear()
-        return 'cleared'
-
 @app.route('/about/', methods=['GET'])
 @app.route('/readme/', methods=['GET'])
 @app.route('/news/2019/10/21/ieddit-beta-release/', methods=['GET'])
