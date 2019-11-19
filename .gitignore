@@ -147,3 +147,4 @@ dmypy.json
 # Bot Config Files
 bot.config
 bot_config.py
+posts.json
