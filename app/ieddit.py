@@ -4,6 +4,7 @@ Main ieddit code.
 TODO: split this up into different views, function groups, etc.
 """
 from share import *
+from sqlalchemy import func
 import _thread
 
 abs_path = os.path.abspath(os.path.dirname(__file__))
@@ -317,33 +318,38 @@ def set_rate_limit():
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_all_subs(explore=False):
     subs = db.session.query(Sub).all()
-    if explore == False:
-        return subs
-    else:
-        esubs = []
-        for sub in subs:
-            if hasattr(sub, 'rules'):
-                if sub.rules != None:
-                    sub.new_rules = pseudo_markup(sub.rules)
+    return subs
 
-            if hasattr(sub, 'rules'):
-                if sub.rules != None:
-                    sub.new_rules = pseudo_markup(sub.rules)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_explore_subs(offset=None, limit=None):
+    if limit is None:
+        limit = 50
+    if offset is None:
+        offset = 0
 
-            sub.posts = sub.get_posts(count=True)
+    subs = db.session.query(Post.sub).distinct(Post.sub).all()
+    subs = [db.session.query(Sub).filter_by(name=s[0]).first() for s in subs]
+    esubs = []
 
-            if sub.posts == 0:
-                continue
+    for sub in subs:
+         if hasattr(sub, 'rules'):
+            if sub.rules != None:
+                sub.new_rules = pseudo_markup(sub.rules)
 
-            sub.comments = sub.get_comments(count=True)
-            #sub.comments = anon_block(sub.comments)
+         #sub.posts = sub.get_posts(count=True)
 
-            sub.score = sub.comments + sub.posts
+         #if sub.posts == 0:
+         #   continue
 
-            esubs.append(sub)
+         sub.comments = sub.get_comments(count=True)
+        #sub.comments = anon_block(sub.comments)
 
-        esubs.sort(key=lambda x: x.score, reverse=True)
-        return esubs
+         sub.score = sub.comments# + sub.posts
+
+         esubs.append(sub)
+
+    esubs.sort(key=lambda x: x.score, reverse=True)
+    return esubs
 
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
@@ -1267,7 +1273,7 @@ def create_post(postsub=None, api=False, *args, **kwargs):
 
 @app.route('/get_sub_list', methods=['GET'])
 def get_sub_list():
-    subs = get_all_subs()
+    subs = get_explore_subs()
     if subs != None:
         for s in subs:
             s.comments = s.get_comments()
@@ -1717,7 +1723,7 @@ def explore_stats(sub):
 @app.route('/explore/', methods=['GET'])
 def explore():
     esubs = []
-    subs = get_all_subs(explore=True)
+    subs = get_explore_subs()
     for sub in subs:
         new_sub = explore_stats(sub)
         if new_sub.posts > 0:
