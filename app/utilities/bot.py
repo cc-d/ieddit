@@ -4,7 +4,7 @@ Example bot for interracting with the api
 import requests
 
 class Api:
-    def __init__(self, username=None, key=None, site_url='http://ieddit.com'):
+    def __init__(self, username=None, key=None, site_url='https://ieddit.com'):
         if username is None or key  is None:
             raise ValueError('empty username or key')
         self.username = username
