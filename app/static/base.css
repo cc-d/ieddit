@@ -912,3 +912,8 @@ ul {
 .post-title {
 	min-height: 2.5rem;
 }
+
+.user-profile-karma {
+	display: flex;
+	margin-left: 0.5rem;
+}

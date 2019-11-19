@@ -956,6 +956,9 @@ def view_user(username):
     vuser = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
     mod_of = db.session.query(Moderator).filter_by(username=vuser.username).all()
     mods = {}
+
+    vuser.karma = get_user_karma(username)
+
     for s in mod_of:
         mods[s.sub] = s.rank
     vuser.mods = mods
@@ -1732,6 +1735,14 @@ def explore():
     esubs.sort(key=lambda x: x.users, reverse=True)
 
     return render_template('explore.html', subs=esubs)
+
+@app.route('/clear_cache', methods=['POST'])
+def clear_cache():
+    key = request.form.get('key')
+    if key == config.API_OPER_KEY:
+        cache.clear()
+        return json.dumps({'status':'success'})
+    return json.dumps({'status':'error'})
 
 @app.route('/about/', methods=['GET'])
 @app.route('/readme/', methods=['GET'])

@@ -12,7 +12,7 @@ from PIL import Image
 from io import BytesIO
 import urllib.parse
 import time
-from ieddit import db, cache
+from ieddit import db
 from models import Post
 
 def add_remote_image(url, tid):
@@ -28,7 +28,8 @@ def create_thumbnail(r, tid):
     size = 128, 128
     im.thumbnail(size)
     im.save(abspath + '/static/thumbnails/thumb-' + str(tid) + '.PNG', 'PNG')
-    cache.clear()
+    r = requests.post(config.URL + '/clear_cache', data={'key':config.API_OPER_KEY})
+    print(r.text)
 
 def main():
     c = False

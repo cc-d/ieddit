@@ -116,3 +116,35 @@ def get_post_from_comment_id(cid):
     """
     pid = db.session.query(Comment).filter_by(id=cid).first().post_id
     return db.session.query(Post).filter_by(id=pid).first()
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_user_id_from_username(username):
+    return db.session.query(Iuser.id).filter_by(username=username).first()[0]
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_user_karma(username):
+    """
+    returns a dict with a user's post/comment karma
+    """
+    username = normalize_username(username)
+    user_id = get_user_id_from_username(username)
+
+    user_post_ids = db.session.query(Post.id).filter_by(author_id=user_id, anonymous=False).all()
+    user_comment_ids = db.session.query(Comment.id).filter_by(author_id=user_id, anonymous=False).all()
+
+    karma = {'post':0, 'comment':0}
+
+
+    for pid in user_post_ids:
+        try:
+            karma['post'] += db.session.query(Vote.vote).filter_by(post_id=pid[0]).first()[0]
+        except TypeError:
+            pass
+    for cid in user_comment_ids:
+        try:
+            karma['comment'] += db.session.query(Vote.vote).filter_by(comment_id=cid[0]).first()[0]
+        except TypeError:
+            pass
+
+    return karma
+

@@ -20,7 +20,7 @@ elif DB_TYPE == 'postgres':
 # This will be unique every time create_db.py is ran when testing
 # to force clear sessions
 
-SECRET_KEY = 'not-a-real-key-|r|OFhO30GkjS|r|'
+SECRET_KEY = 'not-a-real-key-|r|7vVgnMhWiV|r|'
 
 # Change this to your local URL. IE http://127.0.0.1
 URL = 'http://dev.ieddit.com'
@@ -68,3 +68,6 @@ SENTRY_DSN = 'your_dsn'
 
 DISCORD_ENABLED = False
 DISCORD_URL = ''
+
+# for any api functions which only site operator should be able to use
+API_OPER_KEY = 'not-a-real-key'
