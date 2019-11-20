@@ -1759,7 +1759,7 @@ def changelog():
 
 @app.route('/comments/', methods=['GET'])
 @app.route('/i/<sub>/comments/', methods=['GET'])
-def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False, api=False):
+def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False, api=False, comments_only=False):
     # code is copy pasted from user page... the post stuff can probably be gotten rid of.
     # the username stuff can be gotten rid of too
     mods = {}

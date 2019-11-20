@@ -256,6 +256,7 @@ def user_preferences():
     if 'username' not in session:
         flash('not logged in', 'danger')
         return redirect('/login/')
+
     user = db.session.query(Iuser).filter_by(username=session['username']).first()
 
     return render_template('preferences.html', user=user)
@@ -267,6 +268,46 @@ def user_update_preferences():
         return redirect('/login/')    
 
     user = db.session.query(Iuser).filter_by(username=session['username']).first()
+
+    # preferences a user can update without a password here
+    hss = request.form.get('hide_sub_style')
+    if user.hide_sub_style is True:
+        if hss is None:
+            user.hide_sub_style = False
+    elif user.hide_sub_style is False:
+        if hss is not None:
+            user.hide_sub_style = True
+
+    session['hide_sub_style'] = user.hide_sub_style
+
+    always_override = request.form.get('always_override')
+    if user.always_override is True:
+        if always_override is None:
+            user.always_override = False
+    elif user.always_override is False:
+        if always_override is not None:
+            user.always_override = True
+          
+    session['always_override'] = user.always_override
+
+    always_anonymous = request.form.get('always_anonymous')
+    if user.anonymous is True:
+        if always_anonymous is None:
+            user.anonymous = False
+    elif user.anonymous is False:
+        if always_anonymous is not None:
+            user.anonymous = True
+          
+    session['anonymous'] = user.anonymous
+
+    checkbox_only = request.form.get('checkbox_only')
+
+    if checkbox_only != None:
+        db.session.add(user)
+        db.session.commit()
+
+        flash('successfully updated preferences', 'success')
+        return redirect('/user/preferences/')
 
     new_email = request.form.get('new_email')
     new_password = request.form.get('new_password')
@@ -312,28 +353,6 @@ def user_update_preferences():
             user.email = new_email
         if update_password:
             user.password = generate_password_hash(new_password)
-
-        hss = request.form.get('hide_sub_style')
-
-        if user.hide_sub_style is True:
-            if hss is None:
-                user.hide_sub_style = False
-        elif user.hide_sub_style is False:
-            if hss is not None:
-                user.hide_sub_style = True
-
-        session['hide_sub_style'] = user.hide_sub_style
-
-        always_override = request.form.get('always_override')
-
-        if user.always_override is True:
-            if always_override is None:
-                user.always_override = False
-        elif user.always_override is False:
-            if always_override is not None:
-                user.always_override = True
-                
-        session['always_override'] = user.always_override
 
         db.session.add(user)
         db.session.commit()

@@ -1,39 +1,45 @@
 {% extends 'base.html' %}
 {% block content %}
-{% if vuser.admin %}
-<h6 style="color: red;"> admin </h6>
-{% endif %}
-
-<h6 style='display: flex;'> user profile for /u/{{ vuser.username }}
-
-{% set karma_post = vuser.karma['post'] %}
-{% if vuser.karma['post'] > 0 %}
-    {% set post_karma_color = 'style=color:orange;' %}
-    {% set karma_post = '+' + vuser.karma['post']|string %}
-{% elif vuser.karma['post'] == 0 %}
-    {% set post_karma_color = '' %}
-{% else %}
-    {% set post_karma_color = 'style=color:lightblue;' %}
-{% endif %}
-
-{% set karma_comment = vuser.karma['comment'] %}
-{% if vuser.karma['comment'] > 0 %}
-    {% set comment_karma_color = 'style=color:orange;' %}
-    {% set karma_comment = '+' + vuser.karma['comment']|string %}
-{% elif vuser.karma['comment'] == 0 %}
-    {% set comment_karma_color = '' %}
-{% else %}
-    {% set comment_karma_color = 'style=color:lightblue;' %}
-{% endif %}
-
-<div class='user-profile-karma rounded'>
-    <p class='user-post-karma' {{ post_karma_color }} data-toggle='tooltip' data-placement="top" title="total post karma">{{ karma_post }}</p>&nbsp;<p class='user-comment-karma' {{ comment_karma_color }} data-toggle='tooltip' data-placement="top" title="total comment karma">{{ karma_comment }}</p>
+<div class='user-profile'>
+    <div class='user-image-container'>
+        <i class='fa fa-user user-profile-image'></i>
+    </div>
+    <div class='user-profile-info'>
+        <h6 class='user-profile-info-top'>/u/{{ vuser.username }}
+        {% set karma_post = vuser.karma['post'] %}
+        {% if vuser.karma['post'] > 0 %}
+            {% set post_karma_color = 'style=color:orange;' %}
+            {% set karma_post = '+' + vuser.karma['post']|string %}
+        {% elif vuser.karma['post'] == 0 %}
+            {% set post_karma_color = '' %}
+        {% else %}
+            {% set post_karma_color = 'style=color:lightblue;' %}
+        {% endif %}
+        
+        {% set karma_comment = vuser.karma['comment'] %}
+        {% if vuser.karma['comment'] > 0 %}
+            {% set comment_karma_color = 'style=color:orange;' %}
+            {% set karma_comment = '+' + vuser.karma['comment']|string %}
+        {% elif vuser.karma['comment'] == 0 %}
+            {% set comment_karma_color = '' %}
+        {% else %}
+            {% set comment_karma_color = 'style=color:lightblue;' %}
+        {% endif %}
+        
+        <div class='user-profile-karma rounded'>    
+            <p class='user-post-karma' {{ post_karma_color }} data-toggle='tooltip' data-placement="top" title="total post karma">{{ karma_post }}</p>&nbsp;<p class='user-comment-karma' {{ comment_karma_color }} data-toggle='tooltip' data-placement="top" title="total comment karma"> {{ karma_comment }}</p>    
+        </div>
+        </h6>
+        <div class='user-profile-body'>
+            <p class='user-profile-joined'>Joined: {{ (vuser.created|string)[0:10] }}</p>
+            <p style='color:red;' class='user-profile-joined'>Admin</p>
+            <div style='height:3.5rem'><p style='opacity: 0.5; margin-top: 1rem; font-size: 75%;'>placeholder for future content...</p></div>
+        </div>
 </div>
-</h6>
 
 <div class="btn-group" role="group">
 {% if session['username'] != vuser.username %}
-<a href="/message/{{ vuser.username }}"><button type="button" class="btn btn-sm btn-secondary user-opt">send message</button></a>
+<a href="/message/{{ vuser.username }}"><button type="button" class="btn btn-sm btn-secondary user-opt">message <i class='fa fa-envelope'></i></button></a>
 
 {% if vuser.id not in session['blocked']['other_user'] %}
 <a href="javascript:hideObject('other_user', '{{ vuser.id }}');"><button id='block-user-button' type="button" class="btn btn-sm btn-danger user-opt">block <i class='fa fa-ban'></i></button></a>
@@ -45,7 +51,6 @@
 
 {% else %}
 
-<a href="/u/{{ session['username'] }}/messages/"><button type="button" class="btn btn-sm btn-secondary user-opt">view messages</button></a>
 </div>
 
 
@@ -55,49 +60,22 @@
 <a href="/user/pgp/"><button type="button" class="btn btn-sm btn-secondary user-opt">pgp</button></a>
 <a href="/user/blocked/"><button type="button" class="btn btn-sm btn-secondary user-opt">blocked</button></a>
 
-
-<!-- Disabled for now due to lack of use
-<form action='/user/darkmode' method='POST'>
-{% if vuser.darkmode == False and session['darkmod'] != True %}
-    <input type='hidden' name='action' value='enable'>
-    <button type="submit" class="btn btn-sm btn-secondary user-opt">enable darkmode</button></a>
-{% else %}
-    <input type='hidden' name='action' value='disable'>
-    <button type="submit" class="btn btn-sm btn-secondary user-opt">disable darkmode</button></a>
 {% endif %}
-</form>
--->
-
-<form action='/user/anonymous' method='POST'>
-{% if vuser.anonymous == False %}
-    <input type='hidden' name='action' value='enable'>
-    <button type="submit" class="btn btn-sm btn-success user-opt">enable default anonymous</button></a>
-{% else %}
-    <input type='hidden' name='action' value='disable'>
-    <button type="submit" class="btn btn-sm btn-danger user-opt">disable default anonymous</button></a>
-{% endif %}
-</form>
-
-{% endif %}
-
-
 
 </div>
 
-
-<br><br>
+<div class='profile-mod-container'>
 {% if vuser.mods|length > 0 %}
-<ul class="list-group">
-<li class="list-group-item">moderator of</li>
-<li class="list-group-item">
-{% for sub, rank in vuser.mods.items() %}
-  <a href="{{ config.URL }}/i/{{ sub }}/">/i/{{ sub }}</a>
-{% endfor %}
- </li>
-</ul>
+    <p style='color: #fff; margin-bottom: 0;'>Moderator Of:</p>
+    {% for sub, rank in vuser.mods.items() %}
+      <a class='profile-mod-sub' href="{{ config.URL }}/i/{{ sub }}/">
+      /i/{{ sub }} </a>
+    {% endfor %}
 {% endif %}
+</div>
+
 <div id='user-recent'>
-<h6 class='margin-lr'> recent posts </h6>
+<h6 style='color: #fff;'>Recent Posts</h6>
 
 {% set count = [0] %}
 
@@ -115,9 +93,9 @@
 {% endif %}
 
 
-<h6 class='margin-lr'> recent comments </h6>
+<h6 style='color: #fff;'>Recent Comments</h6>
 <ul class="list-unstyled">
-{% include 'combase.html' %}
+{% include 'profile_comments.html' %}
 </ul>
 </div>
 {% endblock %}

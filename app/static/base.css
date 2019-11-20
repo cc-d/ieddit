@@ -514,6 +514,7 @@ blockquote {
 	word-break: break-word;
 	max-height: 100%;
 	overflow: hidden;
+	color: #fff!important;
 }
 .mod-option-wrapper {
 	float: right;
@@ -574,8 +575,7 @@ blockquote {
 }
 
 #user-recent {
-	margin-top: 3rem;
-	border-top: 1px solid black;
+	margin-top: 0.75rem;
 }
 
 .alert.success {
@@ -675,8 +675,23 @@ ul {
 }
 
 .preference-option {
-	margin-left: 1.5rem;
 }
+
+.profile-mod-sub {
+	color: #fff;
+	margin-right: 0.5rem;
+	font-size: 90%;
+}
+
+.profile-mod-container {
+	margin-top: 0.75rem;
+}
+
+
+#user-preference-checkboxes {
+	max-width: 15rem;
+}
+
 .col.inner-div {
 	white-space: nowrap;
 	overflow: hidden;
@@ -922,4 +937,32 @@ ul {
 	margin-top: 0.25rem;
 	padding-left: 0.25rem;
 	padding-right: 0.25rem;
+	margin-bottom: 0px;
+}
+
+.user-profile-image {
+	text-align: center;
+	height: 100px;
+	width: 100px;
+	font-size: 100px;
+	position: absolute;
+	margin-right: 100px;
+	border: 1px solid red;
+}
+
+.user-profile-info {
+	margin-left: 108px;
+	height: 100px;
+}
+
+.user-profile-joined {
+	font-size: 75%;
+	margin-bottom: 0;
+	display: inline;
+}
+
+.user-profile-info-top {
+	display: flex;
+	color: #fff;
+	margin-bottom: 0px;
 }

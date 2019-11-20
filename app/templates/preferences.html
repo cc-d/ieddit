@@ -1,9 +1,52 @@
 {% extends 'base.html' %}
-
 {% block content %}
+<!-- This was pretty Cool, might re-enable it -->
+<!--<form class='margin-lr' action='/user/anonymous' method='POST'>
+{% if user.anonymous == False %}
+    <input type='hidden' name='action' value='enable'>
+    <button type="submit" class="btn btn-sm btn-success user-opt">enable default anonymous</button></a>
+{% else %}
+    <input type='hidden' name='action' value='disable'>
+    <button type="submit" class="btn btn-sm btn-danger user-opt">disable default anonymous</button></a>
+{% endif %}
+</form> -->
+<h3 class='margin-lr' style='color: #fff;'>Preferences</h3>
+<form class='margin-lr border-top' id='user-preference-checkboxes' action='/user/update_preferences' method='POST'>
+    <div class="form-group" style='margin-left: 2rem; margin-top: 0.5rem;'>
+      <div class='preference-option'>
+        {% if user.anonymous == True %}
+          <input type="checkbox" class="form-check-input" id="always-anonymous" name='always_anonymous' checked><label for="always-anonymous">Always Anonymous</label>
+        {% else %}
+          <input type="checkbox" class="form-check-input" id="always-anonymous" name='always_anonymous'><label for="always-anonymous">Always Anonymous</label>
+        {% endif %}
+      </div>
 
-<form style='max-width: 25rem; margin: 1rem;' action='/user/update_preferences' method='POST'>
-    <div class="form-group">
+      <div class='preference-option'>
+        {% if user.hide_sub_style == True %}
+          <input type="checkbox" class="form-check-input" id="hide-sub-style-box" name='hide_sub_style' checked><label for="hide-sub-style-box">Hide Custom Sub Styles</label>
+        {% else %}
+          <input type="checkbox" class="form-check-input" id="hide-sub-style-box" name='hide_sub_style'><label for="hide-sub-style-box">Hide Custom Sub Styles</label>
+        {% endif %}
+      </div>
+
+      <div class='preference-option'>
+        {% if user.always_override == True %}
+          <input type="checkbox" class="form-check-input" id="always-post-as-user" name='always_override' checked><label for="always-post-as-user">Always Post As Normal User</label>
+        {% else %}
+          <input type="checkbox" class="form-check-input" id="always-post-as-user" name='always_override'><label for="always-post-as-user">Always Post As Normal User</label>
+        {% endif %}
+      </div>
+
+      <input type='hidden' name='checkbox_only' value='checkbox_only'>
+        <button type="submit" style="margin-left: -1.5rem; margin-top: 0.5rem;" class="btn btn-primary btn-sm">save preferences</button>
+
+    </div>
+</form>
+<br>
+<h3 class='margin-lr' style='color: #fff;'>Account</h3>
+
+<form class="border-top" style='max-width: 25rem; margin: 1rem;' action='/user/update_preferences' method='POST'>
+    <div class="form-group" style='margin-top: 0.5rem;'>
         <label for="exampleInputEmail1">Change Email address</label>
         <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" 
         placeholder="{% if user.email %}{{ user.email }}{% else %}Enter email{% endif %}" name='new_email'>
@@ -16,22 +59,6 @@
         <label for="exampleInputPassword2">Confirm New Password</label>
         <input type="password" class="form-control" id="exampleInputPassword2" placeholder="confirm password" name='con_new_password'>
     </div>
-    <div class="form-group preference-option">
-        {% if user.hide_sub_style == True %}
-          <input type="checkbox" class="form-check-input" id="hide-sub-style-box" name='hide_sub_style' checked><label for="hide-sub-style-box">Hide Custom Sub Styles</label>
-        {% else %}
-          <input type="checkbox" class="form-check-input" id="hide-sub-style-box" name='hide_sub_style' checked><label for="hide-sub-style-box">Hide Custom Sub Styles</label>
-        {% endif %}
-
-        <br>
-
-        {% if user.always_override == True %}
-          <input type="checkbox" class="form-check-input" id="always-post-as-user" name='always_override' checked><label for="always-post-as-user">Always Post As Normal User</label>
-        {% else %}
-          <input type="checkbox" class="form-check-input" id="always-post-as-user" name='always_override'><label for="always-post-as-user">Always Post As Normal User</label>
-        {% endif %}
-
-    </div>    
     <div class="form-group border-top">
         <label for="exampleInputPassword3">Enter Current Password</label>
         <input type="password" class="form-control" id="exampleInputPassword3" placeholder="confirm password" name='cur_password'>
