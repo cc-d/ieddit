@@ -14,7 +14,7 @@
         {% elif vuser.karma['post'] == 0 %}
             {% set post_karma_color = '' %}
         {% else %}
-            {% set post_karma_color = 'style=color:lightblue;' %}
+            {% set post_karma_color = 'style=color:' + config.DOWNVOTE_COLOR + ';' %}
         {% endif %}
         
         {% set karma_comment = vuser.karma['comment'] %}
@@ -24,7 +24,7 @@
         {% elif vuser.karma['comment'] == 0 %}
             {% set comment_karma_color = '' %}
         {% else %}
-            {% set comment_karma_color = 'style=color:lightblue;' %}
+            {% set comment_karma_color = 'style=color:' + config.DOWNVOTE_COLOR + ';' %}
         {% endif %}
         
         <div class='user-profile-karma'>    

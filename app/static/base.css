@@ -623,7 +623,7 @@ blockquote {
 }
 
 .inner-code {
-	color: #bbb;
+	color: #ccc;
 	display: inline-block;
 }
 
@@ -724,11 +724,11 @@ ul {
 }
 
 .mod-log-table {
-	color: #bbb;
+	color: #ccc;
 }
 
 .banned-user {
-	border: 1px solid #bbb!important;
+	border: 1px solid #ccc!important;
 	margin: 1rem;
 }
 
@@ -744,7 +744,7 @@ ul {
 
 .video-play-btn {
     font-size: 60%;
-    border: 1px solid #bbb;
+    border: 1px solid #ccc;
     padding-left: 4px;
     padding-right: 3px;
     padding-top: 2px;

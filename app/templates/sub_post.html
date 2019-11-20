@@ -160,17 +160,27 @@ var preExpandVideo = false;
     <div class="row post-row bottom_inner_row" style='display: inline-block; width: 100%;'>
     <div class='post-com-wrap' style='display: inline-block;'>
         <div style='display: inline-block;' class="inner-div comment-post-voting" vote-obj-id="{{ post.id }}" vote-obj-type="post" vote-userid="{{ session['user_id'] }}" has_voted="{{ post.has_voted }}">
+
+            {% set vote_html = '<vote class="score">' + post.get_score()|string + '</vote>' %}
+
             {% if post.has_voted|string == '1' %}
-            <a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
+                {% set up_html = '<a href="javascript:void(0)"><i style="color: ' + config.UPVOTE_COLOR + '"class="fa fa-arrow-up"></i></a>' %}
+                {% set vote_html = '<vote class="score" style="color:' + config.AVG_UP_COLOR + '">' + post.get_score()|string + '</vote>' %}
             {% else %}
-            <a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
+                {% set up_html = '<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>' %}
             {% endif %}
-            <vote class="score">{{ post.get_score() }}</vote>
+
             {% if post.has_voted|string == '-1' %}
-            <a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
+                {% set down_html = '<a href="javascript:void(0)"><i style="color: ' + config.DOWNVOTE_COLOR + ';" class="fa fa-arrow-down"></i></a>' %}
+                {% set vote_html = '<vote class="score" style="color:' + config.AVG_DOWN_COLOR + '">' + post.get_score()|string + '</vote>' %}
             {% else %}
-            <a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
+                {% set down_html = '<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>' %}
             {% endif %}
+
+            {{ up_html|safe }}
+            {{ vote_html|safe }}
+            {{ down_html|safe }}
+
         </div>
         <a style='display: inline-block;' class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/"><span class='num-and-com'>{{ post.comment_count }}</span> <span class='comment-span'>comments</span> <i class='comment-fontawesome fa fa-comment'></i></a>
     </div>

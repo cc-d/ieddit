@@ -1,5 +1,35 @@
+var averageRGB = (function () {
+  var reSegment = /[\da-z]{2}/gi;
+  function dec2hex(v) {return v.toString(16);}
+  function hex2dec(v) {return parseInt(v,16);}
+
+  return function (c1, c2) {
+
+    var b1 = c1.match(reSegment);
+    var b2 = c2.match(reSegment);
+    var t, c = [];
+
+    for (var i=b1.length; i;) {
+      t = dec2hex( (hex2dec(b1[--i]) + hex2dec(b2[i])) >> 1 );
+
+      c[i] = t.length == 2? '' + t : '0' + t; 
+    }
+    console.log(c.join(''));
+    return  '#' + c.join('');
+  }
+}());
+
 var fontColor = '#bbb';
 var rgbFontColor = 'rgb(187, 187, 187)';
+
+//var downColor = 'deepskyblue';
+var downColor = '#00bfff';
+var rgbDownColor = 'rgb(0, 191, 255)';
+
+//var upColor = 'orange';
+var upColor = '#ffa500';
+var rgbUpColor = 'rgb(255, 165, 0)'
+
 
 $(document).on('click', '.comment-reply', function () {
 	var replycommid = $(this).attr('comment_id');
@@ -28,14 +58,15 @@ $(document).on('click', '.fa-arrow-up', function() {
 	var voteId = $(this).parent().parent().attr('vote-obj-id');
 	var voteDiv = $(this).parent().parent().children('vote');
 	var self = $(this);
-	if($(self).css('color') != 'rgb(255, 165, 0)') {
+	if($(self).css('color') != rgbUpColor) {
 		if (oType == 'post') {
 			$.post('/vote', {'vote':'1', 'post_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
-					$(self).css('color', 'orange');
+					$(voteDiv).css('color', averageRGB(upColor, '#cccccc'));
+					$(self).css('color', upColor);
 					$(self).parent().parent().children('a').children('.fa-arrow-down').css('color', fontColor);
 				}
 			});
@@ -47,19 +78,21 @@ $(document).on('click', '.fa-arrow-up', function() {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
-					$(self).css('color', 'orange');
+					$(self).css('color', averageRGB(upColor, '#cccccc'));
+					$(voteDiv).css('color', upColor);
 					$(self).parent().parent().children('a').children('.fa-arrow-down').css('color', fontColor);
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) + 1);
 		}
-	} else if ($(self).css('color') == 'rgb(255, 165, 0)') {
+	} else if ($(self).css('color') == rgbUpColor) {
 		if (oType == 'post') {
 			$.post('/vote', {'vote':'0', 'post_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(voteDiv).css('color', fontColor);
 					$(self).css('color', fontColor);
 				}
 			});
@@ -71,6 +104,7 @@ $(document).on('click', '.fa-arrow-up', function() {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(voteDiv).css('color', fontColor);
 					$(self).css('color', fontColor);
 				}
 			});
@@ -91,7 +125,8 @@ $(document).on('click', '.fa-arrow-down', function() {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
-					$(self).css('color', 'rgb(173, 216, 230)');
+					$(self).css('color', rgbDownColor);
+					$(voteDiv).css('color', averageRGB(downColor, '#cccccc'));
 					$(self).parent().parent().children('a').children('.fa-arrow-up').css('color', fontColor);
 				}
 			});
@@ -103,19 +138,21 @@ $(document).on('click', '.fa-arrow-down', function() {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
-					$(self).css('color', 'rgb(173, 216, 230)');
+					$(self).css('color', rgbDownColor);
+					$(voteDiv).css('color', averageRGB(downColor, '#cccccc'));
 					$(self).parent().parent().children('a').children('.fa-arrow-up').css('color', fontColor);
 				}
 			});
 			//$(voteDiv).html(parseInt(voteDiv.html()) - 1);
 		}
-	} else if ($(self).css('color') == 'rgb(173, 216, 230)') {
+	} else if ($(self).css('color') == rgbDownColor) {
 		if (oType == 'post') {
 			$.post('/vote', {'vote':'0', 'post_id':voteId}).done( function(data) {
 				if (data == 'not logged in') {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(voteDiv).css('color', fontColor);
 					$(self).css('color', fontColor);
 				}
 			});
@@ -127,6 +164,7 @@ $(document).on('click', '.fa-arrow-down', function() {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
+					$(voteDiv).css('color', fontColor);
 					$(self).css('color', fontColor);
 				}
 			});

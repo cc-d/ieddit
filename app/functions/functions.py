@@ -152,6 +152,7 @@ def get_tag_count(text):
 
 def clean_and_linkify(text):
     clean_text = clean(markdown(text), strip=True)
+    clean_text = linkify(clean_text)
     return clean_text
 
 

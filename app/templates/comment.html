@@ -76,17 +76,25 @@
 
 {% if comment.deleted == False %}
 <div style='display: inline;' class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="{{ session['user_id'] }}" has_voted="{{ comment.has_voted }}">
-	{% if comment.has_voted == 1 %}
-	<a href="javascript:void(0)"><i style="color: orange;"class="fa fa-arrow-up"></i></a>
-	{% else %}
-	<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
-	{% endif %}
-	<vote class="score">{{ comment.get_score() }}</vote>
-	{% if comment.has_voted == -1 %}
-	<a href="javascript:void(0)"><i style="color: lightblue;" class="fa fa-arrow-down"></i></a>
-	{% else %}
-	<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
-	{% endif %}
+            {% set vote_html = '<vote class="score">' + comment.get_score()|string + '</vote>' %}
+
+            {% if comment.has_voted|string == '1' %}
+                {% set up_html = '<a href="javascript:void(0)"><i style="color: ' + config.UPVOTE_COLOR + '"class="fa fa-arrow-up"></i></a>' %}
+                {% set vote_html = '<vote class="score" style="color:' + config.AVG_UP_COLOR + '">' + comment.get_score()|string + '</vote>' %}
+            {% else %}
+                {% set up_html = '<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>' %}
+            {% endif %}
+
+            {% if comment.has_voted|string == '-1' %}
+                {% set down_html = '<a href="javascript:void(0)"><i style="color: ' + config.DOWNVOTE_COLOR + ';" class="fa fa-arrow-down"></i></a>' %}
+                {% set vote_html = '<vote class="score" style="color:' + config.AVG_DOWN_COLOR + '">' + comment.get_score()|string + '</vote>' %}
+            {% else %}
+                {% set down_html = '<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>' %}
+            {% endif %}
+
+            {{ up_html|safe }}
+            {{ vote_html|safe }}
+            {{ down_html|safe }}
 </div>
 			<div class="inner-div applyinline" style="display: inline;">
 				{% if post.locked == False %}
