@@ -937,6 +937,7 @@ ul {
 	margin-top: 0.25rem;
 	padding-left: 0.25rem;
 	padding-right: 0.25rem;
+	border-radius: 0.25rem;
 	margin-bottom: 0px;
 }
 
@@ -947,7 +948,8 @@ ul {
 	font-size: 100px;
 	position: absolute;
 	margin-right: 100px;
-	border: 1px solid red;
+	border-radius: 0.5rem;
+	border: 1px solid #666!important;
 }
 
 .user-profile-info {

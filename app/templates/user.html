@@ -2,13 +2,14 @@
 {% block content %}
 <div class='user-profile'>
     <div class='user-image-container'>
+        <!-- In future will offer ability to upload profile images -->
         <i class='fa fa-user user-profile-image'></i>
     </div>
     <div class='user-profile-info'>
         <h6 class='user-profile-info-top'>/u/{{ vuser.username }}
         {% set karma_post = vuser.karma['post'] %}
         {% if vuser.karma['post'] > 0 %}
-            {% set post_karma_color = 'style=color:orange;' %}
+            {% set post_karma_color = 'style=color:greenyellow;' %}
             {% set karma_post = '+' + vuser.karma['post']|string %}
         {% elif vuser.karma['post'] == 0 %}
             {% set post_karma_color = '' %}
@@ -18,7 +19,7 @@
         
         {% set karma_comment = vuser.karma['comment'] %}
         {% if vuser.karma['comment'] > 0 %}
-            {% set comment_karma_color = 'style=color:orange;' %}
+            {% set comment_karma_color = 'style=color:greenyellow;' %}
             {% set karma_comment = '+' + vuser.karma['comment']|string %}
         {% elif vuser.karma['comment'] == 0 %}
             {% set comment_karma_color = '' %}
@@ -26,13 +27,18 @@
             {% set comment_karma_color = 'style=color:lightblue;' %}
         {% endif %}
         
-        <div class='user-profile-karma rounded'>    
+        <div class='user-profile-karma'>    
             <p class='user-post-karma' {{ post_karma_color }} data-toggle='tooltip' data-placement="top" title="total post karma">{{ karma_post }}</p>&nbsp;<p class='user-comment-karma' {{ comment_karma_color }} data-toggle='tooltip' data-placement="top" title="total comment karma"> {{ karma_comment }}</p>    
         </div>
         </h6>
         <div class='user-profile-body'>
             <p class='user-profile-joined'>Joined: {{ (vuser.created|string)[0:10] }}</p>
-            <p style='color:red;' class='user-profile-joined'>Admin</p>
+
+            <!-- Various user types will go here -->
+            {% if vuser.admin == True %}
+                <p style='color:red;' class='user-profile-joined'>Admin</p>
+            {% endif %}
+
             <div style='height:3.5rem'><p style='opacity: 0.5; margin-top: 1rem; font-size: 75%;'>placeholder for future content...</p></div>
         </div>
 </div>
