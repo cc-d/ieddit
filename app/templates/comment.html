@@ -90,7 +90,11 @@
 </div>
 			<div class="inner-div applyinline" style="display: inline;">
 				{% if post.locked == False %}
-				<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>
+					{% if profile_comment %}
+						<a class="comment-link comment-reply" href="{{ comment.permalink }}" comment_id="{{ comment.id }}">reply</a>
+					{% else %}
+						<a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">reply</a>
+					{% endif %}
 				{% endif %}
 
 
