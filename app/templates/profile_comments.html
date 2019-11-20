@@ -10,7 +10,7 @@
     {% set cauthor_type = comment.author_type %}
 {% endif %}
 
-{% if comment.deleted == False %}
+{% if comment.deleted == False and comment.anonymous == False %}
     {% if userpage and comment.anonymous %}
 
     {% else %}
