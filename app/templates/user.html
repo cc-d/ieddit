@@ -27,7 +27,7 @@
 {% endif %}
 
 <div class='user-profile-karma rounded'>
-    <p class='user-post-karma' {{ post_karma_color }} >{{ karma_post }}</p>&nbsp;<p class='user-comment-karma' {{ comment_karma_color }} >{{ karma_comment }}</p>
+    <p class='user-post-karma' {{ post_karma_color }} data-toggle='tooltip' data-placement="top" title="total post karma">{{ karma_post }}</p>&nbsp;<p class='user-comment-karma' {{ comment_karma_color }} data-toggle='tooltip' data-placement="top" title="total comment karma">{{ karma_comment }}</p>
 </div>
 </h6>
 
