@@ -6,24 +6,28 @@
 
 <h6 style='display: flex;'> user profile for /u/{{ vuser.username }}
 
+{% set karma_post = vuser.karma['post'] %}
 {% if vuser.karma['post'] > 0 %}
     {% set post_karma_color = 'style=color:orange;' %}
+    {% set karma_post = '+' + vuser.karma['post']|string %}
 {% elif vuser.karma['post'] == 0 %}
     {% set post_karma_color = '' %}
 {% else %}
     {% set post_karma_color = 'style=color:lightblue;' %}
 {% endif %}
 
+{% set karma_comment = vuser.karma['comment'] %}
 {% if vuser.karma['comment'] > 0 %}
     {% set comment_karma_color = 'style=color:orange;' %}
+    {% set karma_comment = '+' + vuser.karma['comment']|string %}
 {% elif vuser.karma['comment'] == 0 %}
     {% set comment_karma_color = '' %}
 {% else %}
     {% set comment_karma_color = 'style=color:lightblue;' %}
 {% endif %}
 
-<div class='user-profile-karma'>
-    (<p class='user-post-karma' {{ post_karma_color }} >{{ vuser.karma['post'] }}</p>, <p class='user-comment-karma' {{ comment_karma_color }} >{{ vuser.karma['comment'] }}</p>)
+<div class='user-profile-karma rounded'>
+    <p class='user-post-karma' {{ post_karma_color }} >{{ karma_post }}</p>&nbsp;<p class='user-comment-karma' {{ comment_karma_color }} >{{ karma_comment }}</p>
 </div>
 </h6>
 

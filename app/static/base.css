@@ -914,6 +914,12 @@ ul {
 }
 
 .user-profile-karma {
+	font-family: monospace;
 	display: flex;
 	margin-left: 0.5rem;
+	background-color: #262626;
+	max-height: 1rem;
+	margin-top: 0.25rem;
+	padding-left: 0.25rem;
+	padding-right: 0.25rem;
 }
