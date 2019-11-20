@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 
-
-
 {% if post.override == False %}
 	{% if post.anonymous %}
 		{% set pauthor = 'Anonymous' %}
@@ -14,23 +12,22 @@
 {% endif %}
 
 <title>{{ post.title }}</title>
+<meta property="og:title" content="{{ post.title }}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="{{ post.permalink }}" />
+{% if post.remote_image_url %}
+	<meta property="og:image" content="{{ post.remote_image_url }}" />
+{% else %}
+	{% if post.post_type == 'url' %}
+		<meta property="og:image" content="{{ config.URL }}/static/globe.png" />
+	{% else %}
+		<meta property="og:image" content="/static/comment-white.png" />
+	{% endif %}
+{% endif %}
 
 <div id="comment-page-wrapper">
 	{% set pre_expand = True %}
 	{% include 'sub_post.html' %}
-<!--
-<div id="row">
-	<unstyled> sort by: </unstyled>
-	{% if not parent_comment.id %}
-	<a class="comment-link" href="{{ post_url }}sort-top"><small>top</small></a>
-	<unstyled><small>|</small></unstyled>
-	<a class="comment-link" href="{{ post_url }}sort-new"><small>new</small></a>
-	{% else %}
-	<a class="comment-link" href="{{ post_url }}{{ parent_comment.id }}/sort-top"><small>top</small></a>
-	<unstyled><small>|</small></unstyled>
-	<a class="comment-link" href="{{ post_url }}{{ parent_comment.id }}/sort-new"><small>new</small></a>
-	{% endif %}
-</div>-->
 
 {% if post.locked %}
 <h2>post is locked</h2>

@@ -748,8 +748,11 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
                 post.sub_nsfw = True
             else:
                 post.sub_nsfw = False
+
+            post.post_type = 'url'
             if hasattr(post, 'text'):
                 post.new_text = pseudo_markup(post.text)
+                post.post_type = 'selftext'
 
             if thumb_exists(post.id):
                 post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
@@ -957,8 +960,6 @@ def view_user(username):
     mod_of = db.session.query(Moderator).filter_by(username=vuser.username).all()
     mods = {}
 
-    vuser.karma = get_user_karma(username)
-
     for s in mod_of:
         mods[s.sub] = s.rank
     vuser.mods = mods
@@ -1002,6 +1003,8 @@ def view_user(username):
                         Comment.is_mod = True
                     else:
                         Comment.is_mod = False
+
+    vuser.karma = get_user_karma(username)
 
     return render_template('user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts, userpage=True)
 
