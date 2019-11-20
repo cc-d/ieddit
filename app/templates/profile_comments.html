@@ -12,27 +12,18 @@
     {% endif %}
     
     {% if comment.deleted == False %}
-        {% if userpage and comment.anonymous %}
-    
-        {% else %}
-    
         {% if no_posts %}
-    <div class="allcomment-comment">
-        {% endif %}
+            <div class="allcomment-comment">
         {% endif %}
     {% endif %}
     
     {% with %}
-    {% set parent_comment = False %}
-    {% set profile_comment = True %}
-    {% include 'comment.html' %}
+        {% set parent_comment = False %}
+        {% set comment_list = True %}
+        {% include 'comment.html' %}
     {% endwith %}    
 {% endif %}
 
 {% else %}
 <p class='margin-lr'> no comments </p>
 {% endfor %}
-
-{% if count.pop() > 0 %}
-<!-- <p> user has additional anonymous comments </p> -->
-{% endif %}

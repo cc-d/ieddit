@@ -1,35 +1,27 @@
 {% set count = [0] %}
 {% for comment, post in comments_with_posts %}
-{% if count.append(count.pop() + 1) %}{% endif %}
-
-{% if comment.anonymous %}
-    {% set cauthor = 'Anonymous' %}
-    {% set cauthor_type = 'user' %}
-{% else %}
-    {% set cauthor = comment.author %}
-    {% set cauthor_type = comment.author_type %}
-{% endif %}
-
-{% if comment.deleted == False %}
-    {% if userpage and comment.anonymous %}
-
+    {% if count.append(count.pop() + 1) %}{% endif %}
+    
+    {% if comment.anonymous %}
+        {% set cauthor = 'Anonymous' %}
+        {% set cauthor_type = 'user' %}
     {% else %}
-
-    {% if no_posts %}
-<div class="allcomment-comment">
+        {% set cauthor = comment.author %}
+        {% set cauthor_type = comment.author_type %}
     {% endif %}
+    
+    {% if comment.deleted == False %}
+        {% if no_posts %}
+            <div class="allcomment-comment">
+        {% endif %}
     {% endif %}
-{% endif %}
-
-{% with %}
-{% set parent_comment = False %}
-{% include 'comment.html' %}
-{% endwith %}
-
+    
+    {% with %}
+        {% set parent_comment = False %}
+        {% set comment_list = True %}
+        {% include 'comment.html' %}
+    {% endwith %}
+    
 {% else %}
-<p class='margin-lr'> no comments </p>
+    <p class='margin-lr'> no comments </p>
 {% endfor %}
-
-{% if count.pop() > 0 %}
-<!-- <p> user has additional anonymous comments </p> -->
-{% endif %}
