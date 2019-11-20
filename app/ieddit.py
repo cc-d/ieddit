@@ -749,11 +749,8 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
             else:
                 post.sub_nsfw = False
 
-            post.post_type = 'url'
             if hasattr(post, 'text'):
                 post.new_text = pseudo_markup(post.text)
-                post.post_type = 'selftext'
-
             if thumb_exists(post.id):
                 post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
             elif hasattr(post, 'url'):
