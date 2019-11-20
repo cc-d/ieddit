@@ -30,7 +30,11 @@
 
 	{% if session['admin'] or is_modv %}
 		<label for="normal-checkbox"> non-mod?</label>
-		<input type='checkbox' name='override' id="normal-checkbox">
+		{% if session['always_override'] == True %}
+			<input type='checkbox' name='override' id="normal-checkbox" checked>
+		{% else %}
+			<input type='checkbox' name='override' id="normal-checkbox">
+		{% endif %}
 	{% endif %}
 
 	{% endif %}

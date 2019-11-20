@@ -57,9 +57,6 @@
 </div>
 
 
-
-
-
 	<button type="submit" class="btn btn-primary btn-dark">Create Post</button>
 	<label for="anon-checkbox">anonymous?</label>
 	{% if session['anonymous'] %}
@@ -69,8 +66,12 @@
 	{% endif %}
 
 	{% if session['admin'] or is_modv %}
-	<label for="normal-checkbox"> non-mod?</label>
-	<input type='checkbox' name='override' id="normal-checkbox">
+		<label for="normal-checkbox"> non-mod?</label>
+		{% if session['always_override'] == True %}
+			<input type='checkbox' name='override' id="normal-checkbox" checked>
+		{% else %}
+			<input type='checkbox' name='override' id="normal-checkbox">
+		{% endif %}
 	{% endif %}
 
 	<br><br><br>

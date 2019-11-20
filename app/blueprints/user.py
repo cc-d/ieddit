@@ -315,14 +315,25 @@ def user_update_preferences():
 
         hss = request.form.get('hide_sub_style')
 
-        if user.hide_sub_style == True:
-            if hss == None:
+        if user.hide_sub_style is True:
+            if hss is None:
                 user.hide_sub_style = False
-        elif user.hide_sub_style == False:
-            if hss != None:
+        elif user.hide_sub_style is False:
+            if hss is not None:
                 user.hide_sub_style = True
-                
+
         session['hide_sub_style'] = user.hide_sub_style
+
+        always_override = request.form.get('always_override')
+
+        if user.always_override is True:
+            if always_override is None:
+                user.always_override = False
+        elif user.always_override is False:
+            if always_override is not None:
+                user.always_override = True
+                
+        session['always_override'] = user.always_override
 
         db.session.add(user)
         db.session.commit()

@@ -3,33 +3,41 @@
 {% block content %}
 
 <form style='max-width: 25rem; margin: 1rem;' action='/user/update_preferences' method='POST'>
-  <div class="form-group">
-    <label for="exampleInputEmail1">Change Email address</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" 
-    placeholder="{% if user.email %}{{ user.email }}{% else %}Enter email{% endif %}" name='new_email'>
-  </div>
-  <div class="form-group">
-    <label for="exampleInputPassword1">Change Password</label>
-    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="enter new password" name='new_password'>
-  </div>
-  <div class="form-group">
-    <label for="exampleInputPassword2">Confirm New Password</label>
-    <input type="password" class="form-control" id="exampleInputPassword2" placeholder="confirm password" name='con_new_password'>
-  </div>
-  <div class="form-group preference-option">
-    {% if user.hide_sub_style == True %}
-    <input type="checkbox" class="form-check-input" id="exampleInputCheckbox1" name='hide_sub_style' checked><label for="exampleInputCheckbox1">Hide Custom Sub Styles</label>
-    {% else %}
-    <input type="checkbox" class="form-check-input" id="exampleInputCheckbox1" name='hide_sub_style'><label for="exampleInputCheckbox1">Hide Custom Sub Styles</label>
-    {% endif %}
+    <div class="form-group">
+        <label for="exampleInputEmail1">Change Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" 
+        placeholder="{% if user.email %}{{ user.email }}{% else %}Enter email{% endif %}" name='new_email'>
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword1">Change Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="enter new password" name='new_password'>
+    </div>
+    <div class="form-group">
+        <label for="exampleInputPassword2">Confirm New Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword2" placeholder="confirm password" name='con_new_password'>
+    </div>
+    <div class="form-group preference-option">
+        {% if user.hide_sub_style == True %}
+          <input type="checkbox" class="form-check-input" id="hide-sub-style-box" name='hide_sub_style' checked><label for="hide-sub-style-box">Hide Custom Sub Styles</label>
+        {% else %}
+          <input type="checkbox" class="form-check-input" id="hide-sub-style-box" name='hide_sub_style' checked><label for="hide-sub-style-box">Hide Custom Sub Styles</label>
+        {% endif %}
 
-  </div>  
-  <div class="form-group border-top">
-    <label for="exampleInputPassword3">Enter Current Password</label>
-    <input type="password" class="form-control" id="exampleInputPassword3" placeholder="confirm password" name='cur_password'>
-  </div>	
-  </div>
-  <button style='margin-left: 1.5rem;' type="submit" class="btn btn-primary">update</button>
+        <br>
+
+        {% if user.always_override == True %}
+          <input type="checkbox" class="form-check-input" id="always-post-as-user" name='always_override' checked><label for="always-post-as-user">Always Post As Normal User</label>
+        {% else %}
+          <input type="checkbox" class="form-check-input" id="always-post-as-user" name='always_override'><label for="always-post-as-user">Always Post As Normal User</label>
+        {% endif %}
+
+    </div>    
+    <div class="form-group border-top">
+        <label for="exampleInputPassword3">Enter Current Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword3" placeholder="confirm password" name='cur_password'>
+    </div>	
+    </div>
+    <button style='margin-left: 1.5rem;' type="submit" class="btn btn-primary">update</button>
 </form>	
 
 <br><br><a style='margin-left: 1.5rem;' href='/api/get_user/{{ session.username }}'>download user data </a><br>

@@ -27,6 +27,7 @@ class Iuser(db.Model):
     darkmode = db.Column(db.Boolean, default=False, nullable=False)
     hide_sub_style = db.Column(db.Boolean, default=False, nullable=False)
     pgp = db.Column(db.Boolean, default=False, nullable=False)
+    always_override = db.Column(db.Boolean, default=False, nullable=False)
 
     def get_recent_comments(self, limit=15, deleted=False):
         coms = db.session.query(Comment).filter_by(author_id=self.id, deleted=deleted).order_by(Comment.created.desc()).limit(limit).all()
