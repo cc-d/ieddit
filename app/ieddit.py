@@ -199,15 +199,17 @@ def robotstxt():
     return app.send_static_file('robots.txt')
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_explore_subs(offset=None, limit=None):
+def get_explore_subs(offset=0, limit=50):
     """
     one of the best current targets for optimization
     """
-    subs = db.session.query(Sub).all()
+    subs = db.session.query(Sub).outerjoin(Comment). \
+            group_by(Sub).order_by(func.count(Comment.sub_name).desc()). \
+            limit(limit).offset(offset).all()
+
     for s in subs:
         s.stats = get_explore_stats(s.name) 
 
-    #esubs.sort(key=lambda x: x.score, reverse=True)
     return subs
 
 @limiter.limit(config.LOGIN_RATE_LIMIT)
@@ -844,7 +846,6 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
         if vote == 0 and last_vote == None:
             return 'never voted'
 
-
         if vote == 0:
             if last_vote.post_id is not None or last_vote.comment_id is not None:
                 if last_vote.post_id is not None:
@@ -856,12 +857,6 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
                     vpost.ups -= 1
                 elif last_vote.vote == -1:
                     vpost.downs -= 1
-
-            try:
-                if vpost is None:
-                    raise ValueError('vpost is none. %s' % str(last_vote))
-            except:
-                raise ValueError('vpost is none. %s' % str(last_vote))
 
             score = str(vpost.ups - vpost.downs)
 
@@ -883,12 +878,10 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
                 last_vote.vote = 1
         db.session.commit()
 
-
         if comment_id != None:
             vcom = db.session.query(Comment).filter_by(id=comment_id).first()
         elif post_id != None:
             vcom = db.session.query(Post).filter_by(id=post_id).first()
-
 
         if vote == 1:
             if not invert_vote:
@@ -1106,10 +1099,7 @@ def create_comment(api=False, *args, **kwargs):
 
         post_id = post_obj.id
         sub_name = post_obj.sub
-
         text = kwargs['text']
-
-
     else:
         username = session['username']
         user_id = session['user_id']
@@ -1147,11 +1137,11 @@ def create_comment(api=False, *args, **kwargs):
         return redirect(post.get_permalink())
 
     deleted = False
+
     sub = normalize_sub(sub_name)
     if sub in get_banned_subs(username):
         deleted = True
-        #flash('you are banned from commenting', 'danger')
-        #return redirect(post.get_permalink())
+
     sub_name = sub
 
     if override != None:
@@ -1485,9 +1475,9 @@ def blocksub(sub=None):
 
 @app.route('/explore/', methods=['GET'])
 def explore():
-    subs = get_explore_subs()
-
-    subs.sort(key=lambda x: x.stats[1], reverse=True)
+    subs = get_explore_subs(limit=100)
+    for s in subs:
+        s.new_rules = pseudo_markup(s.rules)
 
     return render_template('explore.html', subs=subs)
 

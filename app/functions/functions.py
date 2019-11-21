@@ -158,6 +158,9 @@ def pseudo_markup(text, escape_only=False):
     if escape_only:
         return html.escape(text).replace('&lt;br&gt;', '').replace('\n', '<br>')
 
+    if text is None:
+        return None
+
     # really hacky way of preserving newlines right now, will address the problem
     # properly after making sure it at least works currently
     random_sequence = rstring(10)
