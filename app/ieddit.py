@@ -677,8 +677,10 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
         if thumb_exists(post.id):
             post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
 
-        if get_youtube_vid_id(post.url):
-            post.video = 'https://www.youtube.com/embed/%s?version=3&enablejsapi=1' % get_youtube_vid_id(post.url)
+        if post.url != None:
+            youtube_url = get_youtube_embed_url(post.url)
+            if youtube_url:
+                post.video = youtube_url
 
         post.mods = get_sub_mods(post.sub)
         post.created_ago = time_ago(post.created)

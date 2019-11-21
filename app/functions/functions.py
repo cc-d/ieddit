@@ -259,25 +259,19 @@ def get_youtube_embed_url(url):
         return False
 
     qargs = (urllib.parse.urlparse(url)).query.split('&')
-    strip_qargs = ['v=', 'feature=']
-
-    for strip in strip_qargs:
-        qargs = [q for q in qargs if q.find(strip) == -1]
-
-    qargs = [html.unescape(q) for q in qargs]
+    #qargs = [q for q in qargs if q.split('=')[0] == 't']
 
     if len(qargs) > 0:
-        qargs = '&' + ('&'.join(qargs))
+        qargs = '&'.join(qargs)
     else:
         qargs = ''
+
+    print(qargs, '@@@@@@@@@@@@@@@@@@@@@@@')
 
     url = 'https://www.youtube.com/embed/%s?version=3&enablejsapi=1%s' % (vid_id, qargs)
     url = url.replace('t=', 'start=')
 
-
     return url
-
-
 
 
 # convert to dict
