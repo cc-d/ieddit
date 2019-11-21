@@ -90,15 +90,15 @@
     
     {% if request.sub %}
         <a class="top-sort" href="{{ config.URL }}/i/{{ request.sub }}/{{ comments_link }}">
-            <button type="button" class="btn btn-sm btn-custom-blue">{{ comments_text }}</button>
+            <button type="button" class="btn btn-sm btn-primary">{{ comments_text }}</button>
         </a>
     {% elif is_all == True %}
         <a class="top-sort" href="{{ config.URL }}/i/all/{{ comments_link }}">
-            <button type="button" class="btn btn-sm btn-custom-blue">{{ comments_text }}</button>
+            <button type="button" class="btn btn-sm btn-primary">{{ comments_text }}</button>
         </a>
     {% else %}
         <a class="top-sort" href="{{ config.URL }}/{{ comments_link }}">
-            <button type="button" class="btn btn-sm btn-custom-blue">{{ comments_text }}</button>
+            <button type="button" class="btn btn-sm btn-primary">{{ comments_text }}</button>
         </a>
     {% endif %}
 </div>

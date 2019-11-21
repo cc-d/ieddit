@@ -266,8 +266,6 @@ def get_youtube_embed_url(url):
     else:
         qargs = ''
 
-    print(qargs, '@@@@@@@@@@@@@@@@@@@@@@@')
-
     url = 'https://www.youtube.com/embed/%s?version=3&enablejsapi=1%s' % (vid_id, qargs)
     url = url.replace('t=', 'start=')
 
