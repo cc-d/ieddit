@@ -102,6 +102,8 @@ def offset_url(url_params, url_type, params_only=False):
 
 app.jinja_env.globals.update(offset_url=offset_url)
 
+
+
 ##### Sub Functions #####
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_sub_nsfw(sub):
@@ -124,7 +126,6 @@ def normalize_sub(sub):
     if subl != None:
         return subl.name
     return sub
-
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_sub_mods(sub, admin=True):
@@ -159,6 +160,37 @@ def get_muted_subs():
     index page/all page due to spam or some TRULY horrible content
     """
     return [x.name for x in db.session.query(Sub).filter_by(muted=True).all()]
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_unique_sub_users(sub, today=False):
+    """
+    returns all users to ever participate in a sub
+    """
+    users = db.session.query(Post.author).filter_by(sub=sub). \
+            distinct(Post.author).group_by(Post.author).all()
+    users = [u[0] for u in users]
+
+    comments = db.session.query(Comment.author).filter_by(sub_name=sub). \
+            distinct(Comment.author).group_by(Comment.author).all()
+
+    [users.append(c[0]) for c in comments if c[0] not in users]
+
+    return users
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_explore_stats(sub, today=False):
+    """
+    stats used in explore
+    """
+    users = []
+
+    posts = db.session.query(Post.id, Post.author_id).filter_by(sub=sub).all()
+    [users.append(p[1]) for p in posts if p[1] not in users]
+
+    comments = db.session.query(Comment.id, Comment.author_id).filter_by(sub_name=sub).all()
+    [users.append(c[1]) for c in comments if c[1] not in users]
+
+    return (sub, len(users), len(posts), len(comments))
 
 ##### Username Functions #####
 @cache.memoize(config.DEFAULT_CACHE_TIME)

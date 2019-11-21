@@ -203,29 +203,12 @@ def get_explore_subs(offset=None, limit=None):
     """
     one of the best current targets for optimization
     """
-    if limit is None:
-        limit = 50
+    subs = db.session.query(Sub).all()
+    for s in subs:
+        s.stats = get_explore_stats(s.name) 
 
-    if offset is None:
-        offset = 0
-
-    subs = db.session.query(Post.sub).distinct(Post.sub).all()
-    subs = [db.session.query(Sub).filter_by(name=s[0]).first() for s in subs]
-    esubs = []
-
-    for sub in subs:
-        if hasattr(sub, 'rules'):
-            if sub.rules != None:
-                sub.new_rules = pseudo_markup(sub.rules)
-
-        sub.comments = sub.get_comments(count=True)
-
-        sub.score = sub.comments
-
-        esubs.append(sub)
-
-    esubs.sort(key=lambda x: x.score, reverse=True)
-    return esubs
+    #esubs.sort(key=lambda x: x.score, reverse=True)
+    return subs
 
 @limiter.limit(config.LOGIN_RATE_LIMIT)
 @app.route('/login/', methods=['GET', 'POST'])
@@ -1078,21 +1061,18 @@ def create_post(postsub=None, api=False, *args, **kwargs):
 
 @app.route('/get_sub_list', methods=['GET'])
 def get_sub_list():
-    subs = get_explore_subs()
-    if subs != None:
-        for s in subs:
-            s.comments = s.get_comments()
-            s.posts = s.get_posts()
-            if s.comments != None and s.posts != None:
-                s.rank = s.comments.count() + s.posts.count()
-            else:
-                s.rank = 0
-        subs = [s for s in subs]
-        subs.sort(key=lambda x: x.rank, reverse=True)
-        sublinks = []
+    subs, sublinks = [], []
+
+    comments = db.session.query(Comment).filter_by(author_id=session['user_id']).all()
+    [subs.append(c.sub_name) for c in comments if c.sub_name not in subs]
+
+    posts = db.session.query(Post).filter_by(author_id=session['user_id']).all()
+    [subs.append(p.sub) for p in posts if p.sub not in subs]
+
+    if subs != []:
         for s in subs:
             sublinks.append('<a class="dropdown-item sublist-dropdown"' +
-            ' href="javascript:setSub(\'%s\')">/i/%s</a>' % (s.name, s.name))
+            ' href="javascript:setSub(\'%s\')">/i/%s</a>' % (s, s))
         return '\n'.join(sublinks)
     else:
         return ''
@@ -1502,31 +1482,14 @@ def blocksub(sub=None):
 
     return redirect('/i/%s/' % sub)
 
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def explore_stats(sub):
-    if hasattr(sub, 'rules'):
-        if sub.rules is not None:
-            sub.new_rules = pseudo_markup(sub.rules)
-    sub.posts = sub.get_posts(count=True)
-
-    sub.comments = sub.get_comments(count=True)
-    sub.score = sub.comments + sub.posts
-    sub.users = len(sub.get_total_users())
-    return sub
-
 
 @app.route('/explore/', methods=['GET'])
 def explore():
-    esubs = []
     subs = get_explore_subs()
-    for sub in subs:
-        new_sub = explore_stats(sub)
-        if new_sub.posts > 0:
-            esubs.append(new_sub)
 
-    esubs.sort(key=lambda x: x.users, reverse=True)
+    subs.sort(key=lambda x: x.stats[1], reverse=True)
 
-    return render_template('explore.html', subs=esubs)
+    return render_template('explore.html', subs=subs)
 
 @app.route('/clear_cache', methods=['POST'])
 def clear_cache():
