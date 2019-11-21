@@ -153,6 +153,32 @@ def get_style(sub=None):
 
 app.jinja_env.globals.update(get_style=get_style)
 
+def param_replace(url_params, param_name, replace_with):
+    if url_params == '':
+        return param_name + '=' + replace_with
+    url_params = url_params.split('&')
+    url_params = [param for param in url_params if param.split('=')[0] != param_name]
+    url_params.append(param_name + '=' + replace_with)
+
+    url_params = '&'.join(url_params)
+    url_params = url_params.replace('?', '')
+
+    if url_params == '':
+        return ''
+        
+    return url_params
+
+app.jinja_env.globals.update(param_replace=param_replace)
+
+def param_destroy(url_params, param_name):
+    url_params = url_params.split('&')
+    url_params = [param for param in url_params if param.split('=')[0] != param_name]
+
+    return '&'.join(url_params)
+
+app.jinja_env.globals.update(param_destroy=param_destroy)
+
+
 def notbanned(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -496,21 +522,6 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
 
     muted_subs = False
 
-    if subi != 'all':
-        subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
-        if subname == None:
-            return pretty_json({'error':'sub does not exist'})
-        subi = subname.name
-        posts = db.session.query(Post).filter_by(sub=subi, deleted=False)
-    elif user_id != None:
-        muted_subs = get_muted_subs()
-        posts = db.session.query(Post).filter_by(author_id=user_id, deleted=False)
-    else:
-        muted_subs = get_muted_subs()
-        posts = db.session.query(Post).filter_by(deleted=False)
-
-# .order_by((Post.created).desc())
-#            posts = db.session.query(Post).filter_by(deleted=False).order_by((Post.ups - Post.downs).desc())
     if d == 'hour':
         ago = datetime.now() - timedelta(hours=1)
     elif d == 'day':
@@ -519,11 +530,23 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
         ago = datetime.now() - timedelta(days=7)
     elif d == 'month':
         ago = datetime.now() - timedelta(days=31)
+    elif d == 'year':
+        ago = datetime.now() - timedelta(days=365)
     else:
         ago = datetime.now() - timedelta(days=9999)
 
-    if d:
-        posts.filter(Post.created > ago)
+    if subi != 'all':
+        subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
+        if subname == None:
+            return pretty_json({'error':'sub does not exist'})
+        subi = subname.name
+        posts = db.session.query(Post).filter_by(sub=subi, deleted=False).filter(Post.created > ago)
+    elif user_id != None:
+        muted_subs = get_muted_subs()
+        posts = db.session.query(Post).filter_by(author_id=user_id, deleted=False).filter(Post.created > ago)
+    else:
+        muted_subs = get_muted_subs()
+        posts = db.session.query(Post).filter_by(deleted=False).filter(Post.created > ago)
 
     if s == 'top':
         posts = posts.order_by((Post.ups - Post.downs).desc())
@@ -536,7 +559,8 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
         for p in posts:
             p.hot = hot(p.ups, p.downs, p.created)
         posts.sort(key=lambda x: x.hot, reverse=True)
-    #posts = [post for post in posts if post.created > ago]
+    
+    posts = [post for post in posts if post.created > ago]
 
 
     if muted_subs:

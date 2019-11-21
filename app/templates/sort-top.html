@@ -1,14 +1,89 @@
 <div class="btn-group" role="group" aria-label="Basic example">
-    <a class="top-sort" href="{{ session['hot_url'] }}"><button type="button" class="btn btn-sm btn-secondary">Hot</button></a>
-  <a class="top-sort" href="{{ session['top_url'] }}"><button type="button" class="btn btn-sm btn-secondary">Top</button></a>
-  <a class="top-sort" href="{{ session['new_url'] }}"><button type="button" class="btn btn-sm btn-secondary">New</button></a>
+    {% if 's=top' in request.url or 's=new' in request.url %}
+        <a class="top-sort" href="{{ session['hot_url'] }}"><button type="button" class="btn btn-sm btn-secondary">Hot</button></a>
+    {% endif %}
+
+    {% if 's=top' not in request.url %}
+        <a class="top-sort" href="{{ session['top_url'] }}"><button type="button" class="btn btn-sm btn-secondary">Top</button></a>
+    {% endif %}
+
+    {% if 's=new' not in request.url %}
+        <a class="top-sort" href="{{ session['new_url'] }}"><button type="button" class="btn btn-sm btn-secondary">New</button></a>
+    {% endif %}
+
+    {% if 'd=day' in request.environ['QUERY_STRING'] %}
+        {% set active_sort = 'day' %}
+    {% elif 'd=week' in request.environ['QUERY_STRING'] %}
+        {% set active_sort = 'week' %}
+    {% elif 'd=month' in request.environ['QUERY_STRING'] %}
+        {% set active_sort = 'month' %}
+    {% elif 'd=year' in request.environ['QUERY_STRING'] %}
+        {% set active_sort = 'year' %}
+    {% else %}
+        {% set active_sort = 'past' %}
+    {% endif %}
+
+    {% set sort_hour_url = request.environ['PATH_INFO'] + '?' + param_replace(request.environ['QUERY_STRING'], 'd', 'hour') %}
+    {% set sort_day_url = request.environ['PATH_INFO'] + '?' + param_replace(request.environ['QUERY_STRING'], 'd', 'day') %}
+    {% set sort_week_url = request.environ['PATH_INFO'] + '?' + param_replace(request.environ['QUERY_STRING'], 'd', 'week') %}
+    {% set sort_month_url = request.environ['PATH_INFO'] + '?' + param_replace(request.environ['QUERY_STRING'], 'd', 'month') %}
+    {% set sort_year_url = request.environ['PATH_INFO'] + '?' + param_replace(request.environ['QUERY_STRING'], 'd', 'year') %}
+
+    {% set sort_all_url = request.environ['PATH_INFO'] + param_destroy(request.environ['QUERY_STRING'], 'd') %}
+
+
+    <div class="dropdown top-sort" id='sort-date'>
+        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id='sort-date-btn' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ active_sort }}
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% if 'd=hour' not in request.environ['QUERY_STRING'] %}
+                <a class="dropdown-item" href="{{ sort_hour_url }}">past hour</a>
+            {% endif %}
+            {% if 'd=day' not in request.environ['QUERY_STRING'] %}
+                <a class="dropdown-item" href="{{ sort_day_url }}">past day</a>
+            {% endif %}
+            {% if 'd=week' not in request.environ['QUERY_STRING'] %}
+                <a class="dropdown-item" href="{{ sort_week_url }}">past week</a>
+            {% endif %}
+            {% if 'd=month' not in request.environ['QUERY_STRING'] %}
+                <a class="dropdown-item" href="{{ sort_month_url }}">past month</a>
+            {% endif %}
+            <!-- When site is a year old enable 
+            {% if 'd=year' not in request.environ['QUERY_STRING'] %}
+                <a class="dropdown-item" href="{{ sort_year_url }}">past year</a>
+            {% endif %}
+            -->
+            <a class="dropdown-item" href="{{ sort_all_url }}">all time</a>
+        </div>
+    </div>
+
 </div>
 <div class="btn-group">
-{% if request.sub %}
-<a class="top-sort" href="{{ config.URL }}/i/{{ request.sub }}/comments/"><button type="button" class="btn btn-sm btn-secondary">Comments</button></a>
-{% elif is_all == True %}
-<a class="top-sort" href="{{ config.URL }}/i/all/comments/"><button type="button" class="btn btn-sm btn-secondary">Comments</button></a>
-{% else %}
-<a class="top-sort" href="{{ config.URL }}/comments/"><button type="button" class="btn btn-sm btn-secondary">Comments</button></a>
-{% endif %}
+    {% set comment_paths = ['/comments/', '/i/all/comments/'] %}
+    {% if request.sub %}
+        {% set comment_paths = ['/comments/', '/i/' + request.sub + '/comments/', '/i/all/comments/'] %}
+    {% endif %}
+
+    {% if request.environ['PATH_INFO'] not in comment_paths %}
+        {% set comments_link = 'comments/' %}
+        {% set comments_text = 'Comments' %}
+    {% else %}
+        {% set comments_link = '' %}
+        {% set comments_text = 'Posts' %}
+    {% endif %}
+    
+    {% if request.sub %}
+        <a class="top-sort" href="{{ config.URL }}/i/{{ request.sub }}/{{ comments_link }}">
+            <button type="button" class="btn btn-sm btn-custom-blue">{{ comments_text }}</button>
+        </a>
+    {% elif is_all == True %}
+        <a class="top-sort" href="{{ config.URL }}/i/all/{{ comments_link }}">
+            <button type="button" class="btn btn-sm btn-custom-blue">{{ comments_text }}</button>
+        </a>
+    {% else %}
+        <a class="top-sort" href="{{ config.URL }}/{{ comments_link }}">
+            <button type="button" class="btn btn-sm btn-custom-blue">{{ comments_text }}</button>
+        </a>
+    {% endif %}
 </div>

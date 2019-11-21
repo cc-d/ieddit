@@ -489,6 +489,7 @@ blockquote {
 	box-shadow: none!important;
 	font-size: 125%;
 }
+
 .mod-dropdown {
 	background-color: #262626!important;
 	outline: none!important;
@@ -497,6 +498,7 @@ blockquote {
     padding-bottom: 3px;
     font-size: 80%;
 }
+
 .mod-dropdown:focus {
 	background-color: #262626!important;
 	outline: none!important;
@@ -967,4 +969,27 @@ ul {
 	display: flex;
 	color: #fff;
 	margin-bottom: 0px;
+}
+
+.show>.btn-secondary.dropdown-toggle:focus {
+    box-shadow: none!important;
+}
+
+.btn-secondary.focus, .btn-secondary:focus {
+	box-shadow: none!important;
+}
+
+.btn-custom-blue {
+	color: #fff!important;
+	background-color: #336699;
+	border-color: #336699;
+    transition: color .15s ease-in-out,
+    background-color .15s ease-in-out,
+    border-color .15s ease-in-out,
+    box-shadow .15s ease-in-out;
+}
+
+.btn-custom-blue:hover {
+	background-color: #264d73;
+	border-color: #264d73;
 }

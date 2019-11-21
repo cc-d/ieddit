@@ -78,8 +78,8 @@ $(document).on('click', '.fa-arrow-up', function() {
 					alert('please login to vote');
 				} else if (isNaN(data) == false) {
 					$(voteDiv).html(data);
-					$(self).css('color', averageRGB(upColor, '#cccccc'));
-					$(voteDiv).css('color', upColor);
+					$(voteDiv).css('color', averageRGB(upColor, '#cccccc'));
+					$(self).css('color', upColor);
 					$(self).parent().parent().children('a').children('.fa-arrow-down').css('color', fontColor);
 				}
 			});
