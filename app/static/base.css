@@ -427,10 +427,6 @@ ul, li{
     margin-top: 4px;
 }
 
-blockquote {
-   background-color: lightgrey;
-}
-
 .nsfw {
     display: inline;
     color: red;
@@ -1091,7 +1087,7 @@ html {
 }
 
 blockquote {
-    background-color: #343a40;
+    background-color: #222;
     margin: 0 0;
     margin: 0.5rem;
 }
