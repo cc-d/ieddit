@@ -245,6 +245,41 @@ def get_youtube_vid_id(url):
 
     return False
 
+def get_youtube_embed_url(url):
+    """
+    converts a youtube url into an embedded link
+    """
+    if url.find('youtube.com/watch?v=') != -1:
+        vid_id = re.findall('\?v=(.[a-zA-Z0-9\-_]*)', url)[0]
+    elif url.find('youtube.com/v/') != -1:
+        vid_id = re.findall('\.com\/v\/(.[a-zA-Z0-9\-_]*)', url)[0]
+    elif url.find('youtu.be/') != -1:
+        vid_id = re.findall('youtu\.be\/(.[a-zA-Z0-9\-_]*)', url)[0]
+    else:
+        return False
+
+    qargs = (urllib.parse.urlparse(url)).query.split('&')
+    strip_qargs = ['v=', 'feature=']
+
+    for strip in strip_qargs:
+        qargs = [q for q in qargs if q.find(strip) == -1]
+
+    qargs = [html.unescape(q) for q in qargs]
+
+    if len(qargs) > 0:
+        qargs = '&' + ('&'.join(qargs))
+    else:
+        qargs = ''
+
+    url = 'https://www.youtube.com/embed/%s?version=3&enablejsapi=1%s' % (vid_id, qargs)
+    url = url.replace('t=', 'start=')
+
+
+    return url
+
+
+
+
 # convert to dict
 def sqla_to_dict(obj, expunge=None, include_attrs=None, show_anon=False):
     if expunge is None:

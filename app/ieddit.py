@@ -602,7 +602,6 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
         if thumb_exists(post.id):
             post.thumbnail = 'thumbnails/thumb-' + str(post.id) + '.PNG'
 
-
         if get_youtube_vid_id(post.url):
             post.video = 'https://www.youtube.com/embed/%s?version=3&enablejsapi=1' % get_youtube_vid_id(post.url)
 
@@ -761,9 +760,9 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
                 if post.self_text != None:
                     post.new_self_text = pseudo_markup(post.self_text)
 
-            if get_youtube_vid_id(post.url):
-                post.video = 'https://www.youtube.com/embed/%s?version=3&enablejsapi=1' % get_youtube_vid_id(post.url)
-
+            youtube_url = get_youtube_embed_url(post.url)
+            if youtube_url:
+                post.video = youtube_url
         else:
             post = None
 
