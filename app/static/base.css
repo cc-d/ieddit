@@ -516,7 +516,7 @@ blockquote {
 	word-break: break-word;
 	max-height: 100%;
 	overflow: hidden;
-	color: #fff!important;
+	color: #eee!important;
 }
 .mod-option-wrapper {
 	float: right;
@@ -680,7 +680,7 @@ ul {
 }
 
 .profile-mod-sub {
-	color: #fff;
+	color: #eee;
 	margin-right: 0.5rem;
 	font-size: 90%;
 }
@@ -967,7 +967,7 @@ ul {
 
 .user-profile-info-top {
 	display: flex;
-	color: #fff;
+	color: #eee;
 	margin-bottom: 0px;
 }
 
@@ -980,7 +980,7 @@ ul {
 }
 
 .btn-custom-blue {
-	color: #fff!important;
+	color: #eee!important;
 	background-color: #336699;
 	border-color: #336699;
     transition: color .15s ease-in-out,

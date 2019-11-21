@@ -1,6 +1,6 @@
 body {
 	background-color: #262626;
-	color: #bbb;
+	color: #ccc;
 }
 
 code {
@@ -20,11 +20,11 @@ code {
 
 body a {
 	background-color: rgba(0,0,0,0);
-	color: #bbb;
+	color: #ccc;
 }
 
 button {
-	color: #bbb;
+	color: #ccc;
 }
 
 #about-wrap {
@@ -119,47 +119,47 @@ blockquote {
 }
 
 .user-icon-link {
-	color: #bbb;
+	color: #ccc;
 }
 
 .sub-post-title-link {
 	color: #eee;
 }
 .sub-post-title-url {
-	color: #bbb;
+	color: #ccc;
 }
 
 .top-of-post {
-	color: #bbb;
+	color: #ccc;
 }
 
 .comment-link {
-	color: #bbb;
+	color: #ccc;
 }
 
 .fa-arrow-up {
-	color: #bbb;
+	color: #ccc;
 }
 
 .fa-arrow-down {
-	color: #bbb;
+	color: #ccc;
 }
 
 .comment-text-text {
-	color: #bbb;
+	color: #ccc;
 }
 
 .btn-outline-secondary {
-    color: #bbb;
-    border-color: #bbb;
+    color: #ccc;
+    border-color: #ccc;
 }
 
 .nav-link {
-	color: #bbb!important;
+	color: #ccc!important;
 }
 
 .navbar-brand {
-	color: #bbb!important;
+	color: #ccc!important;
 }
 
 .sub-comment {
@@ -173,7 +173,7 @@ blockquote {
 
 .user-icon-link:hover {
 	text-decoration: underline;
-	color: #bbb;
+	color: #ccc;
 }
 
 .comment-post-container {
