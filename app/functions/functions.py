@@ -137,8 +137,6 @@ def split_link(sst, s):
     return new_s
 
 def get_tag_count(text):
-
-
     tag_count = len(re.findall('<[a-zA-Z0-9]*>[^<>"\']*<\/[a-zA-Z0-9]*>', text))
     tag_count += text.count('<br>')
     if text.find('\n') != -1:
@@ -146,12 +144,12 @@ def get_tag_count(text):
     elif text.find('\r\n') != -1:
         tag_count += text.count('\r\n')
 
-
     return tag_count
 
 
 def clean_and_linkify(text):
-    clean_text = clean(markdown(text), strip=True)
+    tags=['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'blockquote']
+    clean_text = clean(markdown(text), strip=True, tags=tags)
     clean_text = linkify(clean_text)
     return clean_text
 
@@ -162,7 +160,6 @@ def pseudo_markup(text, escape_only=False):
 
     # really hacky way of preserving newlines right now, will address the problem
     # properly after making sure it at least works currently
-
     random_sequence = rstring(10)
     reverse_sequence = random_sequence[::-1]
 
@@ -170,6 +167,9 @@ def pseudo_markup(text, escape_only=False):
     for i in range(len(text)):
         if text[i] == '':
             text[i] = random_sequence
+        elif text[i][0] == '>':
+            text[i] = '<blockquote>' + text[i][1:] + '</blockquote>'
+
 
     # empty newlines will now be preserved after clean/bleach
     text = '\n'.join(text)
@@ -207,7 +207,7 @@ def pseudo_markup(text, escape_only=False):
     clean_text = clean_text.replace(reverse_sequence, '\n')
 
     # html tags that should not end in <br>
-    clean_tags = ['<ol>', '</ol>', '<li>', '</li>', '<ul>', '</ul>']
+    clean_tags = ['<ol>', '</ol>', '<li>', '</li>', '<ul>', '</ul>', '<blockquote>', '</blockquote>', '</blockquote>']
     for tag in clean_tags:
         clean_text = clean_text.replace(tag + '<br>', tag)
 
