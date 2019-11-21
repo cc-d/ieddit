@@ -1,31 +1,42 @@
 {% if posts_only %}
-
-{% for post in posts %}
-    {% include 'sub_post.html' %}
+    {% for post in posts %}
+        {% include 'sub_post.html' %}
+    {% else %}
+    	<p> no posts </p>
+    {% endfor %}
 {% else %}
-	<p> no posts </p>
-{% endfor %}
-
-{% else %}
-{% extends 'base.html' %}
-{% block content %}
-<script src="{{ url_for('static', filename='expand-post.js') }}?1"></script>
-
-{% include 'sort-top.html' %}
-
-<div class="active_sub_users">
-Users Active: {{ sub_stats['active_users'] }}
-    <br>
-Posts Today: {{ sub_stats['posts_today'] }}
-</div>
-
-{% for post in posts %}
-    {% include 'sub_post.html' %}
-    {% if loop.last %}
-    {% endif %}
-{% else %}
-	<p> no posts </p>
-{% endfor %}
-
-{% endblock %}
+    {% extends 'base.html' %}
+    {% block content %}
+    <script src="{{ url_for('static', filename='expand-post.js') }}?1"></script>
+    
+    {% include 'sort-top.html' %}
+    
+    <div class="active_sub_users">
+    Users Active: {{ sub_stats['active_users'] }}
+        <br>
+    Posts Today: {{ sub_stats['posts_today'] }}
+    </div>
+    
+    {% for post in posts %}
+        {% include 'sub_post.html' %}
+        {% if loop.last %}
+            {% if 'offset' in request.environ['QUERY_STRING'] %}
+                {% set prev_off_url = request.environ['PATH_INFO'] + offset_url(request.environ['QUERY_STRING'], 'prev') %}
+                <a href="{{ prev_off_url }}" id="prev-button" class="sub-posts-next">
+                    <button type="button" class="btn btn-secondary">prev</button>
+                </a>
+            {% endif %}
+    
+            {% if request.is_more_content %}
+                {% set next_off_url = request.environ['PATH_INFO'] + offset_url(request.environ['QUERY_STRING'], 'next') %}
+                <a href="{{ next_off_url }}" class="sub-posts-next">
+                    <button type="button" class="btn btn-secondary">next</button>
+                </a>
+            {% endif %}
+        {% endif %}
+    {% else %}
+    	<p> no posts </p>
+    {% endfor %}
+    
+    {% endblock %}
 {% endif %}

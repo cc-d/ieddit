@@ -139,6 +139,8 @@ def handle_error(error):
 
     return render_template("error.html", error=description, code=code), code
 
+# Useful jinja2 template functions
+
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_style(sub=None):
     """
@@ -154,6 +156,9 @@ def get_style(sub=None):
 app.jinja_env.globals.update(get_style=get_style)
 
 def param_replace(url_params, param_name, replace_with):
+    """
+    replaces a given param with a string and returns as param args
+    """
     if url_params == '':
         return param_name + '=' + replace_with
     url_params = url_params.split('&')
@@ -165,19 +170,67 @@ def param_replace(url_params, param_name, replace_with):
 
     if url_params == '':
         return ''
-        
+
     return url_params
 
 app.jinja_env.globals.update(param_replace=param_replace)
 
-def param_destroy(url_params, param_name):
+def param_destroy(url_params, param_name, params_only=False):
+    """
+    returns param args with a specific param removed
+    """
     url_params = url_params.split('&')
-    url_params = [param for param in url_params if param.split('=')[0] != param_name]
+    url_params = [param for param in url_params if param.split('=')[0] != param_name and param != '']
 
-    return '&'.join(url_params)
+    url_params = '&'.join(url_params)
+
+    if url_params == '':
+        return ''
+
+    if params_only:
+        return url_params
+    return '?' + url_params
+
 
 app.jinja_env.globals.update(param_destroy=param_destroy)
 
+def offset_url(url_params, url_type, params_only=False):
+    """
+    returns creates the urls used in prev/next
+    """
+    current_offset = None
+    url_params = url_params.split('&')
+    for param in url_params:
+        if param.split('=')[0] == 'offset':
+            current_offset = int(param.split('=')[1])
+
+    url_params = [param for param in url_params if param.split('=')[0] != 'offset' and param != '']
+
+    if current_offset is None and url_type == 'next':
+        url_params.append('offset=15')
+
+    elif url_type == 'next':
+        if current_offset is None:
+            current_offset = 15
+        else:
+            current_offset = current_offset + 15
+        url_params.append('offset=' + str(current_offset))
+
+    elif url_type == 'prev':
+        current_offset = current_offset - 15
+        if current_offset > 0:
+            url_params.append('offset=' + str(current_offset))
+
+    url_params = '&'.join(url_params)
+
+    if url_params == '':
+        return ''
+
+    if params_only:
+        return url_params
+    return '?' + url_params
+
+app.jinja_env.globals.update(offset_url=offset_url)
 
 def notbanned(f):
     @wraps(f)
@@ -516,9 +569,12 @@ def index():
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=False,
              offset=0, limit=15, nsfw=True, d=None, s=None, api=False):
-
-    if offset != None:
-        offset = int(offset)
+    """
+    this is one of the horrific functions i will be rewriting next
+    """
+    if offset is None:
+        offset = 0
+    offset = int(offset)
 
     muted_subs = False
 
@@ -548,6 +604,10 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
         muted_subs = get_muted_subs()
         posts = db.session.query(Post).filter_by(deleted=False).filter(Post.created > ago)
 
+    request.is_more_content = False
+    if posts.count() >= limit:
+        request.is_more_content = True
+
     if s == 'top':
         posts = posts.order_by((Post.ups - Post.downs).desc())
         posts = posts.all()
@@ -573,11 +633,6 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
     pc = len(posts)
     if pc > limit:
         more = True
-
-    try:
-        offset + 1
-    except:
-        offset = 0
 
     if api is False:
         if 'blocked_subs' in session and 'username' in session:
@@ -609,10 +664,6 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
                     posts.insert(0, sticky)
             else:
                 posts.insert(0, sticky)
-
-
-    if more and len(posts) > 0:
-        posts[len(posts)-1].more = True
 
     p = []
     for post in posts:
@@ -663,42 +714,6 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
     d = request.args.get('d')
     s = request.args.get('s')
     subi = normalize_sub(subi)
-
-    if request.environ['QUERY_STRING'] == '':
-        session['off_url'] = request.url + '?offset=15'
-        session['prev_off_url'] = request.url
-    else:
-        if offset == None:
-            session['off_url'] = request.url + '&offset=15'
-            session['prev_off_url'] = request.url
-        else:
-            if (int(offset) - 15) > 0:
-                session['prev_off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) -15))
-            else:
-                session['prev_off_url'] = re.sub('[&\?]?offset=(\d+)', '', request.url)
-
-            session['off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) +15))
-    if request.url.find('offset=') == -1:
-        session['prev_off_url'] = False
-
-
-    session['top_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=top'
-    session['new_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=new'
-    session['hot_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=hot'
-
-    session['hour_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=hour'
-    session['day_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=day'
-    session['week_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=week'
-    session['month_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=month'
-
-    for a in ['top_url', 'new_url', 'day_url', 'week_url', 'hour_url', 'month_url', 'hot_url']:
-        if session[a].find('/&') != -1:
-            session[a] = session[a].replace('/&', '/?')
-
-    if 'prev_off_url' in session:
-        if session['prev_off_url']:
-            if session['prev_off_url'].find('/&'):
-                session['prev_off_url'] = session['prev_off_url'].replace('/&', '/?')
 
     view_user_id = None
     if 'user_id' in session:
@@ -1783,7 +1798,7 @@ def changelog():
 
 @app.route('/comments/', methods=['GET'])
 @app.route('/i/<sub>/comments/', methods=['GET'])
-def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False, api=False, comments_only=False):
+def subcomments(sub=None, offset=0, limit=15, s=None, d=None, nsfw=False, api=False, comments_only=False):
     # code is copy pasted from user page... the post stuff can probably be gotten rid of.
     # the username stuff can be gotten rid of too
     mods = {}
@@ -1795,8 +1810,10 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False, api=False, com
     offset = int(offset)
 
     s = request.args.get('s')
-    if s == None:
+    if s is None:
         s = 'new'
+
+    d = request.args.get('d')
 
     muted_subs = False
 
@@ -1815,7 +1832,6 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False, api=False, com
         muted_subs = get_muted_subs()
         posts = [p for p in posts if p.sub not in muted_subs]
 
-
     posts = posts[offset:offset+limit]
 
     for p in posts:
@@ -1823,29 +1839,37 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False, api=False, com
 
     comments_with_posts = []
 
+    if d == 'hour':
+        ago = datetime.now() - timedelta(hours=1)
+    elif d == 'day':
+        ago = datetime.now() - timedelta(hours=24)
+    elif d == 'week':
+        ago = datetime.now() - timedelta(days=7)
+    elif d == 'month':
+        ago = datetime.now() - timedelta(days=31)
+    elif d == 'year':
+        ago = datetime.now() - timedelta(days=365)
+    else:
+        ago = datetime.now() - timedelta(days=9999)
+
     if sub is None:
         nsfw = False
         sub = 'all'
 
     if sub == 'all':
         if nsfw:
-            comments = db.session.query(Comment)
+            comments = db.session.query(Comment).filter(Comment.created > ago)
         else:
             sfw_subs = [n.name for n in db.session.query(Sub).filter_by(nsfw=False).all()]
-
-            comments = db.session.query(Comment)
+            comments = db.session.query(Comment).filter(Comment.created > ago)
             comments = comments.filter(Comment.sub_name.in_(sfw_subs))
-
-
-        comcount = comments.count()
     else:
-        comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub))
-        comcount = comments.count()
+        comments = db.session.query(Comment).filter_by(sub_name=normalize_sub(sub)).filter(Comment.created > ago)
 
-    if comcount <= offset:
-        more = comcount
+    comments = comments.filter_by(deleted=False).filter(Comment.created > ago)
 
-    comments = comments.filter_by(deleted=False)
+    if comments.count() >= limit:
+        request.is_more_content = True
 
     if s == 'top':
         comments = comments.order_by((Comment.ups - Comment.downs).desc())
@@ -1863,7 +1887,6 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False, api=False, com
 
     comments = anon_block(comments)
     comments = [c for c in comments if c.noblock == True]
-
 
     nsfw_subs = []
     sfw_subs = []
@@ -1897,47 +1920,6 @@ def subcomments(sub=None, offset=0, limit=15, s=None, nsfw=False, api=False, com
                         Comment.is_mod = True
                     else:
                         Comment.is_mod = False
-
-    if request.environ['QUERY_STRING'] == '':
-        session['off_url'] = request.url + '?offset=15'
-        session['prev_off_url'] = request.url
-    else:
-        if offset == None:
-            session['off_url'] = request.url + '&offset=15'
-            session['prev_off_url'] = request.url
-        else:
-            offset = str(offset)
-
-            if (int(offset) - 15) > 0:
-                session['prev_off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) -15))
-            else:
-                session['prev_off_url'] = re.sub('[&\?]?offset=(\d+)', '', request.url)
-            session['off_url'] = request.url.replace('offset=' + offset, 'offset=' + str(int(offset) +15))
-    if request.url.find('offset=') == -1:
-        session['off_url'] = request.url + '&offset=15'
-        session['prev_off_url'] = False
-
-    session['top_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=top'
-    session['new_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=new'
-    session['hot_url'] = re.sub('[&\?]?s=\w+', '', request.url) + '&s=hot'
-
-    session['hour_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=hour'
-    session['day_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=day'
-    session['week_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=week'
-    session['month_url'] = re.sub('[&\?]?d=\w+', '', request.url) + '&d=month'
-
-    for a in ['top_url', 'new_url', 'day_url', 'week_url', 'hour_url', 'month_url', 'hot_url']:
-        if session[a].find('/&') != -1:
-            session[a] = session[a].replace('/&', '/?')
-
-    if 'prev_off_url' in session:
-        if session['prev_off_url']:
-            if session['prev_off_url'].find('/&'):
-                session['prev_off_url'] = session['prev_off_url'].replace('/&', '/?')
-
-    if 'off_url' in session:
-        if session['off_url']:
-            session['off_url'] = session['off_url'].replace('/&', '/?')
 
     if s == 'hot':
             comments.sort(key=lambda x: x.hot, reverse=True)

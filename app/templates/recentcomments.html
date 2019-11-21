@@ -1,26 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="comment-sort-top">
-{% include 'sort-top.html' %}
+    {% include 'sort-top.html' %}
 </div>
-	
 
 {% include 'recent.html' %}
 
-
-
-
-{% if session.prev_off_url %}
-<a href="{{ session.prev_off_url }}" id="prev-button" class="sub-posts-next">
-    <button type="button" class="btn btn-secondary">prev</button>
-</a>
+{% if 'offset' in request.environ['QUERY_STRING'] %}
+    {% set prev_off_url = request.environ['PATH_INFO'] + offset_url(request.environ['QUERY_STRING'], 'prev') %}
+    <a href="{{ prev_off_url }}" id="prev-button" class="sub-posts-next">
+        <button type="button" class="btn btn-secondary">prev</button>
+    </a>
 {% endif %}
 
-{% if session.off_url %}
-
-<a href="{{ session.off_url }}" class="sub-posts-next">
-    <button type="button" class="btn btn-secondary">next</button>
-</a>
+{% if request.is_more_content %}
+    {% set next_off_url = request.environ['PATH_INFO'] + offset_url(request.environ['QUERY_STRING'], 'next') %}
+    <a href="{{ next_off_url }}" class="sub-posts-next">
+        <button type="button" class="btn btn-secondary">next</button>
+    </a>
 {% endif %}
 
 {% endblock %}
