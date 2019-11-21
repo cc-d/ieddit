@@ -7,10 +7,13 @@ from share import *
 from sqlalchemy import func
 import _thread
 
+import requests
+from bs4 import BeautifulSoup
+import urllib.parse
+
 abs_path = os.path.abspath(os.path.dirname(__file__))
 os.chdir(abs_path)
 app.static_folder = 'static'
-
 
 @app.before_request
 def before_request():
@@ -18,12 +21,6 @@ def before_request():
 
     if app.debug:
         g.start = time.time()
-    session.permanent = True
-
-    try:
-        request.sub
-    except:
-        request.sub = False
 
     if 'blocked_subs' not in session:
         if 'username' in session:
@@ -33,67 +30,56 @@ def before_request():
 
     request.is_mod = False
 
-    uri = request.environ['REQUEST_URI']
-    if len(uri) > 2:
-        if uri[:3] == '/i/':
-            getsub = re.findall('\/i\/([a-zA-Z0-9-_]*)', request.environ['REQUEST_URI'])
-            if len(getsub) > 0:
-                if getsub[0] != 'all':
-                    getsub[0] = normalize_sub(getsub[0])
-                    oldsub = request.sub
-                    request.sub = getsub[0]
+    # if in a sub, modify request to reflect
+    if len(request.environ['REQUEST_URI']) >= 3:
+        if request.environ['REQUEST_URI'][:3] == '/i/':
+            current_sub = re.findall(r'\/i\/([a-zA-Z0-9-_]*)', request.environ['REQUEST_URI'])
+            if len(current_sub) == 1:
+                current_sub = current_sub[0]
+                if current_sub != 'all':
+                    request.sub = normalize_sub(current_sub)
                     if 'username' in session:
+                        # if a user is a mod of this sub, it changes how we respond
+                        # to requests rather significantly
                         if session['username'] in get_sub_mods(request.sub):
                             request.is_mod = True
 
-                    if oldsub != request.sub:
-                        request.subtitle = get_subtitle(request.sub)
+                    request.sub_title = get_sub_title(request.sub)
 
     if 'username' in session:
         has_messages(session['username'])
         get_blocked(session['username'])
         session['blocked'] = get_blocked(session['username'])
     else:
-        session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
-
-
-    if 'anon_user' not in session['blocked']:
-        session['blocked']['anon_user'] = []
-
-    # disabled due to lack of use
-
-    #if 'set_darkmode_initial' not in session:
-    #    session['darkmode'] = True
-    #    if 'username' in session:
-    #        u = db.session.query(Iuser).filter_by(username=session['username'])
-    #        u.darkmode = True
-    #        db.session.commit()
-    #    session['set_darkmode_initial'] = True
-
+        if 'blocked' not in session:
+            session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
 
 @app.after_request
 def apply_headers(response):
+    """
+    while this makes locked transactions and the like
+    easy to deal with, it's very important to remember
+    that modify an exting attribute on an sqlalchemy object directly
+    will cause the modified object to be comitted to db
+    """
+
     if response.status_code == 500:
         db.session.rollback()
 
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers['X-Content-Type-Options'] = 'nosniff'
+
     if config.CSP:
         response.headers['Content-Security-Policy'] = "default-src 'self' *.ieddit.com ieddit.com; img-src *; style-src" +\
         " 'self' 'unsafe-inline' *.ieddit.com ieddit.com; script-src 'self' 'unsafe-inline' *.ieddit.com ieddit.com;"
 
-    #response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    #response.headers["Pragma"] = "no-cache"
-    #response.headers["Expires"] = "0"
-    #response.headers['Cache-Control'] = 'public, max-age=0'
-    session['last_url'] = request.url
     if app.debug:
         if hasattr(g, 'start'):
             load_time = str(time.time() - g.start)
             print('\n[Load: %s]' % load_time)
 
-
+    # gotta setup proper cache clearing :)
     if request.environ['REQUEST_METHOD'] == 'POST':
         cache.clear()
 
@@ -102,18 +88,16 @@ def apply_headers(response):
 
     return response
 
-
 @app.teardown_request
 def teardown_request(exception):
+    """
+    same as above, do not modify pre-existing attributes
+    on sqlalchemy objects or the modified objects will be
+    committed to the db
+    """
     if exception:
         db.session.rollback()
     db.session.remove()
-
-
-def only_cache_get(*args, **kwargs):
-    if request.method == 'GET':
-        return False
-    return True
 
 @app.errorhandler(Exception)
 def handle_error(error):
@@ -139,100 +123,11 @@ def handle_error(error):
 
     return render_template("error.html", error=description, code=code), code
 
-# Useful jinja2 template functions
 
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_style(sub=None):
+def not_banned(f):
     """
-    returns sub style for a given sub
+    this decorator handles site-wide banned users
     """
-    if sub is not None:
-        sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
-        if sub is None:
-            return abort(404)
-        return sub.css
-    return None
-
-app.jinja_env.globals.update(get_style=get_style)
-
-def param_replace(url_params, param_name, replace_with):
-    """
-    replaces a given param with a string and returns as param args
-    """
-    if url_params == '':
-        return param_name + '=' + replace_with
-    url_params = url_params.split('&')
-    url_params = [param for param in url_params if param.split('=')[0] != param_name]
-    url_params.append(param_name + '=' + replace_with)
-
-    url_params = '&'.join(url_params)
-    url_params = url_params.replace('?', '')
-
-    if url_params == '':
-        return ''
-
-    return url_params
-
-app.jinja_env.globals.update(param_replace=param_replace)
-
-def param_destroy(url_params, param_name, params_only=False):
-    """
-    returns param args with a specific param removed
-    """
-    url_params = url_params.split('&')
-    url_params = [param for param in url_params if param.split('=')[0] != param_name and param != '']
-
-    url_params = '&'.join(url_params)
-
-    if url_params == '':
-        return ''
-
-    if params_only:
-        return url_params
-    return '?' + url_params
-
-
-app.jinja_env.globals.update(param_destroy=param_destroy)
-
-def offset_url(url_params, url_type, params_only=False):
-    """
-    returns creates the urls used in prev/next
-    """
-    current_offset = None
-    url_params = url_params.split('&')
-    for param in url_params:
-        if param.split('=')[0] == 'offset':
-            current_offset = int(param.split('=')[1])
-
-    url_params = [param for param in url_params if param.split('=')[0] != 'offset' and param != '']
-
-    if current_offset is None and url_type == 'next':
-        url_params.append('offset=15')
-
-    elif url_type == 'next':
-        if current_offset is None:
-            current_offset = 15
-        else:
-            current_offset = current_offset + 15
-        url_params.append('offset=' + str(current_offset))
-
-    elif url_type == 'prev':
-        current_offset = current_offset - 15
-        if current_offset > 0:
-            url_params.append('offset=' + str(current_offset))
-
-    url_params = '&'.join(url_params)
-
-    if url_params == '':
-        return ''
-
-    if params_only:
-        return url_params
-    return '?' + url_params
-
-app.jinja_env.globals.update(offset_url=offset_url)
-
-def notbanned(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'username' not in session and api is False:
@@ -248,26 +143,24 @@ def notbanned(f):
 
 
 def send_email(etext=None, subject=None, to=None, from_domain=config.MAIL_FROM):
+    """
+    sends the recovery email
+    """
     if config.MAIL_TYPE == 'mailgun':
         etext = '<html><head><body>' + etext + '</body></html>'
         r = requests.post(config.MG_URL + '/messages',
             auth=('api', config.MG_API_KEY),
             data={'from': 'no-reply <%s>' % (from_domain),
                 'to': [to, from_domain], 'subject':subject, 'html':etext})
-        print('sending email %s %s %s %s' % (MIMEText(etext, 'html'), subject, to, from_domain))
-        print(r.status_code)
-        print(r.text)
-        print('email %s %s %s' % (to, from_domain, subject))
         return True
 
-
-# i hate sending external requests
 @app.route('/suggest_title')
 @limiter.limit("5/minute")
 def suggest_title(url=None):
-    import requests
-    from bs4 import BeautifulSoup
-    import urllib.parse
+    """
+    real basic title suggestion, important to proxy this if
+    you want to prevent ip leaks
+    """
     url = request.args.get('u')
     url = urllib.parse.unquote(url)
     r = requests.get(url, proxies=config.PROXIES)
@@ -284,8 +177,10 @@ def suggest_title(url=None):
             return ''
     return ''
 
-@app.route('/fonts/<file>')
 
+##### Static Files #####
+
+@app.route('/fonts/<file>')
 def send_font(file=None, methods=['GET']):
     if file != None:
         if len(re.findall('^.*.*$', file)) != 1:
@@ -304,105 +199,13 @@ def robotstxt():
     return app.send_static_file('robots.txt')
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_subtitle(sub):
-    try:
-        title = db.session.query(Sub).filter_by(name=sub).first()
-        title = title.title
-    except:
-        title = None
-    return title
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_api_key(username):
-    key = db.session.query(Api_key).filter_by(username=username).first()
-    return key
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def has_messages(username):
-    if 'username' in session:
-        messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
-        if messages != None:
-            if messages > 0:
-                session['has_messages'] = True
-                session['unread_messages'] = messages
-                return True
-    return False
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_banned_subs(username):
-    subs = db.session.query(Ban).filter_by(username=username).all()
-    b = []
-    for s in subs:
-        b.append(s.sub)
-    return b
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def anon_block(obj):
-    for c in obj:
-        if c.anonymous:
-            if c.author_id in session['blocked']['anon_user']:
-                c.noblock = False
-            else:
-                c.noblock = True
-
-        else:
-            if c.author_id in session['blocked']['other_user']:
-                c.noblock = False
-            else:
-                c.noblock = True
-    return obj
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_muted_subs():
-    return [x.name for x in db.session.query(Sub).filter_by(muted=True).all()]
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_blocked(username):
-    bdict = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
-    if username == None:
-        return bdict
-    blocked = db.session.query(Hidden).filter_by(username=username).all()
-
-    if len(blocked) == 0:
-        return bdict
-
-    for b in blocked:
-        if b.comment_id != None:
-            i = db.session.query(Comment).filter_by(id=b.comment_id).first()
-            if i != None:
-                bdict['comment_id'].append(i.id)
-        elif b.post_id != None:
-            i = db.session.query(Post).filter_by(id=b.post_id).first()
-            if i != None:
-                bdict['post_id'].append(i.id)
-        elif b.other_user != None:
-            i = db.session.query(Iuser).filter_by(id=b.other_user).first()
-            if i != None:
-                if b.anonymous != True:
-                    bdict['other_user'].append(i.id)
-                else:
-                    bdict['anon_user'].append(i.id)
-
-    return bdict
-
-def set_rate_limit():
-    """
-    sets a value of current_time plus either the
-    default rate limit value or a provided one.
-    """
-    session['rate_limit'] = time.time()
-
-    return True
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_all_subs(explore=False):
-    subs = db.session.query(Sub).all()
-    return subs
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_explore_subs(offset=None, limit=None):
+    """
+    one of the best current targets for optimization
+    """
     if limit is None:
         limit = 50
+
     if offset is None:
         offset = 0
 
@@ -411,50 +214,18 @@ def get_explore_subs(offset=None, limit=None):
     esubs = []
 
     for sub in subs:
-         if hasattr(sub, 'rules'):
+        if hasattr(sub, 'rules'):
             if sub.rules != None:
                 sub.new_rules = pseudo_markup(sub.rules)
 
-         #sub.posts = sub.get_posts(count=True)
+        sub.comments = sub.get_comments(count=True)
 
-         #if sub.posts == 0:
-         #   continue
+        sub.score = sub.comments
 
-         sub.comments = sub.get_comments(count=True)
-        #sub.comments = anon_block(sub.comments)
-
-         sub.score = sub.comments# + sub.posts
-
-         esubs.append(sub)
+        esubs.append(sub)
 
     esubs.sort(key=lambda x: x.score, reverse=True)
     return esubs
-
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_pgp_from_username(username):
-    u = normalize_username(username)
-    if u == False:
-        return False
-
-    else:
-        pgp = db.session.query(Pgp).filter_by(username=normalize_username(username)).first()
-
-    if pgp != None:
-        return pgp
-    return False
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_user_from_name(username):
-    if username == '' or username == False or username == None:
-        return False
-    return normalize_username(username, dbuser=True)
-
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_user_from_id(uid):
-    if uid == None or uid == False:
-        return False
-    return db.session.query(Iuser).filter_by(id=uid).first()
 
 @limiter.limit(config.LOGIN_RATE_LIMIT)
 @app.route('/login/', methods=['GET', 'POST'])
@@ -477,7 +248,6 @@ def login():
         username = normalize_username(username)
         if username is False:
             flash('user does not exist', 'danger')
-            set_rate_limit()
             return redirect(url_for('login'))
 
         if db.session.query(db.session.query(Iuser)
@@ -513,7 +283,7 @@ def login():
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
-    [session.pop(key) for key in list(session.keys()) if key is not 'rate_limit']
+    [session.pop(key) for key in list(session.keys())]
 
     return redirect(url_for('index'), 302)
 
@@ -952,7 +722,7 @@ def list_of_child_comments(comment_id, sort_by=None):
     return comments
 
 @app.route('/create', methods=['POST', 'GET'])
-@notbanned
+@not_banned
 @limiter.limit(config.SUB_RATE_LIMIT)
 def create_sub():
     if request.method == 'POST':
@@ -1164,7 +934,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 
 @app.route('/create_post', methods=['POST', 'GET'])
 @limiter.limit(config.POST_RATE_LIMIT)
-@notbanned
+@not_banned
 def create_post(postsub=None, api=False, *args, **kwargs):
     if 'previous_post_form' not in session and not api:
         session['previous_post_form'] = None
@@ -1339,7 +1109,7 @@ def get_sub_list():
 
 @limiter.limit(config.COMMENT_RATE_LIMIT)
 @app.route('/create_comment', methods=['POST'])
-@notbanned
+@not_banned
 def create_comment(api=False, *args, **kwargs):
     text = request.form.get('comment_text')
     post_id = request.form.get('post_id')
@@ -1502,8 +1272,8 @@ def user_messages(username=None):
             read = read.order_by((Message.created).desc()).limit(50).all()
             unread = unread.order_by((Message.created).desc()).limit(50).all()
 
-            read = [x for x in read if x.sender == None or get_user_from_name(x.sender).id not in session['blocked']['other_user']]
-            unread = [x for x in unread if x.sender == None or get_user_from_name(x.sender).id not in session['blocked']['other_user']]
+            read = [x for x in read if x.sender == None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
+            unread = [x for x in unread if x.sender == None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
 
             for r in unread:
                 r.read = True
@@ -1572,7 +1342,7 @@ def reply_message(username=None, mid=None):
 
 
         return render_template('message_reply.html', message=m, sendto=False, self_pgp=get_pgp_from_username(session['username']),
-            other_pgp=get_pgp_from_username(m.sender), other_user=get_user_from_name(username))
+            other_pgp=get_pgp_from_username(m.sender), other_user=get_user_from_username(username))
 
 
 def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False, encrypted_key_id=None, in_reply_to=None):
@@ -1608,12 +1378,6 @@ def msg(username=None):
         if sent_to == None:
             sent_to = username
 
-        if 'rate_limit' in session and config.RATE_LIMIT == True:
-            rl = session['rate_limit'] - time.time()
-            if rl > 0:
-                flash('rate limited, try again in %s seconds' % str(rl))
-                return redirect('/')
-
         if len(text) > 20000 or len(title) > 200:
             flash('text/title too long')
             return redirect('/message/')
@@ -1642,7 +1406,7 @@ def msg(username=None):
                     if len(ru[0]) > 0:
                         username = ru[0]
         return render_template('message_reply.html', sendto=username, message=None, other_pgp=get_pgp_from_username(username),
-                                other_user=get_user_from_name(username), self_pgp=get_pgp_from_username(session['username']))
+                                other_user=get_user_from_username(username), self_pgp=get_pgp_from_username(session['username']))
 
 
 @app.route('/i/<sub>/mods/', methods=['GET'])

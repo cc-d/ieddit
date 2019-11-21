@@ -10,6 +10,98 @@ import config
 from share import *
 from functions import *
 
+##### Useful jinja2 template functions #####
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_style(sub=None):
+    """
+    returns sub style for a given sub
+    """
+    if sub is not None:
+        sub = db.session.query(Sub).filter_by(name=normalize_sub(sub)).first()
+        if sub is None:
+            return abort(404)
+        return sub.css
+    return None
+
+app.jinja_env.globals.update(get_style=get_style)
+
+def param_replace(url_params, param_name, replace_with):
+    """
+    replaces a given param with a string and returns as param args
+    """
+    if url_params == '':
+        return param_name + '=' + replace_with
+    url_params = url_params.split('&')
+    url_params = [param for param in url_params if param.split('=')[0] != param_name]
+    url_params.append(param_name + '=' + replace_with)
+
+    url_params = '&'.join(url_params)
+    url_params = url_params.replace('?', '')
+
+    if url_params == '':
+        return ''
+
+    return url_params
+
+app.jinja_env.globals.update(param_replace=param_replace)
+
+def param_destroy(url_params, param_name, params_only=False):
+    """
+    returns param args with a specific param removed
+    """
+    url_params = url_params.split('&')
+    url_params = [param for param in url_params if param.split('=')[0] != param_name and param != '']
+
+    url_params = '&'.join(url_params)
+
+    if url_params == '':
+        return ''
+
+    if params_only:
+        return url_params
+    return '?' + url_params
+
+
+app.jinja_env.globals.update(param_destroy=param_destroy)
+
+def offset_url(url_params, url_type, params_only=False):
+    """
+    returns creates the urls used in prev/next
+    """
+    current_offset = None
+    url_params = url_params.split('&')
+    for param in url_params:
+        if param.split('=')[0] == 'offset':
+            current_offset = int(param.split('=')[1])
+
+    url_params = [param for param in url_params if param.split('=')[0] != 'offset' and param != '']
+
+    if current_offset is None and url_type == 'next':
+        url_params.append('offset=15')
+
+    elif url_type == 'next':
+        if current_offset is None:
+            current_offset = 15
+        else:
+            current_offset = current_offset + 15
+        url_params.append('offset=' + str(current_offset))
+
+    elif url_type == 'prev':
+        current_offset = current_offset - 15
+        if current_offset > 0:
+            url_params.append('offset=' + str(current_offset))
+
+    url_params = '&'.join(url_params)
+
+    if url_params == '':
+        return ''
+
+    if params_only:
+        return url_params
+    return '?' + url_params
+
+app.jinja_env.globals.update(offset_url=offset_url)
+
 ##### Sub Functions #####
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_sub_nsfw(sub):
@@ -49,6 +141,24 @@ def get_sub_mods(sub, admin=True):
         mod_subs.append(a)
     return [m.username for m in mod_subs]
 
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_sub_title(sub):
+    """
+    this is mainly a function for caching purposes
+    """
+    sub = normalize_sub(sub)
+    title = db.session.query(Sub.title).filter_by(name=sub).first()
+    if title is not None:
+        return title[0]
+    return None
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_muted_subs():
+    """
+    this returns of lists of subs to not show in the main
+    index page/all page due to spam or some TRULY horrible content
+    """
+    return [x.name for x in db.session.query(Sub).filter_by(muted=True).all()]
 
 ##### Username Functions #####
 @cache.memoize(config.DEFAULT_CACHE_TIME)
@@ -59,14 +169,16 @@ def normalize_username(username, dbuser=False):
     user object
     """
     if username is None:
-        return False
-    username = db.session.query(Iuser) \
-    .filter(func.lower(Iuser.username) == func.lower(username)).first()
+        return None
+
+    username = db.session.query(Iuser). \
+                filter(func.lower(Iuser.username) == func.lower(username)).first()
+
     if username is not None:
         if dbuser:
             return username
         return username.username
-    return False
+    return None
     
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
@@ -119,6 +231,9 @@ def get_post_from_comment_id(cid):
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_user_id_from_username(username):
+    """
+    returns just the id of an user
+    """
     return db.session.query(Iuser.id).filter_by(username=username).first()[0]
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
@@ -147,4 +262,117 @@ def get_user_karma(username):
             pass
 
     return karma
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def has_messages(username):
+    """
+    checks to see if this username has any unread messages
+    """
+    if 'username' in session:
+        messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
+        if messages is not None:
+            if messages > 0:
+                session['has_messages'] = True
+                session['unread_messages'] = messages
+                return True
+    return False
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_banned_subs(username):
+    username = normalize_username(username)
+    """
+    returns a list of banned subs for a username
+    """
+    subs = db.session.query(Ban).filter_by(username=username).all()
+    banned = []
+    for s in subs:
+        banned.append(s.sub)
+    return banned
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_blocked(username):
+    """
+    returns a dict of comments/posts/users this username has blocked
+    """
+    username = normalize_username(username)
+
+    bdict = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
+    if username == None:
+        return bdict
+    blocked = db.session.query(Hidden).filter_by(username=username).all()
+
+    if len(blocked) == 0:
+        return bdict
+
+    for b in blocked:
+        if b.comment_id != None:
+            i = db.session.query(Comment).filter_by(id=b.comment_id).first()
+            if i != None:
+                bdict['comment_id'].append(i.id)
+        elif b.post_id != None:
+            i = db.session.query(Post).filter_by(id=b.post_id).first()
+            if i != None:
+                bdict['post_id'].append(i.id)
+        elif b.other_user != None:
+            i = db.session.query(Iuser).filter_by(id=b.other_user).first()
+            if i != None:
+                if b.anonymous != True:
+                    bdict['other_user'].append(i.id)
+                else:
+                    bdict['anon_user'].append(i.id)
+
+    return bdict
+
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_pgp_from_username(username):
+    """
+    returns a pgp object for a username
+    """
+    u = normalize_username(username)
+
+    pgp = db.session.query(Pgp).filter_by(username=normalize_username(username)).first()
+
+    if pgp != None:
+        return pgp
+    return None
+
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_user_from_username(username):
+    """
+    returns an user object given a username
+    """
+    return normalize_username(username, dbuser=True)
+
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_user_from_id(uid):
+    """
+    returns user object from just an id
+    """
+    return db.session.query(Iuser).filter_by(id=uid).first()
+
+##### Post/Comment Functions #####
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def anon_block(obj):
+    """
+    prevents blocked users from also being blocked
+    on their anonymous/non-anonymous posts to avoid
+    de-anonymization
+    """
+    for c in obj:
+        if c.anonymous:
+            if c.author_id in session['blocked']['anon_user']:
+                c.noblock = False
+            else:
+                c.noblock = True
+
+        else:
+            if c.author_id in session['blocked']['other_user']:
+                c.noblock = False
+            else:
+                c.noblock = True
+    return obj
 

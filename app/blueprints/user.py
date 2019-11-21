@@ -529,7 +529,7 @@ def show_obj():
 
     return 'ok'
 
-@cache.memoize(config.DEFAULT_CACHE_TIME, unless=only_cache_get)
+@cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_total_blocked():
     uids, pids, cids = [], [], []
     ano = session['blocked']['anon_user']
@@ -577,4 +577,3 @@ def get_total_blocked():
 @ubp.route('/blocked/', methods=['GET'])
 def show_blocked():
     return render_template('blocked.html', blocked=get_total_blocked())
-

@@ -52,13 +52,13 @@
 
 
 {% if desc %}
-<h6 style="margin-left: 1.25rem;">{% if request.subtitle != None %}Title: {{ request.subtitle }}{% else %}no title{% endif %}</h6><br>
+<h6 style="margin-left: 1.25rem;">{% if request.sub_title != None %}Title: {{ request.sub_title }}{% else %}no title{% endif %}</h6><br>
 {% if request.is_mod %}
 <form action='/mod/title' method='POST' style="margin-left: 1rem;">
 <div class="input-group mb-3">
   <input type='hidden' name='sub' value='{{ request.sub }}'>
-  {% if request.subtitle != None %}
-  <input type="text" style="max-width: 20rem;" name='title' class="form-control rounded" aria-describedby="basic-addon1" value="{{ request.subtitle }}">
+  {% if request.sub_title != None %}
+  <input type="text" style="max-width: 20rem;" name='title' class="form-control rounded" aria-describedby="basic-addon1" value="{{ request.sub_title }}">
   {% else %}
   <input type="text" style="max-width: 20rem;" name='title' class="form-control rounded" placeholder="Example: A place for friends." aria-label="Username" aria-describedby="basic-addon1">
   {% endif %}

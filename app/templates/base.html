@@ -37,7 +37,7 @@
     <script src="{{ url_for('static', filename='expand-post.js') }}{{ g.cache_bust }}"></script>
 
     {% if request.sub and request.sub != 'all' %}
-    <title>/i/{{ request.sub}} {% if request.subtitle != None %} - {{ request.subtitle }}{% endif %}</title>
+    <title>/i/{{ request.sub}} {% if request.sub_title != None %} - {{ request.sub_title }}{% endif %}</title>
 
     {% if session['hide_sub_style'] != True %}
     {% set substyle = get_style(request.sub) %}
