@@ -113,8 +113,8 @@ def handle_error(error):
                      '\n' + title + '\n' + str(trace_back)
 
     if code >= 500:
-        description = "A(n) {} occurred. The developers have been notified of this." \
-        .format(type(error).__name__  or 'unknown error')
+        description = "{}" \
+        .format(str(error)  or 'unknown error')
 
         logger.error(complete_error)
 
@@ -614,9 +614,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
     return comments, post, parent_comment
 
-@app.route('/i/<sub>/<post_id>/<inurl_title>/<comment_id>/sort-<sort_by>')
 @app.route('/i/<sub>/<post_id>/<inurl_title>/<comment_id>/')
-@app.route('/i/<sub>/<post_id>/<inurl_title>/sort-<sort_by>')
 @app.route('/i/<sub>/<post_id>/<inurl_title>/')
 def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort_by=None, comments_only=False, user_id=None):
     if sub == None or post_id == None or inurl_title == None:
@@ -625,7 +623,19 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 
     sub = normalize_sub(sub)
 
-    if comment_id == None:
+    try:
+        post_id = int(post_id)
+    except:
+        raise ValueError('Invalid Post ID')
+
+    if comment_id is not None:
+        try:
+            comment_id = int(comment_id)
+        except:
+            raise ValueError('Invalid Comment ID')
+
+
+    if comment_id is None:
         is_parent = False
     else:
         is_parent = True
@@ -1475,7 +1485,17 @@ def blocksub(sub=None):
 
 @app.route('/explore/', methods=['GET'])
 def explore():
-    subs = get_explore_subs(limit=100)
+    offset = request.args.get('offset')
+    #limit = request.args.get('limit')
+
+    subs = get_explore_subs(limit=101, offset=offset)
+
+    if len(subs) >= 101:
+        request.show_more_subs = True
+        subs = subs[:-1]
+    else:
+        request.show_more_subs = False
+
     for s in subs:
         s.new_rules = pseudo_markup(s.rules)
 

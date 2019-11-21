@@ -16,6 +16,17 @@
     <a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">({{ sub.stats[1] }}) users</a><a></a><a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">({{ sub.stats[2] }}) posts</a><a><a/><a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">({{ sub.stats[3] }}) comments</a>
   </div>
 </div>
+{% else %}
+    <p> no more subs to show </p>
 {% endfor %}
-<br><br><br>
+<br>
+
+{% if request.show_more_subs %}
+    {% set base = request.environ['PATH_INFO'] %}
+    {% set query = request.environ['QUERY_STRING'] %}
+    {% set more_url = base + offset_url(query, 'explore', False) %}
+
+    <a class="btn btn-primary" href="{{ more_url }}">show more</a>
+{% endif %}
+
 {% endblock %}

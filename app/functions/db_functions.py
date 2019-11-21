@@ -91,6 +91,13 @@ def offset_url(url_params, url_type, params_only=False):
         if current_offset > 0:
             url_params.append('offset=' + str(current_offset))
 
+    elif url_type == 'explore':
+        if current_offset is None:
+            current_offset = 100
+        else:
+            current_offset = current_offset + 100
+        url_params.append('offset=' + str(current_offset))
+
     url_params = '&'.join(url_params)
 
     if url_params == '':
