@@ -19,8 +19,8 @@ var averageRGB = (function () {
   }
 }());
 
-var fontColor = '#bbb';
-var rgbFontColor = 'rgb(187, 187, 187)';
+var fontColor = '#ccc';
+var rgbFontColor = 'rgb(204, 204, 204)';
 
 //var downColor = 'deepskyblue';
 var downColor = '#00bfff';
