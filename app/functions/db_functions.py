@@ -110,7 +110,6 @@ def offset_url(url_params, url_type, params_only=False):
 app.jinja_env.globals.update(offset_url=offset_url)
 
 
-
 ##### Sub Functions #####
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_sub_nsfw(sub):
@@ -311,9 +310,10 @@ def has_messages(username):
         messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
         if messages is not None:
             if messages > 0:
-                session['has_messages'] = True
                 session['unread_messages'] = messages
                 return True
+        else:
+            session['unread_messages'] = None
     return False
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
@@ -391,6 +391,16 @@ def get_user_from_id(uid):
     returns user object from just an id
     """
     return db.session.query(Iuser).filter_by(id=uid).first()
+
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_message_count(username):
+    """
+    returns user message counts, planningj on adding this
+    somewhere in the message ui
+    """
+    username = normalize_username(username)
+    return db.session.query(Message.id).filter_by(sender=username).count()
 
 ##### Post/Comment Functions #####
 

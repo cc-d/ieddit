@@ -360,6 +360,11 @@ textarea {
 .message-text-body {
     min-height: 7rem;
     margin: 0.5rem;
+    color: #ddd;
+}
+
+.message-title {
+    color: #eee;
 }
 
 .message-top-row {
@@ -368,10 +373,34 @@ textarea {
 }
 
 .message-bottom-row {
-    margin-left: 1px;
-    margin-right: 1px;
-    border-top: 1px ridge;
-    border-opacity: 0.5;
+
+}
+
+.message-user-top {
+    display: inline-block;
+}
+
+.white-input {
+    border: 1px solid #262626;
+    background-color: #a6a6a6!important;
+    color: black!important;
+    font-family: inherit;
+    font-size: 120%;
+    padding: 0.25rem;
+}
+
+
+.white-input:active {
+    background-color: #eee!important;
+    border: 1px solid #262626;
+}
+
+.user-message-sendto {
+    height: 2.75rem;
+}
+
+.message-link {
+    text-decoration: underline;
 }
 
 .in-reply-to {
@@ -680,7 +709,6 @@ ul {
 
 .comment-selftext-wrapper {
     min-height: 50px;
-    margin-bottom: 0.25rem;
 }
 
 .profile-mod-sub {
@@ -837,6 +865,7 @@ ul {
 
 .comment-bottom {
     display: inline-block;
+    padding-top: 0.5rem;
 }
 
 .col.inner-div.comment-inner-div {
@@ -919,6 +948,10 @@ ul {
     min-height: 2.5rem;
 }
 
+.row.post-row.comment-bottom {
+    display: inline-block!important;
+}
+
 .user-profile-karma {
     font-family: monospace;
     display: flex;
@@ -999,6 +1032,11 @@ code {
 
 .clean-code-wrap {
     background-color: #222;
+    padding-left: 0.5rem;
+    margin-right: 0.5rem;
+    padding-right: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .bg-light {
@@ -1129,6 +1167,7 @@ blockquote {
 
 .comment-text-text {
     color: #ccc;
+    margin-bottom: -0.25rem;
 }
 
 .btn-outline-secondary {
@@ -1166,4 +1205,10 @@ blockquote {
 
 .background-contain {
     background-color: #262626;
+}
+
+.inner-blockquote {
+    margin-left: 0.5rem;
+    padding-bottom: 0.25rem;
+    padding-top: 0.25rem;
 }

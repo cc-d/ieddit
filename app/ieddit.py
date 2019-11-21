@@ -626,13 +626,15 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
     try:
         post_id = int(post_id)
     except:
-        raise ValueError('Invalid Post ID')
+        flash('invalid post id', 'danger')
+        return redirect('/')
 
     if comment_id is not None:
         try:
             comment_id = int(comment_id)
         except:
-            raise ValueError('Invalid Comment ID')
+            flash('invalid comment id')
+            return redirect('/')
 
 
     if comment_id is None:
@@ -1234,82 +1236,95 @@ def user_messages(username=None):
         else:
             has_encrypted = False
 
-            read = db.session.query(Message).filter_by(sent_to=username, read=True)
+            our_messages = db.session.query(Message).filter_by(sent_to=username, read=True)
             unread = db.session.query(Message).filter_by(sent_to=username, read=False)
-            read = read.order_by((Message.created).desc()).limit(50).all()
-            unread = unread.order_by((Message.created).desc()).limit(50).all()
 
-            read = [x for x in read if x.sender == None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
+            our_messages = our_messages.order_by((Message.created).desc()).limit(25).all()
+            unread = unread.order_by((Message.created).desc()).limit(25).all()
+
+            our_messages = [x for x in our_messages if x.sender == None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
             unread = [x for x in unread if x.sender == None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
 
+
+            new_messages = False
             for r in unread:
                 r.read = True
+                r.was_unread = True
+                new_messages = True
+
+            # list preservs order
+            our_messages = unread + our_messages 
 
             sent = db.session.query(Message).filter_by(sender=username, read=False)
-            sent = sent.order_by((Message.created).desc()).limit(5).all()
+            sent = sent.order_by((Message.created).desc()).limit(10).all()
 
             for s in sent:
                 s.is_sent = True
                 if s.encrypted:
                     s.new_text = '<p style="color: green;">ENCRYPTED</p>'
 
-            for r in read:
-                if r.encrypted == False:
-                    r.new_text = pseudo_markup(r.text)
+            for message in our_messages:
+                if message.encrypted == False:
+                    message.new_text = pseudo_markup(message.text)
                 else:
-                    r.sender_pgp = get_pgp_from_username(r.sender)
-                    r.new_text = pseudo_markup(r.text, escape_only=True)
-                if r.in_reply_to != None:
-                    r.ppath = r.in_reply_to.replace(config.URL, '')
-                if r.encrypted == True:
+                    message.sender_pgp = get_pgp_from_username(message.sender)
+                    message.new_text = pseudo_markup(message.text, escape_only=True)
+
+                message.created_ago = time_ago(message.created)
+
+                if message.in_reply_to != None:
+                    message.ppath = message.in_reply_to.replace(config.URL, '')
+
+                if message.encrypted == True:
                     has_encrypted = True
 
-            session['has_messages'] = False
+                message.user_stats = get_message_count(message.sender)
+
             session['unread_messages'] = None
 
             db.session.commit()
-
-            for r in unread:
-                if r.encrypted == False:
-                    r.new_text = pseudo_markup(r.text)
-                else:
-                    r.sender_pgp = get_pgp_from_username(r.sender)
-                    r.new_text = pseudo_markup(r.text, escape_only=True)
-                if r.in_reply_to != None:
-                    r.ppath = r.in_reply_to.replace(config.URL, '')
-                if r.encrypted == True:
-                    has_encrypted = True
 
             if 'pgp_enabled' in session:
                 self_pgp = get_pgp_from_username(session['username'])
             else:
                 self_pgp = False
 
-            return render_template('messages.html', read=read, unread=unread, has_encrypted=has_encrypted, self_pgp=self_pgp,
-                sent=sent)
+            return render_template('messages.html', messages=our_messages, has_encrypted=has_encrypted, self_pgp=self_pgp,
+                sent=sent, new_messages=new_messages)
 
 @app.route('/u/<username>/messages/reply/<mid>', methods=['GET'])
 def reply_message(username=None, mid=None):
-    if 'username' not in session or username == None:
+    if 'username' not in session or username is None:
         flash('not logged in', 'danger')
         return redirect(url_for('login'))
+
     if session['username'] != username:
         flash('you are not that user', 'danger')
         return redirect('/')
 
-    m = db.session.query(Message).filter_by(sent_to=username, id=mid).first()
-    if m == None:
+    message = db.session.query(Message).filter_by(sent_to=username, id=mid).first()
+    if message is None:
         flash('invalid message id', 'danger')
         return redirect('/')
-    else:
-        m.new_text = pseudo_markup(m.text)
-        if hasattr(m, 'in_reply_to'):
-            if m.in_reply_to != None:
-                m.ppath = m.in_reply_to.replace(config.URL, '')
 
+    message.new_text = pseudo_markup(message.text)
+    if hasattr(message, 'in_reply_to'):
+        if message.in_reply_to is not None:
+            message.ppath = message.in_reply_to.replace(config.URL, '')
 
-        return render_template('message-reply.html', message=m, sendto=False, self_pgp=get_pgp_from_username(session['username']),
-            other_pgp=get_pgp_from_username(m.sender), other_user=get_user_from_username(username))
+    message.created_ago = time_ago(message.created)
+
+    message.new_title = message.title
+    if len(message.title) >= 4:
+        if message.title[0:4] != 'RE: ':
+            message.new_title = 'RE: ' + message.title
+
+    message.user_stats = get_message_count(message.sender)
+
+    return render_template('message-reply.html', message=message, sendto=False,
+                            self_pgp=get_pgp_from_username(session['username']),
+                             other_pgp=get_pgp_from_username(message.sender), 
+                             other_user=get_user_from_username(username))
 
 
 def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False, encrypted_key_id=None, in_reply_to=None):

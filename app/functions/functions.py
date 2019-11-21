@@ -214,6 +214,11 @@ def pseudo_markup(text, escape_only=False):
     for tag in clean_tags:
         clean_text = clean_text.replace(tag + '<br>', tag)
 
+
+    # add class to blockquotes
+    clean_text = clean_text.replace('<blockquote>', '<blockquote><div class="inner-blockquote">')
+    clean_text = clean_text.replace('</blockquote>', '</div></blockquote>')
+
     return clean_text
 
 epoch = datetime(1970, 1, 1)

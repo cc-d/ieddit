@@ -124,10 +124,10 @@
 
             {% if session['username'] %}
             <ul class="navbar-nav mr-auto navbar-right">
-                    {% if session['has_messages'] %}
-                    <a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> ({{ session['unread_messages'] }})</a>
+                    {% if session['unread_messages'] %}
+                        <a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> ({{ session['unread_messages'] }})</a>
                     {% else %}
-                    <a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> (0)</a>
+                        <a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> (0)</a>
                     {% endif %}
                 <li class="nav-item active">
                     <a class="nav-link" id='logout-right' href="/logout">logout</a>
