@@ -88,7 +88,7 @@
 {% for post in posts %}
 {% if count.append(count.pop() + 1) %}{% endif %}
 {% if post.anonymous == False and post.author != 'Anonymous' %}
-    {% include 'sub_post.html' %}
+    {% include 'sub-post.html' %}
 {% endif %}
 {% else %}
     <p class='margin-lr'> no posts </p>
@@ -101,7 +101,7 @@
 
 <h6 style='color: #fff;'>Recent Comments</h6>
 <ul class="list-unstyled">
-{% include 'profile_comments.html' %}
+{% include 'profile-comments.html' %}
 </ul>
 </div>
 {% endblock %}

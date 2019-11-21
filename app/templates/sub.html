@@ -1,6 +1,6 @@
 {% if posts_only %}
     {% for post in posts %}
-        {% include 'sub_post.html' %}
+        {% include 'sub-post.html' %}
     {% else %}
         <p> no posts </p>
     {% endfor %}
@@ -18,7 +18,7 @@
     </div>
     
     {% for post in posts %}
-        {% include 'sub_post.html' %}
+        {% include 'sub-post.html' %}
         {% if loop.last %}
             {% if 'offset' in request.environ['QUERY_STRING'] %}
                 {% set prev_off_url = request.environ['PATH_INFO'] + offset_url(request.environ['QUERY_STRING'], 'prev') %}

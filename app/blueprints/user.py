@@ -186,7 +186,7 @@ def user_uanonymous(username=None):
 
 @ubp.route('/reset_password/', methods=['GET'])
 def reset_page():
-    return render_template('reset_password.html')
+    return render_template('reset-password.html')
 
 @limiter.limit(config.RECOVERY_EMAIL_RATE_LIMIT)
 @ubp.route('/password_reset', methods=['POST', 'GET'])
@@ -221,7 +221,7 @@ def password_reset(email=None):
         r = db.session.query(Password_reset).filter_by(rankey=reset).first()
         if r == None:
             return 'invalid link'
-        return render_template('new_reset_password.html', reset=reset, username=r.username)
+        return render_template('new-reset-password.html', reset=reset, username=r.username)
 
 @ubp.route('/new_reset_password', methods=['POST'])
 def new_reset_password():
@@ -235,7 +235,6 @@ def new_reset_password():
     r = db.session.query(Password_reset).filter_by(rankey=reset).first()
     if r == None or r.valid == False:
         return 'invalid key or key expired'
-    #generate_password_hash(password)
 
     r.valid = False
     user = db.session.query(Iuser).filter_by(username=username).first()
@@ -534,7 +533,6 @@ def get_total_blocked():
     uids, pids, cids = [], [], []
     ano = session['blocked']['anon_user']
 
-
     for u in session['blocked']['other_user']:
         u2 = db.session.query(Iuser).filter_by(id=int(u)).first()
         if u2 == None:
@@ -569,8 +567,6 @@ def get_total_blocked():
 
     blocked = uids + pids + cids
     blocked.sort(key=lambda x: x.created, reverse=True)
-
-    [print(str(vars(b))) for b in blocked]
 
     return blocked
 

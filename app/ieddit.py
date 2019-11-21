@@ -246,7 +246,7 @@ def login():
             return redirect(url_for('login'))
 
         username = normalize_username(username)
-        if username is False:
+        if username is None:
             flash('user does not exist', 'danger')
             return redirect(url_for('login'))
 
@@ -262,6 +262,7 @@ def login():
 
                 session['username'] = login_user.username
                 session['user_id'] = login_user.id
+
                 if login_user.admin:
                         session['admin'] = login_user.admin
 
@@ -270,7 +271,6 @@ def login():
                 if hasattr(login_user, 'anonymous'):
                     if login_user.anonymous:
                         session['anonymous'] = True
-                session['darkmode'] = login_user.darkmode
 
                 if get_pgp_from_username(login_user.username):
                     session['pgp_enabled'] = True
@@ -280,11 +280,9 @@ def login():
         flash('Username or Password incorrect.', 'danger')
         return redirect(url_for('login'), 302)
 
-
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
     [session.pop(key) for key in list(session.keys())]
-
     return redirect(url_for('index'), 302)
 
 @limiter.limit(config.REGISTER_RATE_LIMIT)
@@ -327,8 +325,6 @@ def register():
         logout()
         session['username'] = new_user.username
         session['user_id'] = new_user.id
-
-        #cache.clear()
 
         return redirect(config.URL, 302)
 
@@ -470,7 +466,7 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
         if api:
             comments = db.session.query(Comment).filter_by(post_id=post.id, deleted=False).all()
             post.comments = [sqla_to_dict(c) for c in comments]
-        
+
         p.append(post)
 
     if api is True:
@@ -481,12 +477,14 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
     return p
 
 @app.route('/i/<subi>/')
-def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, show_top=True, s=None, d=None):
+def subi(subi, user_id=None, posts_only=False, offset=0,
+        limit=15, nsfw=True, show_top=True, s=None, d=None):
     offset = request.args.get('offset')
     d = request.args.get('d')
     s = request.args.get('s')
     subi = normalize_sub(subi)
 
+    # ensure caching does not cache another user's post view
     view_user_id = None
     if 'user_id' in session:
         view_user_id = session['user_id']
@@ -504,7 +502,6 @@ def subi(subi, user_id=None, posts_only=False, offset=0, limit=15, nsfw=True, sh
         if hasattr(p, 'self_text'):
             if p.self_text != None:
                 p.new_self_text = pseudo_markup(p.self_text)
-
 
     if posts_only:
         return sub_posts
@@ -593,7 +590,9 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
             show_blocked = False
 
             # if direct link, just show it
-            if parent_comment.id in session['blocked']['comment_id'] or parent_comment.author_id in session['blocked']['other_user']:
+            if parent_comment.id in session['blocked']['comment_id'] or \
+                parent_comment.author_id in session['blocked']['other_user']:
+
                 flash('you are viewing a comment you have blocked', 'danger')
                 show_blocked = True
 
@@ -601,10 +600,8 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
     else:
         comments = db.session.query(Comment).filter(Comment.author_id == user_id,
-            Comment.deleted == deleted).order_by(Comment.created.desc()).all()
+        Comment.deleted == deleted).order_by(Comment.created.desc()).all()
         show_blocked = False
-
-
 
     if 'blocked_subs' in session and 'username' in session:
         comments = [c for c in comments if c.sub_name not in session['blocked_subs']]
@@ -684,17 +681,14 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
         post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title),
         post=post, tree=tree, parent_comment=parent_comment, is_parent=is_parent,
         config=config, is_modv=is_modv)
-
-
-
-
-
-# need to entirely rewrite how comments are handled once everything else is complete
-# this sort of recursion KILLS performance, especially when combined with the already
-# terrible comment_structure function.
-
+`
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def list_of_child_comments(comment_id, sort_by=None):
+    """
+    need to entirely rewrite how comments are handled once everything else is complete
+    this sort of recursion KILLS performance, especially when combined with the already
+    terrible comment_structure function.
+    """
     comments = {}
     current_comments = []
     if sort_by == 'new':
@@ -707,6 +701,7 @@ def list_of_child_comments(comment_id, sort_by=None):
     for c in start:
         current_comments.append(c.id)
         comments[c.id] = c
+
     while len(current_comments) > 0:
         for current_c in current_comments:
             if sort_by == 'new':
@@ -772,8 +767,8 @@ def view_user(username):
         mods[s.sub] = s.rank
     vuser.mods = mods
 
-    posts = vuser.get_recent_posts()#.all()
-    comments = vuser.get_recent_comments()#.all()
+    posts = vuser.get_recent_posts()
+    comments = vuser.get_recent_comments()
 
     for p in posts:
         p.created_ago = time_ago(p.created)
@@ -995,11 +990,9 @@ def create_post(postsub=None, api=False, *args, **kwargs):
             flash('invalid title/sub length', 'danger')
             return redirect(url_for('create_post'))
 
-        print('mid')
         deleted = False
         if sub in get_banned_subs(username):
             deleted = True
-
 
         if request.form.get('override') is None:
             override = False
@@ -1053,8 +1046,6 @@ def create_post(postsub=None, api=False, *args, **kwargs):
         if 'previous_post_form' in session and api is False:
             session['previous_post_form'] = None
 
-        print('end')
-
         if api:
             return sqla_to_dict(new_post)
 
@@ -1083,7 +1074,7 @@ def create_post(postsub=None, api=False, *args, **kwargs):
 
         sppf = session['previous_post_form']
         session['previous_post_form'] = None
-        return render_template('create_post.html', postsub=postsub, sppf=sppf, is_modv=is_modv)
+        return render_template('create-post.html', postsub=postsub, sppf=sppf, is_modv=is_modv)
 
 @app.route('/get_sub_list', methods=['GET'])
 def get_sub_list():
@@ -1127,15 +1118,11 @@ def create_comment(api=False, *args, **kwargs):
         anonymous = kwargs['anonymous']
         override = kwargs['override']
 
-        print(parent_id)
-
         if parent_type == 'comment':
             post_obj = get_post_from_comment_id(parent_id)
         else:
             post_obj = db.session.query(Post).filter_by(id=parent_id).first()
             parent_id = None
-
-        print(username, user_id, parent_type, parent_id, post_obj)
 
         post_id = post_obj.id
         sub_name = post_obj.sub
@@ -1341,7 +1328,7 @@ def reply_message(username=None, mid=None):
                 m.ppath = m.in_reply_to.replace(config.URL, '')
 
 
-        return render_template('message_reply.html', message=m, sendto=False, self_pgp=get_pgp_from_username(session['username']),
+        return render_template('message-reply.html', message=m, sendto=False, self_pgp=get_pgp_from_username(session['username']),
             other_pgp=get_pgp_from_username(m.sender), other_user=get_user_from_username(username))
 
 
@@ -1405,7 +1392,7 @@ def msg(username=None):
                 if len(ru) == 1:
                     if len(ru[0]) > 0:
                         username = ru[0]
-        return render_template('message_reply.html', sendto=username, message=None, other_pgp=get_pgp_from_username(username),
+        return render_template('message-reply.html', sendto=username, message=None, other_pgp=get_pgp_from_username(username),
                                 other_user=get_user_from_username(username), self_pgp=get_pgp_from_username(session['username']))
 
 
@@ -1415,7 +1402,7 @@ def submods(sub=None):
     modactions = db.session.query(Mod_action).filter_by(sub=sub).limit(5).all()
     if type(modactions) != None:
         modactions = [m for m in modactions]
-    return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions)
+    return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions)
 
 @app.route('/i/<sub>/actions/', methods=['GET'])
 def subactions(sub=None):
@@ -1423,7 +1410,7 @@ def subactions(sub=None):
     modactions = db.session.query(Mod_action).filter_by(sub=sub).all()
     if type(modactions) != None:
         modactions = [m for m in modactions]
-    return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions, allactions=True)
+    return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions, allactions=True)
 
 
 @app.route('/i/<sub>/mods/banned/', methods=['GET'])
@@ -1434,14 +1421,14 @@ def bannedusers(sub=None):
         banned = [b for b in banned]
     else:
         banned = []
-    return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), banned=banned)
+    return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), banned=banned)
 
 @app.route('/i/<sub>/mods/add/', methods=['GET'])
 def addmod(sub=None):
     sub = normalize_sub(sub)
     if hasattr(request, 'is_mod'):
         if request.is_mod:
-            return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
+            return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
     return abort(403)
 
 @app.route('/i/<sub>/mods/remove/', methods=['GET'])
@@ -1449,7 +1436,7 @@ def removemod(sub=None):
     sub = normalize_sub(sub)
     if hasattr(request, 'is_mod'):
         if request.is_mod:
-            return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
+            return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
     return abort(403)
 
 @app.route('/i/<sub>/info/', methods=['GET'])
@@ -1463,14 +1450,14 @@ def description(sub=None):
             rtext = pseudo_markup(subr.rules)
         else:
             rtext = None
-    return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
+    return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
 
 @app.route('/i/<sub>/settings/', methods=['GET'])
 def settings(sub=None):
     sub = normalize_sub(sub)
     subr = db.session.query(Sub).filter_by(name=sub).first()
     if request.is_mod:
-        return render_template('sub_mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw, sub_object=subr)
+        return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw, sub_object=subr)
     return abort(403)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
@@ -1695,7 +1682,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None, d=None, nsfw=False, api=Fa
 
         return pretty_json(comments)
 
-    return render_template('recentcomments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
+    return render_template('recent-comments.html', posts=posts, url=config.URL, comments_with_posts=comments_with_posts, no_posts=True)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_posts_and_comments(subi=None, day=False, load=None):
@@ -1834,8 +1821,6 @@ def get_stats(subi=None):
 
             timediff = lc + timediff
 
-
-            # cache_bust = '?' + str(time.time()).split('.')[0]
             uptime = (time.time() - int(cache_bust[1:])) / 60 / 60
         except Exception as e:
             print(e)
@@ -1858,19 +1843,9 @@ def stats(subi=None):
     else:
         debug = False
 
-    return render_template('stats.html', posts=posts, dayposts=dayposts, comments=comments, daycoms=daycoms,
+    return render_template('stats.html', posts=posts, dax`yposts=dayposts, comments=comments, daycoms=daycoms,
         users=users, bans=bans, messages=messages, mod_actions=mod_actions, subs=subs, votes=votes, dayvotes=dayvotes,
         dayusers=dayusers, timediff=timediff, uptime=uptime, debug=debug, subi=subi, subscripts=subscripts)
-
-
-@app.route('/debug/', methods=['GET'])
-def debug_info():
-    d = ''
-    d += str(vars(request))
-    d += '<br><br><br>'
-    d += str(vars(session))
-    d += '<br><br><br>'
-    return d
 
 from blueprints import mod
 app.register_blueprint(mod.bp)
