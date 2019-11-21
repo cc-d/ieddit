@@ -110,7 +110,7 @@ No Description
 
 <form action='/mod/remove' method='POST'>
 <div class="input-group mb-3">
-	<button type='submit' class="btn btn-danger mod-add-button" type="button">Remove Mod</button>
+    <button type='submit' class="btn btn-danger mod-add-button" type="button">Remove Mod</button>
   <div class="input-group-prepend">
     <span class="input-group-text" id="basic-addon1">/u/</span>
   </div>
@@ -132,19 +132,19 @@ No Description
 {% else %}
 <li class="list-group-item banned-user">User: {{ ban.username }} 
 {% endif %}
-	{% if request.is_mod %}
-	<form action='/mod/unban' method='POST'>
+    {% if request.is_mod %}
+    <form action='/mod/unban' method='POST'>
     <input type='hidden' value='{{ ban.id }}' name='ban_id'>
     <input type='hidden' value='{{ ban.anonymous }}'>
     {% if ban.anonymous %}
     <input type='hidden' value='Anonymous' name='username'>
     {% else %}
-		<input type='hidden' value='{{ ban.username }}' name='username'>
+        <input type='hidden' value='{{ ban.username }}' name='username'>
     {% endif %}
-		<input type='hidden' value='{{ request.sub }}' name='sub'>
-		<button type="submit" class="btn btn-dark btn-sm">Unban</button>
-	</form>
-	{% endif %}
+        <input type='hidden' value='{{ request.sub }}' name='sub'>
+        <button type="submit" class="btn btn-dark btn-sm">Unban</button>
+    </form>
+    {% endif %}
 </li>
 {% endfor %}
 </ul>

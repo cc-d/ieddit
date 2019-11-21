@@ -10,22 +10,22 @@
 {% if message %}
 <div class="media">
   <div class="media-body message-body rounded">
-  	<div class="message-text-body">
-  	<div class="row message-top-row">
+    <div class="message-text-body">
+    <div class="row message-top-row">
       {% if message.sender %}
-  		<a class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}"><i class="fa fa-user"></i> {{ message.sender }}</a>
+        <a class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}"><i class="fa fa-user"></i> {{ message.sender }}</a>
       {% else %}
       
       {% endif %}
-  		{% if message.in_reply_to != None %}
-  		<div class="in-reply-to">
-  		<small><a class="user-icon-link" href="{{ message.in_reply_to }}">{{ message.ppath }}</a></small>
-  		</div>
-  		{% endif %}
-  	</div>
+        {% if message.in_reply_to != None %}
+        <div class="in-reply-to">
+        <small><a class="user-icon-link" href="{{ message.in_reply_to }}">{{ message.ppath }}</a></small>
+        </div>
+        {% endif %}
+    </div>
     <h5 class="mt-0 message-title">{{ message.title }}</h5>
-		<div class="safe-markup-text">{{ message.new_text|safe }}</div>
-	</div>
+        <div class="safe-markup-text">{{ message.new_text|safe }}</div>
+    </div>
   </div>
 </div>
 {% endif %}

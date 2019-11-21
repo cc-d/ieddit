@@ -13,7 +13,7 @@
 {% include 'crypto.html' %}
 
 <div class='margin-lr'>
-	<button class='btn btn-success' id='decrypt-button'><i class='fa fa-lock'></i> Decrypt Messages </button>
+    <button class='btn btn-success' id='decrypt-button'><i class='fa fa-lock'></i> Decrypt Messages </button>
 </div>
 
 {% endif %}
@@ -25,11 +25,11 @@
 {% for message in unread %}
 
 {% if message.encrypted == True and message.encrypted_key_id == self_pgp.id|string %}
-	{% include 'message.html' %}
+    {% include 'message.html' %}
 {% elif message.encrypted == True and message.encrypted_key_id|string != self_pgp.id|string and message.encrypted_key_id|string != 'None' %}
-	<div class='margin-lr'><p style='color: red;'>you have a encrypted messages but (probably) cannot read it. Sent to: {{ message.encrypted_key_id }} - You are: {{ self_pgp.id }}</p></div>
+    <div class='margin-lr'><p style='color: red;'>you have a encrypted messages but (probably) cannot read it. Sent to: {{ message.encrypted_key_id }} - You are: {{ self_pgp.id }}</p></div>
 {% else %}
-	{% include 'message.html' %}
+    {% include 'message.html' %}
 {% endif %}
 
 {% else %}
@@ -45,11 +45,11 @@
 {% for message in read %}
 
 {% if message.encrypted == True and message.encrypted_key_id|string == self_pgp.id|string %}
-	{% include 'message.html' %}
+    {% include 'message.html' %}
 {% elif message.encrypted == True and message.encrypted_key_id|string != self_pgp.id|string and message.encrypted_key_id|string != 'None' %}
-	<div class='margin-lr'><p style='color: red;'>you have a encrypted messages but (probably) cannot read it. Sent to: {{ message.encrypted_key_id }} - You are: {{ self_pgp.id }}</p></div>
+    <div class='margin-lr'><p style='color: red;'>you have a encrypted messages but (probably) cannot read it. Sent to: {{ message.encrypted_key_id }} - You are: {{ self_pgp.id }}</p></div>
 {% else %}
-	{% include 'message.html' %}
+    {% include 'message.html' %}
 {% endif %}
 
 {% else %}

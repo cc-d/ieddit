@@ -2,17 +2,17 @@
 {% block content %}
 
 <form action='/admin/ban_and_delete' method='POST'>
-	<p>username</p>
-	<input style='color: black;' type='text' name='username'><br>
-	<button style='color: black; background-color: red;' type='submit'>ban and delete</button>
+    <p>username</p>
+    <input style='color: black;' type='text' name='username'><br>
+    <button style='color: black; background-color: red;' type='submit'>ban and delete</button>
 </form>
 
 <br>
 
 <form action='/admin/add_api_key' method='POST'>
-	<p>username - api key add</p>
-	<input style='color: black;' type='text' name='username'><br>
-	<button style='color: black;' type='submit'>add api key</button>
+    <p>username - api key add</p>
+    <input style='color: black;' type='text' name='username'><br>
+    <button style='color: black;' type='submit'>add api key</button>
 </form>
 
 <br>
@@ -20,12 +20,12 @@
 <style>th, td { padding-right: 1rem; }</style>
 <table class='margin-lr'>
   <tr>
-  	<th>action</th>
+    <th>action</th>
     <th>user</th>
     <th>key</th>
   </tr>
-  	{% for key in keys %}
-  	  <tr>
+    {% for key in keys %}
+      <tr>
     <td><a href='javascript:removeApiKey("{{ key.username }}");'><i class='fa fa-ban'></i></a></td>
     <td>{{ key.username }}</td>
     <td>{{ key.key }}</td>

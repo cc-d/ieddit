@@ -2,13 +2,13 @@
 {% block content %}
 
 {% if post.override == False %}
-	{% if post.anonymous %}
-		{% set pauthor = 'Anonymous' %}
-		{% set pauthor_type = 'user' %}
-	{% else %}
-		{% set pauthor = post.author %}
-		{% set pauthor_type = post.author_type %}
-	{% endif %}
+    {% if post.anonymous %}
+        {% set pauthor = 'Anonymous' %}
+        {% set pauthor_type = 'user' %}
+    {% else %}
+        {% set pauthor = post.author %}
+        {% set pauthor_type = post.author_type %}
+    {% endif %}
 {% endif %}
 
 <title>{{ post.title }}</title>
@@ -16,18 +16,18 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="{{ post.permalink }}" />
 {% if post.remote_image_url %}
-	<meta property="og:image" content="{{ post.remote_image_url }}" />
+    <meta property="og:image" content="{{ post.remote_image_url }}" />
 {% else %}
-	{% if post.post_type == 'url' %}
-		<meta property="og:image" content="{{ config.URL }}/static/globe.png" />
-	{% else %}
-		<meta property="og:image" content="/static/comment-white.png" />
-	{% endif %}
+    {% if post.post_type == 'url' %}
+        <meta property="og:image" content="{{ config.URL }}/static/globe.png" />
+    {% else %}
+        <meta property="og:image" content="/static/comment-white.png" />
+    {% endif %}
 {% endif %}
 
 <div id="comment-page-wrapper">
-	{% set pre_expand = True %}
-	{% include 'sub_post.html' %}
+    {% set pre_expand = True %}
+    {% include 'sub_post.html' %}
 
 {% if post.locked %}
 <h2>post is locked</h2>
@@ -60,7 +60,7 @@
 {% endif %}
 
 <ul class="list-unstyled comment-reply-list">
-	{%- for comment, value in tree.items() recursive %}  
+    {%- for comment, value in tree.items() recursive %}  
 {% if comment.anonymous %}
 {% set cauthor = 'Anonymous' %}
 {% set cauthor_type = 'user' %}
@@ -68,22 +68,22 @@
 {% set cauthor = comment.author %}
 {% set cauthor_type = comment.author_type %}
 {% endif %}
-	{% if loop.depth0 < 5 %}
-	{% include 'collapsed.html' %}
+    {% if loop.depth0 < 5 %}
+    {% include 'collapsed.html' %}
 
-	{% with %}
-	{% set cominline = True %}
-	{% include 'comment.html' %}
-	{% endwith %}
+    {% with %}
+    {% set cominline = True %}
+    {% include 'comment.html' %}
+    {% endwith %}
 
-	{%- if value %}
-	{{ loop(value.items()) }}
-	{% endif %}
+    {%- if value %}
+    {{ loop(value.items()) }}
+    {% endif %}
 
-	{% endif %}
-	{% else %}
-	<p>no comments</p>
-	{%- endfor %}
+    {% endif %}
+    {% else %}
+    <p>no comments</p>
+    {%- endfor %}
 </ul>
 </div>
 {% endblock %} 

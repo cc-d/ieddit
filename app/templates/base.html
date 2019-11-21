@@ -1,185 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<!-- Bootstrap -->
+    <!-- Bootstrap -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<script src="{{ url_for('static', filename='jquery-3.3.1.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='popper.min.js') }}"></script>
-	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
-	<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
-	<link href="{{ url_for('static', filename='font-awesome.min.css') }}" type="text/css" rel="stylesheet">
-	<!--  end bootstrap -->
+    <script src="{{ url_for('static', filename='jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='popper.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+    <link href="{{ url_for('static', filename='font-awesome.min.css') }}" type="text/css" rel="stylesheet">
+    <!--  end bootstrap -->
 
-	<!-- Favicon -->
-	<!--
-	<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
-	<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
-	<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
-	<link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}">
+    <!-- Favicon -->
+    <!--
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}">
 
-	Looked better without it.
+    Looked better without it.
 
-	-->
-	<!-- end favicon -->
+    -->
+    <!-- end favicon -->
 
 
-	<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}{{ g.cache_bust }}">
-	<script src="{{ url_for('static', filename='main.js') }}{{ g.cache_bust }}"></script>
-	<link rel="shortcut icon" href="{{ url_for('static', filename='globe.png') }}{{ g.cache_bust }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}{{ g.cache_bust }}">
-	<link rel="shortcut icon" href="{{ url_for('static', filename='globe.png') }}{{ g.cache_bust }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}{{ g.cache_bust }}">
+    <script src="{{ url_for('static', filename='main.js') }}{{ g.cache_bust }}"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='globe.png') }}{{ g.cache_bust }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}{{ g.cache_bust }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='globe.png') }}{{ g.cache_bust }}">
 
-	<link rel="stylesheet" href="{{ url_for('static', filename='darkmode.css') }}{{ g.cache_bust }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='darkmode.css') }}{{ g.cache_bust }}">
 
-	<script src="{{ url_for('static', filename='actions.js') }}{{ g.cache_bust }}"></script>
+    <script src="{{ url_for('static', filename='actions.js') }}{{ g.cache_bust }}"></script>
 
-	<script src="{{ url_for('static', filename='expand-post.js') }}{{ g.cache_bust }}"></script>
+    <script src="{{ url_for('static', filename='expand-post.js') }}{{ g.cache_bust }}"></script>
 
-	{% if request.sub and request.sub != 'all' %}
-	<title>/i/{{ request.sub}} {% if request.subtitle != None %} - {{ request.subtitle }}{% endif %}</title>
+    {% if request.sub and request.sub != 'all' %}
+    <title>/i/{{ request.sub}} {% if request.subtitle != None %} - {{ request.subtitle }}{% endif %}</title>
 
-	{% if session['hide_sub_style'] != True %}
-	{% set substyle = get_style(request.sub) %}
-	{% if substyle != None %}
-			<style type='text/css'>{{ substyle }}</style>
-	{% endif %}
-	{% endif %}
+    {% if session['hide_sub_style'] != True %}
+    {% set substyle = get_style(request.sub) %}
+    {% if substyle != None %}
+            <style type='text/css'>{{ substyle }}</style>
+    {% endif %}
+    {% endif %}
 
-	{% else %}
-	<title>ieddit</title>
-	{% endif %}
+    {% else %}
+    <title>ieddit</title>
+    {% endif %}
 
 </head>
 <body class="bg-light">
 <div class='background-contain'>
 <div class='page-continer'>
 <div class="page mx-auto">
-	<nav class="navbar navbar-expand-lg navbar-light rounded">
-		<a class="navbar-brand" href="/">ieddit</a>
+    <nav class="navbar navbar-expand-lg navbar-light rounded">
+        <a class="navbar-brand" href="/">ieddit</a>
 
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav mr-auto navbar-right">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto navbar-right">
 
-				{% if request.sub and request.sub != 'all' %}
-				<li class="nav-item active" style="margin-top: 0.25rem;">
-					<a class="nav-link" href="/i/{{ request.sub }}">/i/{{ request.sub }}</a>
-				</li>
-				<li class="nav-item active">
-					<a class="nav-link" href="/i/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary"><i class='fa fa-gears'></i> information</button></a>
-				</li>
-				{% else %}
-				<li class="nav-item active" style="margin-top: 0.25rem;">
-					<a class="nav-link" href="/about/">about</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/i/all"><button type="button" class="btn btn-sm btn-danger">/i/all <i class='fa fa-users'></i></button></a>
-				</li>
-				{% endif %}
+                {% if request.sub and request.sub != 'all' %}
+                <li class="nav-item active" style="margin-top: 0.25rem;">
+                    <a class="nav-link" href="/i/{{ request.sub }}">/i/{{ request.sub }}</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/i/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary"><i class='fa fa-gears'></i> information</button></a>
+                </li>
+                {% else %}
+                <li class="nav-item active" style="margin-top: 0.25rem;">
+                    <a class="nav-link" href="/about/">about</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/i/all"><button type="button" class="btn btn-sm btn-danger">/i/all <i class='fa fa-users'></i></button></a>
+                </li>
+                {% endif %}
 
-				{% if request.sub and request.sub != 'all' %}
-				{% if session['username'] %}
-				<form action='/i/{{ request.sub }}/block' method='POST'>
-				<li class='nav-item nav-link'>
-				<input type='hidden' name='lol' value='1'>
-				{% if request.sub in session['blocked_subs'] %}
-					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'>subscribe <i class='fa fa-star'></i></button>
-				{% else %}
-					<button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger	'>unsubscribe <i class='fa fa-ban'></i></button>
-				{% endif %}
-			</li>
-				</form>
-				<li class="nav-item">
-					<a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success">Create Post +</button></a>
-				</li>
-				{% endif %}
+                {% if request.sub and request.sub != 'all' %}
+                {% if session['username'] %}
+                <form action='/i/{{ request.sub }}/block' method='POST'>
+                <li class='nav-item nav-link'>
+                <input type='hidden' name='lol' value='1'>
+                {% if request.sub in session['blocked_subs'] %}
+                    <button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'>subscribe <i class='fa fa-star'></i></button>
+                {% else %}
+                    <button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger '>unsubscribe <i class='fa fa-ban'></i></button>
+                {% endif %}
+            </li>
+                </form>
+                <li class="nav-item">
+                    <a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success">Create Post +</button></a>
+                </li>
+                {% endif %}
 
-				{% else %}
-				<li class="nav-item">
-					<a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-primary">Create Sub +</button></a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/explore/"><button type="button" class="btn btn-sm btn-success">Explore <i class='fa fa-paper-plane'></i></button></a>
-				</li>
-				{% endif %}
-				{% if session['username'] %}
-				<li class="nav-item active">
-					<a class="nav-link" id='logout-left' href="/logout">logout</a>
-				</li>
-				{% endif %}
-			</ul>
-		</div>
-		<div class="navbar" id='user-nav' style='max-height: 56px; height: 56px; overflow: hidden;'>
-			<ul class="navbar-nav mr-auto navbar-right">
-				{% if session['username'] %}
-				<div id='top-username' stlye='height: 24px; max-height: 24px; overflow: hidden;'>
-				<li class="nav-item active">
-					<a style='display: inline; max-width: 150px; overflow: hidden;' class="nav-link" href="/u/{{ session['username'] }}"><div style='display: inline-block;'><i style='display: inline-block; width: 1rem; height: 1rem; margin-right: -0.25rem;' class="fa fa-user user-icon-link"></i> <div id='inner-user-text' style='display: inline; overflow: hidden;'><div id='textcap' style=' display:inline-block; max-width: 126px;'>{{ session['username'] }}</div></div></div></a>
-				</li>
-			</div>
-				{% else %}
-				<li class="nav-item">
-					<a class="nav-link" href="/login/"><button type="button" class="btn btn-sm btn-secondary">Login</button></a>
-				</li>
-				{% endif %}
-			</ul>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-primary">Create Sub +</button></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/explore/"><button type="button" class="btn btn-sm btn-success">Explore <i class='fa fa-paper-plane'></i></button></a>
+                </li>
+                {% endif %}
+                {% if session['username'] %}
+                <li class="nav-item active">
+                    <a class="nav-link" id='logout-left' href="/logout">logout</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="navbar" id='user-nav' style='max-height: 56px; height: 56px; overflow: hidden;'>
+            <ul class="navbar-nav mr-auto navbar-right">
+                {% if session['username'] %}
+                <div id='top-username' stlye='height: 24px; max-height: 24px; overflow: hidden;'>
+                <li class="nav-item active">
+                    <a style='display: inline; max-width: 150px; overflow: hidden;' class="nav-link" href="/u/{{ session['username'] }}"><div style='display: inline-block;'><i style='display: inline-block; width: 1rem; height: 1rem; margin-right: -0.25rem;' class="fa fa-user user-icon-link"></i> <div id='inner-user-text' style='display: inline; overflow: hidden;'><div id='textcap' style=' display:inline-block; max-width: 126px;'>{{ session['username'] }}</div></div></div></a>
+                </li>
+            </div>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/login/"><button type="button" class="btn btn-sm btn-secondary">Login</button></a>
+                </li>
+                {% endif %}
+            </ul>
 
-			{% if session['username'] %}
-			<ul class="navbar-nav mr-auto navbar-right">
-					{% if session['has_messages'] %}
-					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> ({{ session['unread_messages'] }})</a>
-					{% else %}
-					<a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> (0)</a>
-					{% endif %}
-				<li class="nav-item active">
-					<a class="nav-link" id='logout-right' href="/logout">logout</a>
-				</li>
-			</ul>
-			{% endif %}
-		</div>
-		<div class="navbar" style='padding-left: 0px; padding-right: 0px;'>
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            {% if session['username'] %}
+            <ul class="navbar-nav mr-auto navbar-right">
+                    {% if session['has_messages'] %}
+                    <a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="has-messages-i fa fa-envelope"></i> ({{ session['unread_messages'] }})</a>
+                    {% else %}
+                    <a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> (0)</a>
+                    {% endif %}
+                <li class="nav-item active">
+                    <a class="nav-link" id='logout-right' href="/logout">logout</a>
+                </li>
+            </ul>
+            {% endif %}
+        </div>
+        <div class="navbar" style='padding-left: 0px; padding-right: 0px;'>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 
-			<span class="navbar-toggler-icon"></span>
-		</button>
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-		</div>
+        </div>
 </nav>
 </div>
-	{% with messages = get_flashed_messages(with_categories=true) %}
-		{% if messages %}
-		<div id='alert-container' class='bg-light'>
-			<ul class='flashes generic-alert bg-light' onload="autoFadeAlert()">
-			{% for category, message in messages %}
-			<div class="alert alert-dismissible alert-{{ category }} fade show" role="alert">
-				{{ message }}
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			{% endfor %}
-			</ul>
-		</div>
-		{% endif %}
-	{% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div id='alert-container' class='bg-light'>
+            <ul class='flashes generic-alert bg-light' onload="autoFadeAlert()">
+            {% for category, message in messages %}
+            <div class="alert alert-dismissible alert-{{ category }} fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    {% endwith %}
 </div>
 </div>
 <div class='page-container bg-light'>
 <div class="mx-auto bg-light page">
-	<div id="content" class="bg-light">
-		{% block content %}
-		{% endblock %}
-	</div>
+    <div id="content" class="bg-light">
+        {% block content %}
+        {% endblock %}
+    </div>
 </div>
 </div>
 
 <!-- ? -->
 <small>
 <div id='footer'>
-	<a href='https://ieddit.com' class='footer-link'><i class='fa fa-globe'></i> ieddit.com</a>
-	<a href='https://kiwiirc.com/nextclient/irc.freenode.net/#ieddit' class='footer-link'><i class='fa fa-comment'></i> irc</a>
-	<a href='https://discord.gg/pdGCV6K' class='footer-link'><i class='fa fa-phone-square'></i> discord</a>
-	<a href='https://github.com/cc-d/ieddit' class='footer-link'><i class='fa fa-github'></i> github</a>
+    <a href='https://ieddit.com' class='footer-link'><i class='fa fa-globe'></i> ieddit.com</a>
+    <a href='https://kiwiirc.com/nextclient/irc.freenode.net/#ieddit' class='footer-link'><i class='fa fa-comment'></i> irc</a>
+    <a href='https://discord.gg/pdGCV6K' class='footer-link'><i class='fa fa-phone-square'></i> discord</a>
+    <a href='https://github.com/cc-d/ieddit' class='footer-link'><i class='fa fa-github'></i> github</a>
 </div>
 </small>
 

@@ -72,7 +72,7 @@ var preExpandVideo = false;
     </div>
     <div class="media-body posts-media-body" id='media-body-{{ post.id }}'>
     <div class="row post-row top-post-row">
-    	<div class="col inner-div post-inner-div">
+        <div class="col inner-div post-inner-div">
 
             {% if post.override == True %}
                 {% set pauther_type = 'user' %}
@@ -92,7 +92,7 @@ var preExpandVideo = false;
             {% elif pauther_type == 'mod' %}
            <i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[m]{{ pauther }}</a>
             {% else %}
-    		<i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">{{ pauther }}</a>
+            <i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">{{ pauther }}</a>
             {% endif %}
 
             </small>
@@ -101,7 +101,7 @@ var preExpandVideo = false;
             <small class="created-ago"><a class="comment-link" href="{{ post.permalink }}">{{ post.created_ago }}</a></small>
 
 
-    	</div>
+        </div>
     </div>
 
     <div class="post-title">

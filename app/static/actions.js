@@ -1,160 +1,160 @@
 $(document).ready(function() {/*
-	$('.tl-dropdown').on('hide.bs.dropdown', function () {
-		$(this).css('height', '0.5rem');
-	})
-	$('.tl-dropdown').on('show.bs.dropdown', function () {
-		$(this).css('height', '30rem');
-	});*/
+    $('.tl-dropdown').on('hide.bs.dropdown', function () {
+        $(this).css('height', '0.5rem');
+    })
+    $('.tl-dropdown').on('show.bs.dropdown', function () {
+        $(this).css('height', '30rem');
+    });*/
 
-	//jsalert('test', 'danger');
+    //jsalert('test', 'danger');
 });
 
 function banAndDeleteAll(itype, iid) {
-	$.post('/admin/ban_and_delete', itype + '=' + iid).done(function(data) {
-		location.reload();
-	});
+    $.post('/admin/ban_and_delete', itype + '=' + iid).done(function(data) {
+        location.reload();
+    });
 }
 
 function blockUser(itype, iid) {
-	$.post('/user/block_user', itype + '=' + iid).done(function(data) {
-		location.reload();
-	});
+    $.post('/user/block_user', itype + '=' + iid).done(function(data) {
+        location.reload();
+    });
 }
 
 function addApiKey(user) {
-	$.post('/admin/add_api_key', 'username' + '=' + user).done(function(data) {
-		location.reload();
-	});
+    $.post('/admin/add_api_key', 'username' + '=' + user).done(function(data) {
+        location.reload();
+    });
 }
 
 function removeApiKey(user) {
-	$.post('/admin/remove_api_key', 'username' + '=' + user).done(function(data) {
-		location.reload();
-	});
+    $.post('/admin/remove_api_key', 'username' + '=' + user).done(function(data) {
+        location.reload();
+    });
 }
 
 function addSubMute(sub) {
-	$.post('/admin/add_sub_mute', 'sub' + '=' + sub).done(function(data) {
-		location.reload();
-	});
+    $.post('/admin/add_sub_mute', 'sub' + '=' + sub).done(function(data) {
+        location.reload();
+    });
 }
 
 function removeSubMute(sub) {
-	$.post('/admin/remove_sub_mute', 'sub' + '=' + sub).done(function(data) {
-		location.reload();
-	});
+    $.post('/admin/remove_sub_mute', 'sub' + '=' + sub).done(function(data) {
+        location.reload();
+    });
 }
 
 function hideObject(itype, iid) {
-	itype = itype + ''
-	iid = iid + ''
+    itype = itype + ''
+    iid = iid + ''
 
-	$.post('/user/hide', {d:'{"' + itype + '":"' + iid + '"}'}).done(function(data) {
-		if (data === 'ok') {
-			jsalert('blocked ' + itype + ' ' + iid, 'success');
-			if (itype === 'post_id') {
-				$('#top-of-post-' + iid).css('display', 'none');
-			} else if (itype === 'comment_id') {
-				//$('#comment-' + iid).css('display', 'none');
-				minHide(iid, undefined, true);
-			} else if (itype === 'other_user') {
-					$('#block-user-button-u').css('display', 'none');
-					$('#block-user-button').css('display', 'inline-block');
-					location.reload();
-					jsalert('blocked user', 'success');
-					return;
-			}
-		} else {
-			jsalert('error: ' + data, 'danger');
-		}
-	});
+    $.post('/user/hide', {d:'{"' + itype + '":"' + iid + '"}'}).done(function(data) {
+        if (data === 'ok') {
+            jsalert('blocked ' + itype + ' ' + iid, 'success');
+            if (itype === 'post_id') {
+                $('#top-of-post-' + iid).css('display', 'none');
+            } else if (itype === 'comment_id') {
+                //$('#comment-' + iid).css('display', 'none');
+                minHide(iid, undefined, true);
+            } else if (itype === 'other_user') {
+                    $('#block-user-button-u').css('display', 'none');
+                    $('#block-user-button').css('display', 'inline-block');
+                    location.reload();
+                    jsalert('blocked user', 'success');
+                    return;
+            }
+        } else {
+            jsalert('error: ' + data, 'danger');
+        }
+    });
 }
 
 function showObject(itype, iid) {
-	itype = itype + ''
-	iid = iid + ''
+    itype = itype + ''
+    iid = iid + ''
 
-	$.post('/user/show', {d:'{"' + itype + '":"' + iid + '"}'}).done(function(data) {
-		if (data === 'ok') {
-			jsalert('unblocked ' + itype + ' ' + iid, 'success');
-			if ('#block-user-button-u' !== undefined) {
-				$('#block-user-button-u').css('display', 'none');
-				$('#block-user-button').css('display', 'inline-block');
-				jsalert('unblocked user', 'success');
-				location.reload();
-				return;
-			}
-			console.log($('#' + itype + '-' + iid).html());
-			$('#' + itype + '-' + iid).remove();
+    $.post('/user/show', {d:'{"' + itype + '":"' + iid + '"}'}).done(function(data) {
+        if (data === 'ok') {
+            jsalert('unblocked ' + itype + ' ' + iid, 'success');
+            if ('#block-user-button-u' !== undefined) {
+                $('#block-user-button-u').css('display', 'none');
+                $('#block-user-button').css('display', 'inline-block');
+                jsalert('unblocked user', 'success');
+                location.reload();
+                return;
+            }
+            console.log($('#' + itype + '-' + iid).html());
+            $('#' + itype + '-' + iid).remove();
 
-		} else {
-			jsalert('error: ' + data, 'danger');
-		}
-	});
+        } else {
+            jsalert('error: ' + data, 'danger');
+        }
+    });
 }
 
 function jsalert(message, atype) {
-	width = parseInt($('#content').width() * 0.75);
-	if (atype === 'undefined') {
-		atype = 'success';
-	}
-	html = `
-	<div id='alert-container' class='js-alert' style='margin-top: -70px; display: inline-block; z-index: 101; width: ` + width + `px; position: fixed;' class='bg-light'>
-			<ul style='display: inline-block; width: 100%; margin: 0; padding: 0;' class='flashes generic-alert bg-light'>
-			<div style='display: inline-block; width: 100%; margin: 0;' class="alert alert-dismissible alert-` + atype + ` fade show" role="alert">
-				` + message + `
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			</ul>
-		</div>
-	</div>`
-	$('#content').prepend($(html));
+    width = parseInt($('#content').width() * 0.75);
+    if (atype === 'undefined') {
+        atype = 'success';
+    }
+    html = `
+    <div id='alert-container' class='js-alert' style='margin-top: -70px; display: inline-block; z-index: 101; width: ` + width + `px; position: fixed;' class='bg-light'>
+            <ul style='display: inline-block; width: 100%; margin: 0; padding: 0;' class='flashes generic-alert bg-light'>
+            <div style='display: inline-block; width: 100%; margin: 0;' class="alert alert-dismissible alert-` + atype + ` fade show" role="alert">
+                ` + message + `
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            </ul>
+        </div>
+    </div>`
+    $('#content').prepend($(html));
 
-	setTimeout(function() {
-		autoFadeErrors();
-		$('.js-alert').css('display', 'none');
-	}, 5000);
+    setTimeout(function() {
+        autoFadeErrors();
+        $('.js-alert').css('display', 'none');
+    }, 5000);
 }
 
 function goToLink(val) {
-	var r = confirm(val);
-	if (r === false) {
-		return;
-	}
-	elem = $('#' + val);
-	window.location($(elem).attr('href'));
+    var r = confirm(val);
+    if (r === false) {
+        return;
+    }
+    elem = $('#' + val);
+    window.location($(elem).attr('href'));
 }
 
 function formSubmit(val) {
-	var r = confirm(val);
-	if (r === false) {
-		return;
-	}
-	elem = $('#' + val);
-	/*
-	if ($(elem).attr('href') !== undefined ) {
-		window.location = $(elem).attr('href');
-	}*/
-	btn = $('#btn-' + val);
-	console.log(btn);
-	console.log(elem);
+    var r = confirm(val);
+    if (r === false) {
+        return;
+    }
+    elem = $('#' + val);
+    /*
+    if ($(elem).attr('href') !== undefined ) {
+        window.location = $(elem).attr('href');
+    }*/
+    btn = $('#btn-' + val);
+    console.log(btn);
+    console.log(elem);
 
-	formId = val
-	val = val.split('-');
+    formId = val
+    val = val.split('-');
 
-	itype = val[0]
-	action = val[1]
-	iid = val[2]
-	console.log(val);
+    itype = val[0]
+    action = val[1]
+    iid = val[2]
+    console.log(val);
 
-	if (val[2] == 'ban' || val[2] == 'unban') {
-		$('#' + formId).click();
-		return;
-	}
+    if (val[2] == 'ban' || val[2] == 'unban') {
+        $('#' + formId).click();
+        return;
+    }
 
-	$('#btn-' + formId).click();
+    $('#btn-' + formId).click();
 }
 
 function copyToClipboard(text) {
@@ -171,17 +171,17 @@ function copyToClipboard(text) {
 }
 
 function downloadData(data, filename=null) {
-	// I hate this, but if we want to support older browsers we need to do this.
-	var blob = new Blob([data]);
-	var link = document.createElement("a");
-	$(link).css({"display": "none"})
+    // I hate this, but if we want to support older browsers we need to do this.
+    var blob = new Blob([data]);
+    var link = document.createElement("a");
+    $(link).css({"display": "none"})
     link.href = window.URL.createObjectURL(blob);
     link.download = filename;
     link.click();
 }
 
 function downloadUserData(username) {
-	$.get("/api/get_user/" + username).done(function (data) {
-		return downloadData(data, username + "_data.json");
-	});
+    $.get("/api/get_user/" + username).done(function (data) {
+        return downloadData(data, username + "_data.json");
+    });
 }
