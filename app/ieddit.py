@@ -681,7 +681,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
         post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title),
         post=post, tree=tree, parent_comment=parent_comment, is_parent=is_parent,
         config=config, is_modv=is_modv)
-`
+
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def list_of_child_comments(comment_id, sort_by=None):
     """
@@ -1843,7 +1843,7 @@ def stats(subi=None):
     else:
         debug = False
 
-    return render_template('stats.html', posts=posts, dax`yposts=dayposts, comments=comments, daycoms=daycoms,
+    return render_template('stats.html', posts=posts, dayposts=dayposts, comments=comments, daycoms=daycoms,
         users=users, bans=bans, messages=messages, mod_actions=mod_actions, subs=subs, votes=votes, dayvotes=dayvotes,
         dayusers=dayusers, timediff=timediff, uptime=uptime, debug=debug, subi=subi, subscripts=subscripts)
 
