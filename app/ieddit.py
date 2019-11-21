@@ -760,9 +760,10 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
                 if post.self_text != None:
                     post.new_self_text = pseudo_markup(post.self_text)
 
-            youtube_url = get_youtube_embed_url(post.url)
-            if youtube_url:
-                post.video = youtube_url
+            if post.url != None:
+                youtube_url = get_youtube_embed_url(post.url)
+                if youtube_url:
+                    post.video = youtube_url
         else:
             post = None
 
