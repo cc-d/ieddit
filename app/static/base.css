@@ -779,6 +779,13 @@ ul {
     display: block;
 }
 
+.new-messages-container {
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 0.25rem solid rgba(255,255,255,0.1);
+    border-radius: 0.25rem;
+}
+
 .col.inner-div.comment-inner-div {
     margin-top: -0rem!important;
 }

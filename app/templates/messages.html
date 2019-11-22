@@ -22,11 +22,11 @@
 <div class='message-inbox'>
     {% if new_messages %}
         {% set vars = {'continue': True } %}
-        <h2 class='margin-lr'>new</h2>
-        <div style='border: 1px dashed rgba(255, 217, 102, 0.5);'>
+        <h2 style='text-align: center;'>new</h2>
+        <div class='new-messages-container'>
     {% else %}
         {% set vars = {'continue': False } %}
-        <h2 class='margin-lr'>read</h2>
+        <!-- <h2 class='margin-lr'>read</h2> -->
     {% endif %}
     
     {% for message in messages %}
@@ -34,7 +34,7 @@
         {% if vars['continue'] and new_messages %}
             {% if message.was_unread != True %}
                 {% if vars.update({'continue': False }) %}{% endif %}
-                </div><h2 class='margin-lr'>read</h2>
+                </div><!-- <h2 class='margin-lr'>read</h2> -->
             {% endif %}
         {% endif %}
     
@@ -53,18 +53,6 @@
     {% else %}
         <p> no messages </p>
     {% endfor %}
-</div>
+</div>    
 
-{% if sent != [] %}
-<h2 class='margin-lr'> sent </h2>
-{% for message in sent %}
-{% include 'message.html' %}
-{% else %}
-
-{% endfor %}
-{% endif %}
-    
-    
-    
-    
-    {% endblock %}
+{% endblock %}

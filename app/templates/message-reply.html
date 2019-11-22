@@ -28,14 +28,13 @@
             <label class="sr-only" for="inlineFormInputGroupUsername">Username</label>
             <div class="input-group" style='margin-top: 0.5rem;'>
                 <div class="input-group-prepend">
-                    <div class="input-group-text" style='padding: 0.25rem; font-size: 150%;'>
+                    <div class="input-group-text" style='{% if sendto %}border-radius: 0.25rem; {% endif %}padding: 0.25rem; font-size: 150%;'>
                         <h5 style='margin-bottom: 0.25rem;'>
                             {% if sendto %}
                             <a href='{{ config.URL }}/u/{{ sendto }}'>
                                 <i class='fa fa-user' style='margin-right: -0.125rem;'></i>
                                     {{ sendto }}
-                            </a>
-                            <i class='fa fa-check' style='position: absolute; margin-left: 14.5rem; margin-top: 0.25rem; opacity: 0.5;'></i>    
+                            </a>  
                             {% else %}
                                 <i class='fa fa-user'></i> /u/ 
                             {% endif %}
@@ -44,14 +43,12 @@
                 </div>
 
                 {% if sendto %}
-                    {% set u_style = 'background-color:#2e3338!important;' %}
                     {% set u_value = 'value="' + sendto + '" disabled ' %}
+<input value="{{ sendto }}" style="background-color:#a6a6a6!important; color: black!important;" type="hidden" name='sent_to'>
                 {% else %}
-                    {% set u_style = 'background-color:#a6a6a6!important; color: black!important;' %}
                     {% set u_class = 'white-input' %}
+<input style="background-color:#a6a6a6!important; color: black!important;" type="text" class="bg-light form-control user-message-sendto white-input" id="inlineFormInputGroupUsername" placeholder="Enter Username" name='sent_to'>
                 {% endif %}
-
-                <input {{ u_value|safe }} style="{{ u_style }}" type="text" class="bg-light form-control user-message-sendto {{ u_class }}" id="inlineFormInputGroupUsername" placeholder="Enter Username" name='sent_to'>
             </div>
         </div>
 

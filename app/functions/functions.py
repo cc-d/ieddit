@@ -66,11 +66,11 @@ def time_ago(dt):
     diff = get_time() - dt
     if diff.days > 0:
         return str(int(diff.days)) + 'd'#ays ago'
-    if diff.seconds < 60:
+    if diff.seconds <= 60:
         return str(int(diff.seconds)) + 's'#econds ago'
-    if diff.seconds > 60 and diff.seconds < 3600:
+    if diff.seconds > 60 and diff.seconds <= 3600:
         return str(int(diff.seconds / 60)) + 'm'#inutes ago'
-    if diff.seconds > 3600 and diff.seconds < 86400:
+    if diff.seconds >= 3600 and diff.seconds <= 86400:
         return str(int((diff.seconds / 60) / 60)) + 'h'#ours ago'
 
 # horribly ineffecient function lol

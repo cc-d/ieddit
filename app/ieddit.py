@@ -4,7 +4,7 @@ Main ieddit code.
 TODO: split this up into different views, function groups, etc.
 """
 from share import *
-from sqlalchemy import func
+from sqlalchemy import func, or_, and_
 import _thread
 
 import requests
@@ -1236,7 +1236,10 @@ def user_messages(username=None):
         else:
             has_encrypted = False
 
-            our_messages = db.session.query(Message).filter_by(sent_to=username, read=True)
+            our_messages = db.session.query(Message).filter(or_(and_(Message.sent_to == username,
+                                                            Message.read == True),
+                                                            and_(Message.sender == username,
+                                                            Message.in_reply_to == None)))
             unread = db.session.query(Message).filter_by(sent_to=username, read=False)
 
             our_messages = our_messages.order_by((Message.created).desc()).limit(25).all()
@@ -1245,7 +1248,6 @@ def user_messages(username=None):
             our_messages = [x for x in our_messages if x.sender == None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
             unread = [x for x in unread if x.sender == None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
 
-
             new_messages = False
             for r in unread:
                 r.read = True
@@ -1253,17 +1255,17 @@ def user_messages(username=None):
                 new_messages = True
 
             # list preservs order
-            our_messages = unread + our_messages 
+            our_messages = unread + our_messages
 
-            sent = db.session.query(Message).filter_by(sender=username, read=False, anonymous=False, in_reply_to=None)
-            sent = sent.order_by((Message.created).desc()).limit(10).all()
+            for message in our_messages:
+                if message.sender == session['username']:
+                    message.is_sent = True
+                    if message.encrypted:
+                        message.new_text = '<p style="color: green;">ENCRYPTED</p>'
+                else:
+                    message.is_sent = False
 
-            for message in sent:
-                message.is_sent = True
-                if message.encrypted:
-                    message.new_text = '<p style="color: green;">ENCRYPTED</p>'
-
-            for message in our_messages + sent:
+            for message in our_messages:
                 if message.encrypted == False:
                     message.new_text = pseudo_markup(message.text)
                 else:
@@ -1277,7 +1279,6 @@ def user_messages(username=None):
 
                 if message.anonymous is False and message.sender is not None:
                     karma = get_user_karma(message.sender)
-                    print(str(karma))
                     karma = int(karma['post'] + karma['comment'])
                     message.user_stats = karma
                     # if we wanted the # displayed to be # of messages sent
@@ -1301,7 +1302,7 @@ def user_messages(username=None):
                 self_pgp = False
 
             return render_template('messages.html', messages=our_messages, has_encrypted=has_encrypted, self_pgp=self_pgp,
-                sent=sent, new_messages=new_messages)
+                new_messages=new_messages)
 
 @app.route('/u/<username>/messages/reply/<mid>', methods=['GET'])
 def reply_message(username=None, mid=None):
@@ -1329,6 +1330,8 @@ def reply_message(username=None, mid=None):
     if len(message.title) >= 4:
         if message.title[0:4] != 'RE: ':
             message.new_title = 'RE: ' + message.title
+    else:
+        message.new_title = 'RE: ' + message.title
 
     message.user_stats = get_message_count(message.sender)
 

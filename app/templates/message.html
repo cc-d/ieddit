@@ -1,4 +1,4 @@
-<div class="media">
+<div class="media" {% if message.is_sent %}style="opacity: 0.5;"{% endif %}>
   {% if message.encrypted and message.is_sent != True %}
   <div style='border: 1px solid green;' class="media-body message-body rounded">
     <textarea id='other-pgp-pubkey-{{ message.id }}' style='display: none;'>{{ message.sender_pgp.pubkey }}</textarea>
@@ -6,19 +6,28 @@
   <div class="media-body message-body rounded">
   {% endif %}
   <div class="message-text-body">
-  
+
+  {% if message.is_sent != True %}
+    {% set show_name = session['username'] %}
+  {% else %}
+    {% set show_name = message.sent_to %}
+  {% endif %}
+
   <div class="message-top-row">
-  {% if message.sender %}
+  {% if show_name %}
+    {% if message.is_sent %}
+      <p style='display: inline; margin: 0; color: #eee;'>SENT:</p>
+    {% endif %}
+
     {% if message.sender_type == 'admin' and message.anonymous == False %}
-      <i style="color: red;" class="fa fa-user reply-fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}">[a]{{ message.sender }}</a>
+      <i style="color: red;" class="fa fa-user reply-fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ show_name }}">[a]{{ show_name }}</a>
     {% elif message.sender_type == 'mod' and message.anonymous == False %}
-        <i style="color: lightblue;" class="fa fa-user reply-fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}">[m]{{ message.sender }}</a>
+        <i style="color: lightblue;" class="fa fa-user reply-fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ show_name }}">[m]{{ show_name }}</a>
     {% elif message.anonymous == True %}
         <i class="fa fa-user reply-fa-user"></i><a style='color: #aaa;' class="user-icon-link" href="{{ config.URL }}/u/Anonymous">Anonymous</a>
     {% else %}
-        <i class="fa fa-user reply-fa-user"></i><a style='color: #aaa;' class="user-icon-link" href="{{ config.URL }}/u/{{ message.sender }}">{{ message.sender }}</a>
+        <i class="fa fa-user reply-fa-user"></i><a style='color: #aaa;' class="user-icon-link" href="{{ config.URL }}/u/{{ show_name }}">{{ show_name }}</a>
     {% endif %}
-
 
     {% if message.user_stats %}
       <p class='user-message-stats' style='font-family: inherit; display: inline-block; 
@@ -56,7 +65,7 @@
       <div class="message-bottom-row">
         <a style='font-size: 120%; color: #aaa;' href="{{ message.in_reply_to }}">reply</a>
       </div>
-    {% elif message.sender != None %}
+    {% elif show_name == session['username'] %}
       <div class="message-bottom-row">
         <a style='font-size: 120%; color: #aaa;' href="reply/{{ message.id }}">reply</a>
       </div>

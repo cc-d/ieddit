@@ -113,25 +113,28 @@
             {% set square = 'play' %}
             {% set fclass = 'class="video-play-btn rounded"' %}
             {% set vid = 'true' %}
+            {% set has_expand_button = True %}
         {% endif %}
 
         {% if post.post_type == 'url' %}
             {% if post.remote_image_url %}
+                {% set has_expand_button = True %}
                 <a id="expand-button-{{ post.id }}" {{ fclass|safe }} href="javascript:{{ ftype }}(pid={{ post.id }}, ptype='url', vid='{{ vid }}');"><i class="fa fa-{{ square }}"aria-hidden="true"></i></a>
             {% endif %}
         {% else %}
+            {% set has_expand_button = True %}
             <a id="expand-button-{{ post.id }}" {{ fclass|safe }} href="javascript:{{ ftype }}(pid={{ post.id }}, ptype='selftext', vid='{{ vid }}');"><i class="fa fa-{{ square }}" aria-hidden="true"></i></a>
         {% endif %}
     </div>
 
         {% if post.post_type == 'url' %}
         <a class="sub-post-title-link" href="{{ post.url }}">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ post.title }}
+            {% if has_expand_button %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}{{ post.title }}
         </a>
             <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
         {% else %}
         <a class="sub-post-title-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ post.title }}
+            {% if has_expand_button %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}{{ post.title }}
         </a>
             <small><a href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">(self.text)</a></small>
         {% endif %}
