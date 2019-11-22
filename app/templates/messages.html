@@ -28,7 +28,7 @@
         {% set vars = {'continue': False } %}
         <!-- <h2 class='margin-lr'>read</h2> -->
     {% endif %}
-    
+
     {% for message in messages %}
         <!-- Finished listing unread messages, read from here on -->
         {% if vars['continue'] and new_messages %}

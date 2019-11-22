@@ -1242,7 +1242,7 @@ def user_messages(username=None, offset=0):
                         and_(Message.sent_to == username,
                             Message.read),
                         and_(Message.sender == username,
-                            Message.in_reply_to is None)
+                            Message.in_reply_to == None)
                         )
                     )
 
@@ -1277,6 +1277,7 @@ def user_messages(username=None, offset=0):
             for message in our_messages:
                 if message.sender == session['username']:
                     message.show_name = session['username']
+                    message.is_sent = True
                     if message.encrypted:
                         message.new_text = '<p style="color: green;">ENCRYPTED</p>'
                 else:
