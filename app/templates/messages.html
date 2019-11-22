@@ -34,7 +34,7 @@
         {% if vars['continue'] and new_messages %}
             {% if message.was_unread != True %}
                 {% if vars.update({'continue': False }) %}{% endif %}
-                </div> <h2>read</h2>
+                </div><h2 class='margin-lr'>read</h2>
             {% endif %}
         {% endif %}
     

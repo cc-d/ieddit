@@ -117,10 +117,6 @@ textarea {
         font-size: 90%;
     }
 
-    .sub-post-title {
-        margin-right: 10px;
-    }
-
     .navbar-brand {
         margin-right: 0.25rem;;
     }
@@ -143,6 +139,7 @@ textarea {
 
 #user-nav {
     padding-left: 0px;
+    margin-left: -1px;
 }
 
 #logout-right {
@@ -241,13 +238,6 @@ textarea {
 .sub-post-title-link {
     font-size: 1rem;
     color: #212529;
-}
-
-.sub-post-title {
-    margin-top: -0.75rem;
-    min-height: 40px;
-    margin-bottom: 0.25rem;
-    overflow: hidden;
 }
 
 .top-of-post {
@@ -411,7 +401,7 @@ textarea {
     margin-top: 0.5em;
     margin-right: 0.5em;
     border: 0px solid red;
-    min-height: 92px;
+    min-height: 100%;
     word-break: break-word;
     margin-bottom: 0.25rem;
 }
@@ -513,6 +503,7 @@ ul, li{
 }
 
 .fa-arrow-down {
+    font-size: 1rem;
     color: #212529;
 }
 
@@ -639,6 +630,7 @@ ul, li{
 }
 
 .expand-post {
+    position: absolute;
     font-size: 105%;
     display: inline-block;
     margin-left: 0;
@@ -945,7 +937,8 @@ ul {
 }
 
 .post-title {
-    min-height: 2.5rem;
+    margin-bottom: 0.25rem;
+    min-height: 1.75rem;
 }
 
 .row.post-row.comment-bottom {

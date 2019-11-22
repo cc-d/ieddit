@@ -1255,15 +1255,15 @@ def user_messages(username=None):
             # list preservs order
             our_messages = unread + our_messages 
 
-            sent = db.session.query(Message).filter_by(sender=username, read=False)
+            sent = db.session.query(Message).filter_by(sender=username, read=False, anonymous=False, in_reply_to=None)
             sent = sent.order_by((Message.created).desc()).limit(10).all()
 
-            for s in sent:
-                s.is_sent = True
-                if s.encrypted:
-                    s.new_text = '<p style="color: green;">ENCRYPTED</p>'
+            for message in sent:
+                message.is_sent = True
+                if message.encrypted:
+                    message.new_text = '<p style="color: green;">ENCRYPTED</p>'
 
-            for message in our_messages:
+            for message in our_messages + sent:
                 if message.encrypted == False:
                     message.new_text = pseudo_markup(message.text)
                 else:
@@ -1275,10 +1275,21 @@ def user_messages(username=None):
                 if message.in_reply_to != None:
                     message.ppath = message.in_reply_to.replace(config.URL, '')
 
-                if message.encrypted == True:
+                if message.anonymous is False and message.sender is not None:
+                    karma = get_user_karma(message.sender)
+                    print(str(karma))
+                    karma = int(karma['post'] + karma['comment'])
+                    message.user_stats = karma
+                    # if we wanted the # displayed to be # of messages sent
+                    #message.user_stats = get_message_count(message.sender)
+
+                if message.encrypted is True:
                     has_encrypted = True
 
-                message.user_stats = get_message_count(message.sender)
+                if message.in_reply_to is None:
+                    message.message_type = 'message'
+                else:
+                    message.message_type = 'comment'
 
             session['unread_messages'] = None
 

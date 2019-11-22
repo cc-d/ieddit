@@ -22,20 +22,26 @@
 
     {% if message.user_stats %}
       <p class='user-message-stats' style='font-family: inherit; display: inline-block; 
-      color: #aaa; margin-bottom: 0px;' data-toggle="tooltip" data-placement="top" title='total messages sent'>({{ message.user_stats }})</p>
-    {% endif %}
-
-    {% if message.in_reply_to != None %}
-      <div class="in-reply-to" style='display: inline-block;'>
-        <a class="message-link" href="{{ message.in_reply_to }}">{{ message.ppath }}</a>
-      </div>
+      color: #aaa; margin-bottom: 0px;' data-toggle="tooltip" data-placement="top" title='total karma'>({{ message.user_stats }})</p>
     {% endif %}
   {% endif %}
 
-    <div class='created-ago' style='display: inline-block; color: #aaa;'>{{ message.created_ago }}</div>
+    <div class='created-ago' style='display: inline-block; color: #aaa;'>
+      {{ message.created_ago }}
+    </div>
+
   </div>
 
-      <h5 class="mt-1 message-title">{{ message.title }}</h5>
+
+    <div class='title-wrap'>
+      <h5 class="mt-1 message-title" style='display: inline-block;'>{{ message.title }}</h5>
+      {% if message.in_reply_to != None %}
+        <div style='display: inline-block; margin-bottom: -10px; height:1.75rem; white-space: nowrap; word-break: break-all; text-overflow: ellipsis; max-width: 54%; overflow: hidden;'>
+          <a href="{{ message.in_reply_to }}">{{ message.ppath }}</a>
+        </div>
+      {% endif %}
+    </div>
+
     {% if message.encrypted == False or message.is_sent %}
       <div class="safe-markup-text comment-markup-text" style='color: #ddd;' id='message-{{ message.id }}'>{{ message.new_text|safe }}</div>
     {% else %}
@@ -55,6 +61,7 @@
         <a style='font-size: 120%; color: #aaa;' href="reply/{{ message.id }}">reply</a>
       </div>
     {% endif %}
-    </div>
+
   </div>
+</div>
 </div>
