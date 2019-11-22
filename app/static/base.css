@@ -767,13 +767,16 @@ ul {
 }
 
 .video-play-btn {
-    font-size: 60%;
+    font-size: 50%;
     border: 1px solid #ccc;
     padding-left: 4px;
     padding-right: 3px;
     padding-top: 2px;
     padding-bottom: 1px;
     font-family: auto;
+    font-size: 45%;
+    margin-top: 4px;
+    display: block;
 }
 
 .col.inner-div.comment-inner-div {
