@@ -64,7 +64,7 @@ def param_destroy(url_params, param_name, params_only=False):
 
 app.jinja_env.globals.update(param_destroy=param_destroy)
 
-def offset_url(url_params, url_type, params_only=False):
+def offset_url(url_params, url_type=None, params_only=False, offset_by=15):
     """
     returns creates the urls used in prev/next
     """
@@ -96,6 +96,13 @@ def offset_url(url_params, url_type, params_only=False):
             current_offset = 100
         else:
             current_offset = current_offset + 100
+        url_params.append('offset=' + str(current_offset))
+
+    elif url_type is None:
+        if current_offset is None:
+            current_offset = offset_by
+        else:
+            current_offset = current_offset + offset_by
         url_params.append('offset=' + str(current_offset))
 
     url_params = '&'.join(url_params)

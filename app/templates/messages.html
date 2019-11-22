@@ -53,6 +53,14 @@
     {% else %}
         <p> no messages </p>
     {% endfor %}
-</div>    
+
+    {% if request.show_more_messages %}
+        {% set base = request.environ['PATH_INFO'] %}
+        {% set query = request.environ['QUERY_STRING'] %}
+        {% set more_url = base + offset_url(query, offset_by=25) %}
+    
+        <a class="btn btn-primary margin-lr" href="{{ more_url }}">show more</a>
+    {% endif %}
+</div>
 
 {% endblock %}

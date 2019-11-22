@@ -1225,7 +1225,7 @@ def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=N
 
 
 @app.route('/u/<username>/messages/', methods=['GET'])
-def user_messages(username=None):
+def user_messages(username=None, offset=0):
     if 'username' not in session or username == None:
         flash('not logged in', 'danger')
         return redirect(url_for('login'))
@@ -1236,17 +1236,34 @@ def user_messages(username=None):
         else:
             has_encrypted = False
 
-            our_messages = db.session.query(Message).filter(or_(and_(Message.sent_to == username,
-                                                            Message.read == True),
-                                                            and_(Message.sender == username,
-                                                            Message.in_reply_to == None)))
-            unread = db.session.query(Message).filter_by(sent_to=username, read=False)
+            our_messages = db.session.query(Message) \
+            .filter(
+                    or_(
+                        and_(Message.sent_to == username,
+                            Message.read),
+                        and_(Message.sender == username,
+                            Message.in_reply_to is None)
+                        )
+                    )
 
-            our_messages = our_messages.order_by((Message.created).desc()).limit(25).all()
-            unread = unread.order_by((Message.created).desc()).limit(25).all()
+            unread = db.session.query(Message).filter_by(sent_to=username, read=False) \
+                    .order_by((Message.created).desc()).all()
 
-            our_messages = [x for x in our_messages if x.sender == None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
-            unread = [x for x in unread if x.sender == None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
+            if request.args.get('offset') is not None:
+                offset = int(request.args.get('offset'))
+
+            our_messages = our_messages.order_by(
+                                (Message.created).desc()
+                                ).offset(offset).limit(26).all()
+
+            if len(our_messages) >= 26:
+                our_messages = our_messages[:-1]
+                request.show_more_messages = True
+            else:
+                request.show_more_messages = False
+
+            our_messages = [x for x in our_messages if x.sender is not None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
+            unread = [x for x in unread if x.sender is not None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
 
             new_messages = False
             for r in unread:
