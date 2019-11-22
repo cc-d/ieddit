@@ -7,7 +7,7 @@
   {% endif %}
   <div class="message-text-body">
 
-  {% if message.is_sent != True %}
+  {% if message.is_sent == True %}
     {% set show_name = session['username'] %}
   {% else %}
     {% set show_name = message.sent_to %}
