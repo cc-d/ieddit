@@ -1259,11 +1259,11 @@ def user_messages(username=None):
 
             for message in our_messages:
                 if message.sender == session['username']:
-                    message.is_sent = True
+                    message.show_name = session['username']
                     if message.encrypted:
                         message.new_text = '<p style="color: green;">ENCRYPTED</p>'
                 else:
-                    message.is_sent = False
+                    message.show_name = message.sender
 
             for message in our_messages:
                 if message.encrypted == False:
