@@ -797,8 +797,7 @@ ul {
 }
 
 .banned-user {
-    border: 1px solid #ccc!important;
-    margin: 1rem;
+    border: 1px solid rgba(212,212,212,0.3)!important;
 }
 
 .margin-lr {
@@ -1140,6 +1139,7 @@ textarea {
 }
 .add-mod {
     margin-left: 1rem;
+    max-width:15rem;
 }
 
 
@@ -1237,6 +1237,10 @@ blockquote {
 .sub-comment {
     background-color: #262626;
     border: 1px solid black;
+}
+
+.sub-css {
+    max-width: 20rem;
 }
 
 .user-opt {
