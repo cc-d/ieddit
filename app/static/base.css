@@ -1180,6 +1180,9 @@ blockquote {
 
 .nav-link {
     color: #ccc!important;
+    text-overflow: ellipsis;
+    max-width: 15rem;
+    overflow: hidden;
 }
 
 .navbar-brand {
@@ -1215,3 +1218,4 @@ blockquote {
     padding-bottom: 0.25rem;
     padding-top: 0.25rem;
 }
+
