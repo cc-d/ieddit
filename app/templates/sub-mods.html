@@ -51,48 +51,47 @@
 {% endif %}
 
 
-{% if desc %}
-<h6 style="margin-left: 1.25rem;">{% if request.sub_title != None %}Title: {{ request.sub_title }}{% else %}no title{% endif %}</h6><br>
-{% if request.is_mod %}
-<form action='/mod/title' method='POST' style="margin-left: 1rem;">
-<div class="input-group mb-3">
-  <input type='hidden' name='sub' value='{{ request.sub }}'>
-  {% if request.sub_title != None %}
-  <input type="text" style="max-width: 20rem;" name='title' class="form-control rounded" aria-describedby="basic-addon1" value="{{ request.sub_title }}">
-  {% else %}
-  <input type="text" style="max-width: 20rem;" name='title' class="form-control rounded" placeholder="Example: A place for friends." aria-label="Username" aria-describedby="basic-addon1">
+<div class='margin-lr mod-page-sub-title'>
+  <h5 style='display: inline-block;'>Title:</h5>
+  <h6 style='display: inline-block;'>&nbsp;{% if request.sub_title %}{{ request.sub_title }}{% else %}No Title{% endif %}</h6>
+  {% if request.is_mod %}
+  <form action='/mod/title' method='POST'>
+    <div class="input-group mb-3 mod-edit-container">
+      <input type='hidden' name='sub' value='{{ request.sub }}'>
+      {% if request.sub_title != None %}
+        <input type="text" name='title' class="form-control rounded" value="{{ request.sub_title }}">
+      {% else %}
+        <input type="text" name='title' class="form-control rounded" placeholder="Example: A place for friends." aria-label="Username">
+      {% endif %}
+    <br><button type='submit' class="btn btn-primary rounded" type="button">Update Title</button>
+    </div>
+  </form>
   {% endif %}
-<button type='submit' class="btn btn-primary rounded" style='margin-left: 0.25rem;' type="button">Update Title</button>
 </div>
-</form>
-{% endif %}
-<br>
-<div style='margin-left: 1.25rem;' id='display-rules'>
 
-<h3 style="">Description</h3>
-<div>
-{% if rules %}
-<div class="safe-markup-text">
-{{ rules|safe }}
+
+<div id='display-rules' class='margin-lr'>
+  <h3>Description</h3>
+      <div class="safe-markup-text sub-mod-rules">
+        {% if sub.markup_rules %}
+          {{ sub.markup_rules|safe }}
+        {% else %}
+          No Description.
+        {% endif %}
+      </div>
+    </div>
+    {% if request.is_mod %}
+      <div class='margin-lr sub-desc-edit mod-edit-container'>
+        <form action='/mod/edit/description' method='POST'>
+          <div class='form-group'>
+            <!-- Remember, no identation should be placed in textarea tags. -->
+            <textarea name='rtext' class="form-control safe-markup-text sub-desc-edit-text">{% if sub.rules != None %}{{ sub.edit_rules|safe }}{% endif %}</textarea>
+          </div>
+          <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary" type="button">Update description</button>
+        </form>
+      </div>
+    {% endif %}
 </div>
-{% else %}
-No Description
-{% endif %}
-</div> 
-</div>
-{% if request.is_mod %}
-<div id='rules' style='margin-top: 1rem;'>
-<form style="margin-left: 1rem;" action='/mod/edit/description' method='POST'>
-  <div class="form-group">
-    <textarea name='rtext' class="form-control safe-markup-text" id="exampleFormControlTextarea1" rows="3" style='width: 450px; resize: both;'>{% if rules != None %}{{ rules }}{% endif %}</textarea>
-  </div>
-  <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary " type="button">Update description</button>
-</form>
-</div>
-<br>
-<br>
-{% endif %}
-{% endif %}
 
 
 {% if addmod %}

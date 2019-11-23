@@ -426,7 +426,6 @@ ul, li{
 
 .safe-markup-text {
     overflow: hidden;
-    color: #ddd;
 }
 
 .safe-markup-text ul {
@@ -1220,3 +1219,25 @@ blockquote {
     padding-top: 0.25rem;
 }
 
+.sub-desc-edit {
+    margin-top: 1rem;
+}
+
+.mod-edit-container {
+    width: 100%;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    height: auto;
+    max-width: 30rem;
+    margin-bottom: 2rem;
+}
+
+.sub-desc-edit {
+}
+
+.sub-desc-edit-text {
+    width: 100%;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    height: 5rem;
+}

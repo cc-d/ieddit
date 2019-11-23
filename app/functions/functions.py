@@ -154,12 +154,14 @@ def clean_and_linkify(text):
     return clean_text
 
 
-def pseudo_markup(text, escape_only=False):
-    if escape_only:
-        return html.escape(text).replace('&lt;br&gt;', '').replace('\n', '<br>')
-
+def pseudo_markup(text, escape_only=False, replace_newlines=True, all_newlines=True):
     if text is None:
         return None
+
+    if escape_only:
+        if replace_newlines:
+            return html.escape(text).replace('\r\n', '<br>').replace('\n', '<br>')
+        return html.escape(text)
 
     # really hacky way of preserving newlines right now, will address the problem
     # properly after making sure it at least works currently
@@ -168,10 +170,13 @@ def pseudo_markup(text, escape_only=False):
 
     text = text.splitlines()
     for i in range(len(text)):
-        if text[i] == '':
-            text[i] = random_sequence
-        elif text[i][0] == '>':
-            text[i] = '<blockquote>' + text[i][1:] + '</blockquote>'
+        if all_newlines:
+            if text[i] == '':
+                text[i] = random_sequence
+
+        if text[i] != '':
+            if text[i][0] == '>':
+                text[i] = '<blockquote>' + text[i][1:] + '</blockquote>'
 
 
     # empty newlines will now be preserved after clean/bleach

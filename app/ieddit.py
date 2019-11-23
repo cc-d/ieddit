@@ -1430,6 +1430,7 @@ def submods(sub=None):
     modactions = db.session.query(Mod_action).filter_by(sub=sub).limit(5).all()
     if type(modactions) != None:
         modactions = [m for m in modactions]
+
     return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions)
 
 @app.route('/i/<sub>/actions/', methods=['GET'])
@@ -1469,16 +1470,17 @@ def removemod(sub=None):
 
 @app.route('/i/<sub>/info/', methods=['GET'])
 def description(sub=None):
+    """
+    This is the first function I have rewrote in the mods section.
+    A lot of this code is terrible, and is my next priority. After this weekend.
+    """
     sub = normalize_sub(sub)
-    subr = db.session.query(Sub).filter_by(name=sub).first()
-    if hasattr(subr, 'rules') == False:
-        rtext = None
-    else:
-        if subr.rules != None:
-            rtext = pseudo_markup(subr.rules)
-        else:
-            rtext = None
-    return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), desc=True, rules=rtext)
+    sub = db.session.query(Sub).filter_by(name=sub).first()
+
+    sub.markup_rules = pseudo_markup(sub.rules, all_newlines=False, escape_only=True)
+    sub.edit_rules = pseudo_markup(sub.rules, escape_only=True, replace_newlines=False, all_newlines=False)
+
+    return render_template('sub-mods.html', mods=get_sub_mods(sub.name, admin=False), sub=sub)
 
 @app.route('/i/<sub>/settings/', methods=['GET'])
 def settings(sub=None):
@@ -1545,7 +1547,7 @@ def explore():
         request.show_more_subs = False
 
     for s in subs:
-        s.new_rules = pseudo_markup(s.rules)
+        s.new_rules = pseudo_markup(s.rules, escape_only=True, all_newlines=False)
 
     return render_template('explore.html', subs=subs)
 

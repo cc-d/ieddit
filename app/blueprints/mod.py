@@ -315,28 +315,28 @@ def mod_removemod():
         return redirect('/i/' + sub + '/mods/')
 
 @bp.route('/edit/description', methods=['POST'])
-def mod_editrules():
+def mod_edit_rules():
     sub = request.form.get('sub')
-    rtext = escape(request.form.get('rtext'))
+    rtext = request.form.get('rtext')
+
     if 'username' not in session:
         flash('not logged in', 'error')
         return redirect(url_for('login'))
 
-    if len(rtext) < 1 or len(rtext) > 20000:
-        return 'invalid rules text lngth'
-
-    if 'admin' in session:
-        is_mod = True
+    if rtext == '' or rtext is None:
+        rtext = None
     else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(sub)).exists()).scalar()
-    if is_mod:
-        desc = db.session.query(Sub).filter_by(name=sub).first()
-        desc.rules = rtext
-        db.session.add(desc)
+        if len(rtext) < 1 or len(rtext) > 20000:
+            return 'invalid rules text lngth'
+
+    if is_mod_of(session['username'], sub):
+        sub_obj = db.session.query(Sub).filter_by(name=sub).first()
+        sub_obj.rules = rtext
+
+        db.session.add(sub_obj)
         db.session.commit()
         
-        flash('successfully updated description')
+        flash('successfully updated description', 'success')
         return(redirect('/i/' + sub + '/info/'))
     else:
         return '403'
