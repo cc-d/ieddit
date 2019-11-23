@@ -948,7 +948,7 @@ ul {
 
 .post-title {
     margin-bottom: 0.25rem;
-    min-height: 1.75rem;
+    min-height: 38px;
 }
 
 .row.post-row.comment-bottom {
