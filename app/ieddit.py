@@ -38,6 +38,7 @@ def before_request():
                 current_sub = current_sub[0]
                 if current_sub != 'all':
                     request.sub = normalize_sub(current_sub)
+                    #request.in_nsfw_sub = is_sub_nsfw(request.sub)
                     if 'username' in session:
                         # if a user is a mod of this sub, it changes how we respond
                         # to requests rather significantly

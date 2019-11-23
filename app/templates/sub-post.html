@@ -25,20 +25,30 @@
     <style>.post-com-wrap{ margin-left: 0.5rem; }</style>
 {% endif %}
 
+{% if post.sub_nsfw != True %}
+    {% set nsfw_class = 'nsfwpost' %}
+{% else %}
+    {% if request.sub == post.sub %}
+        {% set nsfw_class = '' %}
+    {% else %}
+        {% set nsfw_class = 'nsfwpost' %}
+    {% endif %}
+{% endif %}
+
 {% set comment_thread = False %}
 {% if loop is defined %}
     {% if loop.last and not loop.first %}
-    <ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-bottom: 5px;">
+        <ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ nsfw_class if post.nsfw else ''}}" style="margin-bottom: 5px;">
     {% elif loop.first %}
-    <ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 5px;">
+        <ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ nsfw_class if post.nsfw else ''}}" style="margin-top: 5px;">
     {% else %}
-    <ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
+        <ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ nsfw_class if post.nsfw else ''}}" style="margin-top: 0px;">
     {% endif %}
 {% else %}
     {% if userpage %}
-    <ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px;">
+        <ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ nsfw_class if post.nsfw else ''}}" style="margin-top: 0px;">
     {% else %}
-    <ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ 'nsfwpost' if post.nsfw else ''}}" style="margin-top: 0px; margin-bottom: 2rem;">
+        <ul id='top-of-post-{{ post.id }}' class="list-unstyled sub-list rounded {{ nsfw_class if post.nsfw else ''}}" style="margin-top: 0px; margin-bottom: 2rem;">
     {% endif %}
     {% set comment_thread = True %}
 {% endif %}

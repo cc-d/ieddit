@@ -124,10 +124,11 @@ def is_sub_nsfw(sub):
     returns a boolean if a sub obj is nsfw
     """
     s = db.session.query(Sub).filter_by(name=sub).first()
-    if s.nsfw:
-        return True
+    if hasattr(s, 'nsfw'):
+        if s.nsfw:
+            return True
+        return False
     return False
-
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def normalize_sub(sub):
