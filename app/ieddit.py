@@ -1706,13 +1706,18 @@ def subcomments(sub=None, offset=0, limit=15, s=None, d=None, nsfw=False, api=Fa
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_posts_and_comments(subi=None, day=False, load=None):
+    """
+    how many users have voted/commented/posted to a given sub
+    """
     filter_today = datetime.now() - timedelta(days=1)
+    subi = normalize_sub(subi)
+
     if subi == None or subi == 'all':
         posts = db.session.query(Post)
         comments = db.session.query(Comment)
     else:
-        posts = db.session.query(Post)
-        comments = db.session.query(Comment)
+        posts = db.session.query(Post).filter(Post.sub == subi)
+        comments = db.session.query(Comment).filter(Comment.sub_name == subi)
 
     if day:
         posts = posts.filter(Post.created >= filter_today)
