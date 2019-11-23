@@ -1,0 +1,26 @@
+{% extends 'mod/mod-base.html' %}
+{% block mod_body %}
+<div class='add-mod' style='margin-top: 1rem;'>
+  <form action='/mod/add' method='POST'>
+    <div class="input-group mb-3">
+      <button type='submit' class="btn btn-primary mod-add-button" type="button">&nbsp;
+        <i class='fa fa-user'></i>
+        <i class='fa fa-plus'></i>
+      </button>
+      <input type='hidden' name='sub' value='{{ request.sub }}'>
+      <input type="text" name='username' class="form-control" style="border: 2px solid #4577da; border-left: 0px solid #4577da;" placeholder='Add User To Mods'>
+    </div>
+  </form>
+  
+  <form action='/mod/remove' method='POST'>
+    <div class="input-group mb-3">
+      <button type='submit' class="btn btn-danger mod-add-button" type="button">&nbsp;
+        <i class='fa fa-user'></i>
+        <i class='fa fa-ban'></i>
+      </button>
+      <input type='hidden' name='sub' value='{{ request.sub }}'>
+      <input type="text" name='username' class='form-control'  style="border: 2px solid #e04857; border-left: 0px solid #e04857;;" placeholder='Remove User From Mods'>
+    </div>
+  </form>
+  </div>
+{% endblock %}

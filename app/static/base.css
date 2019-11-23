@@ -333,7 +333,7 @@ textarea {
 }
 
 .mod-add-button {
-    margin-right: 1rem;
+    padding-left: 0px;
 }
 
 #comment-page-wrapper{
@@ -742,13 +742,58 @@ ul {
     margin-left: 1rem;
 }
 
+.mod-single {
+    display: inline-block;
+    margin: 0.25rem;
+}
+
 .mod-page-button {
-    margin-left: -0.75rem;
-    margin-right: -0.75rem;
+    display: inline-block;
+}
+
+.mod-button-a:hover {
+    text-decoration: none;
+}
+
+.mod-page-button:hover {
+    text-decoration: none;
+}
+
+.mod-list-p {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    color: #eee;
+}
+
+.mod-list {
+    display: inline-block;
+    margin: 0.5rem;
 }
 
 .mod-log-table {
-    color: #ccc;
+
+}
+
+.mod-controls {
+    padding: 0.25rem;
+}
+
+.mod-actions-table {
+}
+
+.mod-log-table-link {
+    max-width: 10rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sub-settings {
+    border: 0px solid white;
+}
+
+.sub-settings-text {
+
 }
 
 .banned-user {
@@ -1240,4 +1285,8 @@ blockquote {
     width: -webkit-fill-available;
     width: -moz-available;
     height: 5rem;
+}
+
+.mod-controls {
+    background-color: #343a40;
 }

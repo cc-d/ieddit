@@ -124,7 +124,6 @@ def handle_error(error):
 
     return render_template("error.html", error=description, code=code), code
 
-
 def not_banned(f):
     """
     this decorator handles site-wide banned users
@@ -199,19 +198,12 @@ def sitemap():
 def robotstxt():
     return app.send_static_file('robots.txt')
 
-@cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_explore_subs(offset=0, limit=50):
-    """
-    one of the best current targets for optimization
-    """
-    subs = db.session.query(Sub).outerjoin(Comment). \
-            group_by(Sub).order_by(func.count(Comment.sub_name).desc()). \
-            limit(limit).offset(offset).all()
-
-    for s in subs:
-        s.stats = get_explore_stats(s.name) 
-
-    return subs
+@app.route('/r/<sub>/', methods=['GET'])
+def redirect_to_i(sub=None):
+    sub = normalize_sub(sub)
+    if sub is None:
+        return abort(404)
+    return redirect('/i/%s' % sub)
 
 @limiter.limit(config.LOGIN_RATE_LIMIT)
 @app.route('/login/', methods=['GET', 'POST'])
@@ -468,7 +460,10 @@ def subi(subi, user_id=None, posts_only=False, offset=0,
     offset = request.args.get('offset')
     d = request.args.get('d')
     s = request.args.get('s')
+
     subi = normalize_sub(subi)
+    if subi is None:
+        return abort(404)
 
     # ensure caching does not cache another user's post view
     view_user_id = None
@@ -1423,15 +1418,16 @@ def msg(username=None):
         return render_template('message-reply.html', sendto=username, message=None, other_pgp=get_pgp_from_username(username),
                                 other_user=get_user_from_username(username), self_pgp=get_pgp_from_username(session['username']))
 
-
 @app.route('/i/<sub>/mods/', methods=['GET'])
-def submods(sub=None):
+def view_mod_log(sub=None, limit=1):
     sub = normalize_sub(sub)
-    modactions = db.session.query(Mod_action).filter_by(sub=sub).limit(5).all()
-    if type(modactions) != None:
-        modactions = [m for m in modactions]
+    modactions = db.session.query(Mod_action).filter_by(sub=sub)
+    
+    if request.url[-4:] != '?all':
+        modactions = modactions.limit(limit)
+    modactions = modactions.all()
 
-    return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions)
+    return render_template('mod/mod-log.html', modactions=modactions)
 
 @app.route('/i/<sub>/actions/', methods=['GET'])
 def subactions(sub=None):
@@ -1439,25 +1435,22 @@ def subactions(sub=None):
     modactions = db.session.query(Mod_action).filter_by(sub=sub).all()
     if type(modactions) != None:
         modactions = [m for m in modactions]
-    return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), modactions=modactions, allactions=True)
+    return render_template('mod/mod-log.html', modactions=modactions)
 
 
 @app.route('/i/<sub>/mods/banned/', methods=['GET'])
 def bannedusers(sub=None):
     sub = normalize_sub(sub)
     banned = db.session.query(Ban).filter_by(sub=sub).all()
-    if type(banned) != None:
-        banned = [b for b in banned]
-    else:
-        banned = []
-    return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), banned=banned)
+
+    return render_template('mod/mod-banned.html', banned=banned)
 
 @app.route('/i/<sub>/mods/add/', methods=['GET'])
 def addmod(sub=None):
     sub = normalize_sub(sub)
     if hasattr(request, 'is_mod'):
         if request.is_mod:
-            return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
+            return render_template('mod/mod-add.html')
     return abort(403)
 
 @app.route('/i/<sub>/mods/remove/', methods=['GET'])
@@ -1465,7 +1458,7 @@ def removemod(sub=None):
     sub = normalize_sub(sub)
     if hasattr(request, 'is_mod'):
         if request.is_mod:
-            return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), addmod=True)
+            return render_template('mod/mod-banned.html')
     return abort(403)
 
 @app.route('/i/<sub>/info/', methods=['GET'])
@@ -1484,14 +1477,12 @@ def description(sub=None):
     sub.markup_rules = sub.rules
     sub.edit_rules = sub.rules
 
-    return render_template('sub-mods.html', mods=get_sub_mods(sub.name, admin=False), sub=sub)
+    return render_template('mod/mod-info.html', sub=sub)
 
 @app.route('/i/<sub>/settings/', methods=['GET'])
 def settings(sub=None):
-    sub = normalize_sub(sub)
-    subr = db.session.query(Sub).filter_by(name=sub).first()
     if request.is_mod:
-        return render_template('sub-mods.html', mods=get_sub_mods(sub, admin=False), settings=True, nsfw=subr.nsfw, sub_object=subr)
+        return render_template('mod/mod-settings.html', sub=sub)
     return abort(403)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)

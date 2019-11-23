@@ -1,0 +1,29 @@
+{% extends 'mod/mod-base.html' %}
+{% block mod_body %}
+
+<table class="table table-sm mod-actions-table">
+    <thead class='mod-log-table'>
+        <tr class='mod-log-table'>
+            <th scope="col" class='mod-log-table'>Mod</th>
+            <th scope="col" class='mod-log-table'>Action</th>
+            <th scope="col" class='mod-log-table'>Permalink</th>
+        </tr>
+    </thead>
+    <tbody class='mod-log-table'>
+    {% for ma in modactions %}
+        <tr class='mod-log-table'>
+            <td class='mod-log-table'>
+                <a href="/u/{{ ma.username }}">{{ ma.username }}</a>
+            </td>
+            <td class='mod-log-table'>{{ ma.action }}</td>
+            <td class='mod-log-table mod-log-table-link'>
+                <a class='mod-log-table-text' href="{{ ma.url }}">{{ ma.url|replace(config.URL, '') }}</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<a class='btn btn-primary btn-sm' href="{{ request.environ['PATH_INFO'] + '?all' }}">show all</a>
+
+{% endblock %}

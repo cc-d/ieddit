@@ -1,0 +1,32 @@
+{% extends 'mod/mod-base.html' %}
+{% block mod_body %}
+
+{% if banned != [] %}
+    <ul class="list-group list-group-horizontal-sm">
+        {% for ban in banned %}
+            {% if ban.anonymous %}
+                <li class="list-group-item banned-user">User: Anonymous #{{ ban.id }}
+            {% else %}
+                <li class="list-group-item banned-user">User: {{ ban.username }} 
+            {% endif %}
+            {% if request.is_mod %}
+                <form action='/mod/unban' method='POST'>
+                <input type='hidden' value='{{ ban.id }}' name='ban_id'>
+                <input type='hidden' value='{{ ban.anonymous }}'>
+                {% if ban.anonymous %}
+                    <input type='hidden' value='Anonymous' name='username'>
+                {% else %}
+                    <input type='hidden' value='{{ ban.username }}' name='username'>
+                {% endif %}
+                <input type='hidden' value='{{ request.sub }}' name='sub'>
+                <button type="submit" class="btn btn-dark btn-sm">Unban</button>
+                </form>
+            {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% elif banned == [] %}
+    <h6 style='margin-left: 1rem;'> no banned users </h6>
+{% endif %}
+
+{% endblock %}

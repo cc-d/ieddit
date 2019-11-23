@@ -151,10 +151,14 @@ def get_sub_mods(sub, admin=True):
     mod_subs = db.session.query(Moderator).filter_by(sub=sub).all()
     if admin == False:
         return [m.username for m in mod_subs]
+
     admins = db.session.query(Iuser).filter_by(admin=True).all()
     for a in admins:
         mod_subs.append(a)
+
     return [m.username for m in mod_subs]
+
+app.jinja_env.globals.update(get_sub_mods=get_sub_mods)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_sub_title(sub):
@@ -205,6 +209,20 @@ def get_explore_stats(sub, today=False):
     [users.append(c[1]) for c in comments if c[1] not in users]
 
     return (sub, len(users), len(posts), len(comments))
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_explore_subs(offset=0, limit=50):
+    """
+    one of the best current targets for optimization
+    """
+    subs = db.session.query(Sub).outerjoin(Comment). \
+            group_by(Sub).order_by(func.count(Comment.sub_name).desc()). \
+            limit(limit).offset(offset).all()
+
+    for s in subs:
+        s.stats = get_explore_stats(s.name) 
+
+    return subs
 
 ##### Username Functions #####
 @cache.memoize(config.DEFAULT_CACHE_TIME)

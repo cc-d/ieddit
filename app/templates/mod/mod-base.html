@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="mod-settings-controls margin-lr rounded">
+    <div class='mod-controls'>
+        
+        <a class="mod-button-a" href="/i/{{ request.sub }}/info/">
+            <button class='mod-page-button btn btn-sm btn-secondary rounded'><i class='fa fa-home'></i></button>
+        </a>
+        <a class="mod-button-a" href="/i/{{ request.sub }}/mods/">
+            <button class='mod-page-button btn btn-sm btn-secondary rounded'>Log</button>
+        </a>
+        <a class="mod-button-a" href="/i/{{ request.sub }}/mods/banned/">
+            <button class='mod-page-button btn btn-sm btn-secondary rounded'>Banned</button>
+        </a>
+        {% if request.is_mod %}
+            <a class="mod-button-a" href="/i/{{ request.sub }}/mods/add/">
+                <button class='mod-page-button btn btn-sm btn-secondary rounded'>Manage</button>
+            </a>
+            <a class="mod-button-a" href="/i/{{ request.sub }}/settings/">
+                <button class='mod-page-button btn btn-sm btn-secondary rounded'>Settings</button>
+            </a>
+        {% endif %}
+        <!--
+        <a class="mod-button-a" href="/i/{{ request.sub }}/stats/">
+            <button class='mod-page-button btn btn-sm btn-secondary rounded'>Stats</button>
+        </a>-->
+    </div>
+</div>
+<div class="mod-settings-page margin-lr rounded">
+    <div class='mod-list margin-lr  '>
+        <p class="mod-list-p">Mods: </p>
+        {% set mods = get_sub_mods(request.sub, admin=False) %}
+        {% for mod in mods %}
+            <div class='mod-single'>
+                <a style="color: lightblue!important;" class="" href="{{ config.URL }}/u/{{ mod }}">
+                    <i class="fa fa-user" style='color: lightblue!important;'></i>[m]{{ mod }}
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+    <div class='mod-content margin-lr'>
+        {% block mod_body %}
+        {% endblock %}
+    </div>
+</div>
+
+{% endblock %}

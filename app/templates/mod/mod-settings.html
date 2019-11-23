@@ -1,0 +1,21 @@
+{% extends 'mod/mod-base.html' %}
+{% block mod_body %}
+
+
+<h4 class='sub-settings-text' style='margin-top: 1rem;'>settings</h4>
+<form action='/mod/settings' method='POST'>
+    <input type='hidden' name='sub' value='{{ request.sub }}'>
+    <ul class="list-group">
+        <li class="list-group-item rounded sub-settings">
+            <input type='checkbox' id="modMarkSubNSFW" name='marknsfw' value='nsfw' {% if sub.nsfw %}checked{% endif %}> Mark All Posts NSFW?
+        </li>
+    </ul>
+    <div class="form-group">
+        <label>Subreddit CSS</label>
+        <textarea name='newcss' class="form-control sub-css" style='resize: both;'>{{ sub.css }}</textarea>
+    </div>
+    <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary" type="button">Update</button>
+</form>
+
+
+{% endblock %}
