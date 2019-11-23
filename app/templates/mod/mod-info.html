@@ -1,47 +1,45 @@
 {% extends 'mod/mod-base.html' %}
 {% block mod_body %}
 
-{% if sub.rules %}
-    <div class='margin-lr mod-page-sub-title'>
-        <h5 style='display: inline-block;'>Title:</h5>
-        <h6 style='display: inline-block;'>&nbsp;{% if request.sub_title %}{{ request.sub_title }}{% else %}No Title{% endif %}</h6>
-        {% if request.is_mod %}
-        <form action='/mod/title' method='POST'>
-            <div class="input-group mb-3 mod-edit-container">
-                <input type='hidden' name='sub' value='{{ request.sub }}'>
-                {% if request.sub_title != None %}
-                    <input type="text" name='title' class="form-control rounded" value="{{ request.sub_title }}">
-                {% else %}
-                    <input type="text" name='title' class="form-control rounded" placeholder="Example: A place for friends." aria-label="Username">
-                {% endif %}
-            <br><button type='submit' class="btn btn-primary rounded" type="button">Update Title</button>
-            </div>
-        </form>
-        {% endif %}
-    </div>
-    
-    
-    <div id='display-rules' class='margin-lr'>
-        <h3>Description</h3>
-                <div class="safe-markup-text sub-mod-rules">
-                    {% if sub.markup_rules %}
-                        {{ sub.markup_rules }}
-                    {% else %}
-                        No Description.
-                    {% endif %}
-                </div>
-            </div>
-            {% if request.is_mod %}
-                <div class='margin-lr sub-desc-edit mod-edit-container'>
-                    <form action='/mod/edit/description' method='POST'>
-                        <div class='form-group'>
-                            <!-- Remember, no identation should be placed in textarea tags. -->
-                            <textarea name='rtext' class="form-control safe-markup-text sub-desc-edit-text">{% if sub.rules != None %}{{ sub.rules }}{% endif %}</textarea>
-                        </div>
-                        <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary" type="button">Update description</button>
-                    </form>
-                </div>
+<div class='margin-lr mod-page-sub-title'>
+    <h5 style='display: inline-block;'>Title:</h5>
+    <h6 style='display: inline-block;'>&nbsp;{% if request.sub_title %}{{ request.sub_title }}{% else %}No Title{% endif %}</h6>
+    {% if request.is_mod %}
+    <form action='/mod/title' method='POST'>
+        <div class="input-group mb-3 mod-edit-container">
+            <input type='hidden' name='sub' value='{{ request.sub }}'>
+            {% if request.sub_title != None %}
+                <input type="text" name='title' class="form-control rounded" value="{{ request.sub_title }}">
+            {% else %}
+                <input type="text" name='title' class="form-control rounded" placeholder="Example: A place for friends." aria-label="Username">
             {% endif %}
-    </div>
-{% endif %}
+        <br><button type='submit' class="btn btn-primary rounded" type="button">Update Title</button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+
+<div id='display-rules' class='margin-lr'>
+    <h3>Description</h3>
+            <div class="safe-markup-text sub-mod-rules">
+                {% if sub.markup_rules %}
+                    {{ sub.markup_rules }}
+                {% else %}
+                    No Description.
+                {% endif %}
+            </div>
+        </div>
+        {% if request.is_mod %}
+            <div class='margin-lr sub-desc-edit mod-edit-container'>
+                <form action='/mod/edit/description' method='POST'>
+                    <div class='form-group'>
+                        <!-- Remember, no identation should be placed in textarea tags. -->
+                        <textarea name='rtext' class="form-control safe-markup-text sub-desc-edit-text">{% if sub.rules != None %}{{ sub.rules }}{% endif %}</textarea>
+                    </div>
+                    <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary" type="button">Update description</button>
+                </form>
+            </div>
+        {% endif %}
+</div>
+
 {% endblock %}
