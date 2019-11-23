@@ -74,7 +74,7 @@
   <h3>Description</h3>
       <div class="safe-markup-text sub-mod-rules">
         {% if sub.markup_rules %}
-          {{ sub.markup_rules|safe }}
+          {{ sub.markup_rules }}
         {% else %}
           No Description.
         {% endif %}
@@ -85,7 +85,7 @@
         <form action='/mod/edit/description' method='POST'>
           <div class='form-group'>
             <!-- Remember, no identation should be placed in textarea tags. -->
-            <textarea name='rtext' class="form-control safe-markup-text sub-desc-edit-text">{% if sub.rules != None %}{{ sub.edit_rules|safe }}{% endif %}</textarea>
+            <textarea name='rtext' class="form-control safe-markup-text sub-desc-edit-text">{% if sub.rules != None %}{{ sub.edit_rules }}{% endif %}</textarea>
           </div>
           <button type='submit' name='sub' value='{{ request.sub }}' class="btn btn-primary" type="button">Update description</button>
         </form>

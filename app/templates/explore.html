@@ -7,7 +7,7 @@
     <h5 class="mt-0"><a href="{{ config.URL }}/i/{{ sub.name }}">/i/{{ sub.name }} {% if sub.nsfw %}<a style="color: red;">nsfw</a>{% endif %} {% if sub.title != None %} - {{ sub.title }}{% endif %}</a></h5>
     {% if sub.new_rules %}
         <div class="safe-markup-text">
-            {{ sub.new_rules|safe }}
+            {{ sub.new_rules }}
         </div>
     {% else %}
         This sub has no description.

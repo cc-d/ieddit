@@ -1477,8 +1477,12 @@ def description(sub=None):
     sub = normalize_sub(sub)
     sub = db.session.query(Sub).filter_by(name=sub).first()
 
-    sub.markup_rules = pseudo_markup(sub.rules, all_newlines=False, escape_only=True)
-    sub.edit_rules = pseudo_markup(sub.rules, escape_only=True, replace_newlines=False, all_newlines=False)
+    # if we enable markup for sub descriptions
+    #sub.markup_rules = pseudo_markup(sub.rules, all_newlines=False, escape_only=True)
+    #sub.edit_rules = pseudo_markup(sub.rules, escape_only=True, replace_newlines=False, all_newlines=False)
+
+    sub.markup_rules = sub.rules
+    sub.edit_rules = sub.rules
 
     return render_template('sub-mods.html', mods=get_sub_mods(sub.name, admin=False), sub=sub)
 
@@ -1547,7 +1551,9 @@ def explore():
         request.show_more_subs = False
 
     for s in subs:
-        s.new_rules = pseudo_markup(s.rules, escape_only=True, all_newlines=False)
+        # if we enable markup in sub descriptions
+        #s.new_rules = pseudo_markup(s.rules, escape_only=True, all_newlines=False)
+        s.new_rules = s.rules
 
     return render_template('explore.html', subs=subs)
 
