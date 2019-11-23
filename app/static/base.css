@@ -426,7 +426,7 @@ ul, li{
 
 .safe-markup-text {
     overflow: hidden;
-    color: #eee!important;
+    color: #ddd;
 }
 
 .safe-markup-text ul {
