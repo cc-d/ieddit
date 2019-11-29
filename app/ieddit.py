@@ -1419,7 +1419,7 @@ def msg(username=None):
                                 other_user=get_user_from_username(username), self_pgp=get_pgp_from_username(session['username']))
 
 @app.route('/i/<sub>/mods/', methods=['GET'])
-def view_mod_log(sub=None, limit=1):
+def view_mod_log(sub=None, limit=10):
     sub = normalize_sub(sub)
     modactions = db.session.query(Mod_action).filter_by(sub=sub)
     
