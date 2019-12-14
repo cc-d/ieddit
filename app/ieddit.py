@@ -618,35 +618,40 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
             return 'badlink'
 
     sub = normalize_sub(sub)
+    if sub is None:
+        abort(404)
 
+    
     try:
         post_id = int(post_id)
-    except:
-        flash('invalid post id', 'danger')
-        return redirect('/')
+        p = db.session.query(Post).filter_by(id=post_id).first()
+        if p is None:
+            abort(404)
+        if comment_id is not None:
+            try:
+                comment_id = int(comment_id)
+                c = db.session.query(Comment).filter_by(id=comment_id).first()
+                if c is None:
+                    abort(404)
+            except ValueError:
+                abort(404)
+    except ValueError:
+        abort(404)
 
-    if comment_id is not None:
-        try:
-            comment_id = int(comment_id)
-        except:
-            flash('invalid comment id')
-            return redirect('/')
 
+    is_parent = False if comment_id is None else True
 
-    if comment_id is None:
-        is_parent = False
-    else:
-        is_parent = True
-
-    cache_for = None
     if 'user_id' in session:
         cache_for = session['user_id']
+    else:
+        cache_for = None
 
-    comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title, comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, user_id=user_id, cache_for=cache_for)
+    comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title,
+                                                    comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, 
+                                                    user_id=user_id, cache_for=cache_for)
 
-    if post != None and 'username' in session:
-        if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(post.sub)).exists()).scalar():
-            post.is_mod = True
+    if post is not None and 'username' in session:
+        post.is_mod = True if (is_mod_of(session['username'], post.sub)) else None
 
     if comments_only:
         return comments
@@ -665,15 +670,10 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 
     session['last_return_url'] = last
 
-    if 'username' in session:
-        is_modv = is_mod_of(session['username'], normalize_sub(sub))
-    else:
-        is_modv = False
-
     return render_template('comments.html', comments=comments, post_id=post_id,
-        post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title),
-        post=post, tree=tree, parent_comment=parent_comment, is_parent=is_parent,
-        config=config, is_modv=is_modv)
+                        post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title),
+                        post=post, tree=tree, parent_comment=parent_comment, is_parent=is_parent,
+                        config=config)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def list_of_child_comments(comment_id, sort_by=None):
@@ -753,6 +753,10 @@ def create_sub():
 def view_user(username):
     username = normalize_username(username)
     vuser = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
+
+    if vuser is None:
+        abort(404)
+
     mod_of = db.session.query(Moderator).filter_by(username=vuser.username).all()
     mods = {}
 
