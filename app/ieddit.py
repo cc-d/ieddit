@@ -47,6 +47,7 @@ def before_request():
 
                     request.sub_title = get_sub_title(request.sub)
 
+
     if 'username' in session:
         has_messages(session['username'])
         get_blocked(session['username'])
@@ -56,7 +57,7 @@ def before_request():
             session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
 
 @app.after_request
-def apply_headers(response):
+def apply_after(response):
     """
     while this makes locked transactions and the like
     easy to deal with, it's very important to remember
@@ -86,6 +87,9 @@ def apply_headers(response):
 
     response.cache_control.private = True
     response.cache_control.public = False
+
+    if hasattr(request, 'sub'):
+        session['last_sub'] = request.sub
 
     return response
 
@@ -941,24 +945,18 @@ def create_post(postsub=None, api=False, *args, **kwargs):
         if api is False:
             session['previous_post_form'] = {'title':title, 'url':url, 'sub':sub, 'self_post_text':self_post_text}
 
-        anonymous = request.form.get('anonymous')
-
         sub = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
-        if sub == None:
-            flash('sub does not exist', 'danger')
+        if sub is None:
+            flash('that sub does not exist', 'danger')
             return redirect('/create_post')
 
-        if sub.nsfw:
-            nsfw = True
-        else:
-            nsfw = False
+        nsfw = True if sub.nsfw else False
 
         sub = sub.name
 
-        if anonymous != None:
-            anonymous = True
-        else:
-            anonymous = False
+        anonymous = request.form.get('anonymous')
+
+        anonymous = True if anonymous is not None else False
 
         if len(self_post_text) > 0:
             post_type = 'self_post'
@@ -968,24 +966,18 @@ def create_post(postsub=None, api=False, *args, **kwargs):
             flash('invalid post type, not url or self', 'danger')
             return redirect(url_for('create_post'))
 
-
         if api is False:
             if title is None or 'username' not in session or 'user_id' not in session:
                 flash('invalid post, no title/username/uid', 'danger')
                 return redirect(url_for('create_post'))
 
-        if len(title) > 400 or len(title) < 1 or len(sub) > 30 or len(sub) < 1:
+        if len(title) > 400 or len(title) < 1 or len(sub.name) > 30 or len(sub.name) < 1:
             flash('invalid title/sub length', 'danger')
             return redirect(url_for('create_post'))
 
-        deleted = False
-        if sub in get_banned_subs(username):
-            deleted = True
+        deleted = True if sub.name in get_banned_subs(username) else False
 
-        if request.form.get('override') is None:
-            override = False
-        else:
-            override = True
+        override = False if request.form.get('override') is None else True
 
         if post_type == 'url':
             if len(url) > 2000 or len(url) < 1:
@@ -996,7 +988,7 @@ def create_post(postsub=None, api=False, *args, **kwargs):
             if len(prot) != 1:
                 url = 'https://' + url
             new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=username,
-                        author_id=user_id, sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
+                        author_id=user_id, sub=sub.name, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
                         deleted=deleted, override=override)
 
         elif post_type == 'self_post':
@@ -1010,13 +1002,18 @@ def create_post(postsub=None, api=False, *args, **kwargs):
         db.session.add(new_post)
         db.session.commit()
 
+        # Forget why this was done this way.
         if post_type == 'url':
-            _thread.start_new_thread(os.system, ('python3 utilities/get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
+            _thread.start_new_thread(os.system, (
+                'python3 utilities/get_thumbnail.py %s "%s"' % (
+                    str(new_post.id), urllib.parse.quote(url)
+                )))
 
         new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
-        if is_admin(username) and anonymous == False:
+
+        if is_admin(username) and anonymous is False:
             new_post.author_type = 'admin'
-        elif is_mod(new_post, username) and anonymous == False:
+        elif is_mod(new_post, username) and anonymous is False:
             new_post.author_type = 'mod'
 
         db.session.commit()
@@ -1047,40 +1044,25 @@ def create_post(postsub=None, api=False, *args, **kwargs):
             username = session['username']
 
         if request.referrer:
-            subref = re.findall('\/i\/([a-zA-z0-9-_]*)', request.referrer)
-
-        if 'subref' in locals():
-            if len(subref) == 1:
-                if len(subref[0]) > 0:
-                    postsub = subref[0]
-
-        is_modv = False
-        if postsub:
-            if postsub != '' and postsub is not None:
-                if 'username' in session:
-                    is_modv = is_mod_of(username, postsub)
+            subref = re.findall(r'\/i\/([a-zA-z0-9-_]*)', request.referrer)
 
         sppf = session['previous_post_form']
         session['previous_post_form'] = None
-        return render_template('create-post.html', postsub=postsub, sppf=sppf, is_modv=is_modv)
+
+        return render_template('create-post.html', sppf=sppf)
 
 @app.route('/get_sub_list', methods=['GET'])
 def get_sub_list():
-    subs, sublinks = [], []
+    '''
+    gets sub suggestion dropdown when creating a new post    
+    '''
+    subs = get_explore_subs(limit=30)
 
-    comments = db.session.query(Comment).filter_by(author_id=session['user_id']).all()
-    [subs.append(c.sub_name) for c in comments if c.sub_name not in subs]
+    sublinks = ['<a class="dropdown-item sublist-dropdown"' + \
+                ' href="javascript:setSub(\'%s\')">/i/%s</a>' % (s.name, s.name) 
+                for s in subs]
 
-    posts = db.session.query(Post).filter_by(author_id=session['user_id']).all()
-    [subs.append(p.sub) for p in posts if p.sub not in subs]
-
-    if subs != []:
-        for s in subs:
-            sublinks.append('<a class="dropdown-item sublist-dropdown"' +
-            ' href="javascript:setSub(\'%s\')">/i/%s</a>' % (s, s))
-        return '\n'.join(sublinks)
-    else:
-        return ''
+    return '\n'.join(sublinks)
 
 
 @limiter.limit(config.COMMENT_RATE_LIMIT)

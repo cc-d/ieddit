@@ -131,15 +131,37 @@ def is_sub_nsfw(sub):
     return False
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def normalize_sub(sub):
+def normalize_sub(sub, return_obj=False):
     """
     if a subname is incorrectly capitalized, correct it
     """
     subl = db.session.query(Sub). \
         filter(func.lower(Sub.name) == func.lower(sub)).first()
-    if subl != None:
-        return subl.name
+
+    if subl is not None:
+        if not return_obj:
+            return subl.name
+        return sub
     return sub
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def get_sub_mods(sub, admin=True):
+    """
+    returns the list of mods in a given sub
+    the optional admin kwarg just also includes admins
+    as mods for simplicty sake
+    """
+    mod_subs = db.session.query(Moderator).filter_by(sub=sub).all()
+    if admin == False:
+        return [m.username for m in mod_subs]
+
+    admins = db.session.query(Iuser).filter_by(admin=True).all()
+    for a in admins:
+        mod_subs.append(a)
+
+    return [m.username for m in mod_subs]
+
+app.jinja_env.globals.update(get_sub_mods=get_sub_mods)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_sub_mods(sub, admin=True):

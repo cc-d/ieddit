@@ -14,7 +14,6 @@ var averageRGB = (function () {
 
       c[i] = t.length == 2? '' + t : '0' + t; 
     }
-    console.log(c.join(''));
     return  '#' + c.join('');
   }
 }());
@@ -232,7 +231,6 @@ the input string */
 
 var q = false
 function sortSearch(a, az) {
-    console.log(a, az)
     aza = {}
     for (i=0; i<az.length; i++) {
         aza[az[i]] = 0;
@@ -242,7 +240,6 @@ function sortSearch(a, az) {
         newa = newa + a[i];
 
         for (ii=0; ii<az.length; ii++) {
-            console.log(az[ii].indexOf(newa))
             if (az[ii].indexOf(newa.toLowerCase()) != -1) {
                 aza[az[ii]] += 1
             }

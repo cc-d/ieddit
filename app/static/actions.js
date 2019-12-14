@@ -84,7 +84,6 @@ function showObject(itype, iid) {
                 location.reload();
                 return;
             }
-            console.log($('#' + itype + '-' + iid).html());
             $('#' + itype + '-' + iid).remove();
 
         } else {
@@ -133,21 +132,16 @@ function formSubmit(val) {
         return;
     }
     elem = $('#' + val);
-    /*
-    if ($(elem).attr('href') !== undefined ) {
-        window.location = $(elem).attr('href');
-    }*/
-    btn = $('#btn-' + val);
-    console.log(btn);
-    console.log(elem);
 
-    formId = val
+    btn = $('#btn-' + val);
+
+    formId = val;
+
     val = val.split('-');
 
     itype = val[0]
     action = val[1]
     iid = val[2]
-    console.log(val);
 
     if (val[2] == 'ban' || val[2] == 'unban') {
         $('#' + formId).click();
