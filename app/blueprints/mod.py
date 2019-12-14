@@ -17,12 +17,9 @@ def mod_delete_post():
     pid = request.form.get('post_id')
     post = db.session.query(Post).filter_by(id=pid).first()
     sub_url = config.URL + '/i/' + post.sub
-    if 'admin' in session:
-        is_mod = True
-    else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(post.sub)).exists()).scalar()
-    if is_mod:
+
+
+    if 'admin' in session or is_mod_of(session['username'], post.sub):
         #db.session.delete(post)
         msg = 'deleted'
         if post.deleted == True:
@@ -36,7 +33,7 @@ def mod_delete_post():
         flash('post %s' % msg, category='success')
         return redirect(sub_url)
     else:
-        return '403'
+        return abort(403)
 
 @bp.route('/delete/comment', methods=['POST'])
 def mod_delete_comment():
@@ -47,12 +44,7 @@ def mod_delete_comment():
     comment = db.session.query(Comment).filter_by(id=cid).first()
     post = db.session.query(Post).filter_by(id=comment.post_id).first()
 
-    if 'admin' in session:
-        is_mod = True
-    else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(post.sub)).exists()).scalar()
-    if is_mod:
+    if 'admin' in session or is_mod_of(session['username'], post.sub):
         comment.deleted = True
         mod_action(session['username'], 'delete', comment.get_permalink(), comment.sub_name)
         comment.removed_by = session['username']
@@ -61,7 +53,7 @@ def mod_delete_comment():
         flash('comment deleted', category='success')
         return redirect(post.get_permalink())        
     else:
-        return '403'
+        return abort(403)
 
 @bp.route('/sticky/post', methods=['POST'])
 def mod_sticky_post():
@@ -72,12 +64,7 @@ def mod_sticky_post():
     pid = request.form.get('post_id')
     post = db.session.query(Post).filter_by(id=pid).first()
 
-    if 'admin' in session:
-        is_mod = True
-    else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(post.sub)).exists()).scalar()
-    if is_mod:
+    if 'admin' in session or is_mod_of(session['username'], post.sub):
         old_sticky = db.session.query(Post).filter_by(sub=post.sub, stickied=True).all()
         for s in old_sticky:
             s.stickied = False
@@ -91,7 +78,7 @@ def mod_sticky_post():
         flash('stickied post', category='success')
         return redirect(config.URL + '/i/' + post.sub)
     else:
-        return '403'
+        return abort(403)
 
 
 @bp.route('/unsticky/post', methods=['POST'])
@@ -104,21 +91,15 @@ def mod_unsticky_post():
     post = db.session.query(Post).filter_by(id=pid).first()
     print(post, pid)
 
-    if 'admin' in session:
-        is_mod = True
-    else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(post.sub)).exists()).scalar()
-    if is_mod:
+    if 'admin' in session or is_mod_of(session['username'], post.sub):
         mod_action(session['username'], 'unstickied', post.get_permalink(), post.sub)
         post.stickied = False
         db.session.commit()
-
         
         flash('unstickied post', category='success')
         return redirect(config.URL + '/i/' + post.sub)
     else:
-        return '403'
+        abort(403)
 
 @bp.route('/lock/post', methods=['POST'])
 def mod_lock_post():
@@ -134,12 +115,7 @@ def mod_lock_post():
     else:
         action = 'unlock'
 
-    if 'admin' in session:
-        is_mod = True
-    else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(post.sub)).exists()).scalar()
-    if is_mod:
+    if 'admin' in session or is_mod_of(session['username'], post.sub):
         if action == 'lock':
             mod_action(session['username'], 'locked', post.get_permalink(), post.sub)
             post.locked = True
@@ -153,7 +129,7 @@ def mod_lock_post():
 
         return redirect(post.get_permalink())
     else:
-        return '403'
+        return abort(403)
 
 
 @bp.route('/ban', methods=['POST'])
@@ -163,7 +139,7 @@ def mod_ban_user():
         return redirect(url_for('login'))
 
     dropdown = request.form.get('post_id')
-    if dropdown != None:
+    if dropdown is not None:
         if dropdown.find('|') != -1:
             params = dropdown.split('|')
             iid = params[1]
@@ -172,53 +148,35 @@ def mod_ban_user():
             iid = request.form.get('iid')
             itype = request.form.get('itype')
     else:
-            iid = request.form.get('iid')
-            itype = request.form.get('itype')
+        iid = request.form.get('iid')
+        itype = request.form.get('itype')
 
-    is_mod = True
+    if itype == 'post':
+        obj = db.session.query(Post).filter_by(id=iid).first()
+    elif itype == 'comment':
+        obj = db.session.query(Comment).filter_by(id=iid).first()
 
-    if is_mod:
-        if itype == 'post':
-            obj = db.session.query(Post).filter_by(id=iid).first()
-        elif itype == 'comment':
-            obj = db.session.query(Comment).filter_by(id=iid).first()
-        
-        if obj.anonymous:
-            anon = True
-        else:
-            anon = False
+    anon = True if obj.anonymous else False
 
-        if hasattr(obj, 'sub_name'):
-            is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(obj.sub_name)).exists()).scalar()
-            if is_mod == False:
-                if 'admin' in session:
-                    is_mod = True
-            if is_mod != True:
-                return '403'
-            new_ban = Ban(sub=obj.sub_name, username=obj.author, anonymous=anon)
-            sub = obj.sub_name
-            db.session.add(new_ban)
-        else:
-            is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(obj.sub)).exists()).scalar()
-            if is_mod == False:
-                if 'admin' in session:
-                    is_mod = True
-            if is_mod != True:
-                return '403'
-            new_ban = Ban(sub=obj.sub, username=obj.author, anonymous=anon)
-            sub = obj.sub
-            db.session.add(new_ban)
-
-        mod_action(session['username'], 'ban', obj.get_permalink(), sub)
-
-        db.session.commit()
-
-        flash('banned ' + obj.author + ' from ' + sub, category='success')
-        return redirect(config.URL + '/i/' + sub)
+    if hasattr(obj, 'sub_name'):
+        if 'admin' not in session and is_mod_of(session['username'], obj.sub_name) is False:
+            return abort(403)
+        new_ban = Ban(sub=obj.sub_name, username=obj.author, anonymous=anon)
+        sub = obj.sub_name
+        db.session.add(new_ban)
     else:
-        return '403'
+        if 'admin' not in session and is_mod_of(session['username'], obj.sub) is False:
+            return abort(403)
+        new_ban = Ban(sub=obj.sub, username=obj.author, anonymous=anon)
+        sub = obj.sub
+        db.session.add(new_ban)
+
+    mod_action(session['username'], 'ban', obj.get_permalink(), sub)
+
+    db.session.commit()
+
+    flash('banned ' + obj.author + ' from ' + sub, category='success')
+    return redirect(config.URL + '/i/' + sub)
 
 @bp.route('/unban', methods=['POST'])
 def mod_unban_user():
@@ -226,17 +184,12 @@ def mod_unban_user():
         flash('not logged in', 'error')
         return redirect(url_for('login'))
 
-    username = request.form.get('username')
-    username = normalize_username(username)
-    ban_id = request.form.get('ban_id')
-    sub = request.form.get('sub')
+    username = normalize_username(request.form.get('username'))
 
-    if 'admin' in session:
-        is_mod = True
-    else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(sub)).exists()).scalar()
-    if is_mod:
+    ban_id = request.form.get('ban_id')
+    sub = normalize_sub(request.form.get('sub'))
+
+    if is_mod_of(session['username'], sub):
         uban = db.session.query(Ban).filter_by(id=ban_id, sub=sub)
         uban.delete()
         db.session.commit()
@@ -244,6 +197,8 @@ def mod_unban_user():
         mod_action(session['username'], 'unban', username, sub)
         flash('unbanned ' + username, 'success')
         return redirect('/i/' + sub + '/mods/banned/')
+    else:
+        return abort(403)
 
 @bp.route('/add', methods=['POST'])
 def mod_addmod():
@@ -252,7 +207,7 @@ def mod_addmod():
         return redirect(url_for('login'))
 
     username = request.form.get('username')
-    sub = request.form.get('sub')
+    sub = normalize_sub(request.form.get('sub'))
 
     username = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
     username = username.username
@@ -260,12 +215,7 @@ def mod_addmod():
         flash('Mod already added', 'error')
         return redirect('/i/%s/mods/' % sub)
 
-    if 'admin' in session:
-        is_mod = True
-    else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(sub)).exists()).scalar()
-    if is_mod:
+    if 'admin' in session or is_mod_of(session['username'], sub):
         mods = db.session.query(Moderator).filter_by(sub=sub).all()
         rank = 0
         if mods != None:
@@ -280,7 +230,7 @@ def mod_addmod():
         flash('new moderator ' + username, 'success')
         return redirect('/i/' + sub + '/mods/')
     else:
-        return '403'
+        return abort(403)
 
 @bp.route('/remove', methods=['POST'])
 def mod_removemod():
@@ -294,12 +244,7 @@ def mod_removemod():
         flash ('invalid username', 'error')
         return redirect('/i/' + sub + '/mods/')
 
-    if 'admin' in session:
-        is_mod = True
-    else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(sub)).exists()).scalar()
-    if is_mod:
+    if 'admin' in session or is_mod_of(session['username'], sub):
         sub = normalize_sub(sub)
         delmod = db.session.query(Moderator).filter_by(username=username, sub=sub).first()
         you = db.session.query(Moderator).filter_by(username=session['username'], sub=sub).first()
@@ -309,10 +254,12 @@ def mod_removemod():
             return redirect('/i/' + sub + '/mods/')
 
         db.session.query(Moderator).filter_by(username=delmod.username, sub=sub).delete()
-        db.    session.commit()
+        db.session.commit()
         
         flash('deleted mod')
         return redirect('/i/' + sub + '/mods/')
+    else:
+        return abort(403)
 
 @bp.route('/edit/description', methods=['POST'])
 def mod_edit_rules():
@@ -339,7 +286,7 @@ def mod_edit_rules():
         flash('successfully updated description', 'success')
         return(redirect('/i/' + sub + '/info/'))
     else:
-        return '403'
+        return abort(403)
 
 @bp.route('/nsfw',  methods=['POST'])
 def mod_marknsfw():
@@ -351,18 +298,13 @@ def mod_marknsfw():
     post = db.session.query(Post).filter_by(id=post_id).first()
 
 
-    if 'admin' in session:
-        is_mod = True
-    else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(post.sub)).exists()).scalar()
-    if is_mod:
+    if 'admin' in session or is_mod_of(session['username'], post.sub):
         post.nsfw = True
         flash('marked as nsfw')
         db.session.commit()
-        
         return redirect(post.get_permalink())
-    return '403'
+    else:
+        abort(403)
 
 @bp.route('/title', methods=['POST'])
 def mod_title():
@@ -377,12 +319,9 @@ def mod_title():
     elif len(title) == 0:
         title = None
 
-    if 'admin' in session:
-        is_mod = True
-    else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(sub)).exists()).scalar()
-    if is_mod:
+    sub = normalize_sub(sub)
+
+    if 'admin' in session or is_mod_of(session['username'], sub):
         desc = db.session.query(Sub).filter_by(name=sub).first()
         desc.title = title
         db.session.add(desc)
@@ -391,43 +330,39 @@ def mod_title():
         
         return(redirect('/i/' + sub + '/info/'))
     else:
-        return '403'
+        return abort(403)
 
 @bp.route('/settings', methods=['POST'])
 def mod_settings():
     sub = request.form.get('sub')
     subr = normalize_sub(sub)
-    marknsfw =     request.form.get('marknsfw')
+    marknsfw = request.form.get('marknsfw')
     newcss = request.form.get('newcss')
 
     if 'username' not in session:
         flash('not logged in', 'error')
         return redirect(url_for('login'))
 
-    if 'admin' in session:
-        is_mod = True
-    else:
-        is_mod = db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']),
-                    Moderator.sub.like(sub)).exists()).scalar()
-    if is_mod:
+    sub = normalize_sub(sub)
+
+    if 'admin' in session or is_mod_of(session['username'], sub):
         sub = db.session.query(Sub).filter_by(name=sub).first()
 
         if marknsfw:
-            for p in db.session.query(Post).filter_by(sub=subr):
+            for p in db.session.query(Post).filter_by(sub=subr).all():
                 p.nsfw = True
             db.session.commit()
             sub.nsfw = True
         else:
             sub.nsfw = False
 
-        if newcss != None:
+        if newcss is not None:
             if len(newcss) < 20000:
                 sub.css = newcss
 
         db.session.add(sub)
         db.session.commit()
         flash('successfully updated settings', 'success')
-        
-        return(redirect('/i/' + sub.name + '/info/'))
+        return redirect('/i/' + sub.name + '/info/')
     else:
-        return '403'
+        return abort(403)

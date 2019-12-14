@@ -606,11 +606,6 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
             c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
             if c.has_voted != None:
                 c.has_voted = c.has_voted.vote
-                if Comment.sub_name:
-                    if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(Comment.sub_name)).exists()).scalar():
-                        Comment.is_mod = True
-                    else:
-                        Comment.is_mod = False
 
     return comments, post, parent_comment
 
@@ -802,11 +797,6 @@ def view_user(username):
             c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
             if c.has_voted != None:
                 c.has_voted = c.has_voted.vote
-                if Comment.sub_name:
-                    if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(Comment.sub_name)).exists()).scalar():
-                        Comment.is_mod = True
-                    else:
-                        Comment.is_mod = False
 
     vuser.karma = get_user_karma(username)
 
@@ -1681,11 +1671,6 @@ def subcomments(sub=None, offset=0, limit=15, s=None, d=None, nsfw=False, api=Fa
             c.has_voted = db.session.query(Vote).filter_by(comment_id=c.id, user_id=session['user_id']).first()
             if c.has_voted != None:
                 c.has_voted = c.has_voted.vote
-                if Comment.sub_name:
-                    if db.session.query(db.session.query(Moderator).filter(Moderator.username.like(session['username']), Moderator.sub.like(Comment.sub_name)).exists()).scalar():
-                        Comment.is_mod = True
-                    else:
-                        Comment.is_mod = False
 
     if s == 'hot':
             comments.sort(key=lambda x: x.hot, reverse=True)
