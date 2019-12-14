@@ -248,11 +248,22 @@ def inline_expansion(text):
         z = [x for x in image_exts if a[1].lower()[-5:].find(x) != -1]
         print(z)
         if (len(z) > 0):
-            text = text.replace(a[0], '<div class="expansion-block">' + a[0] + \
-                '<div class="inline-expansion-expand" id="expand-btn-' + random_id + '">' + \
-                '&nbsp;<a class="inline-expand-link" href="javascript:inlineExpand(\'' + random_id + '\');">' + \
-                '<i class="fa fa-plus-square-o"></i></a></div><div class="inline-expanded-hidden" id="hidden-' + random_id + '"><br>' + \
-                '<img class="inline-image" id="real-' + random_id + '" real-src="' + html.escape(a[1]) + '"></div></div>')
+            text = text.replace(a[0], 
+                '<div class="expansion-block">' + a[0] + \
+                    '<div style="display: inline">' + \
+                    '<div class="inline-expansion-expand" id="btn-' + random_id + '">' + \
+                        '&nbsp;' + \
+                        '<a class="inline-expand-link" href="javascript:inlineExpand(\'' + random_id + '\');">' + \
+                            '<i class="fa fa-plus-square-o">' + \
+                            '</i>' + \
+                        '</a>' + \
+                        '</div>' + \
+                    '<div class="inline-expanded-hidden" id="hidden-' + random_id + '">' + \
+                        '<br>' + \
+                        '<img class="inline-image" id="real-' + random_id + '" real-src="' + html.escape(a[1]) + '">' + \
+                    '</div>' + \
+                    '</div>' + \
+                '</div>')
 
     return text
 
