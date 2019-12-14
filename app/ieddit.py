@@ -942,6 +942,9 @@ def create_post(api=False, *args, **kwargs):
             subname = request.form.get('sub')
             self_post_text = request.form.get('self_post_text')
 
+        if url is None and self_post_text is None:
+            self_post_text = ' '
+
         if api is False:
             session['previous_post_form'] = {'title':title, 'url':url, 'sub':subname, 'self_post_text':self_post_text}
 
@@ -964,7 +967,7 @@ def create_post(api=False, *args, **kwargs):
 
         anonymous = True if anonymous is not None else False
 
-        if len(self_post_text) > 0:
+        if len(self_post_text) > 0 or self_post_text == '':
             post_type = 'self_post'
         elif len(url) > 0:
             post_type = 'url'
@@ -998,9 +1001,12 @@ def create_post(api=False, *args, **kwargs):
                         deleted=deleted, override=override)
 
         elif post_type == 'self_post':
-            if len(self_post_text) < 1 or len(self_post_text) > 20000:
+            if len(self_post_text) > 20000:
                 flash('invalid self post length', 'danger')
                 return redirect(url_for('create_post'))
+            elif len(self_post_text) < 1:
+                self_post_text = ' ' * 2
+
             new_post = Post(self_text=self_post_text, title=title, inurl_title=convert_ied(title),
                 author=username, author_id=user_id, sub=sub_obj.name, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
                 deleted=deleted, override=override)
