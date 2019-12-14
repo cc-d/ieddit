@@ -147,8 +147,9 @@ def get_tag_count(text):
     return tag_count
 
 
+tags=['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'blockquote']
 def clean_and_linkify(text):
-    tags=['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'blockquote']
+    global tags
     clean_text = clean(markdown(text), strip=True, tags=tags)
 
     # horrible hack we shouldn't have to do
@@ -156,14 +157,9 @@ def clean_and_linkify(text):
     clean_text = linkify(clean_text)
 
     for a in alts:
+        clean_text = clean_text.replace('https://' + a[0] + a[1], a[2])
+        clean_text = clean_text.replace('http://' + a[0] + a[1], a[2])
         clean_text = clean_text.replace(a[0] + a[1], a[2])
-
-    '''
-    for a in alts.keys():
-        clean_text = clean_text.replace(a, alts[a])
-        clean_text = re.sub('[\s]?^https?:\/\/.*\.' + '.'.join(a.split('.')[:-1]) + '[\s\/]?.*\.*?',
-                            alts[a], clean_text)
-    '''
 
     return clean_text
 
@@ -178,6 +174,7 @@ def alt_tlds(text):
         for r in rep:
             ran = rstring(20)
             replaced.append((ran, '.com', r))
+            print(ran, '.com', r)
             text = text.replace(r, ran + '.com')
 
     return text, replaced
@@ -271,13 +268,14 @@ def inline_expansion(text):
 
     for a in links:
         random_id = rstring(15)
-        repl = re.findall('<a href="([^"]*)" rel="nofollow">([^<]*)', a[0])[0]
-        a = (a[0].replace(repl[0], html.escape(repl[0])), a[1])
-        a = (a[0].replace(repl[1], html.escape(repl[1])), a[1])
+        repl = re.findall('(<a href=")([\s]?https?:\/\/.*\..*[^\s]?)(" rel="nofollow">)([^<]*)(<\/a>)'  , a[0])[0]
+
+        a = ('<a href="%s" rel="nofollow">%s</a>' % (html.escape(repl[1]),  html.escape(repl[3])), a[1])
+
         z = [x for x in image_exts if a[1].lower()[-5:].find(x) != -1]
+
         if (len(z) > 0):
-            text = text.replace(a[0], 
-                '<div class="expansion-block">' + a[0] + \
+            text = '<div class="expansion-block">' + a[0] + \
                     '<div style="display: inline">' + \
                     '<div class="inline-expansion-expand" id="btn-' + random_id + '">' + \
                         '&nbsp;' + \
@@ -291,7 +289,7 @@ def inline_expansion(text):
                         '<img class="inline-image" id="real-' + random_id + '" real-src="' + html.escape(a[1]) + '">' + \
                     '</div>' + \
                     '</div>' + \
-                '</div>')
+                '</div>'    
 
     return text
 
