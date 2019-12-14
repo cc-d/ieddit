@@ -922,7 +922,7 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 @app.route('/create_post', methods=['POST', 'GET'])
 @limiter.limit(config.POST_RATE_LIMIT)
 @not_banned
-def create_post(postsub=None, api=False, *args, **kwargs):
+def create_post(api=False, *args, **kwargs):
     if 'previous_post_form' not in session and not api:
         session['previous_post_form'] = None
 
@@ -932,26 +932,33 @@ def create_post(postsub=None, api=False, *args, **kwargs):
             user_id = db.session.query(Iuser).filter_by(username=username).first().id
             title = kwargs['title']
             url = kwargs['url']
-            sub = kwargs['sub']
+            subname = kwargs['sub']
             self_post_text = kwargs['self_post_text']
         else:
             username = session['username']
             user_id = session['user_id']
             title = request.form.get('title')
             url = request.form.get('url')
-            sub = request.form.get('sub')
+            subname = request.form.get('sub')
             self_post_text = request.form.get('self_post_text')
 
         if api is False:
-            session['previous_post_form'] = {'title':title, 'url':url, 'sub':sub, 'self_post_text':self_post_text}
+            session['previous_post_form'] = {'title':title, 'url':url, 'sub':subname, 'self_post_text':self_post_text}
 
-        sub = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
+        if subname is not None:
+            sub_obj = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(subname)).first()
+            if sub_obj is None:
+                flash('invalid sub', 'danger')
+                return redirect('/create_post')
+        else:
+            flash('did not include a sub', 'danger')
+            return redirect('/create_post')
 
-        if sub is None:
+        if sub_obj is None:
             flash('that sub does not exist', 'danger')
             return redirect('/create_post')
 
-        nsfw = True if sub.nsfw else False
+        nsfw = True if sub_obj.nsfw else False
 
         anonymous = request.form.get('anonymous')
 
@@ -970,11 +977,11 @@ def create_post(postsub=None, api=False, *args, **kwargs):
                 flash('invalid post, no title/username/uid', 'danger')
                 return redirect(url_for('create_post'))
 
-        if len(title) > 400 or len(title) < 1 or len(sub.name) > 30 or len(sub.name) < 1:
+        if len(title) > 400 or len(title) < 1 or len(sub_obj.name) > 30 or len(sub_obj.name) < 1:
             flash('invalid title/sub length', 'danger')
             return redirect(url_for('create_post'))
 
-        deleted = True if sub.name in get_banned_subs(username) else False
+        deleted = True if sub_obj.name in get_banned_subs(username) else False
 
         override = False if request.form.get('override') is None else True
 
@@ -987,7 +994,7 @@ def create_post(postsub=None, api=False, *args, **kwargs):
             if len(prot) != 1:
                 url = 'https://' + url
             new_post = Post(url=url, title=title, inurl_title=convert_ied(title), author=username,
-                        author_id=user_id, sub=sub.name, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
+                        author_id=user_id, sub=sub_obj.name, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
                         deleted=deleted, override=override)
 
         elif post_type == 'self_post':
@@ -995,7 +1002,7 @@ def create_post(postsub=None, api=False, *args, **kwargs):
                 flash('invalid self post length', 'danger')
                 return redirect(url_for('create_post'))
             new_post = Post(self_text=self_post_text, title=title, inurl_title=convert_ied(title),
-                author=username, author_id=user_id, sub=sub, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
+                author=username, author_id=user_id, sub=sub_obj.name, post_type=post_type, anonymous=anonymous, nsfw=nsfw,
                 deleted=deleted, override=override)
 
         db.session.add(new_post)
