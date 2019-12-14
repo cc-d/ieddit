@@ -224,9 +224,37 @@ def pseudo_markup(text, escape_only=False, replace_newlines=True, all_newlines=T
     clean_text = clean_text.replace('<blockquote>', '<blockquote><div class="inner-blockquote">')
     clean_text = clean_text.replace('</blockquote>', '</div></blockquote>')
 
+    clean_text = inline_expansion(clean_text)
+
     return clean_text
 
 epoch = datetime(1970, 1, 1)
+
+def re_first(reg, text):
+    return re.findall(reg, text)[0]
+
+def inline_expansion(text):
+    links = re.findall(r'(<a href="(https?:\/\/[^\s]*\.*)" rel="nofollow">[^<>]*<\/a>)',
+                    text, flags=re.IGNORECASE)
+
+    image_exts = ['.png', '.jpeg', '.jpg', '.gif']
+
+    for a in links:
+        random_id = rstring(15)
+        repl = re.findall('<a href="([^"]*)" rel="nofollow">([^<]*)', a[0])[0]
+        a = (a[0].replace(repl[0], html.escape(repl[0])), a[1])
+        a = (a[0].replace(repl[1], html.escape(repl[1])), a[1])
+        print(a)
+        z = [x for x in image_exts if a[1].lower()[-5:].find(x) != -1]
+        print(z)
+        if (len(z) > 0):
+            text = text.replace(a[0], '<div class="expansion-block">' + a[0] + \
+                '<div class="inline-expansion-expand" id="expand-btn-' + random_id + '">' + \
+                '&nbsp;<a class="inline-expand-link" href="javascript:inlineExpand(\'' + random_id + '\');">' + \
+                '<i class="fa fa-plus-square-o"></i></a></div><div class="inline-expanded-hidden" id="hidden-' + random_id + '"><br>' + \
+                '<img class="inline-image" id="real-' + random_id + '" real-src="' + html.escape(a[1]) + '"></div></div>')
+
+    return text
 
 def epoch_seconds(date):
     td = date - epoch

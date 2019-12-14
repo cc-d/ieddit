@@ -459,3 +459,24 @@ function minShow(cid, startingLevel) {
 function jslogin() {
     window.location.href = '/login';
 }
+
+function inlineExpand(elem_id) {
+    ebtn = $('#expand-btn-' + elem_id);
+    $(ebtn).html('<div class="inline-expansion-expand" id="collapse-btn-' + elem_id + '">&nbsp;' +
+        '<a class="inline-expand-link" href="javascript:inlineCollapse(\'' + elem_id + '\');">' +
+        '<i class="fa fa-minus-square-o"></i></a></div>');
+
+    elem = $('#hidden-' + elem_id);
+    doubleParent = $(elem).parent().parent();
+    $(elem).attr('class', 'inline-expanded');
+    $(elem).css('display', 'block');
+    $('#real-' + elem_id).attr('src', $('#real-' + elem_id).attr('real-src'));
+}
+
+function inlineCollapse(elem_id) {
+    ebtn = $('#collapse-btn-' + elem_id);
+    $(ebtn).html('<div class="inline-expansion-expand" id="expand-btn-' + elem_id + '">&nbsp;' +
+        '<a class="inline-collapse-link" href="javascript:inlineExpand(\'' + elem_id + '\');">' +
+        '<i class="fa fa-plus-square-o"></i></a></div>');
+    $('#hidden-' + elem_id).css('display', 'none');
+}

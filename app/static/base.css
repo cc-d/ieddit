@@ -1294,3 +1294,34 @@ blockquote {
 .mod-controls {
     background-color: #343a40;
 }
+
+.inline-expanded-hidden {
+    display: none;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.inline-expand-link {
+    position: absolute;
+    margin-top: 2px;
+    margin-left: 2px;
+}
+
+.inline-expansion-expand {
+    display: inline;
+}
+
+.expansion-block {
+    display: block;
+}
+
+.inline-expanded {
+    display: block;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.inline-image {
+    max-height: 90%;
+    max-width: 90%;
+}
