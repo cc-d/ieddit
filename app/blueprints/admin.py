@@ -111,7 +111,6 @@ def del_api_key():
 def ban_and_delete():
     post_id = request.form.get('post_id')
     comment_id = request.form.get('comment_id')
-    print(post_id, comment_id)
     if post_id != None:
         username = db.session.query(Post).filter_by(id=post_id).first()
         username = username.author

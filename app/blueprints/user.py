@@ -450,7 +450,6 @@ def hide_obj():
 def block_user_from_content():
     post_id = request.form.get('post_id')
     comment_id = request.form.get('comment_id')
-    print(post_id, comment_id)
     if post_id != None:
         username = db.session.query(Post).filter_by(id=post_id).first()
         if username != None:
@@ -473,7 +472,6 @@ def block_user_from_content():
     if 'username' in session:
         new_hidden = Hidden(post_id=None, comment_id=None, username=session['username'],
                             other_user=int(uid), anonymous=anon)
-        print('new', str(vars(new_hidden)))
         db.session.add(new_hidden)
         db.session.commit()
 
@@ -482,7 +480,6 @@ def block_user_from_content():
     else:
         session['blocked']['other_user'].append(int(uid))
 
-    print('BLOCKED ', session['blocked'])
 
 
     return 'ok'
@@ -511,7 +508,6 @@ def show_obj():
             itype = 'other_user'
             iid = d[k]
 
-    print(str(session['blocked'][itype]))
 
     if int(iid) not in session['blocked'][itype]:
         return 'ok'
@@ -519,11 +515,9 @@ def show_obj():
     if 'username' in session:
         hid = db.session.query(Hidden).filter_by(post_id=post_id, comment_id=comment_id, other_user=other_user, anonymous=False).delete()
         db.session.commit()
-        print(iid)
         session['blocked'][itype].pop(session['blocked'][itype].index(int(iid)))
         session['blocked'] = get_blocked(session['username'])
     else:
-        print(iid)
         session['blocked'][itype].pop(session['blocked'][itype].index(int(iid)))
 
     return 'ok'
