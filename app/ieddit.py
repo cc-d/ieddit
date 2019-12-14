@@ -946,13 +946,12 @@ def create_post(postsub=None, api=False, *args, **kwargs):
             session['previous_post_form'] = {'title':title, 'url':url, 'sub':sub, 'self_post_text':self_post_text}
 
         sub = db.session.query(Sub).filter(func.lower(Sub.name) == func.lower(sub)).first()
+
         if sub is None:
             flash('that sub does not exist', 'danger')
             return redirect('/create_post')
 
         nsfw = True if sub.nsfw else False
-
-        sub = sub.name
 
         anonymous = request.form.get('anonymous')
 
