@@ -450,37 +450,39 @@ def hide_obj():
 def block_user_from_content():
     post_id = request.form.get('post_id')
     comment_id = request.form.get('comment_id')
-    if post_id != None:
-        username = db.session.query(Post).filter_by(id=post_id).first()
-        if username != None:
-            uid = username.author_id
-            anon = username.anonymous
-            username = username.author
-    elif comment_id != None:
-        username = db.session.query(Comment).filter_by(id=comment_id).first()
-        if username != None:
-            uid = username.author_id
-            anon = username.anonymous
-            username = username.author
 
-    if uid == None:
-        return 'cannot find user'
+    if post_id is not None:
+        p = db.session.query(Post).filter_by(id=post_id).first()
+        if p.anonymous:
+            block_id = db.session.query(Iuser.anon_id). \
+                                    filter_by(id=p.author_id).first()[0]
+        else:
+            block_id = db.session.query(Iuser.id). \
+                                    filter_by(id=p.author_id).first()[0]
+
+    elif comment_id is not None:
+        p = db.session.query(Comment).filter_by(id=post_id).first()
+        if p.anonymous:
+            block_id = db.session.query(Iuser.anon_id). \
+                                    filter_by(id=p.author_id).first()[0]
+        else:
+            block_id = db.session.query(Iuser.id). \
+                                    filter_by(id=p.author_id).first()[0]
 
     if 'blocked' not in session:
         session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
 
     if 'username' in session:
         new_hidden = Hidden(post_id=None, comment_id=None, username=session['username'],
-                            other_user=int(uid), anonymous=anon)
+                            other_user=block_id, anonymous=p.anonymous)
         db.session.add(new_hidden)
         db.session.commit()
 
-    if anon == True:
-        session['blocked']['anon_user'].append(int(uid))
+    if p.anonymous:
+        session['blocked']['anon_user'].append(block_id)
     else:
-        session['blocked']['other_user'].append(int(uid))
-
-
+        session['blocked']['other_user'].append(block_id)
+    print(session['blocked'])
 
     return 'ok'
 
@@ -490,9 +492,9 @@ def show_obj():
     post_id = None
     comment_id = None
     other_user = None
-    d = json.loads(request.form.get('d'))
+    anonymous = False
 
-    ano = session['blocked']['anon_user']
+    d = json.loads(request.form.get('d'))
 
     for k in d.keys():
         if k == 'post_id':
@@ -507,15 +509,21 @@ def show_obj():
             other_user = d[k]
             itype = 'other_user'
             iid = d[k]
+        elif k == 'anon_user':
+            anonymous = True
+            other_user = d[k]
+            itype = 'anon_user'
+            iid = d[k]
 
-
-    if int(iid) not in session['blocked'][itype]:
-        return 'ok'
 
     if 'username' in session:
-        hid = db.session.query(Hidden).filter_by(post_id=post_id, comment_id=comment_id, other_user=other_user, anonymous=False).delete()
+        hid = db.session.query(Hidden).filter_by(post_id=post_id, comment_id=comment_id, other_user=other_user, anonymous=anonymous).delete()
         db.session.commit()
-        session['blocked'][itype].pop(session['blocked'][itype].index(int(iid)))
+
+        if not anonymous:
+            session['blocked'][itype].pop(session['blocked'][itype].index(int(iid)))
+        else:
+            session['blocked'][itype].pop(session['blocked'][itype].index(iid))
         session['blocked'] = get_blocked(session['username'])
     else:
         session['blocked'][itype].pop(session['blocked'][itype].index(int(iid)))
@@ -525,25 +533,34 @@ def show_obj():
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_total_blocked():
     uids, pids, cids = [], [], []
-    ano = session['blocked']['anon_user']
 
     for u in session['blocked']['other_user']:
-        u2 = db.session.query(Iuser).filter_by(id=int(u)).first()
-        if u2 == None:
+        u2 = db.session.query(Iuser).filter_by(id=u).first()
+        if u2 is None:
             continue
 
         u2.created_ago = time_ago(u2.created)
         u2.type = 'user'
         u2.key = 'other_user'
         u2.permalink = config.URL + '/u/' + u2.username
+        u2.anonymous = False
         uids.append(u2)
 
-    if hasattr(session['blocked'], 'anon_user') == False:
-        session['blocked']['anon_user'] = []
+    for u in session['blocked']['anon_user']:
+        u2 = db.session.query(Iuser).filter_by(anon_id=u).first()
+        if u2 is None:
+            continue
+
+        u2.created_ago = time_ago(u2.created)
+        u2.type = 'user'
+        u2.key = 'anon_user'
+        u2.permalink = config.URL + '/u/' + 'Anonymous'
+        u2.anonymous = True
+        uids.append(u2)
 
     for p in session['blocked']['post_id']:
         p2 = db.session.query(Post).filter_by(id=int(p)).first()
-        if p2 == None:
+        if p2 is None:
             continue
         p2.created_ago = time_ago(p2.created)
         p2.type = 'post'
@@ -552,7 +569,7 @@ def get_total_blocked():
 
     for c in session['blocked']['comment_id']:
         c2 = db.session.query(Comment).filter_by(id=int(c)).first()
-        if c2 == None:
+        if c2 is None:
             continue
         c2.created_ago = time_ago(c2.created)
         c2.type = 'comment'

@@ -71,8 +71,8 @@ function hideObject(itype, iid) {
 }
 
 function showObject(itype, iid) {
-    itype = itype + ''
-    iid = iid + ''
+    itype = itype.toString();
+    iid = iid.toString();
 
     $.post('/user/show', {d:'{"' + itype + '":"' + iid + '"}'}).done(function(data) {
         if (data === 'ok') {

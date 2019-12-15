@@ -1,5 +1,6 @@
 textarea {
     resize: both;
+    overflow-y: scroll!important;
 }
 
 #sub-dropdown-search{

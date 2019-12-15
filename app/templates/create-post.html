@@ -59,12 +59,22 @@
             <input type='checkbox' name='anonymous' value='1' id="anon-checkbox">
         {% endif %}
 
-        {% if session['admin'] or request.is_mod %}
+
+        {% if session['username'] in get_sub_mods(session['last_sub']) %}
             <label for="normal-checkbox"> non-mod?</label>
             {% if session['always_override'] == True %}
                 <input type='checkbox' name='override' id="normal-checkbox" checked>
             {% else %}
                 <input type='checkbox' name='override' id="normal-checkbox">
+            {% endif %}
+        {% else %}
+            {% if session['admin'] or request.is_mod %}
+                <label for="normal-checkbox"> non-mod?</label>
+                {% if session['always_override'] == True %}
+                    <input type='checkbox' name='override' id="normal-checkbox" checked>
+                {% else %}
+                    <input type='checkbox' name='override' id="normal-checkbox">
+                {% endif %}
             {% endif %}
         {% endif %}
 

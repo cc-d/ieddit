@@ -265,7 +265,7 @@ def normalize_username(username, dbuser=False):
             return username
         return username.username
     return None
-    
+
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def is_admin(username):
@@ -316,7 +316,7 @@ def get_post_from_comment_id(cid):
     return db.session.query(Post).filter_by(id=pid).first()
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_user_id_from_username(username):
+def user_id_from_username(username):
     """
     returns just the id of an user
     """
@@ -328,7 +328,7 @@ def get_user_karma(username):
     returns a dict with a user's post/comment karma
     """
     username = normalize_username(username)
-    user_id = get_user_id_from_username(username)
+    user_id = user_id_from_username(username)
 
     user_post_ids = db.session.query(Post.id).filter_by(author_id=user_id, anonymous=False).all()
     user_comment_ids = db.session.query(Comment.id).filter_by(author_id=user_id, anonymous=False).all()
@@ -355,7 +355,15 @@ def has_messages(username):
     checks to see if this username has any unread messages
     """
     if 'username' in session:
-        messages = db.session.query(Message).filter_by(sent_to=username, read=False).count()
+        messages = db.session.query(Message).filter_by(sent_to=username, read=False).all()
+
+
+        for m in range(len(messages)):
+            messages[m].sender_id = user_id_from_username(messages[m].sender)
+
+        messages = [m for m in messages if m.sender_id not in session['blocked']['other_user']]
+        messages = len(messages)
+
         if messages is not None:
             if messages > 0:
                 session['unread_messages'] = messages
@@ -384,29 +392,39 @@ def get_blocked(username):
     username = normalize_username(username)
 
     bdict = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
-    if username == None:
+    if username is None:
         return bdict
+
     blocked = db.session.query(Hidden).filter_by(username=username).all()
 
-    if len(blocked) == 0:
+    if blocked == []:
         return bdict
 
     for b in blocked:
-        if b.comment_id != None:
-            i = db.session.query(Comment).filter_by(id=b.comment_id).first()
-            if i != None:
-                bdict['comment_id'].append(i.id)
-        elif b.post_id != None:
-            i = db.session.query(Post).filter_by(id=b.post_id).first()
-            if i != None:
-                bdict['post_id'].append(i.id)
-        elif b.other_user != None:
-            i = db.session.query(Iuser).filter_by(id=b.other_user).first()
-            if i != None:
-                if b.anonymous != True:
-                    bdict['other_user'].append(i.id)
+        if b.comment_id is not None:
+            i = db.session.query(Comment.id).filter_by(id=b.comment_id).first()
+            if i is not None:
+                if i[0] not in bdict['post_id']:
+                    bdict['comment_id'].append(i[0])
+
+        elif b.post_id is not None:
+            i = db.session.query(Post.id).filter_by(id=b.post_id).first()
+            if i is not None:
+                if i[0] not in bdict['post_id']:
+                    bdict['post_id'].append(i[0])
+
+        elif b.other_user is not None:
+            if b.anonymous:
+                i = db.session.query(Iuser.anon_id).filter_by(anon_id=b.other_user).first()
+            else:
+                i = db.session.query(Iuser.id).filter_by(id=b.other_user).first()
+            if i is not None:
+                if b.anonymous is not True:
+                    if i[0] not in bdict['other_user']:
+                        bdict['other_user'].append(i[0])
                 else:
-                    bdict['anon_user'].append(i.id)
+                    if i[0] not in bdict['anon_user']:
+                        bdict['anon_user'].append(i[0])
 
     return bdict
 
@@ -450,26 +468,60 @@ def get_message_count(username):
     username = normalize_username(username)
     return db.session.query(Message.id).filter_by(sender=username).count()
 
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def recent_user_comments(user, limit=15, deleted=False):
+    """
+    returns x recent comments for a user, works both with obj and just name
+    """
+    if isinstance(user, str):
+        aid = normalize_username(username, dbuser=True)
+        aid = aid.id
+    else:
+        aid = user.id
+
+    coms = db.session.query(Comment).filter_by(author_id=aid, deleted=deleted). \
+                                    order_by(Comment.created.desc()).limit(limit).all()
+    return coms
+
+
+@cache.memoize(config.DEFAULT_CACHE_TIME)
+def recent_user_posts(user, limit=15, deleted=False):
+    """
+    returns x recent posts for a user, works both with obj and just name
+    """
+    if isinstance(user, str):
+        aid = normalize_username(username, dbuser=True)
+        aid = aid.id
+    else:
+        aid = user.id
+
+    posts = db.session.query(Post).filter_by(author_id=aid, deleted=deleted). \
+                                    order_by(Post.created.desc()).limit(limit).all()
+
+    return posts
+
+
+
 ##### Post/Comment Functions #####
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def anon_block(obj):
+def hide_blocked(obj):
     """
     prevents blocked users from also being blocked
     on their anonymous/non-anonymous posts to avoid
     de-anonymization
     """
-    for c in obj:
-        if c.anonymous:
-            if c.author_id in session['blocked']['anon_user']:
-                c.noblock = False
-            else:
-                c.noblock = True
+    show = []
 
+    session['blocked'] = get_blocked(session['username'])
+
+    for o in obj:
+        user = get_user_from_id(o.author_id)
+        if o.anonymous:
+            if user.anon_id not in session['blocked']['anon_user']:
+                show.append(o)
         else:
-            if c.author_id in session['blocked']['other_user']:
-                c.noblock = False
-            else:
-                c.noblock = True
-    return obj
+            if user.id not in session['blocked']['other_user']:
+                show.append(o)
 
+    return show

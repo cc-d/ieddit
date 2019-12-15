@@ -7,29 +7,33 @@
     </div>
     <div class='user-profile-info'>
         <h6 class='user-profile-info-top'>/u/{{ vuser.username }}
-        {% set karma_post = vuser.karma['post'] %}
-        {% if vuser.karma['post'] > 0 %}
-            {% set post_karma_color = 'style=color:greenyellow;' %}
-            {% set karma_post = '+' + vuser.karma['post']|string %}
-        {% elif vuser.karma['post'] == 0 %}
-            {% set post_karma_color = '' %}
-        {% else %}
-            {% set post_karma_color = 'style=color:' + config.DOWNVOTE_COLOR + ';' %}
-        {% endif %}
+            {% set karma_post = vuser.karma['post'] %}
+            {% if vuser.karma['post'] > 0 %}
+                {% set post_karma_color = 'style=color:greenyellow;' %}
+                {% set karma_post = '+' + vuser.karma['post']|string %}
+            {% elif vuser.karma['post'] == 0 %}
+                {% set post_karma_color = '' %}
+            {% else %}
+                {% set post_karma_color = 'style=color:' + config.DOWNVOTE_COLOR + ';' %}
+            {% endif %}
+            
+            {% set karma_comment = vuser.karma['comment'] %}
+            {% if vuser.karma['comment'] > 0 %}
+                {% set comment_karma_color = 'style=color:greenyellow;' %}
+                {% set karma_comment = '+' + vuser.karma['comment']|string %}
+            {% elif vuser.karma['comment'] == 0 %}
+                {% set comment_karma_color = '' %}
+            {% else %}
+                {% set comment_karma_color = 'style=color:' + config.DOWNVOTE_COLOR + ';' %}
+            {% endif %}
         
-        {% set karma_comment = vuser.karma['comment'] %}
-        {% if vuser.karma['comment'] > 0 %}
-            {% set comment_karma_color = 'style=color:greenyellow;' %}
-            {% set karma_comment = '+' + vuser.karma['comment']|string %}
-        {% elif vuser.karma['comment'] == 0 %}
-            {% set comment_karma_color = '' %}
-        {% else %}
-            {% set comment_karma_color = 'style=color:' + config.DOWNVOTE_COLOR + ';' %}
-        {% endif %}
-        
-        <div class='user-profile-karma'>    
-            <p class='user-post-karma' {{ post_karma_color }} data-toggle='tooltip' data-placement="top" title="total post karma">{{ karma_post }}</p>&nbsp;<p class='user-comment-karma' {{ comment_karma_color }} data-toggle='tooltip' data-placement="top" title="total comment karma"> {{ karma_comment }}</p>    
-        </div>
+            <div class='user-profile-karma'>    
+                <p class='user-post-karma' {{ post_karma_color }} data-toggle='tooltip' data-placement="top" title="total post karma">
+                    {{ karma_post }}
+                </p>&nbsp;
+                <p class='user-comment-karma' {{ comment_karma_color }} data-toggle='tooltip' data-placement="top" title="total comment karma"> {{ karma_comment }}
+                </p>    
+            </div>
         </h6>
         <div class='user-profile-body'>
             <p class='user-profile-joined'>Joined: {{ (vuser.created|string)[0:10] }}</p>
@@ -41,33 +45,54 @@
 
             <div style='height:3.5rem'><p style='opacity: 0.5; margin-top: 1rem; font-size: 75%;'>placeholder for future content...</p></div>
         </div>
-</div>
+    </div>
 
-<div class="btn-group" role="group">
-{% if session['username'] != vuser.username %}
-<a href="/message/{{ vuser.username }}"><button type="button" class="btn btn-sm btn-secondary user-opt">message <i class='fa fa-envelope'></i></button></a>
+    <div class="btn-group" role="group">
+        {% if session['username'] != vuser.username %}
+            <a href="/message/{{ vuser.username }}">
+                <button type="button" class="btn btn-sm btn-secondary user-opt">
+                    message <i class='fa fa-envelope'></i>
+                </button>
+            </a>
 
-{% if vuser.id not in session['blocked']['other_user'] %}
-<a href="javascript:hideObject('other_user', '{{ vuser.id }}');"><button id='block-user-button' type="button" class="btn btn-sm btn-danger user-opt">block <i class='fa fa-ban'></i></button></a>
-<a href="javascript:showObject('other_user', '{{ vuser.id }}');"><button style='margin-top: 0.5rem; display: none;' id='block-user-button-u' type="button" class="btn btn-sm btn-success">unblock <i class='fa fa-undo'></i></button></a>
-{% else %}
-<a href="javascript:hideObject('other_user', '{{ vuser.id }}');"><button style='display: none;' id='block-user-button' type="button" class="btn btn-sm btn-danger user-opt">block <i class='fa fa-ban'></i></button></a>
-<a href="javascript:showObject('other_user', '{{ vuser.id }}');"><button style='margin-top: 0.5rem;' id='block-user-button-u' type="button" class="btn btn-sm btn-success">unblock <i class='fa fa-undo'></i></button></a>
-{% endif %}
+            {% if vuser.id not in session['blocked']['other_user'] %}
+                <a href="javascript:hideObject('other_user', '{{ vuser.id }}');">
+                    <button id='block-user-button' type="button" class="btn btn-sm btn-danger user-opt">
+                        block <i class='fa fa-ban'></i>
+                    </button>
+                </a>
+                <a href="javascript:showObject('other_user', '{{ vuser.id }}');">
+                    <button style='margin-top: 0.5rem; display: none;' id='block-user-button-u' type="button" class="btn btn-sm btn-success">
+                        unblock <i class='fa fa-undo'></i>
+                    </button>
+                </a>
+            {% else %}
+                <a href="javascript:hideObject('other_user', '{{ vuser.id }}');">
+                    <button style='display: none;' id='block-user-button' type="button" class="btn btn-sm btn-danger user-opt">
+                        block <i class='fa fa-ban'></i>
+                    </button>
+                </a>
+                <a href="javascript:showObject('other_user', '{{ vuser.id }}');">
+                    <button style='margin-top: 0.5rem;' id='block-user-button-u' type="button" class="btn btn-sm btn-success">
+                        unblock <i class='fa fa-undo'></i>
+                    </button>
+                </a>
+            {% endif %}
+            
+    {% else %}    
+        </div>
+        <a href="/user/preferences/">
+            <button type="button" class="btn btn-sm btn-secondary user-opt">preferences</button>
+        </a>
 
-{% else %}
-
-</div>
-
-
-<a href="/user/preferences/"><button type="button" class="btn btn-sm btn-secondary user-opt">preferences</button></a>
-
-<div class='btn-group' role='group'>
-<a href="/user/pgp/"><button type="button" class="btn btn-sm btn-secondary user-opt">pgp</button></a>
-<a href="/user/blocked/"><button type="button" class="btn btn-sm btn-secondary user-opt">blocked</button></a>
-
-{% endif %}
-
+        <div class='btn-group' role='group'>
+            <a href="/user/pgp/">
+                <button type="button" class="btn btn-sm btn-secondary user-opt">pgp</button>
+            </a>
+            <a href="/user/blocked/">
+                <button type="button" class="btn btn-sm btn-secondary user-opt">blocked</button>
+            </a>
+    {% endif %}
 </div>
 
 <div class='profile-mod-container'>
@@ -81,27 +106,26 @@
 </div>
 
 <div id='user-recent'>
-<h6 style='color: #fff;'>Recent Posts</h6>
+    <h6 style='color: #fff;'>Recent Posts</h6>
 
-{% set count = [0] %}
+    {% set count = [0] %}
+    
+    {% for post in posts %}
+    {% if count.append(count.pop() + 1) %}{% endif %}
+    {% if post.anonymous == False and post.author != 'Anonymous' %}
+        {% include 'sub-post.html' %}
+    {% endif %}
+    {% else %}
+        <p class='margin-lr'> no posts </p>
+    {% endfor %}
+    
+    {% if count.pop() > 0 %}
+    <!-- <p> user has additional anonymous posts </p> -->
+    {% endif %}
 
-{% for post in posts %}
-{% if count.append(count.pop() + 1) %}{% endif %}
-{% if post.anonymous == False and post.author != 'Anonymous' %}
-    {% include 'sub-post.html' %}
-{% endif %}
-{% else %}
-    <p class='margin-lr'> no posts </p>
-{% endfor %}
-
-{% if count.pop() > 0 %}
-<!-- <p> user has additional anonymous posts </p> -->
-{% endif %}
-
-
-<h6 style='color: #fff;'>Recent Comments</h6>
-<ul class="list-unstyled">
-{% include 'profile-comments.html' %}
-</ul>
+    <h6 style='color: #fff;'>Recent Comments</h6>
+    <ul class="list-unstyled">
+        {% include 'profile-comments.html' %}
+    </ul>
 </div>
 {% endblock %}

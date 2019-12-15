@@ -4,15 +4,19 @@ import urllib
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, session, request
 from datetime import datetime, timedelta
-from sqlalchemy import orm
+from sqlalchemy import orm, func
 
 from flask_caching import Cache
 
 sys.path.append('functions/')
 
-from share import db
+from share import *
 import config
 
+# easier for cross compability reasons than actual uuid type
+def gen_anon_id():
+    import uuid
+    return str(uuid.uuid4())
 
 # iuser instead of user to avoid conflicting namespace with postgresql
 class Iuser(db.Model):
@@ -28,14 +32,7 @@ class Iuser(db.Model):
     hide_sub_style = db.Column(db.Boolean, default=False, nullable=False)
     pgp = db.Column(db.Boolean, default=False, nullable=False)
     always_override = db.Column(db.Boolean, default=False, nullable=False)
-
-    def get_recent_comments(self, limit=15, deleted=False):
-        coms = db.session.query(Comment).filter_by(author_id=self.id, deleted=deleted).order_by(Comment.created.desc()).limit(limit).all()
-        return coms
-
-    def get_recent_posts(self, limit=15, deleted=False):
-        posts = db.session.query(Post).filter_by(author_id=self.id, deleted=deleted).order_by(Post.created.desc()).limit(limit).all()
-        return posts
+    anon_id = db.Column(db.String(255), default=gen_anon_id, nullable=True)
 
     def __repr__(self):
         return '<Iuser %r>' % self.username
@@ -51,31 +48,6 @@ class Sub(db.Model):
     nsfw = db.Column(db.Boolean, default=False, nullable=False)
     css = db.Column(db.String(20000), default=None)
     muted = db.Column(db.Boolean, default=False)
-
-    def get_comments(self, deleted=False, count=False):
-        if count == True:
-            return db.session.query(Comment).filter_by(sub_name=self.name, deleted=deleted).count()
-        return db.session.query(Comment).filter_by(sub_name=self.name, deleted=deleted)
-
-    def get_posts(self, deleted=False, count=False):
-        if count == True:
-            return db.session.query(Post).filter_by(sub=self.name, deleted=deleted).count()
-        return db.session.query(Post).filter_by(sub=self.name, deleted=deleted)
-
-    def get_total_users(self, deleted=False, count=False):
-        posts = self.get_posts(deleted=False, count=False)
-        comments = self.get_comments(deleted=False, count=False)
-        users = []
-        
-        for i in db.session.query(Post.author_id).filter_by(sub=self.name, deleted=deleted).all():
-            if i not in users:
-                users.append(i)
-
-        for i in db.session.query(Comment.author_id).filter_by(sub_name=self.name, deleted=deleted).all():
-            if i not in users:
-                users.append(i)
-
-        return users
 
     def __repr__(self):
         return '<Sub %r>' % self.name
@@ -114,12 +86,6 @@ class Post(db.Model):
     def get_score(self):
         return (self.ups - self.downs)
 
-    def get_type(self):
-        return 'post'
-
-    def get_votes(self):
-        return db.session.query(Vote).filter_by(post_id=self.id).all()
-
     def __repr__(self):
         return '<Post %r>' % self.id
 
@@ -151,19 +117,8 @@ class Comment(db.Model):
             return db.session.query(Comment).filter_by(parent_id=self.id, deleted=False)
         return db.session.query(Comment).filter_by(parent_id=self.id)
 
-    def child_count(self, deleted=False):
-        if deleted == False:
-            return db.session.query(Comment).filter_by(parent_id=self.id, deleted=False).count()
-        return db.session.query(Comment).filter_by(parent_id=self.id).count()
-
-    def get_votes(self):
-        return db.session.query(Vote).filter_by(comment_id=self.id).all()
-
     def get_score(self):
         return int(self.ups) - int(self.downs)
-
-    def get_type(self):
-        return 'comment'
 
     def __repr__(self):
         return '<Comment %r>' % self.id
@@ -272,6 +227,7 @@ class Api_key(db.Model):
 
     def __repr__(self):
         return '<Api_key %r>' % self.id
+
 
 if __name__ == '__main__':
     db.create_all()

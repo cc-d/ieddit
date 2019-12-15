@@ -26,9 +26,15 @@ def thumb_exists(tid):
             return True
     return False
 
-def rstring(length1, length2=False):
-    if length2 == False:
+def rstring(length1, length2=False, ints_only=False):
+    if length1 is None:
+        length1, length2 = 25, 25
+
+    if length2 is False:
         length2 = length1
+
+    if ints_only:
+        return ''.join([random.choice('01234567890') for n in range(random.randint(length1, length2))])
     return ''.join([random.choice(legal_chars) for n in range(random.randint(length1, length2))])
 
 def verify_username(username):
@@ -181,8 +187,8 @@ def alt_tlds(text):
 
 
 def pseudo_markup(text, escape_only=False, replace_newlines=True, all_newlines=True):
-    if text is None:
-        return None
+    if text is None or isinstance(text, bool):
+        return text
 
     if escape_only:
         if replace_newlines:

@@ -49,9 +49,9 @@ def before_request():
 
 
     if 'username' in session:
-        has_messages(session['username'])
-        get_blocked(session['username'])
         session['blocked'] = get_blocked(session['username'])
+        print(session['blocked'])
+        has_messages(session['username'])
     else:
         if 'blocked' not in session:
             session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
@@ -388,8 +388,7 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
 
         if 'blocked' in session:
             posts = [post for post in posts if post.id not in session['blocked']['post_id']]
-            posts = anon_block(posts)
-            posts = [post for post in posts if post.noblock == True]
+            posts = hide_blocked(posts)
 
     posts = posts[offset:offset+limit]
 
@@ -460,7 +459,7 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
 
 @app.route('/i/<subi>/')
 def subi(subi, user_id=None, posts_only=False, offset=0,
-        limit=15, nsfw=True, show_top=True, s=None, d=None):
+        limit=15, nsfw=True, s=None, d=None):
     offset = request.args.get('offset')
     d = request.args.get('d')
     s = request.args.get('s')
@@ -477,6 +476,9 @@ def subi(subi, user_id=None, posts_only=False, offset=0,
     sub_posts = get_subi(subi=subi, view_user_id=view_user_id,
                         posts_only=posts_only, deleted=False, user_id=user_id,
                         offset=offset, limit=15, d=d, s=s, nsfw=nsfw)
+
+    if isinstance(sub_posts, bool):
+        return []
 
     if type(sub_posts) == dict:
         if 'error' in sub_posts.keys():
@@ -593,9 +595,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
     if 'blocked' in session and show_blocked != True:
         comments = [c for c in comments if c.id not in session['blocked']['comment_id']]
-        comments = anon_block(comments)
-
-        comments = [c for c in comments if c.noblock == True]
+        comments = hide_blocked(comments)
 
     for c in comments:
         c.score = (c.ups - c.downs)
@@ -763,8 +763,8 @@ def view_user(username):
         mods[s.sub] = s.rank
     vuser.mods = mods
 
-    posts = vuser.get_recent_posts()
-    comments = vuser.get_recent_comments()
+    posts = recent_user_posts(user=vuser)
+    comments = recent_user_comments(user=vuser)
 
     for p in posts:
         p.created_ago = time_ago(p.created)
@@ -957,7 +957,7 @@ def create_post(api=False, *args, **kwargs):
 
         anonymous = True if anonymous is not None else False
 
-        if len(self_post_text) > 1:
+        if len(self_post_text) > 0:
             post_type = 'self_post'
         elif len(url) > 0:
             post_type = 'url'
@@ -1221,7 +1221,7 @@ def user_messages(username=None, offset=0):
                         and_(Message.sent_to == username,
                             Message.read),
                         and_(Message.sender == username,
-                            Message.in_reply_to == None)
+                            Message.in_reply_to is None),
                         )
                     )
 
@@ -1241,8 +1241,9 @@ def user_messages(username=None, offset=0):
             else:
                 request.show_more_messages = False
 
-            our_messages = [x for x in our_messages if x.sender is not None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
-            unread = [x for x in unread if x.sender is not None or get_user_from_username(x.sender).id not in session['blocked']['other_user']]
+            our_messages = [x for x in our_messages if x.sender is not None]
+
+            unread = [x for x in unread if x.sender is not None]
 
             new_messages = False
             for r in unread:
@@ -1254,6 +1255,7 @@ def user_messages(username=None, offset=0):
             our_messages = unread + our_messages
 
             for message in our_messages:
+                message.sender_id = int(normalize_username(message.sender, dbuser=True).id)
                 if message.sender == session['username']:
                     message.show_name = session['username']
                     message.is_sent = True
@@ -1261,6 +1263,8 @@ def user_messages(username=None, offset=0):
                         message.new_text = '<p style="color: green;">ENCRYPTED</p>'
                 else:
                     message.show_name = message.sender
+
+            our_messages = [m for m in our_messages if m.sender_id not in session['blocked']['other_user']]
 
             for message in our_messages:
                 if message.encrypted == False:
@@ -1641,8 +1645,7 @@ def subcomments(sub=None, offset=0, limit=15, s=None, d=None, nsfw=False, api=Fa
     if muted_subs:
         comments = [c for c in comments if c.sub_name not in muted_subs]
 
-    comments = anon_block(comments)
-    comments = [c for c in comments if c.noblock == True]
+    comments = hide_blocked(comments)
 
     nsfw_subs = []
     sfw_subs = []
