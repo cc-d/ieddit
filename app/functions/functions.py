@@ -174,7 +174,6 @@ def alt_tlds(text):
         for r in rep:
             ran = rstring(20)
             replaced.append((ran, '.com', r))
-            print(ran, '.com', r)
             text = text.replace(r, ran + '.com')
 
     return text, replaced

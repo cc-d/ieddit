@@ -121,7 +121,6 @@ def get_subs(sub_names=None):
 
     for name in sub_names:
         sub = db.session.query(Sub).filter_by(name=name).first()
-        print(sub)
         if sub != None:
             r.append(sqla_to_dict(sub))
 
