@@ -385,11 +385,13 @@ def get_banned_subs(username):
     return banned
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)
-def get_blocked(username):
+def get_blocked(username=None):
     """
     returns a dict of comments/posts/users this username has blocked
     """
-    username = normalize_username(username)
+    
+    if username is not None:
+        username = normalize_username(username)
 
     bdict = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
     if username is None:
@@ -512,7 +514,8 @@ def hide_blocked(obj):
     de-anonymization
     """
     show = []
-
+    if 'username' not in session:
+        return obj
     session['blocked'] = get_blocked(session['username'])
 
     for o in obj:

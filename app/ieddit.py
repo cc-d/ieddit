@@ -50,7 +50,6 @@ def before_request():
 
     if 'username' in session:
         session['blocked'] = get_blocked(session['username'])
-        print(session['blocked'])
         has_messages(session['username'])
     else:
         if 'blocked' not in session:
@@ -593,7 +592,7 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
     if 'blocked_subs' in session and 'username' in session:
         comments = [c for c in comments if c.sub_name not in session['blocked_subs']]
 
-    if 'blocked' in session and show_blocked != True:
+    if 'blocked' in session and show_blocked != True and 'username' in session:
         comments = [c for c in comments if c.id not in session['blocked']['comment_id']]
         comments = hide_blocked(comments)
 
