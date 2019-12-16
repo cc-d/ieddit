@@ -172,9 +172,15 @@ textarea {
 }
 
 .generic-alert {
-    padding-top: 1rem;
-    padding-left: 4rem;
-    padding-right: 4rem;
+    padding: 0px;
+}
+
+.alert {
+    width: 95%;
+    max-width: 1000px;
+    min-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .comment-reply {

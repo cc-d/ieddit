@@ -27,8 +27,7 @@ var rgbDownColor = 'rgb(0, 191, 255)';
 
 //var upColor = 'orange';
 var upColor = '#ffa500';
-var rgbUpColor = 'rgb(255, 165, 0)'
-
+var rgbUpColor = 'rgb(255, 165, 0)';
 
 $(document).on('click', '.comment-reply', function () {
     var replycommid = $(this).attr('comment_id');
@@ -172,15 +171,64 @@ $(document).on('click', '.fa-arrow-down', function() {
     }
 });
 
-function autoFadeErrors() {
-    $(".alert").alert('close');
+function jsalert(message, atype) {
+    width = parseInt($('#content').width() * 0.75);
+    if (atype === 'undefined') {
+        atype = 'success';
+    }
+
+    hid = highestAlertId();
+    
+    html = `<div class="alert alert-dismissible alert-` + atype + ` fade show" id="alert-id-` + hid + `" role="alert">
+        ` + message + `
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>`
+
+    $('#alert-ul').append(html);
+    
+    autoFade('#alert-id-' + hid);
 }
 
-$(document).ready(function() {
+var alertCount = -1;
+
+function autoFade(aid) {
     setTimeout(function() {
-        autoFadeErrors(); 
+        $(aid).alert('close');
     }, 5000);
-});
+};
+
+function highestAlertId() {
+    if (alertCount === -1) {
+    
+        alerts = $('.alert');
+    
+        if (alerts.length === 0) {
+            alertCount = 0;
+            return 0
+        }
+    
+        highest = 0;
+    
+        for (i=0; i<alerts.length; i++) {
+            hid = $(alerts[i]).attr('id').split('-')[2];
+
+            autoFade('#alert-id-' + hid);
+
+            if (parseInt(hid) > highest) {
+                highest = parseInt(hid);
+            }
+        }
+    
+        alertCount = highest + 1;
+        return highest + 1;
+    } else {
+        alertCount = alertCount + 1;
+
+        return alertCount;
+    }
+}
 
 // Suggest Title
 var re = new RegExp('.*\..*\/create_post')

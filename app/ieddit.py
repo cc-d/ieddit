@@ -30,10 +30,16 @@ def before_request():
 
     request.is_mod = False
 
+    try:
+        # gunicorn uses a different dict value
+        req_uri = request.environ['REQUEST_URI']
+    except KeyError as e:
+        req_uri = request.environ['RAW_URI']
+
     # if in a sub, modify request to reflect
-    if len(request.environ['REQUEST_URI']) >= 3:
-        if request.environ['REQUEST_URI'][:3] == '/i/':
-            current_sub = re.findall(r'\/i\/([a-zA-Z0-9-_]*)', request.environ['REQUEST_URI'])
+    if len(req_uri) >= 3:
+        if req_uri[:3] == '/i/':
+            current_sub = re.findall(r'\/i\/([a-zA-Z0-9-_]*)', req_uri)
             if len(current_sub) == 1:
                 current_sub = current_sub[0]
                 if current_sub != 'all':
@@ -46,6 +52,9 @@ def before_request():
                             request.is_mod = True
 
                     request.sub_title = get_sub_title(request.sub)
+
+
+    # last significant request URI
 
 
     if 'username' in session:
@@ -89,6 +98,10 @@ def apply_after(response):
 
     if hasattr(request, 'sub'):
         session['last_sub'] = request.sub
+
+    # last visited url which isn't a static file
+    if request.method == 'GET':
+        session['last_url'] = get_last_url(request.environ['RAW_URI'])
 
     return response
 
@@ -141,6 +154,19 @@ def not_banned(f):
         if api is False:
             if session['username'] in bnames:
                 return redirect('/')
+        return f(*args, **kwargs)
+    return decorated_function
+
+def require_login(f):
+    """
+    this decorator forces a user to have an account
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        username = session['username'] if 'username' in session else None
+        if username is None:
+            flash('please login to use this feature', 'danger')
+            return get_last_url()
         return f(*args, **kwargs)
     return decorated_function
 

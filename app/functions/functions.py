@@ -396,3 +396,26 @@ def anonymize_dict(obj):
             o['author'] = 'Anonymous'
             o['author_id'] = 0
     return o
+
+def get_last_url(uri=None):
+    if request.method != 'GET':
+        if 'last_url' in session:
+            return session['last_url']
+        else:
+            return config.URL
+
+    if uri is None or uri == '' or uri == '/':
+        if 'last_url' in session:
+            return session['last_url']
+        else:
+            return config.URL
+
+    url = config.URL + uri
+    static_paths = ['fonts', 'static']
+
+    if re.findall('^https?:\/\/\S+[.]\S+\/(' + '|'.join(static_paths) + ')\/', url) != []:
+        if 'last_url' in session:
+            return session['last_url']
+        else:
+            return config.URL
+    return url

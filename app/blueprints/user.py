@@ -409,13 +409,15 @@ def user_add_pgp():
     flash('updated pgp key', 'success')
     return redirect('/u/' + user.username)
 
-
 @ubp.route('/hide', methods=['POST'])
 def hide_obj():
     post_id = None
     comment_id = None
     other_user = None
-    ano = session['blocked']['anon_user']
+
+    if 'username' not in session:
+        return 'you must be logged in to hide content'
+
     d = json.loads(request.form.get('d'))
     for k in d.keys():
         if k == 'post_id':
@@ -445,8 +447,8 @@ def hide_obj():
     session['blocked'] = get_blocked(session['username'])
     return 'ok'
 
-
 @ubp.route('/block_user', methods=['POST'])
+@require_login
 def block_user_from_content():
     post_id = request.form.get('post_id')
     comment_id = request.form.get('comment_id')
@@ -461,7 +463,7 @@ def block_user_from_content():
                                     filter_by(id=p.author_id).first()[0]
 
     elif comment_id is not None:
-        p = db.session.query(Comment).filter_by(id=post_id).first()
+        p = db.session.query(Comment).filter_by(id=comment_id).first()
         if p.anonymous:
             block_id = db.session.query(Iuser.anon_id). \
                                     filter_by(id=p.author_id).first()[0]
@@ -482,12 +484,12 @@ def block_user_from_content():
         session['blocked']['anon_user'].append(block_id)
     else:
         session['blocked']['other_user'].append(block_id)
-    print(session['blocked'])
 
-    return 'ok'
+    flash('blocked %s' % (block_id), 'success')
+    return app.make_response(('ok', 200))
 
-    
 @ubp.route('/show', methods=['POST'])
+@require_login
 def show_obj():
     post_id = None
     comment_id = None
@@ -515,6 +517,7 @@ def show_obj():
             itype = 'anon_user'
             iid = d[k]
 
+    iid = iid.strip()
 
     if 'username' in session:
         hid = db.session.query(Hidden).filter_by(post_id=post_id, comment_id=comment_id, other_user=other_user, anonymous=anonymous).delete()
@@ -556,6 +559,7 @@ def get_total_blocked():
         u2.key = 'anon_user'
         u2.permalink = config.URL + '/u/' + 'Anonymous'
         u2.anonymous = True
+        u2.anon_id = u2.anon_id.strip()
         uids.append(u2)
 
     for p in session['blocked']['post_id']:

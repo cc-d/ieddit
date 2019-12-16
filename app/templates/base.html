@@ -11,18 +11,6 @@
     <link href="{{ url_for('static', filename='font-awesome.min.css') }}" type="text/css" rel="stylesheet">
     <!--  end bootstrap -->
 
-    <!-- Favicon -->
-    <!--
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
-    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}">
-
-    Looked better without it.
-
-    -->
-    <!-- end favicon -->
-
 
     <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}{{ g.cache_bust }}">
     <script src="{{ url_for('static', filename='main.js') }}{{ g.cache_bust }}"></script>
@@ -35,17 +23,18 @@
     <script src="{{ url_for('static', filename='expand-post.js') }}{{ g.cache_bust }}"></script>
 
     {% if request.sub and request.sub != 'all' %}
-    <title>/i/{{ request.sub}} {% if request.sub_title != None %} - {{ request.sub_title }}{% endif %}</title>
-
-    {% if session['hide_sub_style'] != True %}
-    {% set substyle = get_style(request.sub) %}
-    {% if substyle != None %}
-            <style type='text/css'>{{ substyle }}</style>
-    {% endif %}
-    {% endif %}
+        
+        <title>/i/{{ request.sub}} {% if request.sub_title != None %} - {{ request.sub_title }}{% endif %}</title>
+        
+        {% if session['hide_sub_style'] != True %}
+            {% set substyle = get_style(request.sub) %}
+            {% if substyle != None %}
+                <style type='text/css'>{{ substyle }}</style>
+            {% endif %}
+        {% endif %}
 
     {% else %}
-    <title>ieddit</title>
+        <title>ieddit</title>
     {% endif %}
 
 </head>
@@ -142,44 +131,47 @@
         </button>
 
         </div>
-</nav>
+    </nav>
 </div>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div id='alert-container' class='bg-light'>
-            <ul class='flashes generic-alert bg-light' onload="autoFadeAlert()">
-            {% for category, message in messages %}
-            <div class="alert alert-dismissible alert-{{ category }} fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-    {% endwith %}
-</div>
-</div>
-<div class='page-container bg-light'>
-<div class="mx-auto bg-light page">
-    <div id="content" class="bg-light">
-        {% block content %}
-        {% endblock %}
+
+    <div id='alert-container' class='bg-light'>
+        <ul class='flashes generic-alert bg-light' id='alert-ul'>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        {% set alert_id = '#alert-id-' + loop.index0|string %}
+                        <div class="alert alert-dismissible alert-{{ category }} fade show" id="{{ alert_id[1:] }}" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <script>autoFade('{{ alert_id }}');</script>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </ul>
     </div>
+
 </div>
 </div>
 
+<div class='page-container bg-light'>
+    <div class="mx-auto bg-light page">
+        <div id="content" class="bg-light">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
 <!-- ? -->
-<small>
-<div id='footer'>
+<small><div id='footer'>
     <a href='https://ieddit.com' class='footer-link'><i class='fa fa-globe'></i> ieddit.com</a>
     <a href='https://kiwiirc.com/nextclient/irc.freenode.net/#ieddit' class='footer-link'><i class='fa fa-comment'></i> irc</a>
     <a href='https://discord.gg/pdGCV6K' class='footer-link'><i class='fa fa-phone-square'></i> discord</a>
     <a href='https://github.com/cc-d/ieddit' class='footer-link'><i class='fa fa-github'></i> github</a>
-</div>
-</small>
+</div></small>
 
 </body>
 </html>
