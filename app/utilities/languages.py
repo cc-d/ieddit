@@ -333,7 +333,7 @@ LANG = {
     "save preferences":{
         "en":"save preferences",
         "fr":"einstellungen speichern",
-
+    },
     "search":{
         "en":"search",
         "fr":"recherche",
@@ -490,4 +490,4 @@ LANG = {
         "en":"you have a encrypted messages but (probably) cannot read it",
         "fr":"vous avez un message crypté mais (probablement) ne pouvez pas le lire",
     }
-}}
+}
