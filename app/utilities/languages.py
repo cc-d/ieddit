@@ -178,6 +178,10 @@ LANG = {
         "en":"hide custom sub styles",
         "fr":"masquer les styles personnalisés pour les communautés",
     },
+    "hot":{
+        "en":"hot",
+        "fr":"chaud",
+    },
     "information":{
         "en":"information",
         "fr":"information",

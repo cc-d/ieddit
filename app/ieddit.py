@@ -381,10 +381,6 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
     if ago is not False:
         posts = posts.filter(Post.created > ago)
 
-    request.is_more_content = False
-    if posts.count() >= limit:
-        request.is_more_content = True
-
     if s == 'top':
         posts = posts.order_by((Post.ups - Post.downs).desc())
         posts = posts.all()
@@ -403,11 +399,6 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
     if nsfw == False:
         posts = [p for p in posts if p.nsfw == False]
 
-    more = False
-    pc = len(posts)
-    if pc > limit:
-        more = True
-
     if api is False:
         if 'blocked_subs' in session and 'username' in session:
             posts = [c for c in posts if c.sub not in session['blocked_subs']]
@@ -416,7 +407,14 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
             posts = [post for post in posts if post.id not in session['blocked']['post_id']]
             posts = hide_blocked(posts)
 
-    posts = posts[offset:offset+limit]
+    posts = posts[offset:offset+limit + 1]
+
+    if len(posts) > 0:
+        if len(posts) > limit:
+            posts = posts[0:limit]
+            posts[-1].is_more = True
+        else:
+            posts[-1].is_more = False
 
     stid = False
     for p in posts:
