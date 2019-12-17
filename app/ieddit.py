@@ -363,23 +363,26 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
     elif d == 'year':
         ago = datetime.now() - timedelta(days=365)
     else:
-        ago = datetime.now() - timedelta(days=9999)
+        ago = False
 
     if subi != 'all':
         subname = db.session.query(Sub).filter(func.lower(Sub.name) == subi.lower()).first()
         if subname is None:
             return pretty_json({'error':'sub does not exist'})
         subi = subname.name
-        posts = db.session.query(Post).filter_by(sub=subi, deleted=False).filter(Post.created > ago)
+        posts = db.session.query(Post).filter_by(sub=subi, deleted=False)
     elif user_id is not None:
         muted_subs = get_muted_subs()
-        posts = db.session.query(Post).filter_by(author_id=user_id, deleted=False).filter(Post.created > ago)
+        posts = db.session.query(Post).filter_by(author_id=user_id, deleted=False)
     else:
         muted_subs = get_muted_subs()
-        posts = db.session.query(Post).filter_by(deleted=False).filter(Post.created > ago)
+        posts = db.session.query(Post).filter_by(deleted=False)
+
+    if ago is not False:
+        posts = posts.filter(Post.created > ago)
 
     request.is_more_content = False
-    if posts.count() + 1 >= limit:
+    if posts.count() >= limit:
         request.is_more_content = True
 
     if s == 'top':
@@ -393,9 +396,6 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
         for p in posts:
             p.hot = hot(p.ups, p.downs, p.created)
         posts.sort(key=lambda x: x.hot, reverse=True)
-    
-    posts = [post for post in posts if post.created > ago]
-
 
     if muted_subs:
         posts = [c for c in posts if c.sub not in muted_subs]
