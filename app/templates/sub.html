@@ -2,7 +2,7 @@
     {% for post in posts %}
         {% include 'sub-post.html' %}
     {% else %}
-        <p> no posts </p>
+        <p> {{ get_word('no posts') }} </p>
     {% endfor %}
 {% else %}
     {% extends 'base.html' %}
@@ -12,9 +12,9 @@
     {% include 'sort-top.html' %}
     
     <div class="active_sub_users">
-    Users Active: {{ sub_stats['active_users'] }}
+    {{ get_word('Users Active', cap_all=True) }}: {{ sub_stats['active_users'] }}
         <br>
-    Posts Today: {{ sub_stats['posts_today'] }}
+    {{ get_word('Posts Today', cap_all=True) }}: {{ sub_stats['posts_today'] }}
     </div>
     
     {% for post in posts %}
@@ -23,19 +23,19 @@
             {% if 'offset' in request.environ['QUERY_STRING'] %}
                 {% set prev_off_url = request.environ['PATH_INFO'] + offset_url(request.environ['QUERY_STRING'], 'prev') %}
                 <a href="{{ prev_off_url }}" id="prev-button" class="sub-posts-next">
-                    <button type="button" class="btn btn-secondary">prev</button>
+                    <button type="button" class="btn btn-secondary">{{ get_word('prev') }}</button>
                 </a>
             {% endif %}
     
             {% if request.is_more_content %}
                 {% set next_off_url = request.environ['PATH_INFO'] + offset_url(request.environ['QUERY_STRING'], 'next') %}
                 <a href="{{ next_off_url }}" class="sub-posts-next">
-                    <button type="button" class="btn btn-secondary">next</button>
+                    <button type="button" class="btn btn-secondary">{{ get_word('next') }}</button>
                 </a>
             {% endif %}
         {% endif %}
     {% else %}
-        <p> no posts </p>
+        <p> {{ get_word('no posts') }} </p>
     {% endfor %}
     
     {% endblock %}

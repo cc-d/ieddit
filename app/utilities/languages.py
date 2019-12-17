@@ -50,6 +50,10 @@ LANG = {
         "en":"banned",
         "fr":"banni",
     },
+    "block":{
+        "en":"block",
+        "fr":"bloc",
+    },
     "blocked":{
         "en":"blocked",
         "fr":"bloqué",
@@ -61,6 +65,10 @@ LANG = {
     "comments":{
         "en":"comments",
         "fr":"commentaires",
+    },
+    "create":{
+        "en":"create",
+        "fr":"créer",
     },
     "create post":{
         "en":"create post",
@@ -82,6 +90,10 @@ LANG = {
         "en":"confirm password",
         "fr":"confirmer le mot de passe",
     },
+    "create new user":{
+        "en":"create new user",
+        "fr":"créer un nouvel utilisateur",
+    },
     "day":{
         "en":"day",
         "fr":"jour",
@@ -98,6 +110,10 @@ LANG = {
         "en":"deleted",
         "fr":"supprimé",
     },
+    "decrypt messages":{
+        "en":"decrypt messages",
+        "fr":"déchiffrer les messages",
+    },
     "download user data":{
         "en":"download user data",
         "fr":"télécharger les informations utilisateur",
@@ -106,13 +122,29 @@ LANG = {
         "en":"edit",
         "fr":"éditer",
     },
+    "email address":{
+        "en":"email address",
+        "fr":"mon adresse mail",
+    },
     "enter new password":{
         "en":"enter new password",
         "fr":"entrer un nouveau mot de passe",
     },
+    "enter email to eeset password":{
+        "en":"enter email to eeset password",
+        "fr":"entrez l'e-mail pour réinitialiser le mot de passe",
+    },
     "explore":{
         "en":"explore",
         "fr":"explorer",
+    },
+    "forgot password":{
+        "en":"forgot password",
+        "fr":"mot de passe oublié",
+    },
+    "future content":{
+        "en":"future content",
+        "fr":"contenu futur",
     },
     "joined":{
         "en":"joined",
@@ -120,6 +152,10 @@ LANG = {
     },
     "log":{
         "en":"log",
+        "fr":"bûche",
+    },
+    "login":{
+        "en":"login",
         "fr":"se connecter",
     },
     "logout":{
@@ -129,6 +165,10 @@ LANG = {
     "lock":{
         "en":"lock",
         "fr":"verouiller",
+    },
+    "Lost passwords cannot be recovered without an email":{
+        "en":"Lost passwords cannot be recovered without an email.",
+        "fr":"Les mots de passe perdus ne peuvent pas être récupérés sans e-mail",
     },
     "hide post":{
         "en":"hide post",
@@ -186,6 +226,14 @@ LANG = {
         "en":"new",
         "fr":"nouveau",
     },
+    "new password":{
+        "en":"new password",
+        "fr":"un nouveau mot de passe",
+    },
+    "new username":{
+        "en":"new username",
+        "fr":"nouveau nom d'utilisateur",
+    },
     "no description":{
         "en":"no description",
         "fr":"pas de description",
@@ -198,9 +246,21 @@ LANG = {
         "en":"no comments",
         "fr":"sans commentaires",
     },
+    "no posts":{
+        "en":"no posts",
+        "fr":"sans publications",
+    },
     "non-mod":{
         "en":"non-mod",
         "fr":"non-mod",
+    },
+    "no messages":{
+        "en":"no messages",
+        "fr":"pas de messages",
+    },
+    "no more subs to show":{
+        "en":"no more subs to show",
+        "fr":"plus de communautés à montrer",
     },
     "nsfw":{
         "en":"nsfw",
@@ -234,6 +294,10 @@ LANG = {
         "en":"past week",
         "fr":"cette semaine-ci",
     },
+    "password":{
+        "en":"password",
+        "fr":"mot de passe",
+    },
     "permalink":{
         "en":"permalink",
         "fr":"perma-lien",
@@ -266,6 +330,10 @@ LANG = {
         "en":"remote url",
         "fr":"adresse URL",
     },
+    "save preferences":{
+        "en":"save preferences",
+        "fr":"einstellungen speichern",
+
     "search":{
         "en":"search",
         "fr":"recherche",
@@ -290,6 +358,14 @@ LANG = {
         "en":"select",
         "fr":"sélectionner",
     },
+    "send email":{
+        "en":"send email",
+        "fr":"envoyer un e-mail",
+    },
+    "sent to":{
+        "en":"sent to",
+        "fr":"envoyé à",
+    },
     "show all":{
         "en":"show all",
         "fr":"montrer tout",
@@ -297,6 +373,10 @@ LANG = {
     "show more":{
         "en":"show more",
         "fr":"montrer davantage",
+    },
+    "stats for":{
+        "en":"stats for",
+        "fr":"stats pour",
     },
     "sticky":{
         "en":"sticky",
@@ -334,9 +414,17 @@ LANG = {
         "en":"top",
         "fr":"populaire",
     },
+    "this sub has no description":{
+        "en":"this sub has no description",
+        "fr":"ce sous n'a pas de description",
+    },
     "unsticky":{
         "en":"unsticky",
         "fr":"enlever la mise en avant",
+    },
+    "unblock":{
+        "en":"unblock",
+        "fr":"débloque",
     },
     "unlock":{
         "en":"unlock",
@@ -374,6 +462,10 @@ LANG = {
         "en":"users",
         "fr":"utilisateurs",
     },
+    "username":{
+        "en":"username",
+        "fr":"nom d'utilisateur",
+    },
     "view all comments":{
         "en":"view all comments",
         "fr":"voir tous les commentaires",
@@ -382,8 +474,20 @@ LANG = {
         "en":"week",
         "fr":"semaine",
     },
+    "you are":{
+        "en":"you are",
+        "fr":"tu es",
+    },
     "you are viewing a single comment":{
         "en":"you are viewing a single comment",
         "fr":"vous regardez un seul commentaire",
     },
-}
+    "you are already logged in as":{
+        "en":"you are already logged in as",
+        "fr":"vous êtes déjà connecté en tant que",
+    },
+    "you have a encrypted messages but (probably) cannot read it":{
+        "en":"you have a encrypted messages but (probably) cannot read it",
+        "fr":"vous avez un message crypté mais (probablement) ne pouvez pas le lire",
+    }
+}}

@@ -4,20 +4,37 @@
 {% for sub in subs %}
 <div class="media explore-sub rounded {% if sub.nsfw %}nsfwpost{%endif%}">
   <div class="media-body media-body-explore">
-    <h5 class="mt-0"><a href="{{ config.URL }}/i/{{ sub.name }}">/i/{{ sub.name }} {% if sub.nsfw %}<a style="color: red;">nsfw</a>{% endif %} {% if sub.title != None %} - {{ sub.title }}{% endif %}</a></h5>
+    <h5 class="mt-0">
+        <a href="{{ config.URL }}/i/{{ sub.name }}">/i/{{ sub.name }} 
+            {% if sub.nsfw %}
+                <a style="color: red;">{{ get_word('nsfw') }}</a>
+            {% endif %} 
+            {% if sub.title != None %} - 
+                {{ sub.title }}
+            {% endif %}
+        </a>
+    </h5>
     {% if sub.new_rules %}
         <div class="safe-markup-text">
             {{ sub.new_rules }}
         </div>
     {% else %}
-        This sub has no description.
+        {{ get_word('This sub has no description', cap=[0]) }}.
     {% endif %}
     <br>
-    <a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">({{ sub.stats[1] }}) users</a><a></a><a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">({{ sub.stats[2] }}) posts</a><a><a/><a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">({{ sub.stats[3] }}) comments</a>
+    <a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">
+        ({{ sub.stats[1] }}) {{ get_word('users') }}
+    </a>
+    <a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">
+        ({{ sub.stats[2] }}) {{ get_word('posts') }}
+    </a>
+    <a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">
+        ({{ sub.stats[3] }}) {{ get_word('comments') }}
+    </a>
   </div>
 </div>
 {% else %}
-    <p> no more subs to show </p>
+    <p> {{ get_word('no more subs to show') }} </p>
 {% endfor %}
 <br>
 
@@ -26,7 +43,7 @@
     {% set query = request.environ['QUERY_STRING'] %}
     {% set more_url = base + offset_url(query, 'explore', False) %}
 
-    <a class="btn btn-primary" href="{{ more_url }}">show more</a>
+    <a class="btn btn-primary" href="{{ more_url }}">{{ get_word('show more') }}</a>
 {% endif %}
 
 {% endblock %}

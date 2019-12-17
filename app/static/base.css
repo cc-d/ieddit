@@ -1349,4 +1349,7 @@ blockquote {
     border: 1px solid #aaa;
     height: 2rem;
     background: #262626;
+    margin-left: -18px;
+    margin-bottom: 0.5rem;
 }
+

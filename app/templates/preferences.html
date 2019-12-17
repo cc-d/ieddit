@@ -10,7 +10,7 @@
     <button type="submit" class="btn btn-sm btn-danger user-opt">disable default anonymous</button></a>
 {% endif %}
 </form> -->
-<h3 class='margin-lr' style='color: #fff;'>Preferences</h3>
+<h3 class='margin-lr' style='color: #fff;'>{{ get_word('Preferences', cap=[0]) }}</h3>
 <form class='margin-lr border-top' id='user-preference-checkboxes' action='/user/update_preferences' method='POST'>
     <div class="form-group" style='margin-left: 2rem; margin-top: 0.5rem;'>
       <div class='preference-option'>
@@ -23,9 +23,9 @@
 
       <div class='preference-option'>
         {% if user.hide_sub_style == True %}
-          <input type="checkbox" class="form-check-input" id="hide-sub-style-box" name='hide_sub_style' checked><label for="hide-sub-style-box">Hide Custom Sub Styles</label>
+          <input type="checkbox" class="form-check-input" id="hide-sub-style-box" name='hide_sub_style' checked><label for="hide-sub-style-box">{{ get_word('Hide Custom Sub Styles', cap_all=True) }}</label>
         {% else %}
-          <input type="checkbox" class="form-check-input" id="hide-sub-style-box" name='hide_sub_style'><label for="hide-sub-style-box">Hide Custom Sub Styles</label>
+          <input type="checkbox" class="form-check-input" id="hide-sub-style-box" name='hide_sub_style'><label for="hide-sub-style-box">{{ get_word('Hide Custom Sub Styles', cap_all=True) }}</label>
         {% endif %}
       </div>
 
@@ -37,7 +37,7 @@
         {% endif %}
       </div>
 
-<div class='pref-language'>
+<div class='pref-language' style="width:200rem;height:200rem;"'>
   <p>Language: </p>
   <select class="custom-select" name='language-select'>
     {% set languages = ['en', 'fr'] %}
@@ -56,7 +56,7 @@
 </div>
 
       <input type='hidden' name='checkbox_only' value='checkbox_only'>
-        <button type="submit" style="margin-left: -1.5rem; margin-top: 0.5rem;" class="btn btn-primary btn-sm">save preferences</button>
+        <button type="submit" style="margin-left: -1.5rem; margin-top: 0.5rem;" class="btn btn-primary btn-sm">{{ get_word('save preferences') }}</button>
 
     </div>
 </form>
@@ -66,7 +66,7 @@
 <form class="border-top" style='max-width: 25rem; margin: 1rem;' action='/user/update_preferences' method='POST'>
     <div class="form-group" style='margin-top: 0.5rem;'>
         <label for="exampleInputEmail1">Change Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" 
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" safe 
         placeholder="{% if user.email %}{{ user.email }}{% else %}Enter email{% endif %}" name='new_email'>
     </div>
     <div class="form-group">

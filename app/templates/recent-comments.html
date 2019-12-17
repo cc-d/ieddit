@@ -9,14 +9,14 @@
 {% if 'offset' in request.environ['QUERY_STRING'] %}
     {% set prev_off_url = request.environ['PATH_INFO'] + offset_url(request.environ['QUERY_STRING'], 'prev') %}
     <a href="{{ prev_off_url }}" id="prev-button" class="sub-posts-next">
-        <button type="button" class="btn btn-secondary">prev</button>
+        <button type="button" class="btn btn-secondary">{{ get_word('prev') }}</button>
     </a>
 {% endif %}
 
 {% if request.is_more_content %}
     {% set next_off_url = request.environ['PATH_INFO'] + offset_url(request.environ['QUERY_STRING'], 'next') %}
     <a href="{{ next_off_url }}" class="sub-posts-next">
-        <button type="button" class="btn btn-secondary">next</button>
+        <button type="button" class="btn btn-secondary">{{ get_word('next') }}</button>
     </a>
 {% endif %}
 

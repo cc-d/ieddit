@@ -53,11 +53,11 @@
                     <a class="nav-link" href="/i/{{ request.sub }}">/i/{{ request.sub }}</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="/i/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary"><i class='fa fa-gears'></i> information</button></a>
+                    <a class="nav-link" href="/i/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary"><i class='fa fa-gears'></i> {{ get_word('information') }}</button></a>
                 </li>
                 {% else %}
                 <li class="nav-item active" style="margin-top: 0.25rem;">
-                    <a class="nav-link" href="/about/">{{ get_word('about', 'fr') }}</a>
+                    <a class="nav-link" href="/about/">{{ get_word('about') }}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/i/all"><button type="button" class="btn btn-sm btn-danger">/i/{{ get_word('all') }}&nbsp;<i class='fa fa-users'></i></button></a>
@@ -70,23 +70,23 @@
                 <li class='nav-item nav-link'>
                 <input type='hidden' name='lol' value='1'>
                 {% if request.sub in session['blocked_subs'] %}
-                    <button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'>subscribe <i class='fa fa-star'></i></button>
+                    <button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'>{{ get_word('subscribe') }} <i class='fa fa-star'></i></button>
                 {% else %}
-                    <button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger '>unsubscribe <i class='fa fa-ban'></i></button>
+                    <button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger '>{{ get_word('unsubscribe') }} <i class='fa fa-ban'></i></button>
                 {% endif %}
             </li>
                 </form>
                 <li class="nav-item">
-                    <a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success">Create Post +</button></a>
+                    <a class="nav-link" href="/create_post"><button type="button" class="btn btn-sm btn-success">{{ get_word('Create Post', cap_all=True) }} +</button></a>
                 </li>
                 {% endif %}
 
                 {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-primary">Create Sub +</button></a>
+                    <a class="nav-link" href="/create"><button type="button" class="btn btn-sm btn-primary">{{ get_word('Create Sub', cap_all=True) }} +</button></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/explore/"><button type="button" class="btn btn-sm btn-success">Explore <i class='fa fa-paper-plane'></i></button></a>
+                    <a class="nav-link" href="/explore/"><button type="button" class="btn btn-sm btn-success">{{ get_word('Explore', cap=[0]) }} <i class='fa fa-paper-plane'></i></button></a>
                 </li>
                 {% endif %}
                 {% if session['username'] %}
@@ -106,7 +106,11 @@
             </div>
                 {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/login/"><button type="button" class="btn btn-sm btn-secondary">Login</button></a>
+                    <a class="nav-link" href="/login/">
+                        <button type="button" class="btn btn-sm btn-secondary">
+                            {{ get_word('Login', cap=[0]) }}
+                        </button>
+                    </a>
                 </li>
                 {% endif %}
             </ul>
@@ -119,7 +123,7 @@
                         <a class="has-messages nav-link user-icon-link" href="{{ config.URL }}/u/{{ session.username }}/messages/"><i class="fa fa-envelope"></i> (0)</a>
                     {% endif %}
                 <li class="nav-item active">
-                    <a class="nav-link" id='logout-right' href="/logout">logout</a>
+                    <a class="nav-link" id='logout-right' href="/logout">{{ get_word('logout') }}</a>
                 </li>
             </ul>
             {% endif %}

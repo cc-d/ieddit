@@ -15,7 +15,7 @@
     <!-- Comments are sorted by new by default, while posts are sorted by hot -->
     {% if comments_text == 'Comments' %}
         {% if 's=top' in request.environ['QUERY_STRING'] or 's=new' in request.environ['QUERY_STRING'] %}
-            <a class="top-sort" href="{{ request.environ['PATH_INFO'] }}"><button type="button" class="btn btn-sm btn-secondary">Hot</button></a>
+            <a class="top-sort" href="{{ request.environ['PATH_INFO'] }}"><button type="button" class="btn btn-sm btn-secondary">{{ get_word('', cap=[0]) }}</button></a>
         {% endif %}
         {% if 's=new' not in request.environ['QUERY_STRING'] %}
             <a class="top-sort" href="{{ request.environ['PATH_INFO'] + '?s=new' }}"><button type="button" class="btn btn-sm btn-secondary">New</button></a>
@@ -25,7 +25,7 @@
             <a class="top-sort" href="{{ request.environ['PATH_INFO'] }}"><button type="button" class="btn btn-sm btn-secondary">New</button></a>
         {% endif %}
         {% if 's=hot' not in request.environ['QUERY_STRING'] %}
-            <a class="top-sort" href="{{ request.environ['PATH_INFO'] + '?s=hot' }}"><button type="button" class="btn btn-sm btn-secondary">Hot</button></a>
+            <a class="top-sort" href="{{ request.environ['PATH_INFO'] + '?s=hot' }}"><button type="button" class="btn btn-sm btn-secondary">{{ get_word('', cap=[0]) }}</button></a>
         {% endif %}
     {% endif %}
 
