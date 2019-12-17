@@ -166,7 +166,7 @@
             {% if session['username'] != comment.author %}
             <a class="dropdown-item" href="javascript:formSubmit('mod-delete-comment-{{ comment.id }}')">delete</a>
             {% endif %}
-            <a class="dropdown-item" href="javascript:formSubmit('btn-mod-ban-comment-{{ comment.id }}')">ban</a>
+            <a class="dropdown-item" href="javascript:formSubmit('btn-mod-ban-comment-{{ comment.id }}')">{{ get_word('ban') }}</a>
   </div>
   {% endif %}
 </div>
@@ -195,7 +195,7 @@
                     <form action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
                         <input name='iid' type='hidden' value='{{ comment.id }}'>
                         <input name='itype' type='hidden' value='comment'>
-                        <button type='submit' id='btn-mod-ban-comment-{{ comment.id }}' name='comment_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>ban</button>
+                        <button type='submit' id='btn-mod-ban-comment-{{ comment.id }}' name='comment_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>{{ get_word('ban') }}</button>
                     </form>
             </small></div>
             </div>

@@ -20,9 +20,9 @@
 <style>th, td { padding-right: 1rem; }</style>
 <table class='margin-lr'>
   <tr>
-    <th>action</th>
-    <th>user</th>
-    <th>key</th>
+    <th>{{ get_word('action') }}</th>
+    <th>{{ get_word('user') }}</th>
+    <th>{{ get_word('key') }}</th>
   </tr>
     {% for key in keys %}
       <tr>
@@ -46,7 +46,7 @@
 <style>th, td { padding-right: 1rem; }</style>
 <table class='margin-lr'>
   <tr>
-    <th>action</th>
+    <th>{{ get_word('action') }}</th>
     <th>sub</th>
   </tr>
     {% for sub in muted_subs %}

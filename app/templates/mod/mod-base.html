@@ -8,17 +8,17 @@
             <button class='mod-page-button btn btn-sm btn-secondary rounded'><i class='fa fa-home'></i></button>
         </a>
         <a class="mod-button-a" href="/i/{{ request.sub }}/mods/">
-            <button class='mod-page-button btn btn-sm btn-secondary rounded'>Log</button>
+            <button class='mod-page-button btn btn-sm btn-secondary rounded'>{{ word_for('Log', cap=[0]) }}</button>
         </a>
         <a class="mod-button-a" href="/i/{{ request.sub }}/mods/banned/">
-            <button class='mod-page-button btn btn-sm btn-secondary rounded'>Banned</button>
+            <button class='mod-page-button btn btn-sm btn-secondary rounded'>{{ word_for('Banned', cap=[0]) }}</button>
         </a>
         {% if request.is_mod %}
             <a class="mod-button-a" href="/i/{{ request.sub }}/mods/add/">
-                <button class='mod-page-button btn btn-sm btn-secondary rounded'>Manage</button>
+                <button class='mod-page-button btn btn-sm btn-secondary rounded'>{{ word_for('Manage', cap=[0]) }}</button>
             </a>
             <a class="mod-button-a" href="/i/{{ request.sub }}/settings/">
-                <button class='mod-page-button btn btn-sm btn-secondary rounded'>Settings</button>
+                <button class='mod-page-button btn btn-sm btn-secondary rounded'>{{ word_for('Settings', cap=[0]) }}</button>
             </a>
         {% endif %}
         <!--
@@ -29,7 +29,7 @@
 </div>
 <div class="mod-settings-page margin-lr rounded">
     <div class='mod-list margin-lr  '>
-        <p class="mod-list-p">Mods: </p>
+        <p class="mod-list-p">{{ word_for('Mods', cap=[0]) }}: </p>
         {% set mods = get_sub_mods(request.sub, admin=False) %}
         {% for mod in mods %}
             <div class='mod-single'>

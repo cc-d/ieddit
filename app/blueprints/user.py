@@ -244,13 +244,11 @@ def new_reset_password():
     db.session.add(r)
     db.session.commit()
 
-
-    
-
     flash('successfully reset password for %s' % username, 'success')
     return redirect('/login/')
 
 @ubp.route('/preferences/', methods=['GET'])
+@require_login
 def user_preferences():
     if 'username' not in session:
         flash('not logged in', 'danger')
@@ -265,6 +263,11 @@ def user_update_preferences():
     if 'username' not in session:
         flash('not logged in', 'danger')
         return redirect('/login/')    
+
+    print(session['language'])
+    lang = request.form.get('language-select')
+    session['language'] = lang
+    print(session['language'])
 
     user = db.session.query(Iuser).filter_by(username=session['username']).first()
 

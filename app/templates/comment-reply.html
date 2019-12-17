@@ -19,7 +19,7 @@
 
     {% else %}
     <input class="post-text-area-button btn btn-secondary btn-sm" style='margin-left: 0.25rem; display: inline-block;' type='submit' value='new comment'>
-    <small> anonymous? </small>
+    <small> {{ get_word('anonymous') }}? </small>
 
     {% if session['anonymous'] %}
         <input type='checkbox' name='anonymous' value='1' checked>

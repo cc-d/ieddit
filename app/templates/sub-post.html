@@ -261,7 +261,7 @@
             {% endif %}
 
         <a class="dropdown-item" href="javascript:formSubmit('post-{% if post.locked == True %}unlock{% else %}lock{% endif %}-{{ post.id }}')">{% if post.locked == True %}unlock{% else %}lock{% endif %}</a>
-        <a class="dropdown-item" href="javascript:formSubmit('post-ban-{{ post.id }}')">ban</a>
+        <a class="dropdown-item" href="javascript:formSubmit('post-ban-{{ post.id }}')">{{ get_word('ban') }}</a>
     </div>
 </div>
 {% endif %}
@@ -269,9 +269,9 @@
 
 {% if session['admin'] == True %}
 <div class="dropdown bottom-post-dropdown">
-  <button class="btn btn-danger btn-sm bottom-dropdown btn-bot" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><h6 class='btn-description'>admin</h6>  </button>
+  <button class="btn btn-danger btn-sm bottom-dropdown btn-bot" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><h6 class='btn-description'>{{ get_word('admin') }}</h6>  </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-            <a class="dropdown-item" href="javascript:banAndDeleteAll('post_id','{{ post.id }}');">b&d all</a>
+            <a class="dropdown-item" href="javascript:banAndDeleteAll('post_id','{{ post.id }}');">b&d {{ get_word('all') }}</a>
     </div>
 </div>
 {% endif %}
@@ -349,7 +349,7 @@
     {% endif %}
 
     <form id='post-ban-{{ post.id }}' action='{{ config.URL }}/mod/ban' method='POST' class='post-mod-option-form post-mod-delete-form'>
-        <button id='btn-post-ban-{{ post.id }}' type='submit' name='post_id' value='{{ pauther }}|{{ post.id }}|post' class='mod-option-button post-delete-button'>ban</button>
+        <button id='btn-post-ban-{{ post.id }}' type='submit' name='post_id' value='{{ pauther }}|{{ post.id }}|post' class='mod-option-button post-delete-button'>{{ get_word('ban') }}</button>
     </form>
     </div>
     <!-- END OF INVISIBLE OPTIONS -->

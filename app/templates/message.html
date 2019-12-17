@@ -18,7 +18,7 @@
     {% elif message.sender_type == 'mod' and message.anonymous == False %}
         <i style="color: lightblue;" class="fa fa-user reply-fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ message.show_name }}">[m]{{ message.show_name }}</a>
     {% elif message.anonymous == True %}
-        <i class="fa fa-user reply-fa-user"></i><a style='color: #aaa;' class="user-icon-link" href="{{ config.URL }}/u/Anonymous">Anonymous</a>
+        <i class="fa fa-user reply-fa-user"></i><a style='color: #aaa;' class="user-icon-link" href="{{ config.URL }}/u/Anonymous">{{ get_word('Anonymous', cap=[0]) }}</a>
     {% else %}
         <i class="fa fa-user reply-fa-user"></i><a style='color: #aaa;' class="user-icon-link" href="{{ config.URL }}/u/{{ message.show_name }}">{{ message.show_name }}</a>
     {% endif %}

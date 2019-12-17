@@ -55,14 +55,15 @@ def before_request():
 
 
     # last significant request URI
-
-
     if 'username' in session:
         session['blocked'] = get_blocked(session['username'])
         has_messages(session['username'])
     else:
         if 'blocked' not in session:
             session['blocked'] = {'comment_id':[], 'post_id':[], 'other_user':[], 'anon_user':[]}
+
+    if 'language' not in session:
+        session['language'] = config.DEFAULT_LANGUAGE
 
 @app.after_request
 def apply_after(response):
@@ -166,7 +167,7 @@ def require_login(f):
         username = session['username'] if 'username' in session else None
         if username is None:
             flash('please login to use this feature', 'danger')
-            return get_last_url()
+            return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
 

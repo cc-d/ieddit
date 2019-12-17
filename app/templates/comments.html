@@ -56,7 +56,7 @@
 
 
 {% if parent_comment %}
-<h5 id='single-comment'> you are viewing a single comment - <a style='text-decoration: underline;' href="{{ post.permalink }}">view all comments</a></h5>
+<h5 id='single-comment'> {{ get_word('you are viewing a single comment') }} - <a style='text-decoration: underline;' href="{{ post.permalink }}">{{ get_word('view all comments') }}</a></h5>
 {% endif %}
 
 <ul class="list-unstyled comment-reply-list">
@@ -82,7 +82,7 @@
 
     {% endif %}
     {% else %}
-    <p>no comments</p>
+    <p>{{ get_word('no comments') }}</p>
     {%- endfor %}
 </ul>
 </div>

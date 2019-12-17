@@ -11,6 +11,48 @@ from share import *
 from functions import *
 
 ##### Useful jinja2 template functions #####
+def set_language(lang=config.DEFAULT_LANGUAGE):
+    """
+    in future this will user geoip
+    """
+    session['language'] = lang
+    return lang
+
+def get_word(word, language=None, cap=None, cap_all=False):
+    """
+    multi language support
+    """
+    capitalize = cap
+
+    if language is None:
+        language = session['language']
+
+    word = word.lower()
+    language = language.lower()
+
+    if word in LANG.keys():
+        if language in LANG[word].keys():
+            new_word = LANG[word][language]
+            if cap_all:
+                new_word = ' '.join(
+                                [(x[0].upper() + x[1:]) for x in new_word.split()]
+                                )
+                return new_word
+
+            elif capitalize is not None:
+                new_word = list(new_word)
+                for c in capitalize:
+                    new_word[c] = new_word[c].upper()
+
+                return ''.join(new_word)
+
+            else:
+                return new_word
+
+    return word
+
+app.jinja_env.globals.update(get_word=get_word)
+
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_style(sub=None):
     """

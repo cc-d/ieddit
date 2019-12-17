@@ -52,7 +52,7 @@
                 </div>
             </div>
         <button type="submit" class="btn btn-primary btn-dark">Create Post</button>
-        <label for="anon-checkbox">anonymous?</label>
+        <label for="anon-checkbox">{{ get_word('anonymous') }}?</label>
         {% if session['anonymous'] %}
             <input type='checkbox' name='anonymous' value='1' id="anon-checkbox" checked>
         {% else %}

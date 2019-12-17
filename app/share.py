@@ -33,6 +33,8 @@ import sys
 sys.path.append(os.path.abspath(os.path.dirname(__file__)) + '/functions/')
 sys.path.append('.')
 
+from utilities.languages import *
+
 from utilities.discord_logger import *
 
 logger = logging.getLogger('ieddit.py')

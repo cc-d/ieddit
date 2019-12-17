@@ -7,7 +7,7 @@
             {% if comment.edited %}* {% endif %}
 
             {% if comment.deleted == True %}
-                <i class="fa fa-user"></i><a class="user-icon-link">[deleted]</a>
+                <i class="fa fa-user"></i><a class="user-icon-link">[{{ get_word('deleted') }}]</a>
             {% else %}
                 {% if cauthor_type == 'admin' %}
                     <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
@@ -25,7 +25,7 @@
             <small class="created-ago">
             
             <a class="comment-link" href="{{ comment.permalink }}">
-            parent</a>
+            {{ get_word('parent') }}</a>
                 </small><small class="created-ago">
 
                     <a class="hide-comment" href="javascript:minShow({{ comment.id }})">[+]</a></small>

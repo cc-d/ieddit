@@ -4,9 +4,9 @@
 <table class="table table-sm mod-actions-table">
     <thead class='mod-log-table'>
         <tr class='mod-log-table'>
-            <th scope="col" class='mod-log-table'>Mod</th>
-            <th scope="col" class='mod-log-table'>Action</th>
-            <th scope="col" class='mod-log-table'>Permalink</th>
+            <th scope="col" class='mod-log-table'>{{ get_word('Mod', cap=[0]) }}</th>
+            <th scope="col" class='mod-log-table'>{{ get_word('Action', cap=[0]) }}</th>
+            <th scope="col" class='mod-log-table'>{{ get_word('Permalink', cap=[0]) }}</th>
         </tr>
     </thead>
     <tbody class='mod-log-table'>
@@ -24,6 +24,6 @@
     </tbody>
 </table>
 
-<a class='btn btn-primary btn-sm' href="{{ request.environ['PATH_INFO'] + '?all' }}">show all</a>
+<a class='btn btn-primary btn-sm' href="{{ request.environ['PATH_INFO'] + '?all' }}">{{ get_word('show all') }}</a>
 
 {% endblock %}

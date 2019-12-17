@@ -15,9 +15,9 @@
     <div class="form-group" style='margin-left: 2rem; margin-top: 0.5rem;'>
       <div class='preference-option'>
         {% if user.anonymous == True %}
-          <input type="checkbox" class="form-check-input" id="always-anonymous" name='always_anonymous' checked><label for="always-anonymous">Always Anonymous</label>
+          <input type="checkbox" class="form-check-input" id="always-anonymous" name='always_anonymous' checked><label for="always-anonymous">{{ get_word('Always Anonymous', cap_all=True) }}</label>
         {% else %}
-          <input type="checkbox" class="form-check-input" id="always-anonymous" name='always_anonymous'><label for="always-anonymous">Always Anonymous</label>
+          <input type="checkbox" class="form-check-input" id="always-anonymous" name='always_anonymous'><label for="always-anonymous">{{ get_word('Always Anonymous', cap_all=True) }}</label>
         {% endif %}
       </div>
 
@@ -31,11 +31,29 @@
 
       <div class='preference-option'>
         {% if user.always_override == True %}
-          <input type="checkbox" class="form-check-input" id="always-post-as-user" name='always_override' checked><label for="always-post-as-user">Always Post As Normal User</label>
+          <input type="checkbox" class="form-check-input" id="always-post-as-user" name='always_override' checked><label for="always-post-as-user">{{ get_word('Always Post As Normal User', cap_all=True) }}</label>
         {% else %}
-          <input type="checkbox" class="form-check-input" id="always-post-as-user" name='always_override'><label for="always-post-as-user">Always Post As Normal User</label>
+          <input type="checkbox" class="form-check-input" id="always-post-as-user" name='always_override'><label for="always-post-as-user">{{ get_word('Always Post As Normal User', cap_all=True) }}</label>
         {% endif %}
       </div>
+
+<div class='pref-language'>
+  <p>Language: </p>
+  <select class="custom-select" name='language-select'>
+    {% set languages = ['en', 'fr'] %}
+
+    {% if session['language'] %}
+      <option selected value="{{ session['language'] }}">{{ session['language'] }}</option>
+    {% endif %}
+
+    {% for x in languages %}
+      {% if x != session['language'] %}
+        <option value="{{ x }}">{{ x }}</option>
+      {% endif %}
+    {% endfor %}
+
+  </select>
+</div>
 
       <input type='hidden' name='checkbox_only' value='checkbox_only'>
         <button type="submit" style="margin-left: -1.5rem; margin-top: 0.5rem;" class="btn btn-primary btn-sm">save preferences</button>

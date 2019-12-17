@@ -2,14 +2,14 @@
 {% block content %}
 <form class="needs-validation" novalidate method='post'>
     <div class="form-group form-input-text" style="max-width: 20rem;">
-    <label for="create-post-title">Sub Name</label>
-    <input name='subname' type="text" class="form-control" id="create-post-title" placeholder="Example: baseball" maxlength="30">
+        <label for="create-post-title">{{ get_word('Sub Name', cap_all=True) }}</label>
+        <input name='subname' type="text" class="form-control" id="create-post-title" placeholder="Example: baseball" maxlength="30">
     </div>
     <div class="form-group form-input-text" style="max-width: 25rem;">
-    <label for="create-post-title">Sub Title (optional)</label>
-    <input name='title' type="text" class="form-control" id="create-post-title" placeholder="Example: A place to discuss baseball!">
+        <label for="create-post-title">{{ get_word('Sub Title', cap_all=True) }} ({{ get_word('optional') }})</label>
+        <input name='title' type="text" class="form-control" id="create-post-title" placeholder="Example: A place to discuss baseball!">
     </div>
-    <button type="submit" class="btn btn-primary btn-dark">Create Sub</button>
+    <button type="submit" class="btn btn-primary btn-dark">{{ get_word('Create Sub', cap_all=True) }}</button>
     <br><br><br>
 </form>
 {% endblock %}

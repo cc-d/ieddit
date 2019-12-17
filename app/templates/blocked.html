@@ -21,7 +21,7 @@
       </th>
       <td>{{ b.type }}</td>
       <td>{{ b.created_ago }}</td>
-      <td><a style='color: #fff!important;' href="{{ config.URL }}/u/Anonymous">{{ config.URL }}/u/Anonymous</a></td>
+      <td><a style='color: #fff!important;' href="{{ config.URL }}/u/Anonymous">{{ config.URL }}/u/{{ get_word('Anonymous', cap=[0]) }}</a></td>
     </tr>
     {% else %}
     <tr id='{{ b.key }}-{{ b.id }}'>
