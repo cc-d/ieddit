@@ -494,6 +494,12 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
 
         return pretty_json(p)
 
+    if offset == 0 and subi == 'all':
+        announcement = db.session.query(Post).filter_by(announcement=True).first()
+        if announcement is not None:
+            if announcement.id not in session['blocked']['post_id']:
+                p = [announcement] + p
+
     return p
 
 @app.route('/i/<subi>/')

@@ -42,6 +42,10 @@ LANG = {
         "en":"admin",
         "fr":"admin",
     },
+    "announcement":{
+        "en":"announcement",
+        "fr":"announcement",
+    },
     "anonymous":{
         "en":"anonymous",
         "fr":"anonyme",

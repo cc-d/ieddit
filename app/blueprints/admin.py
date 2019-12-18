@@ -32,12 +32,10 @@ def show_admin_stats():
 def admin_only(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'admin' not in session:
+        if 'admin' not in session or 'username' not in session:
             logger.critical("Unauthorized User Attempted to Access Admin Utilities")
             return abort(403)
-        if 'username' not in session:
-            logger.critical("Unauthorized User Attempted to Access Admin Utilities")
-            return abort(403)
+
         admins = db.session.query(Iuser).filter_by(admin=True).all()
         anames = [a.username for a in admins]
         if session['username'] not in anames:
@@ -106,6 +104,29 @@ def del_api_key():
     else:
         return 'no user'
 
+@abp.route('/announcement', methods=['POST'])
+@admin_only
+def announcement():
+    pid = request.form.get('post_id')
+
+    post = db.session.query(Post).filter_by(id=pid).first()
+
+    print(str(vars(post)))
+    if post.announcement:
+        post.announcement = False
+    else:
+        existing = db.session.query(Post).filter_by(announcement=True).first()
+        if existing is not None:
+            existing.announcement = False
+            db.session.add(existing)
+
+        post.announcement = True
+
+    db.session.add(post)
+    db.session.commit()
+    print(str(vars(post)))
+    return 'ok'
+
 @abp.route('/ban_and_delete', methods=['POST'])
 @admin_only
 def ban_and_delete():
@@ -142,10 +163,6 @@ def ban_and_delete():
     flash('banned and deleted %s' % user.username, 'success')
 
     return redirect('/admin/')
-
-
-
-
 
 
 

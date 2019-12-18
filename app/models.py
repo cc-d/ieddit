@@ -79,6 +79,7 @@ class Post(db.Model):
     nsfw = db.Column(db.Boolean, default=False, nullable=False)
     remote_image_url = db.Column(db.String(2000), default=None, nullable=True)
     override = db.Column(db.Boolean, default=False, nullable=False)
+    announcement = db.Column(db.Boolean, default=False, nullable=False)
 
     def get_permalink(self):
         return config.URL + str(urllib.parse.urlparse(self.permalink).path)

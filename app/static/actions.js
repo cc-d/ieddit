@@ -8,6 +8,12 @@ function banAndDeleteAll(itype, iid) {
     });
 }
 
+function adminAnnouncement(itype, iid) {
+    $.post('/admin/announcement', itype + '=' + iid).done(function(data) {
+        location.reload();
+    });
+}
+
 function blockUser(itype, iid) {
     $.post('/user/block_user', itype + '=' + iid).done(function(data) {
         location.reload();

@@ -90,6 +90,11 @@
                 {% if post.stickied == True %}
                     <i class="fa fa-thumb-tack" style="margin-right: 0.5rem;"></i>
                 {% endif %}
+
+                {% if post.announcement == True %}
+                    <i class="fa fa-bullhorn" style="margin-right: 0.5rem; color: red;"></i>
+                {% endif %}
+
                 {% if post.locked == True %}
                     <i class="fa fa-lock" style="margin-right: 0.5rem;"></i>
                 {% endif %}
@@ -269,10 +274,13 @@
 
 {% if session['admin'] == True %}
 <div class="dropdown bottom-post-dropdown">
-  <button class="btn btn-danger btn-sm bottom-dropdown btn-bot" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><h6 class='btn-description'>{{ get_word('admin') }}</h6>  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-            <a class="dropdown-item" href="javascript:banAndDeleteAll('post_id','{{ post.id }}');">b&d {{ get_word('all') }}</a>
+  <button class="btn btn-danger btn-sm bottom-dropdown btn-bot" type="button" id="admin-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><h6 class='btn-description'>{{ get_word('admin') }}</h6>  </button>
+
+  <div class="dropdown-menu" aria-labelledby="admin-0">
+        <a class="dropdown-item" href="javascript:banAndDeleteAll('post_id','{{ post.id }}');">b&d {{ get_word('all') }}</a>
+        <a class="dropdown-item" href="javascript:adminAnnouncement('post_id','{{ post.id }}');">{{ get_word('announcement') }}</a>
     </div>
+
 </div>
 {% endif %}
 </small>
