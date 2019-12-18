@@ -82,7 +82,7 @@ class Post(db.Model):
     announcement = db.Column(db.Boolean, default=False, nullable=False)
 
     def get_permalink(self):
-        return config.URL + str(urllib.parse.urlparse(self.permalink).path)
+        return config.URL + config.SUB_PREFIX + self.permalink
 
     def get_has_voted(self, user_id):
         return db.session.query(Vote).filter_by(post_id=self.id, user_id=user_id).first()
@@ -114,7 +114,7 @@ class Comment(db.Model):
     removed_by = db.Column(db.String(30), default=None)
 
     def get_permalink(self):
-        return config.URL + str(urllib.parse.urlparse(self.permalink).path)
+        return config.URL + config.SUB_PREFIX + self.permalink
 
     def get_children(self, show_deleted=True):
         if show_deleted is False:

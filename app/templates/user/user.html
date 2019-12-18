@@ -99,8 +99,8 @@
 {% if vuser.mods|length > 0 %}
     <p style='color: #fff; margin-bottom: 0;'>Moderator Of:</p>
     {% for sub, rank in vuser.mods.items() %}
-      <a class='profile-mod-sub' href="{{ config.URL }}/i/{{ sub }}/">
-      /i/{{ sub }} </a>
+      <a class='profile-mod-sub' href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ sub }}/">
+      {{ config.SUB_PREFIX }}{{ sub }} </a>
     {% endfor %}
 {% endif %}
 </div>

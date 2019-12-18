@@ -5,7 +5,7 @@
 <div class="media explore-sub rounded {% if sub.nsfw %}nsfwpost{%endif%}">
   <div class="media-body media-body-explore">
     <h5 class="mt-0">
-        <a href="{{ config.URL }}/i/{{ sub.name }}">/i/{{ sub.name }} 
+        <a href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ sub.name }}">{{ config.SUB_PREFIX }}{{ sub.name }} 
             {% if sub.nsfw %}
                 <a style="color: red;">{{ get_word('nsfw') }}</a>
             {% endif %} 
@@ -22,13 +22,13 @@
         {{ get_word('This sub has no description', cap=[0]) }}.
     {% endif %}
     <br>
-    <a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">
+    <a class="explore-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ sub.name }}">
         ({{ sub.stats[1] }}) {{ get_word('users') }}
     </a>
-    <a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">
+    <a class="explore-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ sub.name }}">
         ({{ sub.stats[2] }}) {{ get_word('posts') }}
     </a>
-    <a class="explore-link" href="{{ config.URL }}/i/{{ sub.name }}">
+    <a class="explore-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ sub.name }}">
         ({{ sub.stats[3] }}) {{ get_word('comments') }}
     </a>
   </div>

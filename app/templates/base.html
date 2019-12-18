@@ -24,7 +24,7 @@
 
     {% if request.sub and request.sub != 'all' %}
         
-        <title>/i/{{ request.sub}} {% if request.sub_title != None %} - {{ request.sub_title }}{% endif %}</title>
+        <title>{{ config.SUB_PREFIX }}{{ request.sub}} {% if request.sub_title != None %} - {{ request.sub_title }}{% endif %}</title>
         
         {% if session['hide_sub_style'] != True %}
             {% set substyle = get_style(request.sub) %}
@@ -50,29 +50,29 @@
 
                 {% if request.sub and request.sub != 'all' %}
                 <li class="nav-item active" style="margin-top: 0.25rem;">
-                    <a class="nav-link" href="/i/{{ request.sub }}">/i/{{ request.sub }}</a>
+                    <a class="nav-link" href="{{ config.SUB_PREFIX }}{{ request.sub }}">{{ config.SUB_PREFIX }}{{ request.sub }}</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="/i/{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary"><i class='fa fa-gears'></i> {{ get_word('information') }}</button></a>
+                    <a class="nav-link" href="{{ config.SUB_PREFIX }}{{ request.sub }}/info/"><button type="button" class="btn btn-sm btn-primary"><i class='fa fa-gears'></i> {{ get_word('information') }}</button></a>
                 </li>
                 {% else %}
                 <li class="nav-item active" style="margin-top: 0.25rem;">
                     <a class="nav-link" href="/about/">{{ get_word('about') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/i/all"><button type="button" class="btn btn-sm btn-danger">/i/{{ get_word('all') }}&nbsp;<i class='fa fa-users'></i></button></a>
+                    <a class="nav-link" href="{{ config.SUB_PREFIX }}all"><button type="button" class="btn btn-sm btn-danger">{{ config.SUB_PREFIX }}{{ get_word('all') }}&nbsp;<i class='fa fa-users'></i></button></a>
                 </li>
                 {% endif %}
 
                 {% if request.sub and request.sub != 'all' %}
                 {% if session['username'] %}
-                <form action='/i/{{ request.sub }}/block' method='POST'>
+                <form action='{{ config.SUB_PREFIX }}{{ request.sub }}/block' method='POST'>
                 <li class='nav-item nav-link'>
                 <input type='hidden' name='lol' value='1'>
                 {% if request.sub in session['blocked_subs'] %}
-                    <button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'>{{ get_word('subscribe') }} <i class='fa fa-star'></i></button>
+                    <button type='submit' formmethod='POST' fromaction='{{ config.SUB_PREFIX }}{{ request.sub }}/block'  name='subscribe' value='0' class='btn btn-sm btn-success'>{{ get_word('subscribe') }} <i class='fa fa-star'></i></button>
                 {% else %}
-                    <button type='submit' formmethod='POST' fromaction='/i/{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger '>{{ get_word('unsubscribe') }} <i class='fa fa-ban'></i></button>
+                    <button type='submit' formmethod='POST' fromaction='{{ config.SUB_PREFIX }}{{ request.sub }}/block' name='subscribe' value='0' class='btn btn-sm btn-danger '>{{ get_word('unsubscribe') }} <i class='fa fa-ban'></i></button>
                 {% endif %}
             </li>
                 </form>

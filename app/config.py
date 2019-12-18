@@ -1,5 +1,7 @@
 DEBUG = True
 
+SUB_PREFIX = '/i/'
+
 DATABASE = 'ieddit'
 PG_USER = 'test'
 PG_PASSWORD = 'test'

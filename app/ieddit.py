@@ -40,8 +40,8 @@ def before_request():
     session['sub_language'] = None
 
     if len(req_uri) >= 3:
-        if req_uri[:3] == '/i/':
-            current_sub = re.findall(r'\/i\/([a-zA-Z0-9-_]*)', req_uri)
+        if req_uri[:3] == config.SUB_PREFIX:
+            current_sub = re.findall(r'\/' + config.SUB_PREFIX[1] + '\/([a-zA-Z0-9-_]*)', req_uri)
             if len(current_sub) == 1:
                 current_sub = current_sub[0]
                 if current_sub != 'all':
@@ -92,10 +92,6 @@ def apply_after(response):
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers['X-Content-Type-Options'] = 'nosniff'
-
-    if config.CSP:
-        response.headers['Content-Security-Policy'] = "default-src 'self' *.ieddit.com ieddit.com; img-src *; style-src" +\
-        " 'self' 'unsafe-inline' *.ieddit.com ieddit.com; script-src 'self' 'unsafe-inline' *.ieddit.com ieddit.com;"
 
     if app.debug:
         if hasattr(g, 'start'):
@@ -245,7 +241,7 @@ def redirect_to_i(sub=None):
     sub = normalize_sub(sub)
     if sub is None:
         return abort(404)
-    return redirect('/i/%s' % sub)
+    return redirect(config.SUB_PREFIX + '%s' % sub)
 
 @limiter.limit(config.LOGIN_RATE_LIMIT)
 @app.route('/login/', methods=['GET', 'POST'])
@@ -471,7 +467,7 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
         post.mods = get_sub_mods(post.sub)
         post.created_ago = time_ago(post.created)
         if subi != 'all':
-            post.site_url = config.URL + '/i/' + subi + '/' + str(post.id) + '/' + post.inurl_title
+            post.site_url = config.URL + config.SUB_PREFIX + subi + '/' + str(post.id) + '/' + post.inurl_title
         post.remote_url_parsed = post_url_parse(post.url)
         post.comment_count = db.session.query(Comment).filter_by(post_id=post.id).count()
 
@@ -507,7 +503,7 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
 
     return p
 
-@app.route('/i/<subi>/')
+@app.route(config.SUB_PREFIX + '<subi>/')
 def subi(subi, user_id=None, posts_only=False, offset=0,
         limit=15, nsfw=True, s=None, d=None):
     offset = request.args.get('offset')
@@ -659,8 +655,8 @@ def c_get_comments(sub=None, post_id=None, inurl_title=None, comment_id=False, s
 
     return comments, post, parent_comment
 
-@app.route('/i/<sub>/<post_id>/<inurl_title>/<comment_id>/')
-@app.route('/i/<sub>/<post_id>/<inurl_title>/')
+@app.route(config.SUB_PREFIX + '<sub>/<post_id>/<inurl_title>/<comment_id>/')
+@app.route(config.SUB_PREFIX + '<sub>/<post_id>/<inurl_title>/')
 def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort_by=None, comments_only=False, user_id=None):
     if sub == None or post_id == None or inurl_title == None:
         if not comments_only:
@@ -712,7 +708,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
 
     tree = comment_structure(comments, tree)
 
-    last = '%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title)
+    last = '%s%s%s/%s/%s/' % (config.URL, config.SUB_PREFIX, sub, post_id, post.inurl_title)
 
     if comment_id is not False and comment_id is None:
         last = last + str(comment_id)
@@ -720,7 +716,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
     session['last_return_url'] = last
 
     return render_template('comments.html', comments=comments, post_id=post_id,
-                        post_url='%s/i/%s/%s/%s/' % (config.URL, sub, post_id, post.inurl_title),
+                        post_url='%s%s%s/%s/%s/' % (config.SUB_PREFIX, config.URL, sub, post_id, post.inurl_title),
                         post=post, tree=tree, parent_comment=parent_comment, is_parent=is_parent,
                         config=config)
 
@@ -786,7 +782,7 @@ def create_sub():
             db.session.commit()
 
             flash('You have created a new sub! Mod actions are under the "info" tab.', 'success')
-            return redirect(config.URL + '/i/' + subname, 302)
+            return redirect(config.URL + config.SUB_PREFIX + subname, 302)
 
         if verify_subname(subname) == False:
             flash('Invalid sub name. Valid Characters are A-Z 0-9 - _ ')
@@ -1056,7 +1052,7 @@ def create_post(api=False, *args, **kwargs):
         if post_type == 'url':
             _thread.start_new_thread(os.system, ('python3 utilities/get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
 
-        new_post.permalink = config.URL + '/i/' + new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
+        new_post.permalink = new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 
         if is_admin(username) and anonymous is False:
             new_post.author_type = 'admin'
@@ -1065,7 +1061,7 @@ def create_post(api=False, *args, **kwargs):
 
         db.session.commit()
 
-        url = new_post.permalink
+        url = new_post.get_permalink()
 
         new_vote = Vote(post_id=new_post.id, vote=1, user_id=user_id, comment_id=None)
         db.session.add(new_vote)
@@ -1092,7 +1088,7 @@ def create_post(api=False, *args, **kwargs):
 
         if request.referrer:
             subref = re.findall(r'' + config.URL.split('//')[1] + \
-                '\/i\/([a-zA-z0-9-_]*)', request.referrer)
+                '\/' + config.SUB_PREFIX[1] + '\/([a-zA-z0-9-_]*)', request.referrer)
 
         sub = db.session.query(Sub).filter_by(name=normalize_sub(subref[0])).first()
         if sub is not None:
@@ -1113,7 +1109,7 @@ def get_sub_list():
     subs = get_explore_subs(limit=30)
 
     sublinks = ['<a class="dropdown-item sublist-dropdown"' + \
-                ' href="javascript:setSub(\'%s\')">/i/%s</a>' % (s.name, s.name) 
+                ' href="javascript:setSub(\'%s\')">%s%s</a>' % (s.name, config.SUB_PREFIX, s.name) 
                 for s in subs]
 
     return '\n'.join(sublinks)
@@ -1454,7 +1450,7 @@ def msg(username=None):
                 flash('invalid username')
                 return redirect('/')
         if request.referrer:
-            ru = re.findall('\/i\/([a-zA-z0-9-_]*)', request.referrer)
+            ru = re.findall('\/' + config.SUB_PREFIX[1] + '\/([a-zA-z0-9-_]*)', request.referrer)
             if ru != None:
                 if len(ru) == 1:
                     if len(ru[0]) > 0:
@@ -1462,7 +1458,7 @@ def msg(username=None):
         return render_template('user/message-reply.html', sendto=username, message=None, other_pgp=get_pgp_from_username(username),
                                 other_user=get_user_from_username(username), self_pgp=get_pgp_from_username(session['username']))
 
-@app.route('/i/<sub>/mods/', methods=['GET'])
+@app.route(config.SUB_PREFIX + '<sub>/mods/', methods=['GET'])
 def view_mod_log(sub=None, limit=10):
     sub = normalize_sub(sub)
     modactions = db.session.query(Mod_action).filter_by(sub=sub)
@@ -1473,7 +1469,7 @@ def view_mod_log(sub=None, limit=10):
 
     return render_template('mod/log.html', modactions=modactions)
 
-@app.route('/i/<sub>/actions/', methods=['GET'])
+@app.route(config.SUB_PREFIX + '<sub>/actions/', methods=['GET'])
 def subactions(sub=None):
     sub = normalize_sub(sub)
     modactions = db.session.query(Mod_action).filter_by(sub=sub).all()
@@ -1482,14 +1478,14 @@ def subactions(sub=None):
     return render_template('mod/log.html', modactions=modactions)
 
 
-@app.route('/i/<sub>/mods/banned/', methods=['GET'])
+@app.route(config.SUB_PREFIX + '<sub>/mods/banned/', methods=['GET'])
 def bannedusers(sub=None):
     sub = normalize_sub(sub)
     banned = db.session.query(Ban).filter_by(sub=sub).all()
 
     return render_template('mod/banned.html', banned=banned)
 
-@app.route('/i/<sub>/mods/add/', methods=['GET'])
+@app.route(config.SUB_PREFIX + '<sub>/mods/add/', methods=['GET'])
 def addmod(sub=None):
     sub = normalize_sub(sub)
     if hasattr(request, 'is_mod'):
@@ -1497,7 +1493,7 @@ def addmod(sub=None):
             return render_template('mod/add.html')
     return abort(403)
 
-@app.route('/i/<sub>/mods/remove/', methods=['GET'])
+@app.route(config.SUB_PREFIX + '<sub>/mods/remove/', methods=['GET'])
 def removemod(sub=None):
     sub = normalize_sub(sub)
     if hasattr(request, 'is_mod'):
@@ -1505,7 +1501,7 @@ def removemod(sub=None):
             return render_template('mod/banned.html')
     return abort(403)
 
-@app.route('/i/<sub>/info/', methods=['GET'])
+@app.route(config.SUB_PREFIX + '<sub>/info/', methods=['GET'])
 def description(sub=None):
     """
     This is the first function I have rewrote in the mods section.
@@ -1523,7 +1519,7 @@ def description(sub=None):
 
     return render_template('mod/info.html', sub=sub)
 
-@app.route('/i/<sub>/settings/', methods=['GET'])
+@app.route(config.SUB_PREFIX + '<sub>/settings/', methods=['GET'])
 def settings(sub=None):
     if request.is_mod:
         return render_template('mod/settings.html', sub=sub)
@@ -1537,7 +1533,7 @@ def get_blocked_subs(username=None):
     else:
         return []
 
-@app.route('/i/<sub>/block', methods=['POST'])
+@app.route(config.SUB_PREFIX + '<sub>/block', methods=['POST'])
 def blocksub(sub=None):
     if 'username' not in session:
         flash('not logged in', 'error')
@@ -1569,7 +1565,7 @@ def blocksub(sub=None):
 
     session['blocked_subs'] = bsubs
 
-    return redirect('/i/%s/' % sub)
+    return redirect(config.SUB_PREFIX + '%s/' % sub)
 
 
 @app.route('/explore/', methods=['GET'])
@@ -1608,13 +1604,8 @@ def about():
     with open('../README.md') as r:
         return render_template('about.html', about=markdown(r.read()))
 
-@app.route('/changelog/', methods=['GET'])
-def changelog():
-    commits = requests.get('https://api.github.com/repos/civicsoft/ieddit/commits').json()
-    return render_template('changelog.html', commits=commits, time_ago=time_ago, strptime=datetime.strptime)
-
 @app.route('/comments/', methods=['GET'])
-@app.route('/i/<sub>/comments/', methods=['GET'])
+@app.route(config.SUB_PREFIX + '<sub>/comments/', methods=['GET'])
 def subcomments(sub=None, offset=0, limit=15, s=None, d=None, nsfw=False, api=False, comments_only=False):
     # code is copy pasted from user page... the post stuff can probably be gotten rid of.
     # the username stuff can be gotten rid of too
@@ -1865,41 +1856,15 @@ def get_stats(subi=None):
     dayvotes = len(dayvotes)
     dayusers = len(dayusers)
 
-    # requires user be on linux, and have log file in this location, so this is
-    # only set to try to be calculated on the ieddit prod/dev server. it makes
-    # assumptions that cannot be made for any user on a different setup
-    if config.URL == 'https://ieddit.com' or config.URL == 'http://dev.ieddit.com' and subi == None:
-        try:
-            fline = str(os.popen('head -n 1 /var/log/nginx/access.log').read()).split(' ')[3][1:]
-            lline = str(os.popen('tail -n 1 /var/log/nginx/access.log').read()).split(' ')[3][1:]
+    return (len(posts), len(comments), users, bans, messages, 
+            mod_actions, subs, len(votes), daycoms, dayposts,
+            dayvotes, dayusers, subscripts)
 
-            fline = datetime.strptime(fline, '%d/%b/%Y:%H:%M:%S')
-            lline = datetime.strptime(lline, '%d/%b/%Y:%H:%M:%S')
-
-            timediff = lline - fline
-
-            timediff = ' total requests in past %s hours' % str(timediff.total_seconds() / 60 / 24)
-
-            lc = str(os.popen('wc -l /var/log/nginx/access.log').read()).split(' ')[0]
-
-            timediff = lc + timediff
-
-            uptime = (time.time() - int(cache_bust[1:])) / 60 / 60
-        except Exception as e:
-            print(e)
-            timediff, uptime = False, False
-    else:
-        timediff, uptime = False, False
-
-
-    return (len(posts), len(comments), users, bans, messages, mod_actions, subs, len(votes), daycoms, dayposts, dayvotes, dayusers,
-        timediff, uptime, subscripts)
-
-@app.route('/i/<subi>/stats/', methods=['GET'])
+@app.route(config.SUB_PREFIX + '<subi>/stats/', methods=['GET'])
 @app.route('/stats/', methods=['GET'])
 def stats(subi=None):
     (posts, comments, users, bans, messages, mod_actions, subs, votes, daycoms, dayposts, dayvotes,
-        dayusers, timediff, uptime, subscripts) = get_stats(subi=subi)
+        dayusers, subscripts) = get_stats(subi=subi)
 
     if 'admin' in session:
         debug = str(vars(request))
@@ -1908,7 +1873,7 @@ def stats(subi=None):
 
     return render_template('stats.html', posts=posts, dayposts=dayposts, comments=comments, daycoms=daycoms,
         users=users, bans=bans, messages=messages, mod_actions=mod_actions, subs=subs, votes=votes, dayvotes=dayvotes,
-        dayusers=dayusers, timediff=timediff, uptime=uptime, debug=debug, subi=subi, subscripts=subscripts)
+        dayusers=dayusers, debug=debug, subi=subi, subscripts=subscripts)
 
 from blueprints import mod
 app.register_blueprint(mod.bp)

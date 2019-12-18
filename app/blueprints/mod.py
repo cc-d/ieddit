@@ -16,7 +16,7 @@ def mod_delete_post():
         return redirect(url_for('login'))
     pid = request.form.get('post_id')
     post = db.session.query(Post).filter_by(id=pid).first()
-    sub_url = config.URL + '/i/' + post.sub
+    sub_url = config.URL + config.SUB_PREFIX + post.sub
 
 
     if 'admin' in session or is_mod_of(session['username'], post.sub):
@@ -76,7 +76,7 @@ def mod_sticky_post():
 
         mod_action(session['username'], 'stickied', post.get_permalink(), post.sub)
         flash('stickied post', category='success')
-        return redirect(config.URL + '/i/' + post.sub)
+        return redirect(config.URL + config.SUB_PREFIX + post.sub)
     else:
         return abort(403)
 
@@ -97,7 +97,7 @@ def mod_unsticky_post():
         db.session.commit()
         
         flash('unstickied post', category='success')
-        return redirect(config.URL + '/i/' + post.sub)
+        return redirect(config.URL + config.SUB_PREFIX + post.sub)
     else:
         abort(403)
 
@@ -176,7 +176,7 @@ def mod_ban_user():
     db.session.commit()
 
     flash('banned ' + obj.author + ' from ' + sub, category='success')
-    return redirect(config.URL + '/i/' + sub)
+    return redirect(config.URL + config.SUB_PREFIX + sub)
 
 @bp.route('/unban', methods=['POST'])
 def mod_unban_user():
@@ -196,7 +196,7 @@ def mod_unban_user():
         
         mod_action(session['username'], 'unban', username, sub)
         flash('unbanned ' + username, 'success')
-        return redirect('/i/' + sub + '/mods/banned/')
+        return redirect(config.SUB_PREFIX + sub + '/mods/banned/')
     else:
         return abort(403)
 
@@ -213,7 +213,7 @@ def mod_addmod():
     username = username.username
     if db.session.query(Moderator).filter(func.lower(Moderator.username) == func.lower(username), Moderator.sub == sub).first() != None:
         flash('Mod already added', 'error')
-        return redirect('/i/%s/mods/' % sub)
+        return redirect(config.SUB_PREFIX + '%s/mods/' % sub)
 
     if 'admin' in session or is_mod_of(session['username'], sub):
         mods = db.session.query(Moderator).filter_by(sub=sub).all()
@@ -228,7 +228,7 @@ def mod_addmod():
         db.session.commit()
 
         flash('new moderator ' + username, 'success')
-        return redirect('/i/' + sub + '/mods/')
+        return redirect(config.SUB_PREFIX + sub + '/mods/')
     else:
         return abort(403)
 
@@ -242,7 +242,7 @@ def mod_removemod():
     sub = request.form.get('sub')
     if not username:
         flash ('invalid username', 'error')
-        return redirect('/i/' + sub + '/mods/')
+        return redirect(config.SUB_PREFIX + sub + '/mods/')
 
     if 'admin' in session or is_mod_of(session['username'], sub):
         sub = normalize_sub(sub)
@@ -251,13 +251,13 @@ def mod_removemod():
 
         if delmod.rank < you.rank:
             flash('cannot delete mod of higher rank')
-            return redirect('/i/' + sub + '/mods/')
+            return redirect(config.SUB_PREFIX + sub + '/mods/')
 
         db.session.query(Moderator).filter_by(username=delmod.username, sub=sub).delete()
         db.session.commit()
         
         flash('deleted mod')
-        return redirect('/i/' + sub + '/mods/')
+        return redirect(config.SUB_PREFIX + sub + '/mods/')
     else:
         return abort(403)
 
@@ -284,7 +284,7 @@ def mod_edit_rules():
         db.session.commit()
         
         flash('successfully updated description', 'success')
-        return(redirect('/i/' + sub + '/info/'))
+        return(redirect(config.SUB_PREFIX + sub + '/info/'))
     else:
         return abort(403)
 
@@ -328,7 +328,7 @@ def mod_title():
         db.session.commit()
         flash('successfully updated title')
         
-        return(redirect('/i/' + sub + '/info/'))
+        return(redirect(config.SUB_PREFIX + sub + '/info/'))
     else:
         return abort(403)
 
@@ -371,6 +371,6 @@ def mod_settings():
         db.session.add(sub)
         db.session.commit()
         flash('successfully updated settings', 'success')
-        return redirect('/i/' + sub.name + '/info/')
+        return redirect(config.SUB_PREFIX + sub.name + '/info/')
     else:
         return abort(403)

@@ -3,7 +3,7 @@
 
 <div class='margin-lr' id='stats'>
     {% if subi != None %}
-        <h3 class='stat'>{{ get_word('stats for') }} /i/{{ subi }}</h3>
+        <h3 class='stat'>{{ get_word('stats for') }} {{ config.SUB_PREFIX }}{{ subi }}</h3>
         <br><br>
     {% endif %}
 
@@ -34,13 +34,6 @@
     <h6 class='stat'>{{ get_word('total bans') }}: {{ bans }}</h6>
     <h6 class='stat'>{{ get_word('total mod actions') }}: {{ mod_actions }}</h6>
     <br><br>
-
-    {% if timediff != False %}
-        <br>
-        <h6 class='stat'>{{ timediff }}</h6>
-        <br><br>
-        <h6 class='stat'>time (in hours) since last restart/code update: {{ uptime }}</h6>
-    {% endif %}
 
     {% if debug %}
         <br><br><br>

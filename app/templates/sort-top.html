@@ -1,6 +1,6 @@
-{% set comment_paths = ['/comments/', '/i/all/comments/'] %}
+{% set comment_paths = ['/comments/', config.SUB_PREFIX + 'all/comments/'] %}
 {% if request.sub %}
-    {% set comment_paths = ['/comments/', '/i/' + request.sub + '/comments/', '/i/all/comments/'] %}
+    {% set comment_paths = ['/comments/', 'config.SUB_PREFIX' + request.sub + '/comments/', config.SUB_PREFIX + 'all/comments/'] %}
 {% endif %}
 
 {% if request.environ['PATH_INFO'] not in comment_paths %}
@@ -89,11 +89,11 @@
 
     
     {% if request.sub %}
-        <a class="top-sort" href="{{ config.URL }}/i/{{ request.sub }}/{{ comments_link }}">
+        <a class="top-sort" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ request.sub }}/{{ comments_link }}">
             <button type="button" class="btn btn-sm btn-primary">{{ comments_text }}</button>
         </a>
     {% elif is_all == True %}
-        <a class="top-sort" href="{{ config.URL }}/i/all/{{ comments_link }}">
+        <a class="top-sort" href="{{ config.URL }}{{ config.SUB_PREFIX }}all/{{ comments_link }}">
             <button type="button" class="btn btn-sm btn-primary">{{ comments_text }}</button>
         </a>
     {% else %}

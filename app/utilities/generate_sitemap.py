@@ -38,11 +38,11 @@ def main():
 
     subs = db.session.query(Sub).all()
     for s in subs:
-        links.append(gl(config.URL + '/i/' + s.name + '/', priority=0.9))
+        links.append(gl(config.URL + config.SUB_PREFIX + s.name + '/', priority=0.9))
 
     posts = db.session.query(Post).all()
     for post in posts:
-        links.append(gl(post.permalink, priority=0.8))
+        links.append(gl(post.get_permalink(), priority=0.8))
 
     users = db.session.query(Iuser).all()
     for user in users:

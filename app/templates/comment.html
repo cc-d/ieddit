@@ -29,16 +29,16 @@
                         {% endif %}
                 </small>
                     {% endif %}
-                    <a href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
+                    <a href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
                         <small class="created-ago comment-link">
                             {{ comment.created_ago }}
                         </small>
                     </a>
                 <small class="created-ago">
                     {% if comment.parent_id != None %}
-                        <a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
+                        <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
                     {% else %}
-                        <a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
+                        <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
                     {% endif %}parent</a>
                 </small>
                 <small class="created-ago">
@@ -59,7 +59,7 @@
     
                 {% if cominline and comment.deleted == True %}
                     {% if loop.depth0 == 4 and value|length > 0 %}
-                        <a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
+                        <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
                             {{ get_word('view more') }} <i class='fa fa-arrow-circle-right '></i>
                         </button></a>
                     {% endif %}
@@ -140,7 +140,7 @@
 
             {% if cominline and comment.deleted == False %}
                 {% if loop.depth0 == 4 and value|length > 0 %}
-                    <a class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
+                    <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
                         {{ get_word('view more') }} <i class='fa fa-arrow-circle-right '></i>
                     </button></a>
                 {% endif %}

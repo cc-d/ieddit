@@ -19,12 +19,12 @@
             {% endif %}
 
             </small>
-            <a href="{{ comment.permalink }}">
+            <a href="{{ comment.get_permalink() }}">
                 <small class="created-ago comment-link">32m</small>
             </a>
             <small class="created-ago">
             
-            <a class="comment-link" href="{{ comment.permalink }}">
+            <a class="comment-link" href="{{ comment.get_permalink() }}">
             {{ get_word('parent') }}</a>
                 </small><small class="created-ago">
 

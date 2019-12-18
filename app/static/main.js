@@ -263,7 +263,7 @@ function suggestTitle() {
 
 
 function setSub(sub) {
-    $('#create-post-sub').val(sub.replace('/i/', ''));
+    $('#create-post-sub').val(sub);
 }
 
 

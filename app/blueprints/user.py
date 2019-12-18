@@ -10,7 +10,7 @@ def user_delete_post():
         return redirect(url_for('login'))
     pid = request.form.get('post_id')
     post = db.session.query(Post).filter_by(id=pid).first()
-    sub_url = config.URL + '/i/' + post.sub
+    sub_url = config.URL + config.SUB_PREFIX + post.sub
 
     if post.author == session['username']:
         post.deleted = True

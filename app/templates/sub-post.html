@@ -74,7 +74,7 @@
             {% endif %}
         </a>
         {% else %}
-            <a href="{{ post.permalink }}">
+            <a href="{{ post.get_permalink() }}">
                 <img class="mr-3 post-image" src="{{ url_for('static', filename='comment-white.png') }}" alt="Generic placeholder image">
             </a>
         {% endif %}
@@ -111,8 +111,8 @@
 
                 </small>
 
-                <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/i/{{ post.sub }}">/i/{{ post.sub }}</a></small>
-                <small class="created-ago"><a class="comment-link" href="{{ post.permalink }}">{{ post.created_ago }}</a></small>
+                <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}">{{ config.SUB_PREFIX }}{{ post.sub }}</a></small>
+                <small class="created-ago"><a class="comment-link" href="{{ post.get_permalink() }}">{{ post.created_ago }}</a></small>
             </div>
         </div>
 
@@ -148,10 +148,10 @@
         </a>
             <small><a href="{{ post.url }}" class="sub-post-title-url">({{ post.remote_url_parsed }})</a></small>
         {% else %}
-        <a class="sub-post-title-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
+        <a class="sub-post-title-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
             {% if has_expand_button %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}{{ post.title }}
         </a>
-            <small><a href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">({{ get_word('self.text') }})</a></small>
+            <small><a href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">({{ get_word('self.text') }})</a></small>
         {% endif %}
 
 
@@ -199,7 +199,7 @@
             {{ down_html|safe }}
 
         </div>
-        <a style='display: inline-block;' class="comment-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/"><span class='num-and-com'>{{ post.comment_count }}</span> <span class='comment-span'>comments</span> <i class='comment-fontawesome fa fa-comment'></i></a>
+        <a style='display: inline-block;' class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/"><span class='num-and-com'>{{ post.comment_count }}</span> <span class='comment-span'>comments</span> <i class='comment-fontawesome fa fa-comment'></i></a>
     </div>
 
 <script>document.write('<style> .hidden-buttons {opacity: 0; position: absolute; font-size:0px; pointer-events: none; };</style>');</script>
@@ -207,7 +207,7 @@
 <div style='display:inline-block;' class="dropup btn-group rounded v-button" id='dot-button-{{ post.id }}'>
     <button class="btn btn-secondary rounded btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-ellipsis-h'></i>  </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <!-- <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>-->
+        <!-- <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.get_permalink() }}")'>copy link</a>-->
         {% if post.id not in session['blocked']['post_id'] %}
             <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("post_id", "{{ post.id }}")'>{{ get_word('hide post') }}</a>
         {% else %}
