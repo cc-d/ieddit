@@ -47,7 +47,7 @@
             and message.encrypted_key_id|string != 'None' %}
             <div>
                 <p style='color: red;'>{{ get_word('you have a encrypted messages but (probably) cannot read it.') }}
-                 {{ word_for('Sent to', cap=[0]) }}: {{ message.encrypted_key_id }} - {{ get_word('You are') }}: {{ self_pgp.id }}</p>
+                 {{ get_word('Sent to', cap=[0]) }}: {{ message.encrypted_key_id }} - {{ get_word('You are') }}: {{ self_pgp.id }}</p>
             </div>
         {% else %}
             {% include 'message.html' %}
