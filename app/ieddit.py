@@ -1212,7 +1212,7 @@ def create_comment(api=False, *args, **kwargs):
     db.session.add(new_comment)
     db.session.commit()
 
-    new_comment.permalink = post.get_permalink() +  str(new_comment.id)
+    new_comment.permalink = post.get_permalink().replace(config.URL + config.SUB_PREFIX, '') +  str(new_comment.id)
 
     db.session.add(new_comment)
     db.session.commit()
