@@ -716,7 +716,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
     session['last_return_url'] = last
 
     return render_template('comments.html', comments=comments, post_id=post_id,
-                        post_url='%s%s%s/%s/%s/' % (config.SUB_PREFIX, config.URL, sub, post_id, post.inurl_title),
+                        post_url='%s%s%s/%s/%s/' % (config.URL, config.SUB_PREFIX, sub, post_id, post.inurl_title),
                         post=post, tree=tree, parent_comment=parent_comment, is_parent=is_parent,
                         config=config)
 
