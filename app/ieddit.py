@@ -498,6 +498,7 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
         announcement = db.session.query(Post).filter_by(announcement=True).first()
         if announcement is not None:
             if announcement.id not in session['blocked']['post_id']:
+                p = [po for po in p if po.announcement is False]
                 p = [announcement] + p
 
     return p
