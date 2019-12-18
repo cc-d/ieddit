@@ -287,6 +287,7 @@ def login():
                         session['admin'] = login_user.admin
 
                 session['hide_sub_style'] = login_user.hide_sub_style
+                session['hide_sub_language'] = login_user.hide_sub_language
 
                 session['language'] = login_user.language
 
