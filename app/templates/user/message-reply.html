@@ -2,13 +2,13 @@
 {% block content %}
 
 {% if self_pgp %}
-{% include 'keys.html' %}
-{% include 'crypto.html' %}
+{% include 'user/keys.html' %}
+{% include 'user/crypto.html' %}
 
 {% endif %}
 
 {% if message %}
-    {% include 'message.html' %}
+    {% include 'user/message.html' %}
 {% endif %}
 
 {% if message.sender %}

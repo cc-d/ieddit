@@ -498,6 +498,10 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
         announcement = db.session.query(Post).filter_by(announcement=True).first()
         if announcement is not None:
             if announcement.id not in session['blocked']['post_id']:
+                if 'username' in session and api is False:
+                    user_vote = announcement.get_has_voted(session['user_id'])
+                    if user_vote is not None:
+                        announcement.has_voted = str(user_vote.vote)
                 p = [po for po in p if po.announcement is False]
                 p = [announcement] + p
 
@@ -846,7 +850,7 @@ def view_user(username):
 
     vuser.karma = get_user_karma(username)
 
-    return render_template('user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts, userpage=True)
+    return render_template('user/user.html', vuser=vuser, posts=posts, url=config.URL, comments_with_posts=comments_with_posts, userpage=True)
 
 @limiter.limit('25 per minute')
 @app.route('/vote', methods=['GET', 'POST'])
@@ -1355,7 +1359,7 @@ def user_messages(username=None, offset=0):
             else:
                 self_pgp = False
 
-            return render_template('messages.html', messages=our_messages, has_encrypted=has_encrypted, self_pgp=self_pgp,
+            return render_template('user/messages.html', messages=our_messages, has_encrypted=has_encrypted, self_pgp=self_pgp,
                 new_messages=new_messages)
 
 @app.route('/u/<username>/messages/reply/<mid>', methods=['GET'])
@@ -1389,7 +1393,7 @@ def reply_message(username=None, mid=None):
 
     message.user_stats = get_message_count(message.sender)
 
-    return render_template('message-reply.html', message=message, sendto=False,
+    return render_template('user/message-reply.html', message=message, sendto=False,
                             self_pgp=get_pgp_from_username(session['username']),
                              other_pgp=get_pgp_from_username(message.sender), 
                              other_user=get_user_from_username(username))
@@ -1455,7 +1459,7 @@ def msg(username=None):
                 if len(ru) == 1:
                     if len(ru[0]) > 0:
                         username = ru[0]
-        return render_template('message-reply.html', sendto=username, message=None, other_pgp=get_pgp_from_username(username),
+        return render_template('user/message-reply.html', sendto=username, message=None, other_pgp=get_pgp_from_username(username),
                                 other_user=get_user_from_username(username), self_pgp=get_pgp_from_username(session['username']))
 
 @app.route('/i/<sub>/mods/', methods=['GET'])
@@ -1467,7 +1471,7 @@ def view_mod_log(sub=None, limit=10):
         modactions = modactions.limit(limit)
     modactions = modactions.all()
 
-    return render_template('mod/mod-log.html', modactions=modactions)
+    return render_template('mod/log.html', modactions=modactions)
 
 @app.route('/i/<sub>/actions/', methods=['GET'])
 def subactions(sub=None):
@@ -1475,7 +1479,7 @@ def subactions(sub=None):
     modactions = db.session.query(Mod_action).filter_by(sub=sub).all()
     if type(modactions) != None:
         modactions = [m for m in modactions]
-    return render_template('mod/mod-log.html', modactions=modactions)
+    return render_template('mod/log.html', modactions=modactions)
 
 
 @app.route('/i/<sub>/mods/banned/', methods=['GET'])
@@ -1483,14 +1487,14 @@ def bannedusers(sub=None):
     sub = normalize_sub(sub)
     banned = db.session.query(Ban).filter_by(sub=sub).all()
 
-    return render_template('mod/mod-banned.html', banned=banned)
+    return render_template('mod/banned.html', banned=banned)
 
 @app.route('/i/<sub>/mods/add/', methods=['GET'])
 def addmod(sub=None):
     sub = normalize_sub(sub)
     if hasattr(request, 'is_mod'):
         if request.is_mod:
-            return render_template('mod/mod-add.html')
+            return render_template('mod/add.html')
     return abort(403)
 
 @app.route('/i/<sub>/mods/remove/', methods=['GET'])
@@ -1498,7 +1502,7 @@ def removemod(sub=None):
     sub = normalize_sub(sub)
     if hasattr(request, 'is_mod'):
         if request.is_mod:
-            return render_template('mod/mod-banned.html')
+            return render_template('mod/banned.html')
     return abort(403)
 
 @app.route('/i/<sub>/info/', methods=['GET'])
@@ -1517,12 +1521,12 @@ def description(sub=None):
     sub.markup_rules = sub.rules
     sub.edit_rules = sub.rules
 
-    return render_template('mod/mod-info.html', sub=sub)
+    return render_template('mod/info.html', sub=sub)
 
 @app.route('/i/<sub>/settings/', methods=['GET'])
 def settings(sub=None):
     if request.is_mod:
-        return render_template('mod/mod-settings.html', sub=sub)
+        return render_template('mod/settings.html', sub=sub)
     return abort(403)
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)

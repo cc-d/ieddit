@@ -63,7 +63,7 @@ def user_get_edit(itype, iid):
         lastedit = None
     session['last_edit'] = None
     
-    return render_template('edit.html', itype=itype, iid=iid, etext=etext, lastedit=lastedit)
+    return render_template('user/edit.html', itype=itype, iid=iid, etext=etext, lastedit=lastedit)
 
 @ubp.route('/edit',  methods=['POST'])
 def user_edit_post():
@@ -186,7 +186,7 @@ def user_uanonymous(username=None):
 
 @ubp.route('/reset_password/', methods=['GET'])
 def reset_page():
-    return render_template('reset-password.html')
+    return render_template('user/reset-password.html')
 
 @limiter.limit(config.RECOVERY_EMAIL_RATE_LIMIT)
 @ubp.route('/password_reset', methods=['POST', 'GET'])
@@ -221,7 +221,7 @@ def password_reset(email=None):
         r = db.session.query(Password_reset).filter_by(rankey=reset).first()
         if r == None:
             return 'invalid link'
-        return render_template('new-reset-password.html', reset=reset, username=r.username)
+        return render_template('user/new-reset-password.html', reset=reset, username=r.username)
 
 @ubp.route('/new_reset_password', methods=['POST'])
 def new_reset_password():
@@ -256,7 +256,7 @@ def user_preferences():
 
     user = db.session.query(Iuser).filter_by(username=session['username']).first()
 
-    return render_template('preferences.html', user=user)
+    return render_template('user/preferences.html', user=user)
 
 @ubp.route('/update_preferences', methods=['POST'])
 def user_update_preferences():
@@ -388,7 +388,7 @@ def user_pgp():
     user = db.session.query(Iuser).filter_by(username=session['username']).first()
     pgp = db.session.query(Pgp).filter_by(username=session['username']).first()
 
-    return render_template('pgp.html', user=user, pgp=pgp)
+    return render_template('user/pgp.html', user=user, pgp=pgp)
 
 @ubp.route('/addpgp', methods=['POST'])
 def user_add_pgp():
@@ -602,4 +602,4 @@ def get_total_blocked():
 
 @ubp.route('/blocked/', methods=['GET'])
 def show_blocked():
-    return render_template('blocked.html', blocked=get_total_blocked())
+    return render_template('user/blocked.html', blocked=get_total_blocked())

@@ -11,7 +11,7 @@
         <textarea id='self-pgp-privkey' style='display: none;'>{% if self_pgp.privkey %}{{ self_pgp.privkey }}{% else %}{% endif %}</textarea>
         <textarea id='self-pgp-pubkey' style='display: none;'>{% if self_pgp.pubkey %}{{ self_pgp.pubkey }}{% else %}{% endif %}</textarea>
 
-        {% include 'crypto.html' %}
+        {% include 'user/crypto.html' %}
     
         <div style='display: inline-block;' class='margin-lr'>
             <button class='btn btn-success' id='decrypt-button' style='margin-top: -1rem;'>
@@ -42,7 +42,7 @@
         {% endif %}
     
         {% if message.encrypted == True and message.encrypted_key_id == self_pgp.id|string %}
-            {% include 'message.html' %}
+            {% include 'user/message.html' %}
         {% elif message.encrypted == True and message.encrypted_key_id|string != self_pgp.id|string 
             and message.encrypted_key_id|string != 'None' %}
             <div>
@@ -50,7 +50,7 @@
                  {{ get_word('Sent to', cap=[0]) }}: {{ message.encrypted_key_id }} - {{ get_word('You are') }}: {{ self_pgp.id }}</p>
             </div>
         {% else %}
-            {% include 'message.html' %}
+            {% include 'user/message.html' %}
         {% endif %}
     
     {% else %}

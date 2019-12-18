@@ -88,15 +88,15 @@
                 {% endif %}
 
                 {% if post.stickied == True %}
-                    <i class="fa fa-thumb-tack" style="margin-right: 0.5rem;"></i>
+                    <i class="fa fa-thumb-tack" style="margin-right: 0.5rem;" data-toggle='tool-tip' title="{{ get_word('stickied') }}"></i>
                 {% endif %}
 
                 {% if post.announcement == True %}
-                    <i class="fa fa-bullhorn" style="margin-right: 0.5rem; color: red;"></i>
+                    <i class="fa fa-bullhorn" style="margin-right: 0.5rem; color: red;" data-toggle='tool-tip' title="{{ get_word('announcement') }}"></i>
                 {% endif %}
 
                 {% if post.locked == True %}
-                    <i class="fa fa-lock" style="margin-right: 0.5rem;"></i>
+                    <i class="fa fa-lock" style="margin-right: 0.5rem;" data-toggle='tool-tip' title="{{ get_word('locked') }}"></i>
                 {% endif %}
                 <small>
 
