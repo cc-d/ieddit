@@ -25,7 +25,20 @@ def get_word(word, language=None, cap=None, cap_all=False):
     capitalize = cap
 
     if language is None:
-        language = session['language']
+        if 'sub_language' in session:
+            if session['sub_language'] is not None:
+                language = session['sub_language']
+            else:
+                language = config.DEFAULT_LANGUAGE
+        else:
+            if 'language' in session:
+                language = session['language']
+            else:
+                language = config.DEFAULT_LANGUAGE
+
+    if 'hide_sub_language' in session:
+        if session['hide_sub_language'] is True:
+            language = session['language']
 
     word = word.lower()
     language = language.lower()
@@ -183,7 +196,7 @@ def normalize_sub(sub, return_obj=False):
     if subl is not None:
         if not return_obj:
             return subl.name
-        return sub
+        return subl
     return sub
 
 @cache.memoize(config.DEFAULT_CACHE_TIME)

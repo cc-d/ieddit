@@ -37,13 +37,22 @@ def before_request():
         req_uri = request.environ['RAW_URI']
 
     # if in a sub, modify request to reflect
+    session['sub_language'] = None
+
     if len(req_uri) >= 3:
         if req_uri[:3] == '/i/':
             current_sub = re.findall(r'\/i\/([a-zA-Z0-9-_]*)', req_uri)
             if len(current_sub) == 1:
                 current_sub = current_sub[0]
                 if current_sub != 'all':
-                    request.sub = normalize_sub(current_sub)
+
+                    sub = normalize_sub(current_sub, return_obj=True)
+
+                    request.sub = sub.name
+
+                    if hasattr(sub, 'language'):
+                        session['sub_language'] = sub.language
+
                     #request.in_nsfw_sub = is_sub_nsfw(request.sub)
                     if 'username' in session:
                         # if a user is a mod of this sub, it changes how we respond
@@ -64,6 +73,9 @@ def before_request():
 
     if 'language' not in session:
         session['language'] = config.DEFAULT_LANGUAGE
+    else:
+        if session['language'] is None:
+            session['language'] = config.DEFAULT_LANGUAGE
 
 @app.after_request
 def apply_after(response):
@@ -275,6 +287,8 @@ def login():
                         session['admin'] = login_user.admin
 
                 session['hide_sub_style'] = login_user.hide_sub_style
+
+                session['language'] = login_user.language
 
                 if hasattr(login_user, 'anonymous'):
                     if login_user.anonymous:
@@ -1065,7 +1079,14 @@ def create_post(api=False, *args, **kwargs):
             username = session['username']
 
         if request.referrer:
-            subref = re.findall(r'\/i\/([a-zA-z0-9-_]*)', request.referrer)
+            subref = re.findall(r'' + config.URL.split('//')[1] + \
+                '\/i\/([a-zA-z0-9-_]*)', request.referrer)
+
+        sub = db.session.query(Sub).filter_by(name=normalize_sub(subref[0])).first()
+        if sub is not None:
+            if hasattr(sub, 'language'):
+                session['sub_language'] = sub.language
+            subref = sub.name
 
         sppf = session['previous_post_form']
         session['previous_post_form'] = None

@@ -348,6 +348,14 @@ def mod_settings():
     if 'admin' in session or is_mod_of(session['username'], sub):
         sub = db.session.query(Sub).filter_by(name=sub).first()
 
+        lang = request.form.get('language-select')
+        if lang is not None and len(lang) > 0:
+            lang = lang.lower()
+            if lang in config.LANGUAGES:
+                sub.language = lang
+
+        session['language'] = sub.language
+
         if marknsfw:
             for p in db.session.query(Post).filter_by(sub=subr).all():
                 p.nsfw = True

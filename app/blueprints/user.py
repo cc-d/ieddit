@@ -264,12 +264,24 @@ def user_update_preferences():
         flash('not logged in', 'danger')
         return redirect('/login/')    
 
-    print(session['language'])
-    lang = request.form.get('language-select')
-    session['language'] = lang
-    print(session['language'])
-
     user = db.session.query(Iuser).filter_by(username=session['username']).first()
+
+    lang = request.form.get('language-select')
+    if lang is not None and len(lang) > 0:
+        lang = lang.lower()
+        if lang in config.LANGUAGES:
+            user.language = lang
+
+    session['language'] = user.language
+
+    hsl = request.form.get('hide_sub_language')
+    if user.hide_sub_language is True:
+        if hsl is None:
+            user.hide_sub_language = False
+    elif user.hide_sub_language is False:
+        if hsl is not None:
+            user.hide_sub_language = True
+    session['hide_sub_language'] = user.hide_sub_language
 
     # preferences a user can update without a password here
     hss = request.form.get('hide_sub_style')

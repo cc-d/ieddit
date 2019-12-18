@@ -5,15 +5,15 @@
 
 {% if request.environ['PATH_INFO'] not in comment_paths %}
     {% set comments_link = 'comments/' %}
-    {% set comments_text = 'Comments' %}
+    {% set comments_text = get_word('Comments', cap=[0]) %}
 {% else %}
     {% set comments_link = '' %}
-    {% set comments_text = 'Posts' %}
+    {% set comments_text = get_word('Posts', cap=[0]) %}
 {% endif %}
 
 <div class="btn-group" role="group" aria-label="Basic example">
     <!-- Comments are sorted by new by default, while posts are sorted by hot -->
-    {% if comments_text == 'Comments' %}
+    {% if comments_text == get_word('Comments') %}
         {% if 's=top' in request.environ['QUERY_STRING'] or 's=new' in request.environ['QUERY_STRING'] %}
             <a class="top-sort" href="{{ request.environ['PATH_INFO'] }}"><button type="button" class="btn btn-sm btn-secondary">{{ get_word('Hot', cap=[0]) }}</button></a>
         {% endif %}
@@ -34,26 +34,26 @@
     {% endif %}
 
     {% if 'd=hour' in request.environ['QUERY_STRING'] %}
-        {% set active_sort = 'hour' %}
+        {% set active_sort = get_word('hour') %}
     {% elif 'd=day' in request.environ['QUERY_STRING'] %}
-        {% set active_sort = 'day' %}
+        {% set active_sort = get_word('day') %}
     {% elif 'd=week' in request.environ['QUERY_STRING'] %}
-        {% set active_sort = 'week' %}
+        {% set active_sort = get_word('week') %}
     {% elif 'd=month' in request.environ['QUERY_STRING'] %}
-        {% set active_sort = 'month' %}
+        {% set active_sort = get_word('month') %}
     {% elif 'd=year' in request.environ['QUERY_STRING'] %}
-        {% set active_sort = 'year' %}
+        {% set active_sort = get_word('year') %}
     {% else %}
-        {% set active_sort = 'past' %}
+        {% set active_sort = get_word('past') %}
     {% endif %}
 
     {% set no_offset_query_string = param_destroy(request.environ['QUERY_STRING'], 'offset', params_only=True) %}
 
-    {% set sort_hour_url = request.environ['PATH_INFO'] + '?' + param_replace(no_offset_query_string, 'd', 'hour') %}
-    {% set sort_day_url = request.environ['PATH_INFO'] + '?' + param_replace(no_offset_query_string, 'd', 'day') %}
-    {% set sort_week_url = request.environ['PATH_INFO'] + '?' + param_replace(no_offset_query_string, 'd', 'week') %}
-    {% set sort_month_url = request.environ['PATH_INFO'] + '?' + param_replace(no_offset_query_string, 'd', 'month') %}
-    {% set sort_year_url = request.environ['PATH_INFO'] + '?' + param_replace(no_offset_query_string, 'd', 'year') %}
+    {% set sort_hour_url = request.environ['PATH_INFO'] + '?' + param_replace(no_offset_query_string, 'd', get_word('hour')) %}
+    {% set sort_day_url = request.environ['PATH_INFO'] + '?' + param_replace(no_offset_query_string, 'd', get_word('day')) %}
+    {% set sort_week_url = request.environ['PATH_INFO'] + '?' + param_replace(no_offset_query_string, 'd', get_word('week')) %}
+    {% set sort_month_url = request.environ['PATH_INFO'] + '?' + param_replace(no_offset_query_string, 'd', get_word('month')) %}
+    {% set sort_year_url = request.environ['PATH_INFO'] + '?' + param_replace(no_offset_query_string, 'd', get_word('year')) %}
 
     {% set sort_all_url = request.environ['PATH_INFO'] + param_destroy(no_offset_query_string, 'd') %}
 
@@ -64,16 +64,16 @@
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             {% if 'd=hour' not in request.environ['QUERY_STRING'] %}
-                <a class="dropdown-item" href="{{ sort_hour_url }}">past hour</a>
+                <a class="dropdown-item" href="{{ sort_hour_url }}">{{ get_word('past hour') }}</a>
             {% endif %}
             {% if 'd=day' not in request.environ['QUERY_STRING'] %}
-                <a class="dropdown-item" href="{{ sort_day_url }}">past day</a>
+                <a class="dropdown-item" href="{{ sort_day_url }}">{{ get_word('past day') }}</a>
             {% endif %}
             {% if 'd=week' not in request.environ['QUERY_STRING'] %}
-                <a class="dropdown-item" href="{{ sort_week_url }}">past week</a>
+                <a class="dropdown-item" href="{{ sort_week_url }}">{{ get_word('past week') }}</a>
             {% endif %}
             {% if 'd=month' not in request.environ['QUERY_STRING'] %}
-                <a class="dropdown-item" href="{{ sort_month_url }}">past month</a>
+                <a class="dropdown-item" href="{{ sort_month_url }}">{{ get_word('past month') }}</a>
             {% endif %}
             <!-- When site is a year old enable 
             {% if 'd=year' not in request.environ['QUERY_STRING'] %}

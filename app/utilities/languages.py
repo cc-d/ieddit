@@ -2,6 +2,10 @@
 essentially a word-for-for dictionary for ieddit
 '''
 LANG = {
+    "account":{
+        "en":"account",
+        "fr":"compte",
+    },
     "action":{
         "en":"action",
         "fr":"action",
@@ -90,6 +94,10 @@ LANG = {
         "en":"confirm password",
         "fr":"confirmer le mot de passe",
     },
+    "confirm new password":{
+        "en":"confirm new password",
+        "fr":"confirmer le mot de passe",
+    },
     "create new user":{
         "en":"create new user",
         "fr":"créer un nouvel utilisateur",
@@ -158,6 +166,10 @@ LANG = {
         "en":"login",
         "fr":"se connecter",
     },
+    "login to comment":{
+        "en":"login to comment",
+        "fr":"connectez-vous pour commenter",
+    },
     "logout":{
         "en":"logout",
         "fr":"se déconnecter",
@@ -166,9 +178,13 @@ LANG = {
         "en":"lock",
         "fr":"verouiller",
     },
-    "Lost passwords cannot be recovered without an email":{
+    "lost passwords cannot be recovered without an email":{
         "en":"Lost passwords cannot be recovered without an email.",
         "fr":"Les mots de passe perdus ne peuvent pas être récupérés sans e-mail",
+    },
+    "hide comment":{
+        "en":"hide comment",
+        "fr":"masquer le commentaire",
     },
     "hide post":{
         "en":"hide post",
@@ -177,6 +193,10 @@ LANG = {
     "hide custom sub styles":{
         "en":"hide custom sub styles",
         "fr":"masquer les styles personnalisés pour les communautés",
+    },
+    "hide custom sub language":{
+        "en":"hide custom sub language",
+        "fr":"masquer la langue de la communauté",
     },
     "hot":{
         "en":"hot",
@@ -193,6 +213,10 @@ LANG = {
     "mark all posts nsfw":{
         "en":"mark all posts nsfw",
         "fr":"Marquer toutes les publications comme explicites",
+    },
+    "message encrypted":{
+        "en":"message encrypted",
+        "fr":"message crypté",
     },
     "messages":{
         "en":"messages",
@@ -254,6 +278,10 @@ LANG = {
         "en":"no posts",
         "fr":"sans publications",
     },
+    "no title":{
+        "en":"no title",
+        "fr":"pas de titre",
+    },
     "non-mod":{
         "en":"non-mod",
         "fr":"non-mod",
@@ -310,6 +338,10 @@ LANG = {
         "en":"pgp",
         "fr":"adresse pgp",
     },
+    "post is locked":{
+        "en":"post is locked",
+        "fr":"le message est verrouillé",
+    },
     "posts":{
         "en":"posts",
         "fr":"publications",
@@ -330,9 +362,17 @@ LANG = {
         "en":"recent posts",
         "fr":"vos publications récentes",
     },
+    "reply":{
+        "en":"reply",
+        "fr":"répondre",
+    },
     "remote url":{
         "en":"remote url",
         "fr":"adresse URL",
+    },
+    "removed by":{
+        "en":"removed by",
+        "fr":"supprimé par",
     },
     "save preferences":{
         "en":"save preferences",
@@ -365,6 +405,10 @@ LANG = {
     "send email":{
         "en":"send email",
         "fr":"envoyer un e-mail",
+    },
+    "sent":{
+        "en":"sent",
+        "fr":"sent",
     },
     "sent to":{
         "en":"sent to",
@@ -422,6 +466,10 @@ LANG = {
         "en":"this sub has no description",
         "fr":"ce sous n'a pas de description",
     },
+    "type":{
+        "en":"type",
+        "fr":"type",
+    },
     "unsticky":{
         "en":"unsticky",
         "fr":"enlever la mise en avant",
@@ -473,6 +521,10 @@ LANG = {
     "view all comments":{
         "en":"view all comments",
         "fr":"voir tous les commentaires",
+    },
+    "view more":{
+        "en":"view more",
+        "fr":"afficher plus",
     },
     "week":{
         "en":"week",

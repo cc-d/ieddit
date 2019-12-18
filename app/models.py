@@ -33,6 +33,8 @@ class Iuser(db.Model):
     pgp = db.Column(db.Boolean, default=False, nullable=False)
     always_override = db.Column(db.Boolean, default=False, nullable=False)
     anon_id = db.Column(db.String(255), default=gen_anon_id, nullable=True)
+    language = db.Column(db.String(10), default=None, nullable=True)
+    hide_sub_language = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self):
         return '<Iuser %r>' % self.username
@@ -48,6 +50,7 @@ class Sub(db.Model):
     nsfw = db.Column(db.Boolean, default=False, nullable=False)
     css = db.Column(db.String(20000), default=None)
     muted = db.Column(db.Boolean, default=False)
+    language = db.Column(db.String(10), default=None, nullable=True)
 
     def __repr__(self):
         return '<Sub %r>' % self.name

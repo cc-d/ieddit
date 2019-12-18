@@ -5,9 +5,9 @@
     <ul class="list-group list-group-horizontal-sm">
         {% for ban in banned %}
             {% if ban.anonymous %}
-                <li class="list-group-item banned-user">User: {{ get_word('Anonymous', cap=[0]) }} #{{ ban.id }}
+                <li class="list-group-item banned-user">{{ get_word('User') }}: {{ get_word('Anonymous', cap=[0]) }} #{{ ban.id }}
             {% else %}
-                <li class="list-group-item banned-user">User: {{ ban.username }} 
+                <li class="list-group-item banned-user">{{ get_word('User') }}: {{ ban.username }} 
             {% endif %}
             {% if request.is_mod %}
                 <form action='/mod/unban' method='POST'>
@@ -19,7 +19,7 @@
                     <input type='hidden' value='{{ ban.username }}' name='username'>
                 {% endif %}
                 <input type='hidden' value='{{ request.sub }}' name='sub'>
-                <button type="submit" class="btn btn-dark btn-sm">Unban</button>
+                <button type="submit" class="btn btn-dark btn-sm">{{ get_word('Unban') }}</button>
                 </form>
             {% endif %}
             </li>

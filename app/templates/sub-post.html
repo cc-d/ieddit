@@ -83,31 +83,31 @@
     <div class="media-body posts-media-body" id='media-body-{{ post.id }}'>
         <div class="row post-row top-post-row">
             <div class="col inner-div post-inner-div">
-            {% if post.override == True %}
-                {% set pauther_type = 'user' %}
-            {% endif %}
+                {% if post.override == True %}
+                    {% set pauther_type = 'user' %}
+                {% endif %}
 
-            {% if post.stickied == True %}
-            <i class="fa fa-thumb-tack" style="margin-right: 0.5rem;"></i>
-            {% endif %}
-            {% if post.locked == True %}
-            <i class="fa fa-lock" style="margin-right: 0.5rem;"></i>
-            {% endif %}
-            <small>
+                {% if post.stickied == True %}
+                    <i class="fa fa-thumb-tack" style="margin-right: 0.5rem;"></i>
+                {% endif %}
+                {% if post.locked == True %}
+                    <i class="fa fa-lock" style="margin-right: 0.5rem;"></i>
+                {% endif %}
+                <small>
 
-            {% if post.edited %}* {% endif %}
-            {% if pauther_type == 'admin' %}
-            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[a]{{ pauther }}</a>
-            {% elif pauther_type == 'mod' %}
-           <i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[m]{{ pauther }}</a>
-            {% else %}
-            <i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">{{ pauther }}</a>
-            {% endif %}
+                {% if post.edited %}* {% endif %}
+                    {% if pauther_type == 'admin' %}
+                    <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[a]{{ pauther }}</a>
+                {% elif pauther_type == 'mod' %}
+                <i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">[m]{{ pauther }}</a>
+                {% else %}
+                    <i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ pauther }}">{{ pauther }}</a>
+                {% endif %}
 
-            </small>
+                </small>
 
-            <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/i/{{ post.sub }}">/i/{{ post.sub }}</a></small>
-            <small class="created-ago"><a class="comment-link" href="{{ post.permalink }}">{{ post.created_ago }}</a></small>
+                <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}/i/{{ post.sub }}">/i/{{ post.sub }}</a></small>
+                <small class="created-ago"><a class="comment-link" href="{{ post.permalink }}">{{ post.created_ago }}</a></small>
             </div>
         </div>
 
@@ -146,7 +146,7 @@
         <a class="sub-post-title-link" href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
             {% if has_expand_button %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}{{ post.title }}
         </a>
-            <small><a href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">(self.text)</a></small>
+            <small><a href="{{ config.URL }}/i/{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/" class="sub-post-title-url">({{ get_word('self.text') }})</a></small>
         {% endif %}
 
 
@@ -204,29 +204,29 @@
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <!-- <a class="dropdown-item" id='copy-link-{{ post.id }}' href='javascript:copyToClipboard("{{ post.permalink }}")'>copy link</a>-->
         {% if post.id not in session['blocked']['post_id'] %}
-            <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("post_id", "{{ post.id }}")'>hide post</a>
+            <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("post_id", "{{ post.id }}")'>{{ get_word('hide post') }}</a>
         {% else %}
-            <a class="dropdown-item" id='show-post-{{ post.id }}' href='javascript:showObject("post_id", "{{ post.id }}")'>show post</a>
+            <a class="dropdown-item" id='show-post-{{ post.id }}' href='javascript:showObject("post_id", "{{ post.id }}")'>{{ get_word('show post') }}</a>
         {% endif %}
 
 
         {% if post.author_id not in session['blocked']['other_user'] %}
-        <a class="dropdown-item" href="javascript:blockUser('post_id','{{ post.id }}');">block user</a>
+        <a class="dropdown-item" href="javascript:blockUser('post_id','{{ post.id }}');">{{ get_word('block user') }}</a>
         {% endif %}
 
 
     {% if session['username'] == post.author %}
         {% if post.self_text %}
-            <a class="dropdown-item" href="/user/edit/post/{{ post.id }}/">edit</a>
+            <a class="dropdown-item" href="/user/edit/post/{{ post.id }}/">{{ get_word('edit') }}</a>
         {% endif %}
     {% endif %}
 
     {% if session['username'] == post.author %}
-        <a class="dropdown-item" href="javascript:formSubmit('user-delete-post-{{ post.id }}')">delete</a>
+        <a class="dropdown-item" href="javascript:formSubmit('user-delete-post-{{ post.id }}')">{{ get_word('delete') }}</a>
     {% endif %}
 
     {% if post.nsfw == False and session['username'] == post.author %}
-        <a class="dropdown-item" href="javascript:formSubmit('user-nsfw-post-{{ post.id }}')">nsfw</a>
+        <a class="dropdown-item" href="javascript:formSubmit('user-nsfw-post-{{ post.id }}')">{{ get_word('nsfw') }}</a>
     {% endif %}
 
     </div>
@@ -240,27 +240,27 @@
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
             {% if session['username'] != post.author %}
                 {% if post.nsfw == False  and post.author %}
-                    <a class="dropdown-item" href="javascript:formSubmit('post-nsfw-{{ post.id }}')">nsfw</a>
+                    <a class="dropdown-item" href="javascript:formSubmit('post-nsfw-{{ post.id }}')">{{ get_word('nsfw') }}</a>
                 {% endif %}
             {% endif %}
 
 
             {% if post.stickied == False %}
-                    <a class="dropdown-item" href="javascript:formSubmit('post-sticky-{{ post.id }}')">sticky</a>
+                    <a class="dropdown-item" href="javascript:formSubmit('post-sticky-{{ post.id }}')">{{ get_word('sticky') }}</a>
                 {% else %}
-                    <a class="dropdown-item" href="javascript:formSubmit('post-unsticky-{{ post.id }}')">unsticky</a>
+                    <a class="dropdown-item" href="javascript:formSubmit('post-unsticky-{{ post.id }}')">{{ get_word('unsticky') }}</a>
             {% endif %}
 
 
             {% if post.deleted == False %}
                 {% if session['username'] != post.author %}
-                    <a class="dropdown-item" href="javascript:formSubmit('post-delete-{{ post.id }}')">delete</a>
+                    <a class="dropdown-item" href="javascript:formSubmit('post-delete-{{ post.id }}')">{{ get_word('delete') }}</a>
                 {% endif %}
             {% else %}
-                <a class="dropdown-item" href="javascript:formSubmit('post-undelete-{{ post.id }}')">undelete</a>
+                <a class="dropdown-item" href="javascript:formSubmit('post-undelete-{{ post.id }}')">{{ get_word('undelete') }}</a>
             {% endif %}
 
-        <a class="dropdown-item" href="javascript:formSubmit('post-{% if post.locked == True %}unlock{% else %}lock{% endif %}-{{ post.id }}')">{% if post.locked == True %}unlock{% else %}lock{% endif %}</a>
+        <a class="dropdown-item" href="javascript:formSubmit('post-{% if post.locked == True %}{{ get_word('unlock') }}{% else %}{{ get_word('lock') }}{% endif %}-{{ post.id }}')">{% if post.locked == True %}{{ get_word('unlock') }}{% else %}{{ get_word('lock') }}{% endif %}</a>
         <a class="dropdown-item" href="javascript:formSubmit('post-ban-{{ post.id }}')">{{ get_word('ban') }}</a>
     </div>
 </div>
@@ -295,18 +295,18 @@
 <!-- BEGIN HIDDEN USER BOTTONS -->
 <div class='hidden-buttons'>
     {% if post.new_self_text %}
-    <a id='user-edit-{{ post.id }}' href='{{ config.URL }}/user/edit/post/{{ post.id }}/'>edit</a>
+    <a id='user-edit-{{ post.id }}' href='{{ config.URL }}/user/edit/post/{{ post.id }}/'>{{ get_word('edit') }}</a>
     {% endif %}
 
     {% if session['username'] == post.author %}
     <form action='{{ config.URL }}/user/delete/post' method='POST' class='hidden-buttons post-mod-option-form post-mod-sticky-form'>
-        <button id='btn-user-delete-post-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>delete</button>
+        <button id='btn-user-delete-post-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>{{ get_word('delete') }}</button>
     </form>
     {% endif %}
 
     {% if post.nsfw == False %}
         <form action='{{ config.URL }}/user/nsfw' method='POST' class='hidden-buttons post-mod-option-form post-mod-sticky-form'>
-            <button id='btn-user-nsfw-post-{{ post.id }}'type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>nsfw</button>
+            <button id='btn-user-nsfw-post-{{ post.id }}'type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button'>{{ get_word('nsfw') }}</button>
         </form>
     {% endif %}
 
@@ -315,36 +315,36 @@
     {% if session['username'] != post.author %}
     {% if post.nsfw == False  and post.author %}
     <form id='post-nsfw-{{ post.id }}' action='{{ config.URL }}/mod/nsfw' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-        <button id='btn-post-nsfw-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>nsfw</button>
+        <button id='btn-post-nsfw-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>{{ get_word('nsfw') }}</button>
     </form>
     {% endif %}
     {% endif %}
     {% if post.stickied == False %}
         <form id='post-sticky-{{ post.id }}' action='{{ config.URL }}/mod/sticky/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-            <button id='btn-post-sticky-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>sticky</button>
+            <button id='btn-post-sticky-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>{{ get_word('sticky') }}</button>
         </form>
     {% else %}
         <form id='post-unsticky-{{ post.id }}' action='{{ config.URL }}/mod/unsticky/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-            <button id='btn-post-unsticky-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>unsticky</button>
+            <button id='btn-post-unsticky-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>{{ get_word('unsticky') }}</button>
         </form>
     {% endif %}
 
 
-    <form id='post-{% if post.locked == True %}unlock{% else %}lock{% endif %}-{{ post.id }}' action='{{ config.URL }}/mod/lock/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-        <button id='btn-post-{% if post.locked == True %}unlock{% else %}lock{% endif %}-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>
-            {% if post.locked == True %}unlock{% else %}lock{% endif %}</button>
+    <form id='post-{% if post.locked == True %}{{ get_word('unlock') }}{% else %}{{ get_word('lock') }}{% endif %}-{{ post.id }}' action='{{ config.URL }}/mod/lock/post' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+        <button id='btn-post-{% if post.locked == True %}{{ get_word('unlock') }}{% else %}{{ get_word('lock') }}{% endif %}-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-sticky-button'>
+            {% if post.locked == True %}{{ get_word('unlock') }}{% else %}{{ get_word('lock') }}{% endif %}</button>
     </form>
 
 
     {% if post.deleted == False %}
         {% if session['username'] != post.author %}
             <form id='post-delete-{{ post.id }}' action='{{ config.URL }}/mod/delete/post' method='POST' class='post-mod-option-form post-mod-delete-form'>
-                <button id='btn-post-delete-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
+                <button id='btn-post-delete-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>{{ get_word('delete') }}</button>
             </form>
         {% endif %}
     {% else %}
         <form id='post-undelete-{{ post.id }}' action='{{ config.URL }}/mod/delete/post' method='POST' class='post-mod-option-form post-mod-delete-form'>
-            <button id='btn-post-undelete-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>delete</button>
+            <button id='btn-post-undelete-{{ post.id }}' type='submit' name='post_id' value='{{ post.id }}' class='mod-option-button post-delete-button'>{{ get_word('delete') }}</button>
         </form>
     {% endif %}
 
@@ -360,5 +360,5 @@
 </ul>
 
 {% if comment_thread == True %}
-    <h5 id='viewing-single' style='display: none;'> you are viewing a single comment </h5>
+    <h5 id='viewing-single' style='display: none;'> {{ get_word('you are viewing a single comment') }} </h5>
 {% endif %}
