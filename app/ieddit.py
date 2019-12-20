@@ -1227,19 +1227,22 @@ def create_comment(api=False, *args, **kwargs):
 
     sender = new_comment.author
 
-
     if new_comment.parent_id and not deleted:
         cparent = db.session.query(Comment).filter_by(id=new_comment.parent_id).first()
         if cparent.author != username:
-            new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
-                sent_to=cparent.author, in_reply_to=new_comment.permalink, anonymous=anonymous)
+            new_message = Message(title='comment reply', text=new_comment.text,
+                sender=sender, sender_type=new_comment.author_type, sent_to=cparent.author,
+                in_reply_to=new_comment.get_permalink().replace(config.URL + config.SUB_PREFIX, ''),
+                anonymous=anonymous)
             db.session.add(new_message)
             db.session.commit()
     else:
         if not deleted:
             if post.author != username:
-                new_message = Message(title='comment reply', text=new_comment.text, sender=sender, sender_type=new_comment.author_type,
-                    sent_to=post.author, in_reply_to=post.get_permalink(), anonymous=anonymous)
+                new_message = Message(title='comment reply', text=new_comment.text,
+                    sender=sender, sender_type=new_comment.author_type, sent_to=post.author,
+                    in_reply_to=post.get_permalink().replace(config.URL + config.SUB_PREFIX, ''),
+                    anonymous=anonymous)
                 db.session.add(new_message)
                 db.session.commit()
 
@@ -1267,14 +1270,13 @@ def user_messages(username=None, offset=0):
             return redirect('/')
         else:
             has_encrypted = False
-
+            username = session['username']
             our_messages = db.session.query(Message) \
             .filter(
                     or_(
                         and_(Message.sent_to == username,
                             Message.read),
-                        and_(Message.sender == username,
-                            Message.in_reply_to is None),
+                        and_(Message.sender == username)
                         )
                     )
 
@@ -1328,9 +1330,6 @@ def user_messages(username=None, offset=0):
 
                 message.created_ago = time_ago(message.created)
 
-                if message.in_reply_to != None:
-                    message.ppath = message.in_reply_to.replace(config.URL, '')
-
                 if message.anonymous is False and message.sender is not None:
                     karma = get_user_karma(message.sender)
                     karma = int(karma['post'] + karma['comment'])
@@ -1340,11 +1339,6 @@ def user_messages(username=None, offset=0):
 
                 if message.encrypted is True:
                     has_encrypted = True
-
-                if message.in_reply_to is None:
-                    message.message_type = 'message'
-                else:
-                    message.message_type = 'comment'
 
             session['unread_messages'] = None
 
@@ -1374,9 +1368,6 @@ def reply_message(username=None, mid=None):
         return redirect('/')
 
     message.new_text = pseudo_markup(message.text)
-    if hasattr(message, 'in_reply_to'):
-        if message.in_reply_to is not None:
-            message.ppath = message.in_reply_to.replace(config.URL, '')
 
     message.created_ago = time_ago(message.created)
 
@@ -1387,7 +1378,12 @@ def reply_message(username=None, mid=None):
     else:
         message.new_title = 'RE: ' + message.title
 
-    message.user_stats = get_message_count(message.sender)
+    if message.sender:
+        if message.anonymous is not True:
+            message.user_stats = get_message_count(message.sender)
+            message.show_name = message.sender
+        else:
+            message.show_name = 'Anonymous'
 
     return render_template('user/message-reply.html', message=message, sendto=False,
                             self_pgp=get_pgp_from_username(session['username']),

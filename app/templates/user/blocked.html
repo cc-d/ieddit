@@ -28,7 +28,7 @@
       <th scope="row"><a href='javascript:showObject("{{ b.key }}", {{ b.id }});'><i style='color: #28a745;' class='fa fa-repeat'></i></a></th>
       <td>{{ b.type }}</td>
       <td>{{ b.created_ago }}</td>
-      <td><a style='color: #fff!important;' href="{{ b.permalink }}">{{ b.permalink }}</a></td>
+      <td><a style='color: #fff!important;' href="{{ b.get_permalink() }}">{{ b.get_permalink() }}</a></td>
     </tr>
     {% endif %}
     {% endfor %}

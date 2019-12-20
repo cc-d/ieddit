@@ -40,7 +40,7 @@
       <h5 class="mt-1 message-title" style='display: inline-block;'>{{ message.title }}</h5>
       {% if message.in_reply_to != None %}
         <div style='display: inline-block; margin-bottom: -10px; height:1.75rem; white-space: nowrap; word-break: break-all; text-overflow: ellipsis; max-width: 54%; overflow: hidden;'>
-          <a href="{{ message.in_reply_to }}">{{ message.ppath }}</a>
+          <a href="{{ config.URL + config.SUB_PREFIX + message.in_reply_to }}">{{ message.in_reply_to }}</a>
         </div>
       {% endif %}
     </div>
@@ -57,9 +57,9 @@
 
     {% if message.in_reply_to != None %}
       <div class="message-bottom-row">
-        <a style='font-size: 120%; color: #aaa;' href="{{ message.in_reply_to }}">reply</a>
+        <a style='font-size: 120%; color: #aaa;' href="{{ config.URL + config.SUB_PREFIX + message.in_reply_to }}">reply</a>
       </div>
-    {% elif message.show_name == session['username'] %}
+    {% elif message.show_name != session['username'] and request.url.split('/')[-2] != 'reply' %}
       <div class="message-bottom-row">
         <a style='font-size: 120%; color: #aaa;' href="reply/{{ message.id }}">{{ get_word('reply') }}</a>
       </div>
