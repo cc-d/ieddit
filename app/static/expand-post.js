@@ -119,8 +119,7 @@ function collapsePost(pid, ptype, vid) {
     button = $('#expand-button-' + pid);
 
     if (vid) {
-        button.children('i').attr('class', 'fa fa-play');
-        button.attr('class', "video-play-btn rounded");
+        button.children('i').attr('class', 'fa fa-play-circle-o');
         pauseVideo(pid);
     } else {
         button.children('i').attr('class', 'fa fa-plus-square-o');

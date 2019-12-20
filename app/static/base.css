@@ -642,6 +642,7 @@ ul, li{
     display: inline-block;
     margin-left: 0;
     margin-right: 0.25rem;
+    margin-top: -2px;
     font-size: larger;
 }
 
@@ -815,19 +816,6 @@ ul {
 .stat {
     display: inline-block;
     margin-left: 2rem;
-}
-
-.video-play-btn {
-    font-size: 50%;
-    border: 1px solid #ccc;
-    padding-left: 4px;
-    padding-right: 3px;
-    padding-top: 2px;
-    padding-bottom: 1px;
-    font-family: auto;
-    font-size: 45%;
-    margin-top: 4px;
-    display: block;
 }
 
 .new-messages-container {

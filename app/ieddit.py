@@ -1276,7 +1276,8 @@ def user_messages(username=None, offset=0):
                     or_(
                         and_(Message.sent_to == username,
                             Message.read),
-                        and_(Message.sender == username)
+                        and_(Message.sender == username,
+                            Message.in_reply_to == None)
                         )
                     )
 
