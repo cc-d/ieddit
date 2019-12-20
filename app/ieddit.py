@@ -498,6 +498,7 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
                     user_vote = announcement.get_has_voted(session['user_id'])
                     if user_vote is not None:
                         announcement.has_voted = str(user_vote.vote)
+                announcement.comment_count = db.session.query(Comment).filter_by(post_id=announcement.id).count()
                 p = [po for po in p if po.announcement is False]
                 p = [announcement] + p
 
