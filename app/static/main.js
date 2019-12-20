@@ -506,17 +506,19 @@ function jslogin() {
 }
 
 function inlineExpand(elem_id) {
+    $('#btn-' + elem_id).parent().parent().attr('class', 'expansion-block-expanded');
     $('#btn-' + elem_id).html('&nbsp;' +
         '<a class="inline-expand-link" href="javascript:inlineCollapse(\'' + elem_id + '\');">' +
         '<i class="fa fa-minus-square-o"></i></a></div>');
     elem = $('#hidden-' + elem_id);
-    doubleParent = $(elem).parent().parent();
+
     $(elem).attr('class', 'inline-expanded');
     $(elem).css('display', 'block');
     $('#real-' + elem_id).attr('src', $('#real-' + elem_id).attr('real-src'));
 }
 
 function inlineCollapse(elem_id) {
+    $('#btn-' + elem_id).parent().parent().attr('class', 'expansion-block-closed');
     $('#btn-' + elem_id).html('&nbsp;' +
         '<a class="inline-collapse-link" href="javascript:inlineExpand(\'' + elem_id + '\');">' +
         '<i class="fa fa-plus-square-o"></i></a>');

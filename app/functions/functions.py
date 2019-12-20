@@ -281,7 +281,7 @@ def inline_expansion(text):
         z = [x for x in image_exts if a[1].lower()[-5:].find(x) != -1]
 
         if (len(z) > 0):
-            text = '<div class="expansion-block">' + a[0] + \
+            text = text.replace(a[0], '<div class="expansion-block">' + '<a class="inline-link-a" ' + a[0][3:] + \
                     '<div style="display: inline">' + \
                     '<div class="inline-expansion-expand" id="btn-' + random_id + '">' + \
                         '&nbsp;' + \
@@ -295,7 +295,7 @@ def inline_expansion(text):
                         '<img class="inline-image" id="real-' + random_id + '" real-src="' + html.escape(a[1]) + '">' + \
                     '</div>' + \
                     '</div>' + \
-                '</div>'    
+                '</div>', 1 )
 
     return text
 

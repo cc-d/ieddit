@@ -556,6 +556,7 @@ ul, li{
     max-height: 100%;
     overflow: hidden;
     color: #eee!important;
+    margin-right: 0.5rem;
 }
 .mod-option-wrapper {
     float: right;
@@ -1298,16 +1299,32 @@ blockquote {
 
 .inline-expand-link {
     position: absolute;
-    margin-top: 2px;
-    margin-left: 2px;
 }
 
 .inline-expansion-expand {
     display: inline;
 }
 
+.inline-link-a {
+    word-break: break-all;
+}
+
 .expansion-block {
-    display: block;
+    display: inline;
+    margin-right: 1rem;
+    padding-right: 0.5rem;
+}
+
+.expansion-block-expanded {
+    display: inline;
+    margin-right: 0px;
+    padding-right: 0.5rem;
+}
+
+.expansion-block-closed {
+    display: inline;
+    margin-right: 0rem;
+    padding-right: 0.5rem;
 }
 
 .inline-expanded {
@@ -1317,8 +1334,8 @@ blockquote {
 }
 
 .inline-image {
-    max-height: 90%;
-    max-width: 90%;
+    max-height: 100%;
+    max-width: 100%;
 }
 
 .pref-language, .pref-language > * {
