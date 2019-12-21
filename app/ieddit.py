@@ -48,6 +48,9 @@ def before_request():
 
                     sub = normalize_sub(current_sub, return_obj=True)
 
+                    if hasattr(sub, 'name') is False:
+                        return abort(404, 'sub does not exist')
+
                     request.sub = sub.name
 
                     if hasattr(sub, 'language'):
@@ -801,7 +804,7 @@ def view_user(username):
     vuser = db.session.query(Iuser).filter(func.lower(Iuser.username) == func.lower(username)).first()
 
     if vuser is None:
-        abort(404)
+        abort(404, 'user does not exist')
 
     mod_of = db.session.query(Moderator).filter_by(username=vuser.username).all()
     mods = {}

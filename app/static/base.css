@@ -1360,18 +1360,28 @@ blockquote {
 }
 
 .user-bio {
-    max-height: 4rem;
-    overflow: hidden;
     font-size: 70%;
-    color: #bbb;
-    word-break: break-word;
-    min-width: 14rem;
-    max-width: 20rem;
-    margin-right: 0.5rem;
+    overflow: hidden;
+    max-width: 14rem;
+    white-space: nowrap;
+}
+
+.bio-text {
+    color: #aaa;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    max-width: 12rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .pref-header {
     color: #fff;
+}
+
+.bio-text-wrap {
+    display: inline-flex;
 }
 
 #edit-bio-textarea {

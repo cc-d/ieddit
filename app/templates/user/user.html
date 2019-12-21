@@ -44,10 +44,11 @@
             {% endif %}
 
             <div class='user-bio'>
+                <div style="display: inline-flex;">About:</div>
                 {% if vuser.bio == None %}
-                    <p class='bio-text' style="opacity: 0.5;">This user has not set a bio.</p>
+                    <div class='bio-text-wrap' style="opacity: 0.5;"><p class='bio-text'>This user has not set a bio.</p></div>
                 {% else %}
-                    <p class='bio-text'>{% for line in vuser.bio.splitlines() %}{{ line }}<br>{% endfor %}</p>
+                    <div class='bio-text-wrap'><p data-toggle='tootltip' title="{{ vuser.bio }}" class='bio-text'>{{ vuser.bio }}</p></div>
                 {% endif %}
             </div>
 
