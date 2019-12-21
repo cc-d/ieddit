@@ -1,3 +1,10 @@
+$(document).ready(function() {
+    textAreas = $('.limited-textarea');
+    for (i=0; i<textAreas.length; i++) {
+        textCount($(textAreas[i]).attr('id'));
+    }
+});
+
 var averageRGB = (function () {
   var reSegment = /[\da-z]{2}/gi;
   function dec2hex(v) {return v.toString(16);}
@@ -525,4 +532,19 @@ function inlineCollapse(elem_id) {
     elem = ('#hidden-' + elem_id);
     $(elem).css('display', 'none');
     $(elem).css('class', '');
+}
+
+function textCount(elem_id, update=false) {
+    textArea = $('#' + elem_id);
+
+    if (update === false) {
+        $(textArea).after('<div class="textarea-count" id="textarea-count-' + elem_id + '">' + 
+                                '(' + textArea.text().length + ' / ' + textArea.attr('maxlength') + ')' + 
+                        '</div>');
+        $(textArea).on('keyup', function() {
+            textCount(elem_id, update=true);
+        });
+    } else {
+        $('#textarea-count-' + elem_id).text('(' + textArea.val().length + ' / ' + textArea.attr('maxlength') + ')');
+    }
 }

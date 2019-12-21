@@ -134,6 +134,10 @@ LANG = {
         "en":"edit",
         "fr":"éditer",
     },
+    "edit bio":{
+        "en":"edit bio",
+        "fr":"modifier la biographie",
+    },
     "email address":{
         "en":"email address",
         "fr":"mon adresse mail",
@@ -378,6 +382,10 @@ LANG = {
         "en":"removed by",
         "fr":"supprimé par",
     },
+    "save":{
+        "en":"save",
+        "fr":"enregistrer",
+    },
     "save preferences":{
         "en":"save preferences",
         "fr":"einstellungen speichern",
@@ -497,6 +505,10 @@ LANG = {
     "update":{
         "en":"update",
         "fr":"mettre à jour",
+    },
+    "update bio":{
+        "en":"update bio",
+        "fr":"mettre à jour la biographie",
     },
     "update description":{
         "en":"update description",

@@ -43,7 +43,14 @@
                 <p style='color:red;' class='user-profile-joined'>{{ get_word('Admin', cap=[0]) }}</p>
             {% endif %}
 
-            <div style='height:3.5rem'><p style='opacity: 0.5; margin-top: 1rem; font-size: 75%;'>{{ get_word('future_content') }}</p></div>
+            <div class='user-bio'>
+                {% if vuser.bio == None %}
+                    <p class='bio-text' style="opacity: 0.5;">This user has not set a bio.</p>
+                {% else %}
+                    <p class='bio-text'>{% for line in vuser.bio.splitlines() %}{{ line }}<br>{% endfor %}</p>
+                {% endif %}
+            </div>
+
         </div>
     </div>
 

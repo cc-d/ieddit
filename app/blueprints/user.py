@@ -603,3 +603,46 @@ def get_total_blocked():
 @ubp.route('/blocked/', methods=['GET'])
 def show_blocked():
     return render_template('user/blocked.html', blocked=get_total_blocked())
+
+@ubp.route('/update_bio', methods=['POST'])
+def update_bio(username=None, new_bio=None):
+    if username is None:
+        if 'username' not in session:
+            return abort(403)
+        username = session['username']
+
+    if new_bio is None:
+        new_bio = request.form.get('new_bio')
+        if new_bio == '':
+            new_bio = None
+
+    if new_bio is not None:
+        new_bio = new_bio.replace('\r\n', '\n')
+        if len(new_bio) > 200:
+            flash('bio cannot be longer than 200 characters', 'danger')
+            return redirect('user/preferences/')
+
+    user = db.session.query(Iuser).filter_by(username=username).first()
+    user.bio = new_bio
+
+    db.session.add(user)
+    db.session.commit()
+
+    flash('successfully updated bio', 'success')
+
+    return redirect('/user/preferences/')    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
