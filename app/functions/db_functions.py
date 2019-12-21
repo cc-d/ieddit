@@ -40,7 +40,9 @@ def get_word(word, language=None, cap=None, cap_all=False):
         if session['hide_sub_language'] is True:
             language = session['language']
 
+    original_word = word
     word = word.lower()
+
     language = language.lower()
 
     if word in LANG.keys():
@@ -62,7 +64,7 @@ def get_word(word, language=None, cap=None, cap_all=False):
             else:
                 return new_word
 
-    return word
+    return original_word
 
 app.jinja_env.globals.update(get_word=get_word)
 

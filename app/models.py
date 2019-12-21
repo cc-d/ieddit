@@ -35,6 +35,7 @@ class Iuser(db.Model):
     anon_id = db.Column(db.String(255), default=gen_anon_id, nullable=True)
     language = db.Column(db.String(10), default=config.DEFAULT_LANGUAGE, nullable=True)
     hide_sub_language = db.Column(db.Boolean, default=False, nullable=False)
+    bio = db.Column(db.String(200), default=None, nullable=True)
 
     def __repr__(self):
         return '<Iuser %r>' % self.username

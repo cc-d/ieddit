@@ -1022,6 +1022,7 @@ ul {
 .user-profile-info {
     margin-left: 108px;
     height: 100px;
+    margin-bottom: 0.5rem;
 }
 
 .user-profile-joined {
@@ -1358,3 +1359,41 @@ blockquote {
     margin-bottom: 0.5rem;
 }
 
+.user-bio {
+    max-height: 4rem;
+    overflow: hidden;
+    font-size: 70%;
+    color: #bbb;
+    word-break: break-word;
+    min-width: 14rem;
+    max-width: 20rem;
+    margin-right: 0.5rem;
+}
+
+.pref-header {
+    color: #fff;
+}
+
+#edit-bio-textarea {
+    min-width: 14rem;
+    max-width: 18rem;
+    width: 100%;
+    overflow-y: hidden!important;
+    margin-top: 0.5rem;
+}
+
+#update-bio-btn {
+    display: block;
+    margin-right: 2rem;
+    float: right;
+}
+
+#user-edit-bio {
+    width: 19rem;
+}
+
+.textarea-count {
+    opacity: 0.5;
+    font-size: 80%;
+    position: absolute;
+}
