@@ -81,4 +81,4 @@ AVG_DOWN_COLOR = '#66c5e5'
 AVG_UP_COLOR = '#e5b866'
 
 DEFAULT_LANGUAGE = 'en'
-LANGUAGES = ['en', 'fr']
+LANGUAGES = ['en', 'fr', 'es']

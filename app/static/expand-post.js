@@ -3,6 +3,11 @@ var widthBreak = 768;
 
 $(document).ready(function() {
     maxWidth = $('.posts-media-body').first().width();
+
+    if (maxWidth === undefined) {
+        return true;
+    }
+
     if (maxWidth <= widthBreak) {
         maxWidth = maxWidth + 80; // thumbnail will be hidden on expansion, it is 80px
     }
@@ -36,7 +41,6 @@ function maxVidSize() {
 
     // 16 because each side is 0.5rem
     width = parseInt(($(widtha).width() - 4));
-    console.log(width);
 
     if (width > maxW) {
         width = maxW;
@@ -80,7 +84,7 @@ function expandPost(pid, ptype, vid) {
     } else {
         v = $('#vid-' + pid);
         src = v.attr('realsrc');
-        console.log(src)
+
         v.attr('src', src);
         v.html(v);
         v.css('display', '');

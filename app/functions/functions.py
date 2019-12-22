@@ -291,7 +291,6 @@ def inline_expansion(text):
                         '</a>' + \
                         '</div>' + \
                     '<div class="inline-expanded-hidden" id="hidden-' + random_id + '">' + \
-                        '<br>' + \
                         '<img class="inline-image" id="real-' + random_id + '" real-src="' + html.escape(a[1]) + '">' + \
                     '</div>' + \
                     '</div>' + \
