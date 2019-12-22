@@ -31,16 +31,17 @@ def create_thumbnail(r, tid):
     r = requests.post(config.URL + '/clear_cache', data={'key':config.API_OPER_KEY})
     print(r.text)
 
-def main():
-    c = False
-    tid = int(sys.argv[1])
-    url = urllib.parse.unquote(sys.argv[2])
+def main(tid=None, url=None):
+    if tid is None:
+        tid = int(sys.argv[1])
+    if url is None:
+        url = urllib.parse.unquote(sys.argv[2])
+
     r = requests.get(url, proxies=config.PROXIES,  allow_redirects=True)
 
     if r.headers['Content-Type'].split('/')[0] == 'image':
         create_thumbnail(r, tid)
         add_remote_image(url, tid)
-        c = True
     else:
         soup = BeautifulSoup(r.text)
         image = soup.find('meta', property='og:image')
