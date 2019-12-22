@@ -1612,6 +1612,8 @@ def subcomments(sub=None, offset=0, limit=15, s=None, d=None, nsfw=False, api=Fa
     # the username stuff can be gotten rid of too
     mods = {}
 
+    sub = normalize_sub(sub)
+
     offset = request.args.get('offset')
     if offset == None:
         offset = 0
