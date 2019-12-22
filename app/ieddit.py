@@ -11,6 +11,10 @@ import requests
 from bs4 import BeautifulSoup
 import urllib.parse
 
+import utilities.get_thumbnail
+
+from threading import Thread
+
 abs_path = os.path.abspath(os.path.dirname(__file__))
 os.chdir(abs_path)
 app.static_folder = 'static'
@@ -1052,9 +1056,11 @@ def create_post(api=False, *args, **kwargs):
         db.session.add(new_post)
         db.session.commit()
 
-        # Forget why this was done this way.
         if post_type == 'url':
-            _thread.start_new_thread(os.system, ('python3 utilities/get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
+            #_thread.start_new_thread(os.system, ('python3 utilities/get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
+            thread = Thread(target = utilities.get_thumbnail.main, args=(str(new_post.id), url,))
+            thread.start()
+            thread.join()
 
         new_post.permalink = new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 

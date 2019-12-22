@@ -44,10 +44,10 @@
             {% endif %}
 
             <div class='user-bio'>
-                <div style="display: inline-flex;">About:</div>
                 {% if vuser.bio == None %}
-                    <div class='bio-text-wrap' style="opacity: 0.5;"><p class='bio-text'>This user has not set a bio.</p></div>
+                <!-- <div class='bio-text-wrap' style="opacity: 0.5;"><p class='bio-text'>This user has not set a bio.</p></div> -->
                 {% else %}
+                <div style="display: inline-flex;">About:</div>
                     <div class='bio-text-wrap'><p data-toggle='tootltip' title="{{ vuser.bio }}" class='bio-text'>{{ vuser.bio }}</p></div>
                 {% endif %}
             </div>
