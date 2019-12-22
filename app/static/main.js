@@ -3,6 +3,8 @@ $(document).ready(function() {
     for (i=0; i<textAreas.length; i++) {
         textCount($(textAreas[i]).attr('id'));
     }
+
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 var averageRGB = (function () {
@@ -19,7 +21,7 @@ var averageRGB = (function () {
     for (var i=b1.length; i;) {
       t = dec2hex( (hex2dec(b1[--i]) + hex2dec(b2[i])) >> 1 );
 
-      c[i] = t.length == 2? '' + t : '0' + t; 
+      c[i] = t.length == 2? '' + t : '0' + t;
     }
     return  '#' + c.join('');
   }
@@ -185,7 +187,7 @@ function jsalert(message, atype) {
     }
 
     hid = highestAlertId();
-    
+
     html = `<div class="alert alert-dismissible alert-` + atype + ` fade show" id="alert-id-` + hid + `" role="alert">
         ` + message + `
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -194,7 +196,7 @@ function jsalert(message, atype) {
     </div>`
 
     $('#alert-ul').append(html);
-    
+
     autoFade('#alert-id-' + hid);
 }
 
@@ -208,16 +210,16 @@ function autoFade(aid) {
 
 function highestAlertId() {
     if (alertCount === -1) {
-    
+
         alerts = $('.alert');
-    
+
         if (alerts.length === 0) {
             alertCount = 0;
             return 0
         }
-    
+
         highest = 0;
-    
+
         for (i=0; i<alerts.length; i++) {
             hid = $(alerts[i]).attr('id').split('-')[2];
 
@@ -227,7 +229,7 @@ function highestAlertId() {
                 highest = parseInt(hid);
             }
         }
-    
+
         alertCount = highest + 1;
         return highest + 1;
     } else {
@@ -383,7 +385,7 @@ if (re.test(window.location)) {
 
 /* Preseving this in history to remind myself I should never write code like
     this again. The difference between these two functions, and the new
-    min hide/show, is literally a 2000%+ increase in speed due to far less 
+    min hide/show, is literally a 2000%+ increase in speed due to far less
     computational complexity.
 
 function hideComments(comment) {
@@ -435,7 +437,7 @@ function showComments(comment) {
         plevel = parent.attr('level')
 
         child = parent.next()
-        
+
         if (child != undefined) {
             clevel = child.attr('level');
             console.log(clevel, plevel);
@@ -473,7 +475,7 @@ function minHide(cid, startingLevel, hide) {
         hcomment.css('display', 'block');
     } else {
         comment.css('display', 'none');
-        hcomment.css('display', 'none');        
+        hcomment.css('display', 'none');
     }
 
     child = comment.next().next()
@@ -538,8 +540,8 @@ function textCount(elem_id, update=false) {
     textArea = $('#' + elem_id);
 
     if (update === false) {
-        $(textArea).after('<div class="textarea-count" id="textarea-count-' + elem_id + '">' + 
-                                '(' + textArea.text().length + ' / ' + textArea.attr('maxlength') + ')' + 
+        $(textArea).after('<div class="textarea-count" id="textarea-count-' + elem_id + '">' +
+                                '(' + textArea.text().length + ' / ' + textArea.attr('maxlength') + ')' +
                         '</div>');
         $(textArea).on('keyup', function() {
             textCount(elem_id, update=true);

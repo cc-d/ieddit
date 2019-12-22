@@ -112,12 +112,12 @@
                 </small>
 
                 <small><a class="top-of-post top-post-sublink" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}">{{ config.SUB_PREFIX }}{{ post.sub }}</a></small>
-                <small class="created-ago"><a class="comment-link" href="{{ post.get_permalink() }}">{{ post.created_ago }}</a></small>
+                <small class="created-ago" data-toggle="tooltip" data-placement="top" title="{{ post.created }}" data-delay='{"show": 500}'><a class="comment-link" href="{{ post.get_permalink() }}">{{ post.created_ago }}</a></small>
             </div>
         </div>
 
     <div class="post-title">
-    
+
     <div class='expand-post'>
         {% set fclass = '' %}
         {% set vid = 'false' %}
@@ -168,7 +168,7 @@
     {% else %}
         <div class='expanded-selftext rounded'>
             <div class='inner-selftext-wrapper'>
-            <div class='safe-markup-text expanded-self-text'>{{ post.new_self_text|safe }}</div> 
+            <div class='safe-markup-text expanded-self-text'>{{ post.new_self_text|safe }}</div>
         </div>
         </div>
     {% endif %}
