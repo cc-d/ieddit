@@ -11,6 +11,10 @@ import requests
 from bs4 import BeautifulSoup
 import urllib.parse
 
+import utilities.get_thumbnail
+
+from threading import Thread
+
 abs_path = os.path.abspath(os.path.dirname(__file__))
 os.chdir(abs_path)
 app.static_folder = 'static'
@@ -504,6 +508,8 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
                 announcement.comment_count = db.session.query(Comment).filter_by(post_id=announcement.id).count()
                 p = [po for po in p if po.announcement is False]
                 p = [announcement] + p
+                announcement.mods = get_sub_mods(announcement.sub)
+                announcement.created_ago = time_ago(announcement.created)
 
     return p
 
@@ -1052,9 +1058,11 @@ def create_post(api=False, *args, **kwargs):
         db.session.add(new_post)
         db.session.commit()
 
-        # Forget why this was done this way.
         if post_type == 'url':
-            _thread.start_new_thread(os.system, ('python3 utilities/get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
+            #_thread.start_new_thread(os.system, ('python3 utilities/get_thumbnail.py %s "%s"' % (str(new_post.id), urllib.parse.quote(url)),))
+            thread = Thread(target = utilities.get_thumbnail.main, args=(str(new_post.id), url,))
+            thread.start()
+            thread.join()
 
         new_post.permalink = new_post.sub + '/' + str(new_post.id) + '/' + new_post.inurl_title +  '/'
 
@@ -1611,6 +1619,8 @@ def subcomments(sub=None, offset=0, limit=15, s=None, d=None, nsfw=False, api=Fa
     # code is copy pasted from user page... the post stuff can probably be gotten rid of.
     # the username stuff can be gotten rid of too
     mods = {}
+
+    sub = normalize_sub(sub)
 
     offset = request.args.get('offset')
     if offset == None:

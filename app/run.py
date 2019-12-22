@@ -12,7 +12,7 @@ import config
 
 @exception_log(logger)
 def main(port=80):
-    app.run(host='0.0.0.0', port=port, use_reloader=False if config.DEBUG else True)
+    app.run(host='0.0.0.0', port=port)
 
 if __name__ == '__main__':
     try:
