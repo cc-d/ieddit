@@ -57,7 +57,7 @@ class Sub(db.Model):
         return '<Sub %r>' % self.name
 
 class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True)    
+    id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(2000), nullable=True)
     self_text = db.Column(db.String(20000), nullable=True)
     post_type = db.Column(db.String(15), nullable=False)
@@ -195,7 +195,7 @@ class Sub_block(db.Model):
 
 class Password_reset(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)    
+    username = db.Column(db.String(20), db.ForeignKey('iuser.username'), nullable=False)
     rankey = db.Column(db.String(50), unique=False, nullable=False)
     valid = db.Column(db.Boolean, default=True, nullable=False)
     expires = db.Column(db.DateTime)

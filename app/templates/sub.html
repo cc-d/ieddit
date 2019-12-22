@@ -7,16 +7,17 @@
 {% else %}
     {% extends 'base.html' %}
     {% block content %}
+
     <script src="{{ url_for('static', filename='expand-post.js') }}?1"></script>
-    
+
     {% include 'sort-top.html' %}
-    
+
     <div class="active_sub_users">
-    {{ get_word('Users Active', cap_all=True) }}: {{ sub_stats['active_users'] }}
+    {{ get_word('Users Active', cap_all=True) }}&nbsp;&nbsp;<span class="text-white">{{ sub_stats['active_users'] }}</span>
         <br>
-    {{ get_word('Posts Today', cap_all=True) }}: {{ sub_stats['posts_today'] }}
+    {{ get_word('Posts Today', cap_all=True) }}&nbsp;&nbsp;<span class="text-white">{{ sub_stats['posts_today'] }}</span>
     </div>
-    
+
     {% for post in posts %}
         {% include 'sub-post.html' %}
         {% if loop.last %}
@@ -26,7 +27,7 @@
                     <button type="button" class="btn btn-secondary">{{ get_word('prev') }}</button>
                 </a>
             {% endif %}
-    
+
             {% if post.is_more %}
                 {% set next_off_url = request.environ['PATH_INFO'] + offset_url(request.environ['QUERY_STRING'], 'next') %}
                 <a href="{{ next_off_url }}" class="sub-posts-next">
@@ -37,6 +38,6 @@
     {% else %}
         <p> {{ get_word('no posts') }} </p>
     {% endfor %}
-    
+
     {% endblock %}
 {% endif %}

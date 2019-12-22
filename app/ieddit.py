@@ -670,7 +670,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
     if sub is None:
         abort(404)
 
-    
+
     try:
         post_id = int(post_id)
         p = db.session.query(Post).filter_by(id=post_id).first()
@@ -696,7 +696,7 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
         cache_for = None
 
     comments, post, parent_comment = c_get_comments(sub=sub, post_id=post_id, inurl_title=inurl_title,
-                                                    comment_id=comment_id, sort_by=sort_by, comments_only=comments_only, 
+                                                    comment_id=comment_id, sort_by=sort_by, comments_only=comments_only,
                                                     user_id=user_id, cache_for=cache_for)
 
     if post is not None and 'username' in session:
@@ -1108,12 +1108,12 @@ def create_post(api=False, *args, **kwargs):
 @app.route('/get_sub_list', methods=['GET'])
 def get_sub_list():
     '''
-    gets sub suggestion dropdown when creating a new post    
+    gets sub suggestion dropdown when creating a new post
     '''
     subs = get_explore_subs(limit=30)
 
     sublinks = ['<a class="dropdown-item sublist-dropdown"' + \
-                ' href="javascript:setSub(\'%s\')">%s%s</a>' % (s.name, config.SUB_PREFIX, s.name) 
+                ' href="javascript:setSub(\'%s\')">%s%s</a>' % (s.name, config.SUB_PREFIX, s.name)
                 for s in subs]
 
     return '\n'.join(sublinks)
@@ -1392,7 +1392,7 @@ def reply_message(username=None, mid=None):
 
     return render_template('user/message-reply.html', message=message, sendto=False,
                             self_pgp=get_pgp_from_username(session['username']),
-                             other_pgp=get_pgp_from_username(message.sender), 
+                             other_pgp=get_pgp_from_username(message.sender),
                              other_user=get_user_from_username(username))
 
 
@@ -1463,7 +1463,7 @@ def msg(username=None):
 def view_mod_log(sub=None, limit=10):
     sub = normalize_sub(sub)
     modactions = db.session.query(Mod_action).filter_by(sub=sub)
-    
+
     if request.url[-4:] != '?all':
         modactions = modactions.limit(limit)
     modactions = modactions.all()
@@ -1859,7 +1859,7 @@ def get_stats(subi=None):
     dayvotes = len(dayvotes)
     dayusers = len(dayusers)
 
-    return (len(posts), len(comments), users, bans, messages, 
+    return (len(posts), len(comments), users, bans, messages,
             mod_actions, subs, len(votes), daycoms, dayposts,
             dayvotes, dayusers, subscripts)
 
