@@ -508,6 +508,8 @@ def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=Fa
                 announcement.comment_count = db.session.query(Comment).filter_by(post_id=announcement.id).count()
                 p = [po for po in p if po.announcement is False]
                 p = [announcement] + p
+                announcement.mods = get_sub_mods(announcement.sub)
+                announcement.created_ago = time_ago(announcement.created)
 
     return p
 
