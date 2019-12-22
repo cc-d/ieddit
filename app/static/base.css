@@ -40,6 +40,10 @@ textarea {
     font-size: 0.8rem;
 }
 
+.vote-comment-wrapper {
+    display: inline-block;
+}
+
 .post-image {
     margin-left: 0.5rem;
     margin-right: 0.5rem!important;
@@ -249,10 +253,7 @@ textarea {
 
 .top-of-post {
     margin-left: 1rem;
-}
-
-.top-post-sublink {
-    color: #212529;
+    display: inline;
 }
 
 .comment-textarea-button {
@@ -263,7 +264,6 @@ textarea {
 .user-icon-link {
     margin-left: 0.25rem;
     text-decoration: none;
-    color: #212529;
 }
 
 .user-icon-link:hover {
@@ -308,7 +308,7 @@ textarea {
 .comment-post-voting{
     margin-left: 1rem;
     margin-right: 0.5em;
-    font-size:16px;
+    display: inline-block;
 }
 
 .top-sort {
@@ -459,6 +459,34 @@ ul, li{
     margin-left: 1rem;
 }
 
+.post-flag {
+    margin-right: 0.5rem;
+}
+
+.small-user-and-sub {
+    display: inline;
+}
+
+.user-and-sub {
+    display: inline;
+}
+
+.usertype-admin {
+    color: red!important;
+}
+
+.usertype-mod {
+    color: lightblue!important;
+}
+
+.content-user {
+    display: inline-block;
+}
+
+.small-user {
+    display: inline-block;
+}
+
 .sub-list {
     margin-bottom: 0.5rem;
     margin-top: 0.5rem;
@@ -495,10 +523,6 @@ ul, li{
     margin-bottom: 0.25rem;
     border: 1px solid gray;
     word-break: break-word;
-}
-
-.comment-link {
-    color: #212529;
 }
 
 .fa-arrow-up {
@@ -702,6 +726,7 @@ ul, li{
 
 .expanded-post-image {
     margin-bottom: 0.5rem;
+    max-width: 100%;
 }
 
 ul {
@@ -918,8 +943,16 @@ ul {
     display: inline-block;
 }
 
-.bottom_inner_row {
-    margin-left: -23px;
+.bottom-post-row {
+    margin-left: -1rem;
+}
+
+.post-position-first {
+    margin-top: 0.25rem;
+}
+
+.post-position-last {
+    margin-bottom: 0.25rem;
 }
 
 .btn-description {
@@ -1190,15 +1223,8 @@ blockquote {
 .sub-post-title-link {
     color: #eee;
 }
+
 .sub-post-title-url {
-    color: #ccc;
-}
-
-.top-of-post {
-    color: #ccc;
-}
-
-.comment-link {
     color: #ccc;
 }
 
@@ -1312,23 +1338,21 @@ blockquote {
 
 .expansion-block {
     display: inline;
-    margin-right: 1rem;
-    padding-right: 0.5rem;
+    padding-right: 1rem;
 }
 
 .expansion-block-expanded {
     display: inline;
-    margin-right: 0px;
-    padding-right: 0.5rem;
+
 }
 
 .expansion-block-closed {
     display: inline;
-    margin-right: 0rem;
-    padding-right: 0.5rem;
+
 }
 
 .inline-expanded {
+    margin: 0.5rem;
     display: block;
     max-height: 100%;
     max-width: 100%;
