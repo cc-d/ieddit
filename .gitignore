@@ -149,3 +149,5 @@ bot.config
 bot_config.py
 posts.json
 commits.txt
+
+.DS_Store
