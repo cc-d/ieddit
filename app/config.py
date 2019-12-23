@@ -22,7 +22,7 @@ elif DB_TYPE == 'postgres':
 # This will be unique every time create_db.py is ran when testing
 # to force clear sessions
 
-SECRET_KEY = 'not-a-real-key-|r|Zuyt_p-5Us|r|'
+SECRET_KEY = 'not-a-real-key-|r|C6-uK6_RwY|r|'
 
 # Change this to your local URL. IE http://127.0.0.1
 URL = 'http://dev.ieddit.com'
@@ -37,13 +37,13 @@ CACHE_TYPE = 'simple'
 DEFAULT_CACHE_TIME = 600
 
 # specific rate limit times in seconds
-SUB_RATE_LIMIT = '1 per second; 3 per minute'
-COMMENT_RATE_LIMIT = '1 per second; 5 per minute'
-POST_RATE_LIMIT = '1 per second; 5 per minute'
-MESSAGE_RATE_LIMIT = '1 per second; 10 per minute'
-REGISTER_RATE_LIMIT = '1 per second; 5 per minute'
-LOGIN_RATE_LIMIT = '1 per second; 25 per minute'
-RECOVERY_EMAIL_RATE_LIMIT = '1 per second; 5 per hour'
+SUB_RATE_LIMIT = '3 per second; 3 per minute'
+COMMENT_RATE_LIMIT = '3 per second; 5 per minute'
+POST_RATE_LIMIT = '3 per second; 5 per minute'
+MESSAGE_RATE_LIMIT = '3 per second; 10 per minute'
+REGISTER_RATE_LIMIT = '3 per second; 5 per minute'
+LOGIN_RATE_LIMIT = '3 per second; 25 per minute'
+RECOVERY_EMAIL_RATE_LIMIT = '3 per second; 5 per hour'
 
 LIMITER_DEFAULTS = ['600 per minute']
 

@@ -1116,7 +1116,6 @@ def get_sub_list():
 
     return '\n'.join(sublinks)
 
-
 @limiter.limit(config.COMMENT_RATE_LIMIT)
 @app.route('/create_comment', methods=['POST'])
 @not_banned
@@ -1235,7 +1234,7 @@ def create_comment(api=False, *args, **kwargs):
             new_message = Message(title='comment reply', text=new_comment.text,
                 sender=sender, sender_type=new_comment.author_type, sent_to=cparent.author,
                 in_reply_to=new_comment.get_permalink().replace(config.URL + config.SUB_PREFIX, ''),
-                anonymous=anonymous)
+                anonymous=anonymous, comment_reply_id=new_comment.id)
             db.session.add(new_message)
             db.session.commit()
     else:
@@ -1244,7 +1243,7 @@ def create_comment(api=False, *args, **kwargs):
                 new_message = Message(title='comment reply', text=new_comment.text,
                     sender=sender, sender_type=new_comment.author_type, sent_to=post.author,
                     in_reply_to=post.get_permalink().replace(config.URL + config.SUB_PREFIX, ''),
-                    anonymous=anonymous)
+                    anonymous=anonymous, comment_reply_id=new_comment.id)
                 db.session.add(new_message)
                 db.session.commit()
 
@@ -1315,7 +1314,7 @@ def user_messages(username=None, offset=0):
             for message in our_messages:
                 message.sender_id = int(normalize_username(message.sender, dbuser=True).id)
                 if message.sender == session['username']:
-                    message.show_name = session['username']
+                    message.show_name = message.sent_to
                     message.is_sent = True
                     if message.encrypted:
                         message.new_text = '<p style="color: green;">ENCRYPTED</p>'
@@ -1342,6 +1341,7 @@ def user_messages(username=None, offset=0):
 
                 if message.encrypted is True:
                     has_encrypted = True
+
 
             session['unread_messages'] = None
 
@@ -1394,9 +1394,13 @@ def reply_message(username=None, mid=None):
                              other_user=get_user_from_username(username))
 
 
-def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False, encrypted_key_id=None, in_reply_to=None):
-    new_message = Message(title=title, text=text, sender=sender, in_reply_to=in_reply_to, sent_to=sent_to, encrypted=encrypted,
-        encrypted_key_id=encrypted_key_id)
+def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False,
+            encrypted_key_id=None, in_reply_to=None, comment_reply_id=None):
+
+    new_message = Message(title=title, text=text, sender=sender,
+                        in_reply_to=in_reply_to, sent_to=sent_to, encrypted=encrypted,
+                        encrypted_key_id=encrypted_key_id, comment_reply_id=comment_reply_id)
+
     db.session.add(new_message)
     db.session.commit()
 

@@ -10,7 +10,7 @@
   <div class="message-top-row">
   {% if message.show_name %}
     {% if message.is_sent %}
-      <p style='display: inline; margin: 0; color: #eee;'>{{ get_word('SENT') }}:</p>
+      <p style='display: inline; margin: 0; color: #eee;'>{{ get_word('sent') }}:</p>
     {% endif %}
 
     {% if message.sender_type == 'admin' and message.anonymous == False %}
@@ -23,7 +23,7 @@
         <i class="fa fa-user reply-fa-user"></i><a style='color: #aaa;' class="user-icon-link" href="{{ config.URL }}/u/{{ message.show_name }}">{{ message.show_name }}</a>
     {% endif %}
 
-    {% if message.user_stats %}
+    {% if message.user_stats and not message.is_sent %}
       <p class='user-message-stats' style='font-family: inherit; display: inline-block; 
       color: #aaa; margin-bottom: 0px;' data-toggle="tooltip" data-placement="top" title='total karma'>({{ message.user_stats }})</p>
     {% endif %}
@@ -40,7 +40,12 @@
       <h5 class="mt-1 message-title" style='display: inline-block;'>{{ message.title }}</h5>
       {% if message.in_reply_to != None %}
         <div style='display: inline-block; margin-bottom: -10px; height:1.75rem; white-space: nowrap; word-break: break-all; text-overflow: ellipsis; max-width: 54%; overflow: hidden;'>
-          <a href="{{ config.URL + config.SUB_PREFIX + message.in_reply_to }}">{{ message.in_reply_to }}</a>
+          {% if message.comment_reply_id %}
+            {% set reply_url = config.URL + config.SUB_PREFIX + message.in_reply_to + '/' + message.comment_reply_id|string %}
+          {% else %}
+            {% set reply_url = config.URL + config.SUB_PREFIX + message.in_reply_to %}
+          {% endif %}
+          <a href="{{ reply_url }}">{{ message.in_reply_to }}</a>
         </div>
       {% endif %}
     </div>

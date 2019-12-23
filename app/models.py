@@ -186,6 +186,7 @@ class Message(db.Model):
     sender_type = db.Column(db.String(20), default='user', nullable=False)
     encrypted = db.Column(db.Boolean, default=False, nullable=False)
     encrypted_key_id = db.Column(db.Integer, db.ForeignKey('pgp.id'), default=None, nullable=True)
+    comment_reply_id = db.Column(db.Integer, db.ForeignKey('comment.id'), default=None, nullable=True)
 
     def __repr__(self):
         return '<Message %r>' % self.id

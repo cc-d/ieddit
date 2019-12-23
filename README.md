@@ -1,14 +1,10 @@
 # **ieddit.com**
 
-###### This site is the result of several thousand lines of code written over the past month, there are a LOT of bugs, has only now reached a state I'd describe as 'beta'. While the general layout/design is mostly complete, the UI is still a bit rough in some areas.
-
 ### About
 
 The idea behind this project was to offer a website with functionality similar to reddit's, with a focus on transparency, privacy, freedom of expression, and so on, while also trimming down the massive amount of design bloat reddit has accumulated over the years. To attempt to preserve these operating principles, this site will not pursue any form of monetization which would violate the privacy of users, regardless of growth. Additionally, this allows the site to operate fully independently without being beholden to the demands of advertisers.
 
 The wikimedia foundation has proven that such a model is feasible even at the upper echelons of scale, if one is willing to operate leanly without the express pursuit of profit.
-
-Last time this site was re-posted to HN, it was on day 1 of the public alpha. A significant amount has been changed since then - and I'm not asleep this time :) - so hopefully it will go a bit smoother.
 
 ### Features
 
@@ -38,19 +34,13 @@ Site finances will be always remain completely transparent. The site's code is c
 
 Tracking code will never be utilized, user data will never be up for sale. The site attempts to avoid using javascript where possible, and most core functionality can be achieved without. TOR/VPN users currently will have no issues using the site, and I'll make every effort to preserve these options.
 
-As of 10/21/2019, I can confirm the core site functionality still works perfectly in a js-disabled tor browser, and it's honestly been a little painful attempting to preserve it. A few things added recently like user/comment/post blocking will only work with javascript, but support for non-javascript browsers can be added easily if there is demand.
-
 Traffic logs are only stored for 1 day max on the prod server. No other logging information is stored on my end but functionality-related database records.
 
 All static files, JS/CSS/Thumbnails, are hosted locally. The only requests that are sent to external servers happen only during image/video expansion.
 
 ### Future
 
-There is a ton of room for UI improvements in the more out-of-the-way areas of the site. Examples being mod options, user settings, etc.
-
 It would be trivial to offer a hidden service option if there is demand for one. As of now, no hidden service option exists, to avoid making the deployment process slightly more tedious and the hosting costs.
-
-I've sunk a solid month of my time into this, and most of the core functionality is now completed, so I'll most likely take a step back and adopt a more gradual pace of development. Areas such as tests, code refactoring, error handling, logging, etc have been neglected due to an emphasis on implementing as many features as possible in a very narrow time window.
 
 ### How To Use
 
@@ -78,15 +68,9 @@ Nothing that violates US law, or anything that would be considered 'gray area'. 
 
 ### Who am I?
 
-I'm just a random person who is fairly frustrated at the state the internet as of late, especially when it comes to the issues resulting from companies trampling on speech in the pursuit of monetization.
+I'm just a random person who is fairly frustrated at the state the internet as of late, especially when it comes to the issues resulting from companies trampling on speech and usability in the pursuit of monetization.
 
 The underlying infrastructure of the internet is fine. Centralization is only an issue if the centralized actor acts with impunity, against the best interests of its users. As seen with youtube, reddit, &c. With transparency and accountability, and without a significant profit incentive to do otherwise, the model still works.
-
-Currently everything is running on google cloud, due to $90 of credit I had on the platform (and they block outgoing port 25... annoying af but hey, it's free). Once this credit runs out, all hosting costs will be coming directly out of my pocket.
-
-As of now, the total costs of running the single prod server, and outgoing proxy servers, are relatively low. When this site was on the front page of HN for nearly an entire day on day 1, it handled just fine once configured correctly on a 1 core 1.6GB vps.
-
-If this site ever starts receiving more traffic than can be handled on using the lowest-tier VPS offerings, I will not be able to sustain it for very long. That being said, unless for some reason the site starts receiving several million requests a day, hosting costs should not go above $20/$30 a month at most.
 
 ### Additional Info
 
