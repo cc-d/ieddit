@@ -17,16 +17,16 @@
         {{ request.sub_title }}{% endif %}</title>
 
     {% if session['hide_sub_style'] != True %}
-    {% set substyle = get_style(request.sub) %}
-    {% if substyle != None %}
-    <style type='text/css'>
-        {{ substyle }}
-    </style>
-    {% endif %}
+        {% set substyle = get_style(request.sub) %}
+        {% if substyle != None %}
+            <style type='text/css'>
+                {{ substyle }}
+            </style>
+        {% endif %}
     {% endif %}
 
     {% else %}
-    <title>ieddit</title>
+        <title>ieddit</title>
     {% endif %}
 
 </head>

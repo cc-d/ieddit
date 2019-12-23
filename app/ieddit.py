@@ -86,13 +86,6 @@ def before_request():
 
 @app.after_request
 def apply_after(response):
-    """
-    while this makes locked transactions and the like
-    easy to deal with, it's very important to remember
-    that modify an exting attribute on an sqlalchemy object directly
-    will cause the modified object to be comitted to db
-    """
-
     if response.status_code == 500:
         db.session.rollback()
 
@@ -124,7 +117,7 @@ def apply_after(response):
 @app.teardown_request
 def teardown_request(exception):
     """
-    same as above, do not modify pre-existing attributes
+    do not modify pre-existing attributes
     on sqlalchemy objects or the modified objects will be
     committed to the db
     """
@@ -361,9 +354,6 @@ def index():
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=False,
              offset=0, limit=15, nsfw=True, d=None, s=None, api=False):
-    """
-    this is one of the horrific functions i will be rewriting next
-    """
     if offset is None:
         offset = 0
     offset = int(offset)
@@ -1510,10 +1500,6 @@ def removemod(sub=None):
 
 @app.route(config.SUB_PREFIX + '<sub>/info/', methods=['GET'])
 def description(sub=None):
-    """
-    This is the first function I have rewrote in the mods section.
-    A lot of this code is terrible, and is my next priority. After this weekend.
-    """
     sub = normalize_sub(sub)
     sub = db.session.query(Sub).filter_by(name=sub).first()
 
