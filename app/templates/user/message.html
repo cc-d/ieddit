@@ -40,11 +40,7 @@
       <h5 class="mt-1 message-title" style='display: inline-block;'>{{ message.title }}</h5>
       {% if message.in_reply_to != None %}
         <div style='display: inline-block; margin-bottom: -10px; height:1.75rem; white-space: nowrap; word-break: break-all; text-overflow: ellipsis; max-width: 54%; overflow: hidden;'>
-          {% if message.comment_reply_id %}
-            {% set reply_url = config.URL + config.SUB_PREFIX + message.in_reply_to + '/' + message.comment_reply_id|string %}
-          {% else %}
-            {% set reply_url = config.URL + config.SUB_PREFIX + message.in_reply_to %}
-          {% endif %}
+          {% set reply_url = config.URL + config.SUB_PREFIX + message.in_reply_to %}
           <a href="{{ reply_url }}">{{ message.in_reply_to }}</a>
         </div>
       {% endif %}

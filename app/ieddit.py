@@ -1028,9 +1028,10 @@ def create_post(api=False, *args, **kwargs):
         last_post = db.session.query(func.max(Post.created)).filter(Post.author == username).scalar()
         last_post = db.session.query(Post).filter_by(author=username, created=last_post).first()
 
-        if (datetime.now() - last_post.created).seconds < 5:
-            flash('prevented potential double post', 'danger')
-            return redirect(last_post.get_permalink())
+        if last_post is not None:
+            if (datetime.now() - last_post.created).seconds < 5:
+                flash('prevented potential double post', 'danger')
+                return redirect(last_post.get_permalink())
 
         if post_type == 'url':
             if len(url) > 2000 or len(url) < 1:
@@ -1216,9 +1217,10 @@ def create_comment(api=False, *args, **kwargs):
     last_post = db.session.query(func.max(Comment.created)).filter(Comment.author == username).scalar()
     last_post = db.session.query(Comment).filter_by(author=username, created=last_post).first()
 
-    if (datetime.now() - last_post.created).seconds < 5:
-        flash('prevented potential double comment', 'danger')
-        return redirect(last_post.get_permalink())
+    if last_post is not None:
+        if (datetime.now() - last_post.created).seconds < 5:
+            flash('prevented potential double comment', 'danger')
+            return redirect(last_post.get_permalink())
 
     new_comment = Comment(post_id=post_id, sub_name=sub_name, text=text,
         author=username, author_id=user_id, parent_id=parent_id, level=level,
