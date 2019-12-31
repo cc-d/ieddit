@@ -107,6 +107,8 @@ def apply_after(response):
 
     if hasattr(request, 'sub'):
         session['last_sub'] = request.sub
+    else:
+        session['last_sub'] = None
 
     # last visited url which isn't a static file
     if request.method == 'GET':
@@ -1097,9 +1099,13 @@ def create_post(api=False, *args, **kwargs):
         else:
             username = session['username']
 
+        subref = None
         if request.referrer:
             subref = re.findall(r'' + config.URL.split('//')[1] + \
                 '\/' + config.SUB_PREFIX[1] + '\/([a-zA-z0-9-_]*)', request.referrer)
+
+        if subref is None or subref == []:
+            return render_template('create-post.html', sppf=None)
 
         sub = db.session.query(Sub).filter_by(name=normalize_sub(subref[0])).first()
         if sub is not None:

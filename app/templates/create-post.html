@@ -40,8 +40,10 @@
                     <input name='sub' type="text" class="form-control" id="create-post-sub" placeholder="Example: baseball" value="{{ sppf['sub'] }}">
                 {% elif request.sub %}
                     <input name='sub' type="text" class="form-control" id="create-post-sub" placeholder="Example: baseball" value='{{ request.sub }}'>
+                {% elif session['last_sub'] %}
+                    <input name='sub' type="text" class="form-control" id="create-post-sub" placeholder="Example: baseball" value='{{ session['last_sub'] }}'>
                 {% else %}
-                    <input name='sub' type="text" class="form-control" id="create-post-sub" placeholder="Example: baseball" value='{{ session.last_sub }}'>
+                    <input name='sub' type="text" class="form-control" id="create-post-sub" placeholder="Example: baseball">
                 {% endif %}
                 <div class="input-group-prepend">
                     <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ get_word('select') }}</button>
