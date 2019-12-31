@@ -1,7 +1,7 @@
 var maxWidth = 0;
 var widthBreak = 768;
 
-$(document).ready(function() {
+window.onload = function() {
     maxWidth = $('.posts-media-body').first().width();
 
     if (maxWidth === undefined) {
@@ -26,8 +26,7 @@ $(document).ready(function() {
     if (typeof preExpand !== 'undefined') {
         expandPost(pid=preExpandId, ptype=preExpandType, vid=preExpandVideo);
     }
-    
-});
+}
 
 width = 0;
 

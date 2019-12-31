@@ -86,13 +86,6 @@ def before_request():
 
 @app.after_request
 def apply_after(response):
-    """
-    while this makes locked transactions and the like
-    easy to deal with, it's very important to remember
-    that modify an exting attribute on an sqlalchemy object directly
-    will cause the modified object to be comitted to db
-    """
-
     if response.status_code == 500:
         db.session.rollback()
 
@@ -114,6 +107,8 @@ def apply_after(response):
 
     if hasattr(request, 'sub'):
         session['last_sub'] = request.sub
+    else:
+        session['last_sub'] = None
 
     # last visited url which isn't a static file
     if request.method == 'GET':
@@ -124,7 +119,7 @@ def apply_after(response):
 @app.teardown_request
 def teardown_request(exception):
     """
-    same as above, do not modify pre-existing attributes
+    do not modify pre-existing attributes
     on sqlalchemy objects or the modified objects will be
     committed to the db
     """
@@ -361,9 +356,6 @@ def index():
 @cache.memoize(config.DEFAULT_CACHE_TIME)
 def get_subi(subi, user_id=None, view_user_id=None, posts_only=False, deleted=False,
              offset=0, limit=15, nsfw=True, d=None, s=None, api=False):
-    """
-    this is one of the horrific functions i will be rewriting next
-    """
     if offset is None:
         offset = 0
     offset = int(offset)
@@ -1034,6 +1026,15 @@ def create_post(api=False, *args, **kwargs):
 
         override = False if request.form.get('override') is None else True
 
+        # prevent immediate double post
+        last_post = db.session.query(func.max(Post.created)).filter(Post.author == username).scalar()
+        last_post = db.session.query(Post).filter_by(author=username, created=last_post).first()
+
+        if last_post is not None:
+            if (datetime.now() - last_post.created).seconds < 5:
+                flash('prevented potential double post', 'danger')
+                return redirect(last_post.get_permalink())
+
         if post_type == 'url':
             if len(url) > 2000 or len(url) < 1:
                 flash('invalid url length', 'danger')
@@ -1098,9 +1099,13 @@ def create_post(api=False, *args, **kwargs):
         else:
             username = session['username']
 
+        subref = None
         if request.referrer:
             subref = re.findall(r'' + config.URL.split('//')[1] + \
                 '\/' + config.SUB_PREFIX[1] + '\/([a-zA-z0-9-_]*)', request.referrer)
+
+        if subref is None or subref == []:
+            return render_template('create-post.html', sppf=None)
 
         sub = db.session.query(Sub).filter_by(name=normalize_sub(subref[0])).first()
         if sub is not None:
@@ -1125,7 +1130,6 @@ def get_sub_list():
                 for s in subs]
 
     return '\n'.join(sublinks)
-
 
 @limiter.limit(config.COMMENT_RATE_LIMIT)
 @app.route('/create_comment', methods=['POST'])
@@ -1215,7 +1219,14 @@ def create_comment(api=False, *args, **kwargs):
     else:
         author_type = 'user'
 
+    # prevent immediate double post
+    last_post = db.session.query(func.max(Comment.created)).filter(Comment.author == username).scalar()
+    last_post = db.session.query(Comment).filter_by(author=username, created=last_post).first()
 
+    if last_post is not None:
+        if (datetime.now() - last_post.created).seconds < 5:
+            flash('prevented potential double comment', 'danger')
+            return redirect(last_post.get_permalink())
 
     new_comment = Comment(post_id=post_id, sub_name=sub_name, text=text,
         author=username, author_id=user_id, parent_id=parent_id, level=level,
@@ -1245,7 +1256,7 @@ def create_comment(api=False, *args, **kwargs):
             new_message = Message(title='comment reply', text=new_comment.text,
                 sender=sender, sender_type=new_comment.author_type, sent_to=cparent.author,
                 in_reply_to=new_comment.get_permalink().replace(config.URL + config.SUB_PREFIX, ''),
-                anonymous=anonymous)
+                anonymous=anonymous, comment_reply_id=new_comment.id)
             db.session.add(new_message)
             db.session.commit()
     else:
@@ -1254,7 +1265,7 @@ def create_comment(api=False, *args, **kwargs):
                 new_message = Message(title='comment reply', text=new_comment.text,
                     sender=sender, sender_type=new_comment.author_type, sent_to=post.author,
                     in_reply_to=post.get_permalink().replace(config.URL + config.SUB_PREFIX, ''),
-                    anonymous=anonymous)
+                    anonymous=anonymous, comment_reply_id=new_comment.id)
                 db.session.add(new_message)
                 db.session.commit()
 
@@ -1325,7 +1336,7 @@ def user_messages(username=None, offset=0):
             for message in our_messages:
                 message.sender_id = int(normalize_username(message.sender, dbuser=True).id)
                 if message.sender == session['username']:
-                    message.show_name = session['username']
+                    message.show_name = message.sent_to
                     message.is_sent = True
                     if message.encrypted:
                         message.new_text = '<p style="color: green;">ENCRYPTED</p>'
@@ -1352,6 +1363,7 @@ def user_messages(username=None, offset=0):
 
                 if message.encrypted is True:
                     has_encrypted = True
+
 
             session['unread_messages'] = None
 
@@ -1404,9 +1416,13 @@ def reply_message(username=None, mid=None):
                              other_user=get_user_from_username(username))
 
 
-def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False, encrypted_key_id=None, in_reply_to=None):
-    new_message = Message(title=title, text=text, sender=sender, in_reply_to=in_reply_to, sent_to=sent_to, encrypted=encrypted,
-        encrypted_key_id=encrypted_key_id)
+def sendmsg(title=None, text=None, sender=None, sent_to=None, encrypted=False,
+            encrypted_key_id=None, in_reply_to=None, comment_reply_id=None):
+
+    new_message = Message(title=title, text=text, sender=sender,
+                        in_reply_to=in_reply_to, sent_to=sent_to, encrypted=encrypted,
+                        encrypted_key_id=encrypted_key_id, comment_reply_id=comment_reply_id)
+
     db.session.add(new_message)
     db.session.commit()
 
@@ -1512,10 +1528,6 @@ def removemod(sub=None):
 
 @app.route(config.SUB_PREFIX + '<sub>/info/', methods=['GET'])
 def description(sub=None):
-    """
-    This is the first function I have rewrote in the mods section.
-    A lot of this code is terrible, and is my next priority. After this weekend.
-    """
     sub = normalize_sub(sub)
     sub = db.session.query(Sub).filter_by(name=sub).first()
 
