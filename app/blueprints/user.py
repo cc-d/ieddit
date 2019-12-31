@@ -40,6 +40,30 @@ def user_delete_comment():
     else:
         return '403'
 
+@ubp.route('/delete/self', methods=['POST'])
+def user_delete_self():
+    if 'username' not in session:
+        flash('not logged in', 'error')
+        return redirect(config.URL)
+
+    password = request.form.get("password")
+    username = request.form.get("username")
+
+    user_query = db.session.query(Iuser).filter_by(username=username)
+    user = user_query.first()
+
+    if not user:
+        flash('invalid user', 'error')
+        return redirect(config.URL)
+
+    if check_password_hash(user.password, password):
+        user_query.delete()
+        db.session.commit()
+        logout()
+        return redirect(config.URL)
+
+    return abort(401, "invalid password")
+
 @ubp.route('/edit/<itype>/<iid>/', methods=['GET'])
 def user_get_edit(itype, iid):
     if 'username' not in session:
@@ -62,7 +86,7 @@ def user_get_edit(itype, iid):
     else:
         lastedit = None
     session['last_edit'] = None
-    
+
     return render_template('user/edit.html', itype=itype, iid=iid, etext=etext, lastedit=lastedit)
 
 @ubp.route('/edit',  methods=['POST'])
@@ -96,7 +120,7 @@ def user_edit_post():
         obj.self_text = etext
         obj.edited = True
         db.session.commit()
-        
+
         flash('post edited', category='success')
         session['last_edit'] = None
         return redirect(obj.get_permalink())
@@ -126,7 +150,7 @@ def user_marknsfw(pid=None):
     post.nsfw = True
     flash('marked as nsfw')
     db.session.commit()
-    
+
     return redirect(post.get_permalink())
 
 
@@ -141,7 +165,7 @@ def user_darkmode(username=None):
 
     action = request.form.get('action')
 
-    if action == 'disable':    
+    if action == 'disable':
         user.darkmode = False
         mode = 'light'
         session['darkmode'] = False
@@ -155,7 +179,7 @@ def user_darkmode(username=None):
     flash('switched to %s mode' % mode, 'success')
     db.session.add(user)
     db.session.commit()
-    
+
     return redirect('/u/' + user.username)
 
 @ubp.route('/anonymous', methods=['POST'])
@@ -169,7 +193,7 @@ def user_uanonymous(username=None):
 
     action = request.form.get('action')
 
-    if action == 'disable':    
+    if action == 'disable':
         user.anonymous = False
         session['anonymous'] = False
     elif action == 'enable':
@@ -181,7 +205,7 @@ def user_uanonymous(username=None):
     flash('toggled anonymous', 'success')
     db.session.add(user)
     db.session.commit()
-    
+
     return redirect('/u/' + user.username)
 
 @ubp.route('/reset_password/', methods=['GET'])
@@ -212,7 +236,7 @@ def password_reset(email=None):
         if e == True:
             db.session.add(new_reset)
             db.session.commit()
-            
+
             flash('password recovery email sent', 'success')
             return redirect('/user/reset_password/')
 
@@ -262,7 +286,7 @@ def user_preferences():
 def user_update_preferences():
     if 'username' not in session:
         flash('not logged in', 'danger')
-        return redirect('/login/')    
+        return redirect('/login/')
 
     user = db.session.query(Iuser).filter_by(username=session['username']).first()
 
@@ -301,7 +325,7 @@ def user_update_preferences():
     elif user.always_override is False:
         if always_override is not None:
             user.always_override = True
-          
+
     session['always_override'] = user.always_override
 
     always_anonymous = request.form.get('always_anonymous')
@@ -311,7 +335,7 @@ def user_update_preferences():
     elif user.anonymous is False:
         if always_anonymous is not None:
             user.anonymous = True
-          
+
     session['anonymous'] = user.anonymous
 
     checkbox_only = request.form.get('checkbox_only')
@@ -371,7 +395,7 @@ def user_update_preferences():
         db.session.add(user)
         db.session.commit()
 
-        
+
 
         flash('successfully updated settings', 'success')
         return redirect('/user/preferences/')
@@ -419,7 +443,7 @@ def user_add_pgp():
 
     session['pgp_enabled'] = True
 
-    
+
 
     flash('updated pgp key', 'success')
     return redirect('/u/' + user.username)
@@ -630,7 +654,7 @@ def update_bio(username=None, new_bio=None):
 
     flash('successfully updated bio', 'success')
 
-    return redirect('/user/preferences/')    
+    return redirect('/user/preferences/')
 
 
 

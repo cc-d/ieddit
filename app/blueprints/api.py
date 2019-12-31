@@ -163,4 +163,3 @@ def get_sub_posts(sub=None, itype=None):
     if itype == 'comments':
         return subcomments(sub, offset=offset, limit=limit, s=sort, api=True)
     return get_subi(sub, offset=offset, limit=limit, s=sort, api=True)
-

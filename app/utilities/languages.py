@@ -42,6 +42,16 @@ LANG = {
         "fr":"toujours poster en tant qu'utilisateur normal",
         "es":"siempre publicar como un usuario normal",
     },
+    "delete account":{
+        "en": "delete account",
+        # "fr": "?",
+        # "es": "?"
+    },
+    "delete my account (irreversible)":{
+        "en": "delete my account (irreversible)",
+        # "fr": "?",
+        # "es": "?"
+    },
     "about":{
         "en":"about",
         "fr":"À propos",

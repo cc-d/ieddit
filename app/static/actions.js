@@ -77,7 +77,7 @@ function showObject(itype, iid) {
             if ('#block-user-button-u' !== undefined) {
                 $('#block-user-button-u').css('display', 'none');
                 $('#block-user-button').css('display', 'inline-block');
-                
+
                 //jsalert('unblocked user', 'success');
                 /*
                 location.reload();*/
