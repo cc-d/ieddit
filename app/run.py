@@ -20,7 +20,7 @@ if __name__ == '__main__':
         if len(argv) > 1:
             port = int(argv[1])
 
-        logger.info(f"Attempting to start app on Port: {port}")
+        logger.info("Attempting to start app on Port: {port}")
         main(port)
 
     except:
