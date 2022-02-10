@@ -17,4 +17,4 @@ redis==3.3.11
 flask-migrate==2.5.2
 pyyaml==5.1.2
 discord-webhook==0.4.1
- praw=6.4.0
+praw=6.4.0
