@@ -22,12 +22,18 @@ abspath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 legal_chars = '01234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
 
 def thumb_exists(tid):
+    """
+    Checks for the existence of a thumbnail of a given id
+    """
     if os.path.exists(abspath + '/static/thumbnails/thumb-%s.PNG' % str(tid)):
         if int(os.stat(abspath + '/static/thumbnails/thumb-%s.PNG' % str(tid)).st_size) > 10:
             return True
     return False
 
 def rstring(length1, length2=False, ints_only=False):
+    """
+    Returns a string of random characters given a specific length
+    """
     if length1 is None:
         length1, length2 = 25, 25
 
@@ -39,6 +45,9 @@ def rstring(length1, length2=False, ints_only=False):
     return ''.join([random.choice(legal_chars) for n in range(random.randint(length1, length2))])
 
 def verify_username(username):
+    """
+    Verifys a string is a valid username (length, illegal characters)
+    """
     if len(username) > 20 or len(username) < 1:
         return False
     for c in username:
@@ -47,6 +56,9 @@ def verify_username(username):
     return True
 
 def verify_subname(subname):
+    """
+    Verifys a string is a valid username (length, illegal characters)
+    """
     if len(subname) > 30 or len(subname) < 1:
         return False
     for c in subname:
@@ -70,6 +82,9 @@ def get_time():
     return datetime.now()
 
 def time_ago(dt):
+    """
+    Returns a short descriptor for however long ago something happened
+    """
     diff = get_time() - dt
     if diff.days > 364:
         return str(int(int(diff.days) / 365)) + 'y'#ears ago'
@@ -315,6 +330,9 @@ def hot(ups, downs, date):
     return round(sign * order + seconds / 45000, 7)
 
 def get_youtube_vid_id(url):
+    """
+    Returns only the youtube video ID from a youtube url
+    """
     if url == None:
         return False
     if url.find('youtube.com/watch?v=') != -1:
@@ -332,7 +350,7 @@ def get_youtube_vid_id(url):
 
 def get_youtube_embed_url(url):
     """
-    converts a youtube url into an embedded link
+    Converts a youtube url into an embedded link
     """
     if url.find('youtube.com/watch?v=') != -1:
         vid_id = re.findall('\?v=(.[a-zA-Z0-9\-_]*)', url)[0]

@@ -2,11 +2,13 @@ DEBUG = True
 
 SUB_PREFIX = '/i/'
 
+# Database Name
 DATABASE = 'ieddit'
+
+# PostgreSQL
 PG_USER = 'test'
 PG_PASSWORD = 'test'
 PG_HOST = 'localhost'
-
 
 DB_TYPE = 'sqlite'
 USE_RECREATE = True
@@ -21,22 +23,21 @@ elif DB_TYPE == 'postgres':
 
 # This will be unique every time create_db.py is ran when testing
 # to force clear sessions
-
-SECRET_KEY = 'not-a-real-key-|r|C6-uK6_RwY|r|'
+SECRET_KEY = 'not-a-real-key-|r|Xuu4433Coj|r|'
 
 # Change this to your local URL. IE http://127.0.0.1
 URL = 'http://dev.ieddit.com'
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-# contet-security
+# Contet-security
 CSP = False
 SESSION_COOKIE_SAMESITE='Lax'
 
 CACHE_TYPE = 'simple'
 DEFAULT_CACHE_TIME = 600
 
-# specific rate limit times in seconds
+# Specific rate limit times in seconds
 SUB_RATE_LIMIT = '3 per second; 3 per minute'
 COMMENT_RATE_LIMIT = '3 per second; 5 per minute'
 POST_RATE_LIMIT = '3 per second; 5 per minute'
@@ -71,7 +72,7 @@ SENTRY_DSN = 'your_dsn'
 DISCORD_ENABLED = False
 DISCORD_URL = ''
 
-# for any api functions which only site operator should be able to use
+# For any api functions which only site operator should be able to use
 API_OPER_KEY = 'not-a-real-key'
 
 DOWNVOTE_COLOR = 'deepskyblue'
@@ -82,3 +83,13 @@ AVG_UP_COLOR = '#e5b866'
 
 DEFAULT_LANGUAGE = 'en'
 LANGUAGES = ['en', 'fr', 'es']
+
+# Values for default admin/test user after creating a test database
+# for a freshly created local dev deployment
+TEST_ADMIN_USERNAME = 'admin'
+TEST_ADMIN_PASSWORD = 'admin'
+TEST_ADMIN_EMAIL = 'admin@admin.com'
+
+TEST_USER_USERNAME = 'test'
+TEST_USER_PASSWORD = 'test'
+TEST_USER_EMAIL = 'test@test.com'
