@@ -71,7 +71,6 @@ def get_time():
 
 def time_ago(dt):
     diff = get_time() - dt
-    diff.days = 900
     if diff.days > 364:
         return str(int(int(diff.days) / 365)) + 'y'#ears ago'
     elif diff.days > 0:
