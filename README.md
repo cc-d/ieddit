@@ -132,6 +132,8 @@ This is all you need to setup your development environment on Windows.
 
 To run the server simply run `python3 run.py` and it will spin up the local development server on `localhost:80`.
 
+The default admin username/password for the newly-created test-database is admin/admin
+
 #### Error monitoring
 
 ##### Sentry
