@@ -1,7 +1,7 @@
 {% extends 'mod/base.html' %}
 {% block mod_body %}
 
-<div class='margin-lr mod-page-sub-title'>
+<div class='mod-page-sub-title'>
     <h5 style='display: inline-block;'>{{ get_word('Title', cap=[0]) }}:</h5>
     <h6 style='display: inline-block;'>&nbsp;{% if request.sub_title %}{{ request.sub_title }}{% else %}{{ get_word('No Title', cap_all=True) }}{% endif %}</h6>
     {% if request.is_mod %}
@@ -19,7 +19,7 @@
     {% endif %}
 </div>
 
-<div id='display-rules' class='margin-lr'>
+<div id='display-rules'>
     <h3>{{ get_word('Description', cap=[0]) }}</h3>
             <div class="safe-markup-text sub-mod-rules">
                 {% if sub.markup_rules %}

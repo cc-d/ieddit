@@ -322,7 +322,6 @@ textarea {
 }
 
 #display-rules {
-    margin-left: 1rem;
     white-space: inherit;
     max-height: 250rem;
     overflow: hidden;
@@ -1012,12 +1011,12 @@ ul {
     display: inline-block;
 }
 
-.active-sub-users {
+.active_sub_users {
     float: right;
     font-size: x-small;
     margin: 5px;
     text-align: right;
-    display: none;
+    display:  none;
 }
 
 .post-title {
