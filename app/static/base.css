@@ -1011,12 +1011,12 @@ ul {
     display: inline-block;
 }
 
-.active_sub_users {
+.active-sub-users {
     float: right;
     font-size: x-small;
     margin: 5px;
     text-align: right;
-    display:  none;
+    display: none;
 }
 
 .post-title {
