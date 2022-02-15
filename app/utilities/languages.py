@@ -495,13 +495,13 @@ LANG = {
         "fr":"oréférences",
         "es":"configuraciones",
     },
-    "self-text (if no url)":{
-        "en":"self-text (if no url)",
+    "text (if no url)":{
+        "en":"text (if no url)",
         "fr":"texte (s'il ne s'agit pas d'une URL)",
         "es":"texto (si no hay url)",
     },
-    "self.text":{
-        "en":"self.text",
+    "text":{
+        "en":"text",
         "fr":"texte",
         "es":"texto",
     },

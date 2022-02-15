@@ -142,7 +142,7 @@
             {% set short_link = post.remote_url_parsed %}
         {% else %}
             {% set title_href = config.URL + config.SUB_PREFIX + post.sub + '/' + post.id|string + '/' + post.inurl_title + '/' %}
-            {% set short_link = get_word('self.text') %}
+            {% set short_link = get_word('text') %}
         {% endif %}
 
         <a class="sub-post-title-link" href="{{ title_href }}">
