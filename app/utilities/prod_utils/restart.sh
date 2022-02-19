@@ -4,4 +4,4 @@ fi
 
 
 cd /home/ccarterdev/i2/ieddit/app/ 
-screen -S website python3 run.py 80
+screen -S website python3 run.py 8000
