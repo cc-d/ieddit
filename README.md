@@ -97,7 +97,7 @@ run ```sudo bash install.sh```
 
 edit ```config.py``` to the proper values (you should only need to change config.URL)
 
-run ```python3 create_db.py```
+run ```python3 app/utilities/create_db.py```
 
 start with ```python3 run.py``` or if you want to use a different port ```python3 run.py <PORT>```
 
