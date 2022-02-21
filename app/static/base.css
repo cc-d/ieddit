@@ -1410,7 +1410,6 @@ blockquote {
 
 #edit-bio-textarea {
     min-width: 14rem;
-    max-width: 18rem;
     width: 100%;
     overflow-y: hidden!important;
     margin-top: 0.5rem;
@@ -1436,3 +1435,6 @@ blockquote {
     margin-top: -12px;
 }
 
+#alert-container {
+    margin-top: 4px;
+}
