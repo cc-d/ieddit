@@ -311,8 +311,11 @@ def user_update_preferences():
     elif user.anonymous is False:
         if always_anonymous is not None:
             user.anonymous = True
-          
+            
     session['anonymous'] = user.anonymous
+
+    show_last_online = request.form.get('show_last_online')
+
 
     checkbox_only = request.form.get('checkbox_only')
 
