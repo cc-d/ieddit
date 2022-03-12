@@ -3,21 +3,19 @@
 
 <form action='/admin/ban_and_delete' method='POST'>
     <p>username</p>
-    <input style='color: black;' type='text' name='username'><br>
-    <button style='color: black; background-color: red;' type='submit'>ban and delete</button>
+    <input type='text' name='username'><br>
+    <button id="ban-and-delete-btn" type='submit'>ban and delete</button>
 </form>
 
 <br>
 
 <form action='/admin/add_api_key' method='POST'>
     <p>username - api key add</p>
-    <input style='color: black;' type='text' name='username'><br>
-    <button style='color: black;' type='submit'>add api key</button>
+    <input type='text' name='username'><br>
+    <button type='submit'>add api key</button>
 </form>
 
 <br>
-
-<style>th, td { padding-right: 1rem; }</style>
 <table class='margin-lr'>
   <tr>
     <th>{{ get_word('action') }}</th>
@@ -37,13 +35,12 @@
 
 <form action='/admin/add_sub_mute' method='POST'>
   <p>mute sub</p>
-  <input style='color: black;' type='text' name='sub'><br>
-  <button style='color: black;' type='submit'>mute sub</button>
+  <input type='text' name='sub'><br>
+  <button type='submit'>mute sub</button>
 </form>
 
 <br>
 
-<style>th, td { padding-right: 1rem; }</style>
 <table class='margin-lr'>
   <tr>
     <th>{{ get_word('action') }}</th>

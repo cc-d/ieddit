@@ -1,4 +1,4 @@
-<form id="{{ reptype }}-reply-box" class="rounded" style="{% if hide_comment_reply == True %}display: none;{% endif %} margin-left: 0.25rem; margin-top: 0.25rem;" action="/create_comment" method="POST">
+<form id="{{ reptype }}-reply-box" class="rounded" style="{% if hide_comment_reply == True %}display: none;{% endif %}" action="/create_comment" method="POST">
     <div class="comment-reply-box-wrapper">
         {% if 'username' not in session %}
         <textarea class="disabled comment-reply-box-expand rounded" name="comment_text" disabled></textarea>
@@ -15,10 +15,10 @@
 
     {% if 'username' not in session %}
     <div onclick="jslogin()">
-    <input class="disabled post-text-area-button btn btn-secondary btn-sm" style='display: inline-block; margin-left: 0.75rem; ' type='button' value='login'><a href='/login' style='display: inline-block; margin-left: 0.5rem; color:#007bff;'>{{ get_word('login to comment') }}</a></div>
+    <input class="disabled post-text-area-button btn btn-secondary btn-sm" type='button' value='login'><a href='/login'>{{ get_word('login to comment') }}</a></div>
 
     {% else %}
-    <input class="post-text-area-button btn btn-secondary btn-sm" style='margin-left: 0.25rem; display: inline-block;' type='submit' value='new comment'>
+    <input class="post-text-area-button btn btn-secondary btn-sm" type='submit' value='new comment'>
     <small> {{ get_word('anonymous') }}? </small>
 
     {% if session['anonymous'] %}

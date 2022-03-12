@@ -78,7 +78,7 @@
                 {% endif %}
 
                 {% if post.announcement == True %}
-                    <i class="fa fa-bullhorn post-flag" style="color: red;" data-toggle='tool-tip' title="{{ get_word('announcement') }}"></i>
+                    <i class="fa fa-bullhorn post-flag admin-color" data-toggle='tool-tip' title="{{ get_word('announcement') }}"></i>
                 {% endif %}
 
                 {% if post.stickied == True %}
@@ -238,7 +238,7 @@
     <div class='mod-option-wrapper user-options next-to-comments'>
         {% if session['username'] in post.mods or session['admin'] == True %}
             <div class="dropdown bottom-post-dropdown">
-                <button class="btn btn-info btn-sm bottom-dropdown btn-bot" type="button" id="mod-opt-{{ post.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-gavel' style='display: inline-block;'></i> <h6 class='btn-description'>mod</h6>  </button>
+                <button class="btn btn-info btn-sm bottom-dropdown btn-bot" type="button" id="mod-opt-{{ post.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-gavel'></i> <h6 class='btn-description'>mod</h6>  </button>
                 <div class="dropdown-menu" aria-labelledby="mod-opt-{{ post.id }}">
                     {% if session['username'] != post.author %}
                         {% if post.nsfw == False  and post.author %}

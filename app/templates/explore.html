@@ -7,7 +7,7 @@
     <h5 class="mt-0">
         <a href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ sub.name }}">{{ config.SUB_PREFIX }}{{ sub.name }} 
             {% if sub.nsfw %}
-                <a style="color: red;">{{ get_word('nsfw') }}</a>
+                <a class="nsfw-color">{{ get_word('nsfw') }}</a>
             {% endif %} 
             {% if sub.title != None %} - 
                 {{ sub.title }}

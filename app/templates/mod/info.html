@@ -2,20 +2,21 @@
 {% block mod_body %}
 
 <div class='mod-page-sub-title'>
-    <h5 style='display: inline-block;'>{{ get_word('Title', cap=[0]) }}:</h5>
-    <h6 style='display: inline-block;'>&nbsp;{% if request.sub_title %}{{ request.sub_title }}{% else %}{{ get_word('No Title', cap_all=True) }}{% endif %}</h6>
+    <h5>{{ get_word('Title', cap=[0]) }}:</h5>
+    <h6>{% if request.sub_title %}{{ request.sub_title }}{% else %}{{ get_word('No Title', cap_all=True) }}{% endif %}</h6>
+
     {% if request.is_mod %}
-    <form action='/mod/title' method='POST'>
-        <div class="input-group mb-3 mod-edit-container">
-            <input type='hidden' name='sub' value='{{ request.sub }}'>
-            {% if request.sub_title != None %}
-                <input type="text" name='title' class="form-control rounded" value="{{ request.sub_title }}">
-            {% else %}
-                <input type="text" name='title' class="form-control rounded" placeholder="Example: A place for friends." aria-label="Username">
-            {% endif %}
-        <br><button type='submit' class="btn btn-primary rounded" type="button">{{ get_word('Update Title', cap_all=True) }}</button>
-        </div>
-    </form>
+        <form action='/mod/title' method='POST'>
+            <div class="input-group mb-3 mod-edit-container">
+                <input type='hidden' name='sub' value='{{ request.sub }}'>
+                {% if request.sub_title != None %}
+                    <input type="text" name='title' class="form-control rounded" value="{{ request.sub_title }}">
+                {% else %}
+                    <input type="text" name='title' class="form-control rounded" placeholder="Example: A place for friends." aria-label="Username">
+                {% endif %}
+            <br><button type='submit' class="btn btn-primary rounded" type="button">{{ get_word('Update Title', cap_all=True) }}</button>
+            </div>
+        </form>
     {% endif %}
 </div>
 

@@ -42,7 +42,7 @@
                         <ul class="navbar-nav mr-auto navbar-right">
 
                             {% if request.sub and request.sub != 'all' %}
-                            <li class="nav-item active" style="margin-top: 0.25rem;">
+                            <li class="nav-item active">
                                 <a class="nav-link"
                                     href="{{ config.SUB_PREFIX }}{{ request.sub }}">{{ config.SUB_PREFIX }}{{ request.sub }}</a>
                             </li>
@@ -52,7 +52,7 @@
                                         {{ get_word('information') }}</button></a>
                             </li>
                             {% else %}
-                            <li class="nav-item active" style="margin-top: 0.25rem;">
+                            <li class="nav-item active">
                                 <a class="nav-link" href="/about/">{{ get_word('about') }}</a>
                             </li>
                             <li class="nav-item">
@@ -106,19 +106,16 @@
                             {% endif %}
                         </ul>
                     </div>
-                    <div class="navbar" id='user-nav' style='max-height: 56px; height: 56px; overflow: hidden;'>
+                    <div class="navbar" id='user-nav'>
                         <ul class="navbar-nav mr-auto navbar-right">
                             {% if session['username'] %}
-                            <div id='top-username' stlye='height: 24px; max-height: 24px; overflow: hidden;'>
+                            <div id='top-username'>
                                 <li class="nav-item active">
-                                    <a style='display: inline; max-width: 150px; overflow: hidden;' class="nav-link"
-                                        href="/u/{{ session['username'] }}">
-                                        <div style='display: inline-block;'><i
-                                                style='display: inline-block; width: 1rem; height: 1rem; margin-right: -0.25rem;'
-                                                class="fa fa-user user-icon-link"></i>
-                                            <div id='inner-user-text' style='display: inline; overflow: hidden;'>
-                                                <div id='textcap' style=' display:inline-block; max-width: 126px;'>
-                                                    {{ session['username'] }}</div>
+                                    <a class="nav-link" id="username-clickable" href="/u/{{ session['username'] }}">
+                                        <div>
+                                            <i class="fa fa-user user-icon-link"></i>
+                                            <div id='inner-user-text'>
+                                                <div id='user-text-wrap'>{{ session['username'] }}</div>
                                             </div>
                                         </div>
                                     </a>
@@ -152,7 +149,7 @@
                         </ul>
                         {% endif %}
                     </div>
-                    <div class="navbar" style='padding-left: 0px; padding-right: 0px;'>
+                    <div class="navbar" id="navbar-wrap">
                         <button class="navbar-toggler" type="button" data-toggle="collapse"
                             data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">

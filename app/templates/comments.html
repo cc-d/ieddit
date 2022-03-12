@@ -50,11 +50,9 @@
         {% endwith %}
 
     {% endif %}
-    
-    <div id='comment-spacer' style='width: 100%; height: 1px; margin-bottom: 1rem;'></div>
 
     {% if parent_comment %}
-        <h5 id='single-comment'> {{ get_word('you are viewing a single comment') }} - <a style='text-decoration: underline;' href="{{ post.get_permalink() }}">{{ get_word('view all comments') }}</a></h5>
+        <h5 id='single-comment'> {{ get_word('you are viewing a single comment') }} - <a class="view-all-comments-link" href="{{ post.get_permalink() }}">{{ get_word('view all comments') }}</a></h5>
     {% endif %}
 
     <ul class="list-unstyled comment-reply-list">

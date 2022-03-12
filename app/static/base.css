@@ -321,6 +321,10 @@ textarea {
     float: left;
 }
 
+#v-button {
+    display: inline-block;
+}
+
 #display-rules {
     white-space: inherit;
     max-height: 250rem;
@@ -361,6 +365,7 @@ textarea {
 
 .message-title {
     color: #eee;
+    display:  inline-block;
 }
 
 .message-top-row {
@@ -515,7 +520,8 @@ ul, li{
 }
 
 .created-ago {
-    margin-left: 1rem;
+    margin-left: 2px;
+    display: inline-block;
 }
 
 .sub-comment {
@@ -925,7 +931,7 @@ ul {
     margin-bottom: 7px;
 }
 
-.commoptions {
+.comm-options {
     display: inline-block;
 }
 
@@ -938,7 +944,7 @@ ul {
     display: inline-block;
 }
 
-.inner-div.applyinline {
+.inner-div.apply-inline {
     display: inline-block;
 }
 
@@ -1438,3 +1444,105 @@ blockquote {
 #alert-container {
     margin-top: 4px;
 }
+
+#ban-and-delete-btn {
+    color:  black;
+    background-color:  red;
+}
+
+.mod-color {
+    color:  lightblue!important;
+}
+
+.admin-color {
+    color:  red!important;
+}
+
+#username-clickable {
+    display: inline;
+    max-width: 150px;
+    overflow: hidden;'
+}
+
+#username-clickable > div {
+    display:  inline-block;
+}
+
+#username-clickable > div > i {
+    display: inline-block;
+}
+
+#inner-user-text {
+    display: inline;
+    overflow: hidden;
+}
+
+#user-text-wrap {
+    display:inline-block;
+    max-width: 126px;
+}
+
+#navbar-wrap {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.half-visible {
+    opacity: 0.5;
+}
+
+.third-visible {
+    opacity: 0.33;
+}
+
+.message-is-sent {
+    display: inline;
+    margin: 0;
+    color: #eee;
+}
+
+.text-aaa {
+    color:  #aaa;
+}
+
+.text-ddd {
+    color:  #ddd;
+}
+
+.in-message-short-url {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50%;
+    margin-bottom: -4px;
+    text-decoration: underline;
+}
+
+.encrypted-text-wrap {
+    color: green;
+    margin: 1rem;
+}
+
+.hidden-comment {
+    overflow: hidden;
+    max-height: 32px;
+    min-height: 32px;
+    display:  none;
+}
+
+.nsfw-color {
+    color:  red;
+}
+
+.mod-page-sub-title > h5, .mod-page-sub-title > h6 {
+    display: inline-block;
+}
+
+.deleted-comment-wrap {
+    max-height: 80px;
+}
+
+.view-all-comments-link {
+    text-decoration: underline;
+}
+

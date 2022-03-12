@@ -1,144 +1,64 @@
 {% if cominline == True %}
-    <li class="media sub-comment media-body rounded comment-color-{{ loop.depth0 % 2 }}" level="{{ loop.depth - 1 }}"
-     style="margin-left:{{ loop.depth - 1 }}rem;
-    {% if comment.deleted %}opacity:0.3; max-height: 5rem;{% endif %}"
-        loop='{{ loop.index0 }} {{ loop.depth0 }}'
-        id="comment-{{ comment.id }}">
-    {% else %}
-        <li class="media sub-comment media-body rounded">
-    {% endif %}
-    <div class='media-body comment-media-body'>
-        <div class="row post-row">
-            <div class="col inner-div comment-inner-div">
-                <small>
+    <li class="media sub-comment media-body rounded {% if comment.deleted %}third-visible deleted-comment-wrap{% endif %} comment-color-{{ loop.depth0 % 2 }}"
+    level="{{ loop.depth - 1 }}"
+    style="margin-left:{{ ((loop.depth - 1) * 16) }}px;"
+    loop='{{ loop.index0 }} {{ loop.depth0 }}'
+    id="comment-{{ comment.id }}">
+{% else %}
+    <li class="media sub-comment media-body rounded">
+{% endif %}
 
-                {% if comment.override == True %}
-                    {% set cauthor_type = 'user' %}
-                {% endif %}
+<div class='media-body comment-media-body'>
+    <div class="row post-row">
+        <div class="col inner-div comment-inner-div">
+            <small>
 
-                {% if comment.edited %}* {% endif %}
-                    {% if comment.deleted == True %}
-                        <i class="fa fa-user"></i><a class="user-icon-link" href="#">[{{ get_word('deleted') }}]</a></small>
-                    {% else %}
-                        {% if cauthor_type == 'admin' %}
-                            <i style="color: red;" class="fa fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
-                        {% elif cauthor_type == 'mod' %}
-                            <i style="color: lightblue;" class="fa fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ cauthor }}</a>
-                        {% else %}
-                            <i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
-                        {% endif %}
-                </small>
-                    {% endif %}
-                    <a href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
-                        <small class="created-ago comment-link">
-                            {{ comment.created_ago }}
-                        </small>
-                    </a>
-                <small class="created-ago">
-                    {% if comment.parent_id != None %}
-                        <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
-                    {% else %}
-                        <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
-                    {% endif %}parent</a>
-                </small>
-                <small class="created-ago">
-                    {% if cominline == True %}
-                        <a class="hide-comment" href="javascript:minHide({{ comment.id }});">[-]</a>
-                    {% endif %}
-                </small>
-            </div>
-        </div>
+            {% if comment.override == True %}
+                {% set cauthor_type = 'user' %}
+            {% endif %}
 
-        <div class='comment-selftext-wrapper'>
-            {% if comment.deleted == True %}
-                {% if comment.removed_by == 'removed by author' or comment.removed_by == None %}
-                    <div class="comment-text comment-text-text safe-markup-text">[{{ get_word('deleted') }}]
+            {% if comment.edited %}* {% endif %}
+                {% if comment.deleted == True %}
+                    <i class="fa fa-user"></i><a class="user-icon-link" href="#">[{{ get_word('deleted') }}]</a></small>
                 {% else %}
-                    <div class="comment-text comment-text-text safe-markup-text">[{{ get_word('removed by') }} <a href="/u/{{ comment.removed_by }}">/u/{{ comment.removed_by }}</a>]
-                {% endif %}
-    
-                {% if cominline and comment.deleted == True %}
-                    {% if loop.depth0 == 4 and value|length > 0 %}
-                        <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
-                            {{ get_word('view more') }} <i class='fa fa-arrow-circle-right '></i>
-                        </button></a>
-                    {% endif %}
-                {% endif %}
-    
-                </div>
-    
-            {% else %}
-                <div class="comment-text comment-text-text safe-markup-text">{{ comment.new_text|safe }}</div>
-            {% endif %}
-
-            {% if session['user'] not in post.mods %}
-                <div class="row post-row comment-bottom" style='margin-bottom: 1rem!important; display: inline; width: 100%;'>
-            {% else %}
-                <div class="row post-row comment-bottom" style='display: inline; width: 100%;'>
-            {% endif %}
-
-            {% if comment.deleted == False %}
-                <div style='display: inline;' class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" vote-userid="{{ session['user_id'] }}" has_voted="{{ comment.has_voted }}">
-                    {% set vote_html = '<vote class="score">' + comment.get_score()|string + '</vote>' %}
-
-                    {% if comment.has_voted|string == '1' %}
-                        {% set up_html = '<a href="javascript:void(0)"><i style="color: ' + config.UPVOTE_COLOR + '"class="fa fa-arrow-up"></i></a>' %}
-                        {% set vote_html = '<vote class="score" style="color:' + config.AVG_UP_COLOR + '">' + comment.get_score()|string + '</vote>' %}
+                    {% if cauthor_type == 'admin' %}
+                        <i class="fa fa-user admin-color"></i><a class="user-icon-link admin-color" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
+                    {% elif cauthor_type == 'mod' %}
+                        <i class="fa fa-user mod-color"></i><a class="user-icon-link mod-color" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ cauthor }}</a>
                     {% else %}
-                        {% set up_html = '<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>' %}
+                        <i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
                     {% endif %}
+            </small>
+                {% endif %}
+                <a href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
+                    <small class="created-ago comment-link">
+                        {{ comment.created_ago }}
+                    </small>
+                </a>
+            <small class="created-ago">
+                {% if comment.parent_id != None %}
+                    <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
+                {% else %}
+                    <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
+                {% endif %}parent</a>
+            </small>
+            <small class="created-ago">
+                {% if cominline == True %}
+                    <a class="hide-comment" href="javascript:minHide({{ comment.id }});">[-]</a>
+                {% endif %}
+            </small>
+        </div>
+    </div>
 
-                    {% if comment.has_voted|string == '-1' %}
-                        {% set down_html = '<a href="javascript:void(0)"><i style="color: ' + config.DOWNVOTE_COLOR + ';" class="fa fa-arrow-down"></i></a>' %}
-                        {% set vote_html = '<vote class="score" style="color:' + config.AVG_DOWN_COLOR + '">' + comment.get_score()|string + '</vote>' %}
-                    {% else %}
-                        {% set down_html = '<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>' %}
-                    {% endif %}
-
-                    {{ up_html|safe }}
-                    {{ vote_html|safe }}
-                    {{ down_html|safe }}
-                </div>
-                <div class="inner-div applyinline" style="display: inline;">
-                    {% if post.locked == False %}
-                        {% if comment_list %}
-                            <a class="comment-link comment-reply" href="{{ comment.get_permalink() }}" comment_id="{{ comment.id }}">{{ get_word('reply') }}</a>
-                        {% else %}
-                            <a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">{{ get_word('reply') }}</a>
-                        {% endif %}
-                    {% endif %}
-
-                    <div style='display:inline-block;' class="dropup btn-group rounded v-button" id='dot-button-{{ post.id }}'>
-                        <button class="btn btn-secondary rounded btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-ellipsis-h'></i>  </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("comment_id", "{{ comment.id }}")'>{{ get_word('hide comment') }}</a>
-
-                            {% if comment.anonymous == False %}
-                                {% if comment.author_id in session['blocked']['other_user'] %}
-                                    {% if comment.author_id not in session['blocked']['anon_user'] %}
-                                        <a class="dropdown-item" href="javascript:blockUser('comment_id','{{ comment.id }}');">{{ get_word('block user') }}</a>
-                                    {% endif %}
-                                {% else %}
-                                    <a class="dropdown-item" href="javascript:blockUser('comment_id','{{ comment.id }}');">{{ get_word('block user') }}</a>
-                                {% endif %}
-                            {% else %}
-                                {% if comment.author_id not in session['blocked']['anon_user'] %}
-                                    <a class="dropdown-item" href="javascript:blockUser('comment_id','{{ comment.id }}');">{{ get_word('block user') }}</a>
-                                {% endif %}
-                            {% endif %}
-
-                            {% if session['username'] == comment.author %}
-                                <a class="dropdown-item" href="/user/edit/comment/{{ comment.id }}/">{{ get_word('edit') }}</a>
-                            {% endif %}
-            
-                            {% if session['username'] == comment.author %}
-                                <a class="dropdown-item" href="javascript:formSubmit('user-delete-comment-{{ comment.id }}')">{{ get_word('delete') }}</a>
-                            {% endif %}
-                        </div>
-                    </div>
+    <div class='comment-selftext-wrapper'>
+        {% if comment.deleted == True %}
+            {% if comment.removed_by == 'removed by author' or comment.removed_by == None %}
+                <div class="comment-text comment-text-text safe-markup-text">[{{ get_word('deleted') }}]
+            {% else %}
+                <div class="comment-text comment-text-text safe-markup-text">[{{ get_word('removed by') }} <a href="/u/{{ comment.removed_by }}">/u/{{ comment.removed_by }}</a>]
             {% endif %}
 
-            {% if cominline and comment.deleted == False %}
+            {% if cominline and comment.deleted == True %}
                 {% if loop.depth0 == 4 and value|length > 0 %}
                     <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
                         {{ get_word('view more') }} <i class='fa fa-arrow-circle-right '></i>
@@ -146,39 +66,123 @@
                 {% endif %}
             {% endif %}
 
-        <div class='commoptions' style='float: right; margin: 0.5rem; margin-top: -0.25rem;'>
+            </div>
 
-        {% if session['username'] in post.mods or session['admin'] == True %}
-            <div class="dropdown bottom-post-dropdown">
-                {% if comment.deleted == False %}
-                <button class="btn btn-info btn-sm btn-com-bot bottom-dropdown comment-button-dropdown" type="button" id="dropdownMenuButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class='fa fa-gavel'><h6 class='btn-description'>{{ get_word('mod') }}</h6> </i>
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    {% if session['username'] != comment.author %}
-                        <a class="dropdown-item" href="javascript:formSubmit('mod-delete-comment-{{ comment.id }}')">{{ get_word('delete') }}</a>
+        {% else %}
+            <div class="comment-text comment-text-text safe-markup-text">{{ comment.new_text|safe }}</div>
+        {% endif %}
+
+
+        <div class="row post-row comment-bottom">
+
+
+        {% if comment.deleted == False %}
+
+            <div class="inner-div comment-voting" vote-obj-id="{{ comment.id }}" vote-obj-type="comment" 
+                vote-userid="{{ session['user_id'] }}" has_voted="{{ comment.has_voted }}">
+                {% set vote_html = '<vote class="score">' + comment.get_score()|string + '</vote>' %}
+
+                {% if comment.has_voted|string == '1' %}
+                    {% set up_html = '<a href="javascript:void(0)"><i style="color: ' + config.UPVOTE_COLOR + '"class="fa fa-arrow-up"></i></a>' %}
+                    {% set vote_html = '<vote class="score" style="color:' + config.AVG_UP_COLOR + '">' + comment.get_score()|string + '</vote>' %}
+                {% else %}
+                    {% set up_html = '<a href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>' %}
+                {% endif %}
+
+                {% if comment.has_voted|string == '-1' %}
+                    {% set down_html = '<a href="javascript:void(0)"><i style="color: ' + config.DOWNVOTE_COLOR + ';" class="fa fa-arrow-down"></i></a>' %}
+                    {% set vote_html = '<vote class="score" style="color:' + config.AVG_DOWN_COLOR + '">' + comment.get_score()|string + '</vote>' %}
+                {% else %}
+                    {% set down_html = '<a href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>' %}
+                {% endif %}
+
+                {{ up_html|safe }}
+                {{ vote_html|safe }}
+                {{ down_html|safe }}
+            </div>
+
+            <div class="inner-div apply-inline">
+                {% if post.locked == False %}
+                    {% if comment_list %}
+                        <a class="comment-link comment-reply" href="{{ comment.get_permalink() }}" comment_id="{{ comment.id }}">{{ get_word('reply') }}</a>
+                    {% else %}
+                        <a class="comment-link comment-reply" href="javascript:void(0)" comment_id="{{ comment.id }}">{{ get_word('reply') }}</a>
                     {% endif %}
-                    <a class="dropdown-item" href="javascript:formSubmit('btn-mod-ban-comment-{{ comment.id }}')">{{ get_word('ban') }}</a>
+                {% endif %}
+
+                <div class="dropup btn-group rounded v-button" id='dot-button-{{ post.id }}'>
+                    <button class="btn btn-secondary rounded btn-sm bottom-dropdown three-dots" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class='fa fa-ellipsis-h'></i>  </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" id='hide-post-{{ post.id }}' href='javascript:hideObject("comment_id", "{{ comment.id }}")'>{{ get_word('hide comment') }}</a>
+
+                        {% if comment.anonymous == False %}
+                            {% if comment.author_id in session['blocked']['other_user'] %}
+                                {% if comment.author_id not in session['blocked']['anon_user'] %}
+                                    <a class="dropdown-item" href="javascript:blockUser('comment_id','{{ comment.id }}');">{{ get_word('block user') }}</a>
+                                {% endif %}
+                            {% else %}
+                                <a class="dropdown-item" href="javascript:blockUser('comment_id','{{ comment.id }}');">{{ get_word('block user') }}</a>
+                            {% endif %}
+                        {% else %}
+                            {% if comment.author_id not in session['blocked']['anon_user'] %}
+                                <a class="dropdown-item" href="javascript:blockUser('comment_id','{{ comment.id }}');">{{ get_word('block user') }}</a>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if session['username'] == comment.author %}
+                            <a class="dropdown-item" href="/user/edit/comment/{{ comment.id }}/">{{ get_word('edit') }}</a>
+                        {% endif %}
+        
+                        {% if session['username'] == comment.author %}
+                            <a class="dropdown-item" href="javascript:formSubmit('user-delete-comment-{{ comment.id }}')">{{ get_word('delete') }}</a>
+                        {% endif %}
+                    </div>
                 </div>
+        {% endif %}
+
+        {% if cominline and comment.deleted == False %}
+            {% if loop.depth0 == 4 and value|length > 0 %}
+                <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/"><button class = 'btn-sm btn btn-success comment-more'>
+                    {{ get_word('view more') }} <i class='fa fa-arrow-circle-right '></i>
+                </button></a>
             {% endif %}
+        {% endif %}
+
+    <div class='comm-options'>
+
+    {% if session['username'] in post.mods or session['admin'] == True %}
+        <div class="dropdown bottom-post-dropdown">
+            {% if comment.deleted == False %}
+            <button class="btn btn-info btn-sm btn-com-bot bottom-dropdown comment-button-dropdown" type="button" id="dropdownMenuButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class='fa fa-gavel'><h6 class='btn-description'>{{ get_word('mod') }}</h6> </i>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                {% if session['username'] != comment.author %}
+                    <a class="dropdown-item" href="javascript:formSubmit('mod-delete-comment-{{ comment.id }}')">{{ get_word('delete') }}</a>
+                {% endif %}
+                <a class="dropdown-item" href="javascript:formSubmit('btn-mod-ban-comment-{{ comment.id }}')">{{ get_word('ban') }}</a>
             </div>
         {% endif %}
-        <script>document.write('<style>.hide-div{display: none;}</style>')</script>
-        {% if session['username'] == comment.author %}
-            <div class='mod-option-wrapper user-options user-options-comments hide-div'>
-                <small>
-                    <a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
-                        <button type='submit' class='mod-option-button'>{{ get_word('edit') }}</button>
-                    </a>
-                    <form action='{{ config.URL }}/user/delete/comment' method='POST' class='post-mod-option-form post-mod-sticky-form'>
-                        <button id='btn-user-delete-comment-{{ comment.id }}' type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button'>{{ get_word('delete') }}</button>
-                    </form>
-                </small>
-            </div>
-        {% endif %}
-    </div>
-    {% if session['username'] in post.mods %}
-        <div class='mod-option-wrapper-comments hide-div'><small>
+        </div>
+    {% endif %}
+    <script>document.write('<style>.hide-div{display: none;}</style>')</script>
+    {% if session['username'] == comment.author %}
+        <div class='mod-option-wrapper user-options user-options-comments hide-div'>
+            <small>
+                <a href='{{ config.URL }}/user/edit/comment/{{ comment.id }}/' class='post-mod-option-form post-mod-sticky-form'>
+                    <button type='submit' class='mod-option-button'>{{ get_word('edit') }}</button>
+                </a>
+                <form action='{{ config.URL }}/user/delete/comment' method='POST' class='post-mod-option-form post-mod-sticky-form'>
+                    <button id='btn-user-delete-comment-{{ comment.id }}' type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button'>{{ get_word('delete') }}</button>
+                </form>
+            </small>
+        </div>
+    {% endif %}
+</div>
+
+{% if session['username'] in post.mods %}
+    <div class='mod-option-wrapper-comments hide-div'>
+        <small>
             <form action='{{ config.URL }}/mod/delete/comment' method='POST' class='post-mod-option-form post-mod-delete-form'>
                 <button id='btn-mod-delete-comment-{{ comment.id }}' type='submit' name='comment_id' value='{{ comment.id }}' class='mod-option-button post-delete-button'>{{ get_word('delete') }}</button>
             </form>|
@@ -187,20 +191,24 @@
                 <input name='itype' type='hidden' value='comment'>
                 <button type='submit' id='btn-mod-ban-comment-{{ comment.id }}' name='comment_id' value='{{ cauthor }}' class='mod-option-button post-delete-button'>{{ get_word('ban') }}</button>
             </form>
-        </small></div>
-        </div>
-    {% endif %}
-        </div>
+        </small>
+    </div>
+</div>
+{% endif %}
 
-        {% if parent_comment.id and loop.index0 == 0 and loop.depth0 == 0 %}
-            {% if post.locked == False %}
-                {% with %}
-                    {% set reptype = 'comment' %}
-                    {% set hide_comment_reply = True %}
-                    {% include 'comment-reply.html' %}
-                    <script> $('#comment-reply-box').css('display', 'none'); </script>
-                {% endwith %}
-            {% endif %}
-        {% endif %}
-        </div>
-    </li> 
+</div>
+
+{% if parent_comment.id and loop.index0 == 0 and loop.depth0 == 0 %}
+    {% if post.locked == False %}
+        {% with %}
+            {% set reptype = 'comment' %}
+            {% set hide_comment_reply = True %}
+            {% include 'comment-reply.html' %}
+            <script> $('#comment-reply-box').css('display', 'none'); </script>
+        {% endwith %}
+    {% endif %}
+{% endif %}
+
+</div>
+
+</li> 

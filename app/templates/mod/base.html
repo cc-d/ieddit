@@ -33,8 +33,8 @@
         {% set mods = get_sub_mods(request.sub, admin=False) %}
         {% for mod in mods %}
             <div class='mod-single'>
-                <a style="color: lightblue!important;" class="" href="{{ config.URL }}/u/{{ mod }}">
-                    <i class="fa fa-user" style='color: lightblue!important;'></i>[m]{{ mod }}
+                <a class="mod-color" href="{{ config.URL }}/u/{{ mod }}">
+                    <i class="fa fa-user mod-color"></i>[m]{{ mod }}
                 </a>
             </div>
         {% endfor %}

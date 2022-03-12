@@ -1,71 +1,65 @@
-<div class="media" {% if message.is_sent %}style="opacity: 0.5;"{% endif %}>
+<div class="media{% if message.is_sent %} half-visible{% endif %}">
+
   {% if message.encrypted and message.is_sent != True %}
-  <div style='border: 1px solid green;' class="media-body message-body rounded">
+    <div style='border: 1px solid green;' class="media-body message-body rounded">
     <textarea id='other-pgp-pubkey-{{ message.id }}' style='display: none;'>{{ message.sender_pgp.pubkey }}</textarea>
   {% else %}
-  <div class="media-body message-body rounded">
+    <div class="media-body message-body rounded">
   {% endif %}
+
   <div class="message-text-body">
-
-  <div class="message-top-row">
-  {% if message.show_name %}
-    {% if message.is_sent %}
-      <p style='display: inline; margin: 0; color: #eee;'>{{ get_word('sent') }}:</p>
+    <div class="message-top-row">
+    {% if message.show_name %}
+      {% if message.is_sent %}
+        <p class="message-is-sent">{{ get_word('sent') }}:</p>
+      {% endif %}
+  
+      {% if message.sender_type == 'admin' and message.anonymous == False %}
+        <i class="fa fa-user reply-fa-user admin-color"></i><a class="user-icon-link admin-color" href="{{ config.URL }}/u/{{ message.show_name }}">[a]{{ message.show_name }}</a>
+      {% elif message.sender_type == 'mod' and message.anonymous == False %}
+          <i class="fa fa-user reply-fa-user mod-color"></i><a class="user-icon-link mod-color" href="{{ config.URL }}/u/{{ message.show_name }}">[m]{{ message.show_name }}</a>
+      {% elif message.anonymous == True %}
+          <i class="fa fa-user reply-fa-user"></i><a class="user-icon-link text-aaa" href="{{ config.URL }}/u/Anonymous">{{ get_word('Anonymous', cap=[0]) }}</a>
+      {% else %}
+          <i class="fa fa-user reply-fa-user"></i><a class="user-icon-link text-aaa" href="{{ config.URL }}/u/{{ message.show_name }}">{{ message.show_name }}</a>
+      {% endif %}
+  
     {% endif %}
+  
+    <div class='created-ago'>{{ message.created_ago }}</div>
+  </div>
 
-    {% if message.sender_type == 'admin' and message.anonymous == False %}
-      <i style="color: red;" class="fa fa-user reply-fa-user"></i><a style="color: red;" class="user-icon-link" href="{{ config.URL }}/u/{{ message.show_name }}">[a]{{ message.show_name }}</a>
-    {% elif message.sender_type == 'mod' and message.anonymous == False %}
-        <i style="color: lightblue;" class="fa fa-user reply-fa-user"></i><a style="color: lightblue;" class="user-icon-link" href="{{ config.URL }}/u/{{ message.show_name }}">[m]{{ message.show_name }}</a>
-    {% elif message.anonymous == True %}
-        <i class="fa fa-user reply-fa-user"></i><a style='color: #aaa;' class="user-icon-link" href="{{ config.URL }}/u/Anonymous">{{ get_word('Anonymous', cap=[0]) }}</a>
-    {% else %}
-        <i class="fa fa-user reply-fa-user"></i><a style='color: #aaa;' class="user-icon-link" href="{{ config.URL }}/u/{{ message.show_name }}">{{ message.show_name }}</a>
-    {% endif %}
 
-    {% if message.user_stats and not message.is_sent %}
-      <p class='user-message-stats' style='font-family: inherit; display: inline-block; 
-      color: #aaa; margin-bottom: 0px;' data-toggle="tooltip" data-placement="top" title='total karma'>({{ message.user_stats }})</p>
+  <div class='title-wrap'>
+    <h5 class="mt-1 message-title">{{ message.title }}</h5>
+    {% if message.in_reply_to != None %}
+      <div class="in-message-short-url">
+        {% set reply_url = config.URL + config.SUB_PREFIX + message.in_reply_to %}
+        <a href="{{ reply_url }}">{{ message.in_reply_to }}</a>
+      </div>
     {% endif %}
+  </div>
+
+  {% if message.encrypted == False or message.is_sent %}
+    <div class="safe-markup-text comment-markup-text text-ddd" id='message-{{ message.id }}'>{{ message.new_text|safe }}</div>
+  {% else %}
+    <div class="safe-markup-text encrypted-text-wrap">
+      <i class='fa fa-lock'></i> {{ get_word('MESSAGE ENCRYPTED') }}
+      <textara style='display: none;' class='emessage' id='encrypted-message-{{ message.id }}'>{{ message.text }}</textara>
+    </div>
+    <div class="decryptedContent safe-markup-text comment-markup-text" id="decryptedContent-{{ message.id }}"></div>
   {% endif %}
 
-    <div class='created-ago' style='display: inline-block; color: #aaa;'>
-      {{ message.created_ago }}
+  {% if message.in_reply_to != None %}
+    <div class="message-bottom-row">
+      <a style='font-size: 120%; color: #aaa;' href="{{ config.URL + config.SUB_PREFIX + message.in_reply_to }}">reply</a>
     </div>
+  {% elif message.show_name != session['username'] and request.url.split('/')[-2] != 'reply' %}
+    <div class="message-bottom-row">
+      <a style='font-size: 120%; color: #aaa;' href="reply/{{ message.id }}">{{ get_word('reply') }}</a>
+    </div>
+  {% endif %}
 
   </div>
-
-
-    <div class='title-wrap'>
-      <h5 class="mt-1 message-title" style='display: inline-block;'>{{ message.title }}</h5>
-      {% if message.in_reply_to != None %}
-        <div style='display: inline-block; margin-bottom: -10px; height:1.75rem; white-space: nowrap; word-break: break-all; text-overflow: ellipsis; max-width: 54%; overflow: hidden;'>
-          {% set reply_url = config.URL + config.SUB_PREFIX + message.in_reply_to %}
-          <a href="{{ reply_url }}">{{ message.in_reply_to }}</a>
-        </div>
-      {% endif %}
-    </div>
-
-    {% if message.encrypted == False or message.is_sent %}
-      <div class="safe-markup-text comment-markup-text" style='color: #ddd;' id='message-{{ message.id }}'>{{ message.new_text|safe }}</div>
-    {% else %}
-      <div class="safe-markup-text" style='color: green; margin: 1rem;'>
-        <i class='fa fa-lock'></i> {{ get_word('MESSAGE ENCRYPTED') }}
-        <textara style='display: none;' class='emessage' id='encrypted-message-{{ message.id }}'>{{ message.text }}</textara>
-      </div>
-    <div class="decryptedContent safe-markup-text comment-markup-text" id="decryptedContent-{{ message.id }}"></div>
-    {% endif %}
-
-    {% if message.in_reply_to != None %}
-      <div class="message-bottom-row">
-        <a style='font-size: 120%; color: #aaa;' href="{{ config.URL + config.SUB_PREFIX + message.in_reply_to }}">reply</a>
-      </div>
-    {% elif message.show_name != session['username'] and request.url.split('/')[-2] != 'reply' %}
-      <div class="message-bottom-row">
-        <a style='font-size: 120%; color: #aaa;' href="reply/{{ message.id }}">{{ get_word('reply') }}</a>
-      </div>
-    {% endif %}
-
   </div>
-</div>
 </div>

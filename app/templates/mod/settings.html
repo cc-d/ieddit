@@ -2,7 +2,7 @@
 {% block mod_body %}
 
 
-<h4 class='sub-settings-text' style='margin-top: 1rem;'>{{ get_word('settings') }}</h4>
+<h4 class='sub-settings-text'>{{ get_word('settings') }}</h4>
 <form action='/mod/settings' method='POST'>
     <input type='hidden' name='sub' value='{{ request.sub }}'>
     <ul class="list-group">
