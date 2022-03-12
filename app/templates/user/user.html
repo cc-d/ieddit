@@ -9,30 +9,27 @@
         <h6 class='user-profile-info-top'>/u/{{ vuser.username }}
             {% set karma_post = vuser.karma['post'] %}
             {% if vuser.karma['post'] > 0 %}
-                {% set post_karma_color = 'style=color:greenyellow;' %}
+                {% set post_karma_class = 'positive-post-karma' %}
                 {% set karma_post = '+' + vuser.karma['post']|string %}
             {% elif vuser.karma['post'] == 0 %}
-                {% set post_karma_color = '' %}
+                {% set post_karma_class = '' %}
             {% else %}
-                {% set post_karma_color = 'style=color:' + config.DOWNVOTE_COLOR + ';' %}
+                {% set post_karma_class = 'negative-post-karma' %}
             {% endif %}
             
             {% set karma_comment = vuser.karma['comment'] %}
             {% if vuser.karma['comment'] > 0 %}
-                {% set comment_karma_color = 'style=color:greenyellow;' %}
+                {% set comment_karma_class = 'positive-comment-karma' %}
                 {% set karma_comment = '+' + vuser.karma['comment']|string %}
             {% elif vuser.karma['comment'] == 0 %}
-                {% set comment_karma_color = '' %}
+                {% set comment_karma_class = '' %}
             {% else %}
-                {% set comment_karma_color = 'style=color:' + config.DOWNVOTE_COLOR + ';' %}
+                {% set comment_karma_class = 'negative-comment-karma' %}
             {% endif %}
         
             <div class='user-profile-karma'>    
-                <p class='user-post-karma' {{ post_karma_color }} data-toggle='tooltip' data-placement="top" title="total post karma">
-                    {{ karma_post }}
-                </p>&nbsp;
-                <p class='user-comment-karma' {{ comment_karma_color }} data-toggle='tooltip' data-placement="top" title="total comment karma"> {{ karma_comment }}
-                </p>    
+                <p class='user-post-karma {{ post_karma_class }}' data-toggle='tooltip' data-placement="top" title="total post karma">{{ karma_post }}</p>
+                <p class='user-comment-karma {{ comment_karma_class }}' data-toggle='tooltip' data-placement="top" title="total comment karma"> {{ karma_comment }}</p>    
             </div>
         </h6>
         <div class='user-profile-body'>
@@ -124,7 +121,7 @@
         {% include 'sub-post.html' %}
     {% endif %}
     {% else %}
-        <p class='margin-lr'> no posts </p>
+        <p class='small-margin-lr'> no posts </p>
     {% endfor %}
     
     {% if count.pop() > 0 %}

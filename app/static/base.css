@@ -283,8 +283,8 @@ textarea {
 }
 
 #content {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
+    margin-left: 4px;
+    margin-right: 4px;
 }
 
 #register-container {
@@ -353,7 +353,7 @@ textarea {
 
 .message-body {
     border: 1px black solid;
-    margin: 0.5rem;
+    margin: 4px;
     overflow-x: hidden;
 }
 
@@ -750,10 +750,6 @@ ul {
 
 .profile-mod-container {
     margin-top: 0.75rem;
-}
-
-#user-preference-checkboxes {
-    max-width: 15rem;
 }
 
 .col.inner-div {
@@ -1415,20 +1411,16 @@ blockquote {
 }
 
 #edit-bio-textarea {
-    min-width: 14rem;
+    min-width: 160px;
     width: 100%;
     overflow-y: hidden!important;
-    margin-top: 0.5rem;
+    margin-top: 8px;
 }
 
 #update-bio-btn {
     display: block;
     margin-right: 2rem;
     float: right;
-}
-
-#user-edit-bio {
-    width: 19rem;
 }
 
 .textarea-count {
@@ -1438,7 +1430,7 @@ blockquote {
 }
 
 .page-container.bg-light {
-    margin-top: -12px;
+    margin-top: -10px;
 }
 
 #alert-container {
@@ -1514,7 +1506,7 @@ blockquote {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 50%;
-    margin-bottom: -4px;
+    margin-bottom: -6px;
     text-decoration: underline;
 }
 
@@ -1546,3 +1538,62 @@ blockquote {
     text-decoration: underline;
 }
 
+.positive-post-karma, .positive-comment-karma {
+    color:  greenyellow;
+}
+
+.downvote-color {
+    color: rgb(0, 191, 255);
+}
+
+.upvote-color {
+    color: rgb(255, 165, 0);
+}
+
+p.user-comment-karma, p.user-post-karma {
+    font-size: 80%;
+}
+
+.user-profile-karma > .user-comment-karma {
+    margin-left: 4px;
+}
+
+.text-fff {
+    color: #fff;
+}
+
+.text-ccc {
+    color: #ccc;
+}
+
+.small-margin-lr {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.first-pref-form-input {
+    margin-top: 8px;
+}
+
+#user-preference-checkboxes input[type="checkbox"] {
+    margin-left: 0px;
+}
+
+#user-preference-checkboxes .preference-option label {
+    margin-left: 16px;
+}
+
+a#download-user-data-link {
+    text-decoration: underline;
+    font-size: 80%;
+    float: right;
+}
+
+button#save-pref-btn {
+    display: block;
+    margin-top: 4px;
+}
+
+button#update-pref-btn {
+    margin-left: 12px;
+}

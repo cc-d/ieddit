@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div id="edit-bio-wrapper" class="margin-lr">
+<div id="edit-bio-wrapper" class="small-margin-lr">
     <h3 class="pref-header">{{ get_word('Edit Bio', cap_all=True) }}</h3>
     <form class='border-top' id='user-edit-bio' action='/user/update_bio' method='POST'>
     <textarea name="new_bio" id="edit-bio-textarea" rows="4" maxlength="200" class="limited-textarea">{% if user.bio %}{{ user.bio }}{% endif %}</textarea>
-    <button type="submit" class="btn btn-primary btn-sm margin-lr" id="update-bio-btn">{{ get_word('update') }}</button>
+    <button type="submit" class="btn btn-primary btn-sm small-margin-lr" id="update-bio-btn">{{ get_word('update') }}</button>
     </form>
 </div>
 
 <br><br>
 
-<h3 class='margin-lr pref-header'>{{ get_word('Preferences', cap=[0]) }}</h3>
-<form class='margin-lr border-top' id='user-preference-checkboxes' action='/user/update_preferences' method='POST'>
-    <div class="form-group" style='margin-left: 2rem; margin-top: 0.5rem;'>
+<h3 class='small-margin-lr pref-header'>{{ get_word('Preferences', cap=[0]) }}</h3>
+<form class='small-margin-lr border-top update-pref-form' id='user-preference-checkboxes' action='/user/update_preferences' method='POST'>
+    <div class="form-group first-pref-form-input">
         <div class='preference-option'>
             <input type="checkbox" class="form-check-input" id="always-anonymous" name='always_anonymous' {% if user.anonymous == True %}checked{% endif %}><label for="always-anonymous">{{ get_word('Always Anonymous', cap_all=True) }}</label>
         </div>
@@ -54,15 +54,15 @@
 </div>
 
         <input type='hidden' name='checkbox_only' value='checkbox_only'>
-        <button type="submit" style="margin-left: -1.5rem; margin-top: 0.5rem;" class="btn btn-primary btn-sm">{{ get_word('save preferences') }}</button>
+        <button type="submit" id="save-pref-btn" class="btn btn-primary btn-sm">{{ get_word('save preferences') }}</button>
 
     </div>
 </form>
 <br>
-<h3 class='margin-lr pref-header'>{{ get_word('Account', cap=[0]) }}</h3>
+<h3 class='small-margin-lr pref-header'>{{ get_word('Account', cap=[0]) }}</h3>
 
-<form class="border-top" style='max-width: 25rem; margin: 1rem;' action='/user/update_preferences' method='POST'>
-    <div class="form-group" style='margin-top: 0.5rem;'>
+<form class="border-top small-margin-lr" action='/user/update_preferences' method='POST'>
+    <div class="form-group">
         <label for="exampleInputEmail1">{{ get_word('Change Email address') }}</label>
         <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" safe 
         placeholder="{% if user.email %}{{ user.email }}{% else %}Enter email{% endif %}" name='new_email'>
@@ -80,9 +80,9 @@
         <input type="password" class="form-control" id="exampleInputPassword3" placeholder="confirm password" name='cur_password'>
     </div>    
     </div>
-    <button style='margin-left: 1.5rem;' type="submit" class="btn btn-primary">{{ get_word('update') }}</button>
+    <button type="submit" id="update-pref-btn" class="btn btn-primary small-margin-lr">{{ get_word('update') }}</button>
 </form> 
 
-<br><br><a style='margin-left: 1.5rem;' href='/api/get_user/{{ session.username }}'>{{ get_word('download user data') }} </a><br>
+<a id="download-user-data-link" href='/api/get_user/{{ session.username }}' class="small-margin-lr">{{ get_word('download user data') }}</a>
 
 {% endblock %}
