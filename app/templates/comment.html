@@ -28,13 +28,19 @@
                     {% else %}
                         <i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
                     {% endif %}
-            </small>
                 {% endif %}
-                <a href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
-                    <small class="created-ago comment-link">
-                        {{ comment.created_ago }}
-                    </small>
-                </a>
+            </small>
+
+            <div class="spacer-dot">•</div>
+
+            <a href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
+                <small class="created-ago comment-link" style="margin-left: 0px;">
+                    {{ comment.created_ago }}
+                </small>
+            </a>
+
+            <div class="spacer-dot">•</div>
+
             <small class="created-ago">
                 {% if comment.parent_id != None %}
                     <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
@@ -42,6 +48,7 @@
                     <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
                 {% endif %}parent</a>
             </small>
+
             <small class="created-ago">
                 {% if cominline == True %}
                     <a class="hide-comment" href="javascript:minHide({{ comment.id }});">[-]</a>
