@@ -100,7 +100,9 @@
                     {% if post.edited %}*{% endif %}
                     <div class="usertype-{{ pauther_type }} user-and-sub">
                         <i class="fa fa-user"></i><a class="user-icon-link usertype-{{ pauther_type }}" href="{{ config.URL }}/u/{{ pauther }}">{{ letter }}{{ pauther }}</a>
+                        <div class="spacer-dot">•</div>
                         <a class="top-of-post" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}">{{ config.SUB_PREFIX }}{{ post.sub }}</a>
+                        <div class="spacer-dot">•</div>
                         <a class="top-of-post comment-link" href="{{ post.get_permalink() }}">{{ post.created_ago }}</a>
                     </div>
                 </small>

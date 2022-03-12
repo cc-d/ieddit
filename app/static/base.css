@@ -252,7 +252,6 @@ textarea {
 }
 
 .top-of-post {
-    margin-left: 1rem;
     display: inline;
 }
 
@@ -1605,3 +1604,7 @@ button#update-pref-btn {
     color: #ccc;
 }
 
+.sub-list .spacer-dot {
+    margin-left: 1px;
+    margin-right: 1px;
+}
