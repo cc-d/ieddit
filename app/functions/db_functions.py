@@ -585,3 +585,15 @@ def hide_blocked(obj):
                 show.append(o)
 
     return show
+
+def update_last_online(username=None):
+    if username == None:
+        if session['username']:
+            username = session['username']
+
+    user = db.session.query(Iuser).filter_by(username=username).first()
+    if user:
+        user.last_online = get_time()
+        db.session.add(self)
+        db.session.commit()
+

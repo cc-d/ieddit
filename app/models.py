@@ -37,6 +37,7 @@ class Iuser(db.Model):
     hide_sub_language = db.Column(db.Boolean, default=False, nullable=False)
     bio = db.Column(db.String(200), default=None, nullable=True)
     show_last_online = db.Column(db.Boolean, default=True, nullable=False)
+    last_online = db.Column(db.DateTime, default=None, nullable=True)
 
     def __repr__(self):
         return '<Iuser %r>' % self.username

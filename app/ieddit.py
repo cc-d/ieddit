@@ -296,13 +296,16 @@ def login():
                 if get_pgp_from_username(login_user.username):
                     session['pgp_enabled'] = True
 
+                update_last_online()
+
                 return redirect(url_for('index'), 302)
 
         flash('Username or Password incorrect.', 'danger')
         return redirect(url_for('login'), 302)
 
-@app.route('/logout', methods=['POST', 'GET'])
+@app.route('/logout', methods=['POST'])
 def logout():
+    update_last_online()
     [session.pop(key) for key in list(session.keys())]
     return redirect(url_for('index'), 302)
 
@@ -953,6 +956,8 @@ def vote(post_id=None, comment_id=None, vote=None, user_id=None):
 
         db.session.commit()
 
+        update_last_online()
+
         return str(vcom.ups - vcom.downs)
     elif request.method == 'GET':
         return 'get'
@@ -1089,6 +1094,8 @@ def create_post(api=False, *args, **kwargs):
 
         if api:
             return sqla_to_dict(new_post)
+
+        update_last_online()
 
         return redirect(url)
 
@@ -1273,6 +1280,9 @@ def create_comment(api=False, *args, **kwargs):
 
     if api:
         return sqla_to_dict(new_comment)
+
+    update_last_online()
+
     return redirect(post_url, 302)
 
 def send_message(title=None, text=None, sent_to=None, sender=None, in_reply_to=None, encrypted=False, encrypted_key_id=None):

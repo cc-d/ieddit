@@ -3,6 +3,12 @@ abspath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, abspath) 
 os.chdir(abspath)
 
+if abspath.split('/')[-1] == 'utilities':
+    os.chdir('..')
+    abspath = '/'.join(abspath.split('/')[:-1])
+
+print(abspath)
+
 from datetime import timedelta
 import logging
 from flask import Flask, render_template, session, request

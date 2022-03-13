@@ -315,6 +315,12 @@ def user_update_preferences():
     session['anonymous'] = user.anonymous
 
     show_last_online = request.form.get('show_last_online')
+    if user.show_last_online is True:
+        if show_last_online is None:
+            user.show_last_online = False
+    elif user.show_last_online is False:
+        if show_last_online is not None:
+            user.show_last_online = True
 
 
     checkbox_only = request.form.get('checkbox_only')

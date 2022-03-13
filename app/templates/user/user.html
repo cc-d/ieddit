@@ -32,21 +32,55 @@
                 <p class='user-comment-karma {{ comment_karma_class }}' data-toggle='tooltip' data-placement="top" title="total comment karma"> {{ karma_comment }}</p>    
             </div>
         </h6>
-        <div class='user-profile-body'>
-            <p class='user-profile-joined'>Joined: {{ (vuser.created|string)[0:10] }}</p>
 
-            <!-- Various user types will go here -->
-            {% if vuser.admin == True %}
-                <p style='color:red;' class='user-profile-joined'>{{ get_word('Admin', cap=[0]) }}</p>
+        <!--
+<div class="user-profile-body">
+    <div class="user-profile-single-line">
+        <div class="user-profile-left-text">Joined:</div>
+        <div class="user-profile-right-text">2022-02-02</div>
+        <div style="" class="admin-color user-page-role">Admin</div>
+    </div>
+    <div class="user-profile-single-line">
+        <div class="user-profile-left-text">About:</div>
+        <div class="user-profile-right-text">3r1fe</div>
+    </div>
+    <div class="user-profile-single-line">
+        <div class="user-profile-left-text">Last Online:</div>
+        <div class="user-profile-right-text">2022-01-02</div>
+    </div>
+</div>
+        -->
+        <div class='user-profile-body'>
+            <div class="user-profile-single-line">
+                <div class="user-profile-left-text">Joined:</div>
+                <div class="user-profile-right-text">{{ (vuser.created|string)[0:10] }}</div>
+                {% if vuser.admin == True %}
+                    <div class="admin-color user-page-role">{{ get_word('Admin', cap=[0]) }}</div>
+                {% endif %}
+            </div>
+
+            {% set last_online_text = 'Unknown' %}
+            {% if vuser.show_last_online == True %}
+                {% if vuser.last_online != None %}
+                    {% set last_online_text = (vuser.last_online|string)[0:10] %}
+                {% endif %}
+            {% else %}
+                {% set last_online_text = 'Hidden' %}
             {% endif %}
 
-            <div class='user-bio'>
-                {% if vuser.bio == None %}
-                <!-- <div class='bio-text-wrap' style="opacity: 0.5;"><p class='bio-text'>This user has not set a bio.</p></div> -->
-                {% else %}
-                <div style="display: inline-flex;">About:</div>
-                    <div class='bio-text-wrap'><p data-toggle='tootltip' title="{{ vuser.bio }}" class='bio-text'>{{ vuser.bio }}</p></div>
-                {% endif %}
+            <div class="user-profile-single-line">
+                <div class="user-profile-left-text">Last Online:</div>
+                <div class="user-profile-right-text">{{ last_online_text }}</div>
+            </div>
+
+            {% set user_bio_text = 'Nothing Yet' %}
+            {% if vuser.bio != None %}
+                {% set user_bio_text = vuser.bio %}
+            {% endif %}
+
+            <div class="user-profile-single-line user-about-line-wrap">
+                <div class="user-profile-left-text">About:</div>
+                <div class="user-profile-right-text">{{ user_bio_text }}</div>
             </div>
 
         </div>
