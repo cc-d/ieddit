@@ -1060,7 +1060,7 @@ ul {
 }
 
 .user-profile-joined {
-    font-size: 75%;
+    font-size: 80%;
     margin-bottom: 0;
     display: inline;
 }
@@ -1385,9 +1385,9 @@ blockquote {
 }
 
 .user-bio {
-    font-size: 70%;
+    font-size: 80%;
     overflow: hidden;
-    max-width: 14rem;
+    max-width: 224px;
     white-space: nowrap;
 }
 
@@ -1607,4 +1607,29 @@ button#update-pref-btn {
 .sub-list .spacer-dot {
     margin-left: 1px;
     margin-right: 1px;
+}
+
+.user-profile-body {
+    font-size: 80%;
+}
+
+.user-profile-left-text {
+    display: inline;
+    color: #ddd;
+    margin-right: 4px;
+}
+
+.admin-color.user-page-role {
+    display: inline;
+}
+
+.user-profile-right-text {
+    display: inline;
+    color: #bbb;
+}
+
+.user-about-line-wrap {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 36px;
 }
