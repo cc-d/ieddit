@@ -588,12 +588,13 @@ def hide_blocked(obj):
 
 def update_last_online(username=None):
     if username == None:
-        if session['username']:
+        if 'username' in session.keys():
             username = session['username']
 
-    user = db.session.query(Iuser).filter_by(username=username).first()
-    if user:
-        user.last_online = get_time()
-        db.session.add(self)
-        db.session.commit()
+    if username:
+        user = db.session.query(Iuser).filter_by(username=username).first()
+        if user:
+            user.last_online = get_time()
+            db.session.add(user)
+            db.session.commit()
 

@@ -303,7 +303,7 @@ def login():
         flash('Username or Password incorrect.', 'danger')
         return redirect(url_for('login'), 302)
 
-@app.route('/logout', methods=['POST'])
+@app.route('/logout', methods=['POST','GET'])
 def logout():
     update_last_online()
     [session.pop(key) for key in list(session.keys())]
