@@ -12,26 +12,16 @@
 {% endif %}
 
 <div class="btn-group" role="group" aria-label="Basic example">
-    <!-- Comments are sorted by new by default, while posts are sorted by hot -->
-    {% if comments_text == get_word('Comments') %}
-        {% if 's=top' in request.environ['QUERY_STRING'] or 's=new' in request.environ['QUERY_STRING'] %}
-            <a class="top-sort" href="{{ request.environ['PATH_INFO'] }}"><button type="button" class="btn btn-sm btn-secondary">{{ get_word('Hot', cap=[0]) }}</button></a>
-        {% endif %}
-        {% if 's=new' not in request.environ['QUERY_STRING'] %}
-            <a class="top-sort" href="{{ request.environ['PATH_INFO'] + '?s=new' }}"><button type="button" class="btn btn-sm btn-secondary">{{ get_word('New', cap=[0]) }}</button></a>
-        {% endif %}
-    {% else %}
-        {% if 's=hot' in request.environ['QUERY_STRING'] or 's=top' in request.environ['QUERY_STRING'] %}
-            <a class="top-sort" href="{{ request.environ['PATH_INFO'] }}"><button type="button" class="btn btn-sm btn-secondary">{{ get_word('New', cap=[0]) }}</button></a>
-        {% endif %}
-        {% if 's=hot' not in request.environ['QUERY_STRING'] %}
-            <a class="top-sort" href="{{ request.environ['PATH_INFO'] + '?s=hot' }}"><button type="button" class="btn btn-sm btn-secondary">{{ get_word('Hot', cap=[0]) }}</button></a>
-        {% endif %}
-    {% endif %}
 
-    {% if 's=top' not in request.environ['QUERY_STRING'] %}
-        <a class="top-sort" href="{{ request.environ['PATH_INFO'] + '?s=top' }}"><button type="button" class="btn btn-sm btn-secondary">{{ get_word('Top', cap=[0]) }}</button></a>
-    {% endif %}
+    <div class="dropdown top-sort" id='sort-order'>
+        <button id="sort-order-btn" class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="sort-date-btn" data-toggle="dropdown" 
+        aria-haspopup="true" aria-expanded="false">order&nbsp;</button>
+        <div class="dropdown-menu" aria-labelledby="sort-order-btn">
+            <a class="dropdown-item" href="{{ request.environ['PATH_INFO'] }}">top</a>
+            <a class="dropdown-item" href="{{ request.environ['PATH_INFO'] + '?s=new' }}">new</a>
+            <a class="dropdown-item" href="{{ request.environ['PATH_INFO'] + '?s=hot' }}">hot</a>
+        </div>
+    </div>
 
     {% if 'd=hour' in request.environ['QUERY_STRING'] %}
         {% set active_sort = get_word('hour') %}
