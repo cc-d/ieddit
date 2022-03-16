@@ -76,10 +76,6 @@ The underlying infrastructure of the internet is fine. Centralization is only an
 
 Code contributions are HIGHLY welcome.
 
-Bitcoin: 1698YXgDhYdoNqqcjxsGjrPrLb81XWNML5
-
-Monero: 48e8yy7jyjT7RGDheWmr8Phemmxu4Z4haA8eLurKaLxi2CpzAZ5xP5hdHYmB1aJTzji1ToihZLudiHECKVL18gvm3HkqSiz
-
 I can be contacted at the email in my github profile, or on HN/Reddit/this site under the same username.
 
 If you have read this far, I genuinely appreciate your time.
