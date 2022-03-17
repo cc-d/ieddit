@@ -1661,3 +1661,7 @@ div#message-count {
 a#nav-message-count-link:hover {
     text-decoration: none;
 }
+
+.sub-post-title-offset {
+    margin-left: 20px;
+}

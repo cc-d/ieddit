@@ -147,8 +147,7 @@
             {% set short_link = get_word('text') %}
         {% endif %}
 
-        <a class="sub-post-title-link" href="{{ title_href }}">
-            {% if has_expand_button %}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}{{ post.title }}
+        <a class="sub-post-title-link {% if has_expand_button %}sub-post-title-offset{% endif %}" href="{{ title_href }}">{{ post.title }}
             <small><a href="{{ title_href }}" class="sub-post-title-url">({{ short_link }})</a></small>
         </a>
     </div>
