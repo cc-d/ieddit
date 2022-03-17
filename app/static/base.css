@@ -261,8 +261,11 @@ textarea {
 }
 
 .user-icon-link {
-    margin-left: 0.25rem;
     text-decoration: none;
+}
+
+.small-text {
+    font-size: 80%;
 }
 
 .user-icon-link:hover {
@@ -1492,12 +1495,64 @@ blockquote {
     color: #eee;
 }
 
+.text-111 {
+    color: #111;
+}
+
+.text-222 {
+    color: #222;
+}
+
+.text-333 {
+    color: #333;
+}
+
+.text-444 {
+    color: #444;
+}
+
+.text-555 {
+    color: #555;
+}
+
+.text-666 {
+    color: #666;
+}
+
+.text-777 {
+    color: #777;
+}
+
+.text-888 {
+    color: #888;
+}
+
+.text-999 {
+    color:  #999;
+}
+
 .text-aaa {
     color:  #aaa;
 }
 
+.text-bbb {
+    color:  #bbb;
+}
+
+.text-ccc {
+    color:  #ccc;
+}
+
 .text-ddd {
     color:  #ddd;
+}
+
+.text-eee {
+    color:  #eee;
+}
+
+.text-fff {
+    color:  #fff;
 }
 
 .in-message-short-url {
@@ -1665,3 +1720,8 @@ a#nav-message-count-link:hover {
 .sub-post-title-offset {
     margin-left: 20px;
 }
+
+.user-icon-and-name-wrap {
+    display: inline;
+}
+

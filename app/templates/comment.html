@@ -10,50 +10,40 @@
 
 <div class='media-body comment-media-body'>
     <div class="row post-row">
-        <div class="col inner-div comment-inner-div">
-            <small>
+        <div class="col inner-div comment-inner-div small-text">
 
-            {% if comment.override == True %}
-                {% set cauthor_type = 'user' %}
-            {% endif %}
-
-            {% if comment.edited %}* {% endif %}
+            <div class="user-icon-and-name-wrap">
+                {% if comment.override == True %}
+                    {% set cauthor_type = 'user' %}
+                {% endif %}
+                {% if comment.edited %}*{% endif %}
                 {% if comment.deleted == True %}
-                    <i class="fa fa-user"></i><a class="user-icon-link" href="#">[{{ get_word('deleted') }}]</a></small>
+                    <i class="fa fa-user"></i><a href="#">[{{ get_word('deleted') }}]</a></small>
                 {% else %}
                     {% if cauthor_type == 'admin' %}
-                        <i class="fa fa-user admin-color"></i><a class="user-icon-link admin-color" href="{{ config.URL }}/u/{{ cauthor }}">[a]{{ cauthor }}</a>
+                        <i class="fa fa-user admin-color"></i><a class="admin-color" href="{{ config.URL }}/u/{{ cauthor }}">&nbsp;[a]{{ cauthor }}</a>
                     {% elif cauthor_type == 'mod' %}
-                        <i class="fa fa-user mod-color"></i><a class="user-icon-link mod-color" href="{{ config.URL }}/u/{{ cauthor }}">[m]{{ cauthor }}</a>
+                        <i class="fa fa-user mod-color"></i><a class="mod-color" href="{{ config.URL }}/u/{{ cauthor }}">&nbsp;[m]{{ cauthor }}</a>
                     {% else %}
-                        <i class="fa fa-user"></i><a class="user-icon-link" href="{{ config.URL }}/u/{{ cauthor }}">{{ cauthor }}</a>
+                        <i class="fa fa-user text-ccc"></i><a href="{{ config.URL }}/u/{{ cauthor }}">&nbsp;{{ cauthor }}</a>
                     {% endif %}
                 {% endif %}
-            </small>
+            </div>
 
             <div class="spacer-dot">•</div>
 
-            <a href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">
-                <small class="created-ago comment-link" style="margin-left: 0px;">
-                    {{ comment.created_ago }}
-                </small>
-            </a>
+            <a href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.id }}/">{{ comment.created_ago }}</a>
 
             <div class="spacer-dot">•</div>
+            {% if comment.parent_id != None %}
+                <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
+            {% else %}
+                <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
+            {% endif %}parent</a>
 
-            <small class="created-ago">
-                {% if comment.parent_id != None %}
-                    <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/{{ comment.parent_id }}/">
-                {% else %}
-                    <a class="comment-link" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}/{{ post.id }}/{{ post.inurl_title }}/">
-                {% endif %}parent</a>
-            </small>
-
-            <small class="created-ago">
-                {% if cominline == True %}
-                    <a class="hide-comment" href="javascript:minHide({{ comment.id }});">[-]</a>
-                {% endif %}
-            </small>
+            {% if cominline == True %}
+                <a class="hide-comment" href="javascript:minHide({{ comment.id }});">[-]</a>
+            {% endif %}
         </div>
     </div>
 

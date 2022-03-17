@@ -96,16 +96,19 @@
                     {% set letter = '[m]' %}
                 {% endif %}                
 
-                <small class="small-user-and-sub">
+                <div class="top-comm-post-row small-text">
                     {% if post.edited %}*{% endif %}
                     <div class="usertype-{{ pauther_type }} user-and-sub">
-                        <i class="fa fa-user"></i><a class="user-icon-link usertype-{{ pauther_type }}" href="{{ config.URL }}/u/{{ pauther }}">{{ letter }}{{ pauther }}</a>
+                        <div class="user-icon-and-name-wrap">
+                            <i class="fa fa-user"></i>
+                            <a class="usertype-{{ pauther_type }}" href="{{ config.URL }}/u/{{ pauther }}">{{ letter }}{{ pauther }}</a>
+                        </div>
                         <div class="spacer-dot">•</div>
-                        <a class="top-of-post" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}">{{ config.SUB_PREFIX }}{{ post.sub }}</a>
+                        <a class="top-of-post text-ccc" href="{{ config.URL }}{{ config.SUB_PREFIX }}{{ post.sub }}">{{ config.SUB_PREFIX }}{{ post.sub }}</a>
                         <div class="spacer-dot">•</div>
-                        <a class="top-of-post comment-link" href="{{ post.get_permalink() }}">{{ post.created_ago }}</a>
+                        <a class="top-of-post comment-link text-ccc" href="{{ post.get_permalink() }}">{{ post.created_ago }}</a>
                     </div>
-                </small>
+                </div>
             </div>
         </div>
 
@@ -148,7 +151,9 @@
         {% endif %}
 
         <a class="sub-post-title-link {% if has_expand_button %}sub-post-title-offset{% endif %}" href="{{ title_href }}">{{ post.title }}
-            <small><a href="{{ title_href }}" class="sub-post-title-url">({{ short_link }})</a></small>
+            <small>
+                <a href="{{ title_href }}" class="sub-post-title-url text-aaa">({{ short_link }})</a>
+            </small>
         </a>
     </div>
 
