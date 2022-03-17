@@ -199,10 +199,7 @@ textarea {
 
 .comment-reply-box-expand {
     min-width: 300px;
-    max-width: 700px;
     width: 100%;
-    width: -webkit-fill-available;
-    width: -moz-available;
     min-height: 8rem;
 }
 
@@ -501,11 +498,6 @@ ul, li{
 
 .explore-link {
     margin-right: 1rem;
-}
-
-.sub-post-title-url {
-    font-size: 0.8rem;
-    color: #212529;
 }
 
 .explore-sub {
@@ -931,11 +923,13 @@ ul {
 
 .comm-options {
     display: inline-block;
+    float: right;
 }
 
 .comment-bottom {
     display: inline-block;
-    padding-top: 0.5rem;
+    padding-top: 4px;
+    width: 100%;
 }
 
 .col.inner-div.comment-inner-div {
