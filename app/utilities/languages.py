@@ -232,7 +232,7 @@ LANG = {
         "es":"acerrojar",
     },
     "lost passwords cannot be recovered without an email":{
-        "en":"Lost passwords cannot be recovered without an email.",
+        "en":"Lost passwords cannot be recovered without an email",
         "fr":"Les mots de passe perdus ne peuvent pas être récupérés sans e-mail",
         "es":"Las contraseñas perdidas no pueden recuperarse sin un correo electrónico",
     },

@@ -15,20 +15,18 @@
     {% if b.anonymous == True %}
     <tr id='{{ b.key }}-{{ b.id }}'>
       <th scope="row">
-        <a href='javascript:showObject("{{ b.key }}","{% if b.key == 'anon_user' %}{{ b.anon_id }}{% else %}{{ b.id }}{% endif %}");'>
-          <i style='color: #28a745;' class='fa fa-repeat'></i>
-        </a>
+        <a href='javascript:showObject("{{ b.key }}","{% if b.key == 'anon_user' %}{{ b.anon_id }}{% else %}{{ b.id }}{% endif %}");'>unblock</a>
       </th>
       <td>{{ b.type }}</td>
       <td>{{ b.created_ago }}</td>
-      <td><a style='color: #fff!important;' href="{{ config.URL }}/u/Anonymous">{{ config.URL }}/u/{{ get_word('Anonymous', cap=[0]) }}</a></td>
+      <td><a href="{{ config.URL }}/u/Anonymous">{{ config.URL }}/u/{{ get_word('Anonymous', cap=[0]) }}</a></td>
     </tr>
     {% else %}
     <tr id='{{ b.key }}-{{ b.id }}'>
-      <th scope="row"><a href='javascript:showObject("{{ b.key }}", {{ b.id }});'><i style='color: #28a745;' class='fa fa-repeat'></i></a></th>
+      <th scope="row"><a href='javascript:showObject("{{ b.key }}", {{ b.id }});'>unblock</a></th>
       <td>{{ b.type }}</td>
       <td>{{ b.created_ago }}</td>
-      <td><a style='color: #fff!important;' href="{{ b.get_permalink() }}">{{ b.get_permalink() }}</a></td>
+      <td><a href="{{ b.permalink }}">/u/{{ b.permalink.split('/u/')[-1] }}</td>
     </tr>
     {% endif %}
     {% endfor %}
