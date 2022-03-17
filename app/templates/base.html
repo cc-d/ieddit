@@ -49,10 +49,7 @@
                             </li>
                             <li class="nav-item active">
                                 <a class="nav-link" href="{{ config.SUB_PREFIX }}{{ request.sub }}/info/">
-                                    <button type="button" class="btn btn-sm btn-primary">
-                                        community
-                                        <i class="fa fa-users in-btn-icon"></i>
-                                    </button>
+                                    <button type="button" class="btn btn-sm btn-primary">Community<i class="fa fa-users in-btn-icon"></i></button>
                                 </a>
                             </li>
                             {% else %}
@@ -61,10 +58,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ config.SUB_PREFIX }}all">
-                                    <button type="button" id="nav-all-btn" class="btn btn-sm btn-danger">
-                                        {{ config.SUB_PREFIX }}all
-                                        <i class="fa fa-exclamation-circle in-btn-icon"></i>
-                                    </button>
+                                    <button type="button" id="nav-all-btn" class="btn btn-sm btn-danger">{{ config.SUB_PREFIX }}all<i class="fa fa-exclamation-circle in-btn-icon"></i></button>
                                 </a>
                             </li>
                             {% endif %}
@@ -75,25 +69,16 @@
                                 <li class='nav-item nav-link'>
                                     {% if request.sub in session['blocked_subs'] %}
                                         <button type='submit' formmethod='POST' fromaction='{{ config.SUB_PREFIX }}{{ request.sub }}/block' 
-                                                name='subscribe' value='0' class='btn btn-sm btn-success'>
-                                            {{ get_word('subscribe') }}
-                                            <i class='fa fa-star in-btn-icon'></i>
-                                        </button>
+                                                name='subscribe' value='0' class='btn btn-sm btn-success'>{{ get_word('subscribe') }}<i class='fa fa-star in-btn-icon'></i></button>
                                     {% else %}
                                     <button type='submit' formmethod='POST' fromaction='{{ config.SUB_PREFIX }}{{ request.sub }}/block'
-                                            name='subscribe' value='0' class='btn btn-sm btn-danger '>
-                                        {{ get_word('unsubscribe') }}
-                                        <i class='fa fa-ban'></i>
-                                    </button>
+                                            name='subscribe' value='0' class='btn btn-sm btn-danger'>{{ get_word('unsubscribe') }}<i class='fa fa-ban'></i></button>
                                     {% endif %}
                                 </li>
                             </form>
                             <li class="nav-item">
                                 <a class="nav-link" href="/create_post">
-                                    <button type="button" class="btn btn-sm btn-success">
-                                        {{ get_word('Create Post', cap_all=True) }}
-                                        <i class="fa fa-plus in-btn-icon"></i>
-                                    </button>
+                                    <button type="button" class="btn btn-sm btn-success">{{ get_word('Create Post', cap_all=True) }}<i class="fa fa-plus in-btn-icon"></i></button>
                                 </a>
                             </li>
                             {% endif %}
@@ -101,18 +86,12 @@
                             {% else %}
                             <li class="nav-item">
                                 <a class="nav-link" href="/create">
-                                    <button type="button" class="btn btn-sm btn-primary">
-                                        {{ get_word('Create Sub', cap_all=True) }}
-                                        <i class="fa fa-plus in-btn-icon"></i>
-                                    </button>
+                                    <button type="button" class="btn btn-sm btn-primary">{{ get_word('Create Sub', cap_all=True) }}<i class="fa fa-plus in-btn-icon"></i></button>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="/explore/">
-                                    <button type="button" class="btn btn-sm btn-success">
-                                        {{ get_word('Explore', cap=[0]) }}
-                                        <i class='fa fa-paper-plane'></i>
-                                    </button>
+                                    <button type="button" class="btn btn-sm btn-success">{{ get_word('Explore', cap=[0]) }}<i class='fa fa-paper-plane in-btn-icon'></i></button>
                                 </a>
                             </li>
                             {% endif %}
@@ -142,9 +121,7 @@
                             {% else %}
                             <li class="nav-item">
                                 <a class="nav-link" href="/login/">
-                                    <button type="button" class="btn btn-sm btn-secondary">
-                                        {{ get_word('Login', cap=[0]) }}
-                                    </button>
+                                    <button type="button" class="btn btn-sm btn-secondary">{{ get_word('Login', cap=[0]) }}</button>
                                 </a>
                             </li>
                             {% endif %}
