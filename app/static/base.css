@@ -1633,3 +1633,15 @@ button#update-pref-btn {
     text-overflow: ellipsis;
     max-height: 36px;
 }
+
+.in-btn-icon {
+    margin-left: 4px;
+}
+
+button#nav-all-btn {
+    font-weight: 600;
+}
+
+a#sub-title-nav-text {
+    font-size: 120%;
+}
