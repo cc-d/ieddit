@@ -69,10 +69,10 @@
                                 <li class='nav-item nav-link'>
                                     {% if request.sub in session['blocked_subs'] %}
                                         <button type='submit' formmethod='POST' fromaction='{{ config.SUB_PREFIX }}{{ request.sub }}/block' 
-                                                name='subscribe' value='0' class='btn btn-sm btn-success'>{{ get_word('subscribe') }}<i class='fa fa-star in-btn-icon'></i></button>
+                                                name='subscribe' value='0' class='btn btn-sm btn-success'>{{ get_word('Subscribe', cap=[0]) }}<i class='fa fa-star in-btn-icon'></i></button>
                                     {% else %}
                                     <button type='submit' formmethod='POST' fromaction='{{ config.SUB_PREFIX }}{{ request.sub }}/block'
-                                            name='subscribe' value='0' class='btn btn-sm btn-danger'>{{ get_word('unsubscribe') }}<i class='fa fa-ban'></i></button>
+                                            name='subscribe' value='0' class='btn btn-sm btn-danger'>{{ get_word('Unsubscribe', cap=[0]) }}<i class='fa fa-ban in-btn-icon'></i></button>
                                     {% endif %}
                                 </li>
                             </form>

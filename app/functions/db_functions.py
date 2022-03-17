@@ -20,9 +20,12 @@ def set_language(lang=config.DEFAULT_LANGUAGE):
 
 def get_word(word, language=None, cap=None, cap_all=False):
     """
-    multi language support
+    adds multi language support by returning translated words for use in various
+    website elements, and also optionally capitalizes letters in the word
     """
-    capitalize = cap
+
+    # a short variable name is used in the jinja2 function for ease of use
+    capitalize_indexes = cap
 
     if language is None:
         if 'sub_language' in session:
@@ -54,9 +57,9 @@ def get_word(word, language=None, cap=None, cap_all=False):
                                 )
                 return new_word
 
-            elif capitalize is not None:
+            elif capitalize_indexes is not None:
                 new_word = list(new_word)
-                for c in capitalize:
+                for c in capitalize_indexes:
                     new_word[c] = new_word[c].upper()
 
                 return ''.join(new_word)

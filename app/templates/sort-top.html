@@ -5,10 +5,10 @@
 
 {% if request.environ['PATH_INFO'] not in comment_paths %}
     {% set comments_link = 'comments/' %}
-    {% set comments_text = get_word('Comments', cap=[0]) %}
+    {% set comments_text = get_word('Comments') %}
 {% else %}
     {% set comments_link = '' %}
-    {% set comments_text = get_word('Posts', cap=[0]) %}
+    {% set comments_text = get_word('Posts') %}
 {% endif %}
 
 <div class="btn-group" role="group" aria-label="Basic example">
