@@ -57,7 +57,7 @@
                             </li>
                             {% else %}
                             <li class="nav-item active">
-                                <a class="nav-link" href="/about/">{{ get_word('about') }}</a>
+                                <a class="nav-link" id="nav-about-text" href="/about/">{{ get_word('about') }}</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ config.SUB_PREFIX }}all">
@@ -153,14 +153,17 @@
                         {% if session['username'] %}
                         <ul class="navbar-nav mr-auto navbar-right">
                             {% if session['unread_messages'] %}
-                                <a class="has-messages nav-link user-icon-link" 
+                                <a class="has-messages nav-link user-icon-link" id="nav-message-count-link" 
                                    href="{{ config.URL }}/u/{{ session.username }}/messages/">
-                                   <i class="has-messages-i fa fa-envelope"></i>&nbsp;({{ session['unread_messages'] }})
+                                   <i class="has-messages-i fa fa-envelope"></i>
+                                   <div id="message-count">({{ session['unread_messages'] }})</div>
                                 </a>
                             {% else %}
-                                <a class="has-messages nav-link user-icon-link" 
+                                <a class="has-messages nav-link user-icon-link" id="nav-message-count-link" 
                                    href="{{ config.URL }}/u/{{ session.username }}/messages/">
-                                   <i class="fa fa-envelope"></i>&nbsp;(0)</a>
+                                   <i class="fa fa-envelope"></i>
+                                   <div id="message-count">(0)</div>
+                               </a>
                             {% endif %}
                             <li class="nav-item active">
                                 <a class="nav-link" id='logout-right' href="/logout">{{ get_word('logout') }}</a>

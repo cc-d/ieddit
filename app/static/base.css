@@ -1645,3 +1645,19 @@ button#nav-all-btn {
 a#sub-title-nav-text {
     font-size: 120%;
 }
+
+a#nav-about-text:hover {
+    text-decoration: underline;
+}
+
+a#nav-about-text {
+    margin-top: 4px;
+}
+
+div#message-count {
+    display: inline;
+}
+
+a#nav-message-count-link:hover {
+    text-decoration: none;
+}
