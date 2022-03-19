@@ -32,6 +32,10 @@ def before_request():
         else:
             session['blocked_subs'] = []
 
+    # create last comment count dict if doesnt exist
+    if 'last_comment_counts' not in session:
+        session['last_comment_counts'] = {}
+
     request.is_mod = False
 
     try:
@@ -537,6 +541,7 @@ def subi(subi, user_id=None, posts_only=False, offset=0,
             return redirect('/')
 
     for p in sub_posts:
+        p.new_comment_count = 0
         if hasattr(p, 'self_text'):
             if p.self_text != None:
                 p.new_self_text = pseudo_markup(p.self_text)
@@ -703,6 +708,8 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
     if post is not None and 'username' in session:
         post.is_mod = True if (is_mod_of(session['username'], post.sub)) else None
 
+    session['last_comment_counts'][str(post_id)] = len(comments)
+
     if comments_only:
         return comments
 
@@ -719,6 +726,8 @@ def get_comments(sub=None, post_id=None, inurl_title=None, comment_id=None, sort
         last = last + str(comment_id)
 
     session['last_return_url'] = last
+
+    # store current number of comments of opened post to show any new comments have been posted since last viewed
 
     return render_template('comments.html', comments=comments, post_id=post_id,
                         post_url='%s%s%s/%s/%s/' % (config.URL, config.SUB_PREFIX, sub, post_id, post.inurl_title),

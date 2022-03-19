@@ -197,9 +197,26 @@
                 {{ down_html|safe }}
 
             </div>
+
+            {% set new_comments = 0 %}
+
+            {% if 'last_comment_counts' in session %}
+                {% if post.id|string in session['last_comment_counts'] %}
+                    {% set new_comments = post.comment_count - session['last_comment_counts'][post.id|string] %}
+                {% endif %}
+            {% endif %}
+
+            {% set new_comment_text = '' %}
+            {% set hide_new_count = 'hidden' %}
+            {% if new_comments > 0 %}
+                {% set new_comment_text = '(+' + new_comments|string + ')' %}
+                {% set hide_new_count = 'inline' %}
+            {% endif %}
+
             <a class="comment-link" href="{{ post.get_permalink() }}">
                 <span class='num-and-com'>{{ post.comment_count }}</span>
                 <span class='comment-span'>comments</span>
+                <span class='new-comment-span-long' style="{{ hide_new_count }}">{{ new_comment_text }}</span>
                 <i class='comment-fontawesome fa fa-comment'></i>
             </a>
         </div>
