@@ -3,36 +3,33 @@
 {% block content %}
 
 <form class="needs-validation new-post-form" novalidate method='post'>
-    <h5>URL</h5>
+    <h5>Title</h5>
     <div class="form-group border-top">
-
-        <label for="create-post-url">{{ get_word('Remote URL', cap_all=True) }}</label>
-        {% if sppf['url'] %}
-            <input name='url' type="text" class="form-control" id="create-post-url" value="{{ sppf['url'] }}">
+        {% if sppf['title'] %}
+            <input name='title' type="text" class="form-control" id="create-post-title" value="{{ sppf['title'] }}">
         {% else %}
-            <input name='url' type="text" class="form-control" id="create-post-url" placeholder="Example: https://ieddit.com">
+            <input name='title' type="text" class="form-control" id="create-post-title" placeholder="Example: Look at this site I found." maxlength="200">
         {% endif %}
+        <a id='suggest-title' href="javascript:suggestTitle();"></a>
     </div>
     <div>
-        <h5>Self-Post Text<small> (if no url)</small></h5>
+        <h5>URL</h5>
         <div class="form-group border-top">
-            <label for="create-post-text" >Self-Post Text</label>
-            {% if sppf['self_post_text'] %}
-                <textarea name='self_post_text' class="form-control" id="create-post-text">{{ sppf['self_post_text'] }}</textarea>
-            {% else %}
-                <textarea name='self_post_text' class="form-control" id="create-post-text" placeholder="Example: How are you doing today?"></textarea>
-            {% endif %}
+                {% if sppf['url'] %}
+                    <input name='url' type="text" class="form-control" id="create-post-url" value="{{ sppf['url'] }}">
+                {% else %}
+                    <input name='url' type="text" class="form-control" id="create-post-url" placeholder="Example: https://ieddit.com">
+                {% endif %}
         </div>
 
+        <h5>Text&nbsp;<div style="font-size: 80%; display: inline">(if no URL)</div></h5>
         <div class="form-group border-top">
             <div class="form-group">
-                <label for="create-post-title">{{ get_word('Title', cap=[0]) }}</label>
-                {% if sppf['title'] %}
-                    <input name='title' type="text" class="form-control" id="create-post-title" value="{{ sppf['title'] }}">
+                {% if sppf['self_post_text'] %}
+                    <textarea name='self_post_text' class="form-control" id="create-post-text">{{ sppf['self_post_text'] }}</textarea>
                 {% else %}
-                    <input name='title' type="text" class="form-control" id="create-post-title" placeholder="Example: Look at this site I found." maxlength="200">
+                    <textarea name='self_post_text' class="form-control" id="create-post-text" placeholder="Example: How are you doing today?"></textarea>
                 {% endif %}
-                <a id='suggest-title' href="javascript:suggestTitle();"></a>
             </div>
             <label for="create-post-sub">{{ get_word('Sub', cap=[0]) }}</label>
             <div class="input-group mb-3">

@@ -994,9 +994,13 @@ def create_post(api=False, *args, **kwargs):
             subname = request.form.get('sub')
             self_post_text = request.form.get('self_post_text')
 
-        if url is None and len(self_post_text) < 1:
-            flash('you must include either text or a URL', 'danger')
+        if title is None:
+            flash('title can not be empty')
             return redirect('/create_post')
+        elif url is None and len(self_post_text) < 1:
+            flash('no title or url')
+            return redirect('/create_post')
+
         if api is False:
             session['previous_post_form'] = {'title':title, 'url':url, 'sub':subname, 'self_post_text':self_post_text}
 
