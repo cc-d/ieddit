@@ -8,7 +8,7 @@ Flask==1.1.4
 Markdown==3.1.1
 Flask_SQLAlchemy==2.4.1
 Flask_Session==0.3.1
-Werkzeug==0.16.0
+Werkzeug==2.2.3
 Faker==2.0.2
 Jinja2==2.10.1
 Pillow==6.1.0
