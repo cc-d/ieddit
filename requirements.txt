@@ -14,7 +14,7 @@ Jinja2==2.10.1
 Pillow==6.1.0
 beautifulsoup4==4.8.0
 psycopg2>=2.7.7
-redis==3.3.11
+redis==4.5.3
 flask-migrate==2.5.2
 pyyaml>=5.1.2
 discord-webhook==0.4.1
